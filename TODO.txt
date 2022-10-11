@@ -1,0 +1,12 @@
+- like all the styling
+- virtual scrolling/limited scrolling for weapon list? (prefer whatever loads faster)
+- ordering weapons by release date to the API (might have to be manual)
+- if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
+- filters
+- weapon viewer
+  - extras (DIM integration, retired perks, comparisons integrations, damage falloff, reload speed)
+  - MW (types + slider)
+  - mods
+  - perks (+enhanced and curated)
+- glossary (will probably need this done manually anyway for the perk descriptions/tooltips)
+- compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
