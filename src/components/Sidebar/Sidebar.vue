@@ -35,7 +35,9 @@ function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
 <style scoped>
 .sidebar {
     width: 400px;
-    text-overflow: ellipsis;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .filter-search {

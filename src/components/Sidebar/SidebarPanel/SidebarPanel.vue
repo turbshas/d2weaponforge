@@ -21,11 +21,16 @@ function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
 </script>
 
 <template>
-    <div>
+    <div class="panel">
         <FilterWindow v-if="viewingFilter"></FilterWindow>
         <WeaponList v-else :weapons="weapons" @entry-clicked="onWeaponSelected"></WeaponList>
     </div>
 </template>
 
 <style scoped>
+.panel {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
 </style>

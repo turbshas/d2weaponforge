@@ -14,7 +14,7 @@ function onEntryClicked(weapon: DestinyInventoryItemDefinition) {
 </script>
 
 <template>
-    <div>
+    <div class="list">
         <WeaponListEntry
             v-for="weapon of weapons"
             :key="weapon.hash"
@@ -25,4 +25,7 @@ function onEntryClicked(weapon: DestinyInventoryItemDefinition) {
 </template>
 
 <style scoped>
+.list {
+    overflow: auto;
+}
 </style>
