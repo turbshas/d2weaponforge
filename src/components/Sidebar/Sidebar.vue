@@ -34,7 +34,6 @@ function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
 
 <style scoped>
 .sidebar {
-    width: 400px;
     display: flex;
     flex-direction: column;
     overflow: hidden;

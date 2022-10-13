@@ -2,9 +2,6 @@
 </script>
 
 <template>
-    <div>
-        Weapon
-    </div>
 </template>
 
 <style scoped>

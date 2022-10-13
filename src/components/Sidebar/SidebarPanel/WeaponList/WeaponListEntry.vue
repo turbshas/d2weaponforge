@@ -9,7 +9,7 @@ const props = defineProps<{
 }>();
 
 function getIconUrl(imgFileName: string) {
-    return destinyDataService.getIconUrl(imgFileName);
+    return destinyDataService.getImageUrl(imgFileName);
 }
 
 function onEntryClicked() {

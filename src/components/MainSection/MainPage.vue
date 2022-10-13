@@ -30,13 +30,20 @@ const isWeaponSelected = computed(() => {
 </script>
 
 <template>
-    <div>
-        <HomePage v-if="isHomeSelected"></HomePage>
-        <Glossary v-if="isGlossarySelected"></Glossary>
-        <ComparePage v-if="isCompareSelected"></ComparePage>
-        <WeaponViewer v-if="isWeaponSelected" :weapon="weapon"></WeaponViewer>
+    <div class="main">
+        <HomePage class="item" v-if="isHomeSelected"></HomePage>
+        <Glossary class="item" v-else-if="isGlossarySelected"></Glossary>
+        <ComparePage class="item" v-else-if="isCompareSelected"></ComparePage>
+        <WeaponViewer class="item" v-else-if="isWeaponSelected" :weapon="weapon"></WeaponViewer>
     </div>
 </template>
 
 <style scoped>
+.main {
+    display: flex;
+}
+
+.item {
+    flex-grow: 1;
+}
 </style>

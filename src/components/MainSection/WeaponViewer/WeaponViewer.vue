@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
-import WeaponPanel from './WeaponPanel.vue';
+import WeaponPanel from './WeaponPanel/WeaponPanel.vue';
 import ExtrasPanel from './ExtrasPanel.vue';
 import MasterworkPanel from './MasterworkPanel.vue';
 import ModsPanel from './ModsPanel.vue';
@@ -12,55 +12,37 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="grid">
+    <div class="viewer">
         {{ weapon?.displayProperties?.name }}
-        <WeaponPanel class="weapon"></WeaponPanel>
-        <ExtrasPanel class="extras"></ExtrasPanel>
-        <MasterworkPanel class="masterwork"></MasterworkPanel>
-        <ModsPanel class="mods"></ModsPanel>
-        <PerksPanel class="perks"></PerksPanel>
+        <div class="weapon">
+            <WeaponPanel :weapon="weapon"></WeaponPanel>
+            <div class="extras">
+                <ExtrasPanel></ExtrasPanel>
+                <div>
+                    <MasterworkPanel></MasterworkPanel>
+                    <ModsPanel></ModsPanel>
+                </div>
+            </div>
+        </div>
+        <div>
+            <PerksPanel></PerksPanel>
+        </div>
     </div>
 </template>
 
 <style scoped>
-.grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(13, 1fr);
+.viewer {
+    display: flex;
+    flex-direction: row;
 }
 
 .weapon {
-    grid-column-start: 1;
-    grid-column-end: 7;
-    grid-row-start: 1;
-    grid-row-end: 7;
+    display: flex;
+    flex-direction: column;
 }
 
 .extras {
-    grid-column-start: 1;
-    grid-column-end: 3;
-    grid-row-start: 8;
-    grid-row-end: 10;
-}
-
-.masterwork {
-    grid-column-start: 4;
-    grid-column-end: 7;
-    grid-row-start: 8;
-    grid-row-end: 9;
-}
-
-.mods {
-    grid-column-start: 4;
-    grid-column-end: 8;
-    grid-row-start: 10;
-    grid-row-end: 13;
-}
-
-.perks {
-    grid-column-start: 8;
-    grid-column-end: 10;
-    grid-row-start: 1;
-    grid-row-end: 12;
+    display: flex;
+    flex-direction: row;
 }
 </style>

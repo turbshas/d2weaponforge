@@ -8,7 +8,10 @@ import type {
     DestinyItemCategoryDefinition,
     DestinyItemTierTypeDefinition,
     DestinyManifest,
-    DestinySeasonDefinition
+    DestinySeasonDefinition,
+    DestinySocketCategoryDefinition,
+    DestinySocketTypeDefinition,
+    DestinyStatDefinition
 } from "bungie-api-ts/destiny2/interfaces";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import { reactive } from "vue";
@@ -36,6 +39,8 @@ interface Destiny2GameData {
 
     weapons: DestinyInventoryItemDefinition[];
     weaponsLookup: { [hash: number]: DestinyInventoryItemDefinition };
+
+    statsLookup: { [hash: number]: DestinyStatDefinition };
 }
 
 type GameDataReactiveWrapper = { gameData: Destiny2GameData | null };
@@ -58,8 +63,16 @@ class DestinyDataService {
         this.initialized = true;
     }
 
-    public getIconUrl = (imgFileName: string) => {
+    public getImageUrl = (imgFileName: string) => {
         return `https://www.bungie.net/${imgFileName}`;
+    }
+
+    public getDamageType = (hash: number) => {
+        return this.gameDataReactiveWrapper.gameData?.damageTypesLookup[hash];
+    }
+
+    public getStatDefinition = (statHash: number) => {
+        return this.gameDataReactiveWrapper.gameData?.statsLookup[statHash];
     }
 
     private refreshGameData = async () => {
@@ -80,8 +93,34 @@ class DestinyDataService {
                 "DestinySeasonDefinition",
                 // List of items - need to find weapons
                 "DestinyInventoryItemDefinition",
-            ]
+                "DestinyPlugSetDefinition",
+                "DestinyStatDefinition",
+                "DestinySandboxPerkDefinition",
+                "DestinySocketCategoryDefinition",
+                "DestinySocketTypeDefinition",
+            ],
         });
+        console.log(manifestSlice);
+        let perksCategory: DestinySocketCategoryDefinition | null = null;
+        for (const key in manifestSlice.DestinySocketCategoryDefinition) {
+            const category = manifestSlice.DestinySocketCategoryDefinition[key];
+            if (category.displayProperties.name === "WEAPON PERKS") {
+                console.log("found perks category", category);
+                perksCategory = category;
+                break;
+            }
+        }
+
+        const perkTypes: DestinySocketTypeDefinition[] = [];
+        if (perksCategory) {
+            for (const key in manifestSlice.DestinySocketTypeDefinition) {
+                const type = manifestSlice.DestinySocketTypeDefinition[key];
+                if (type.socketCategoryHash === perksCategory.hash) {
+                    perkTypes.push(type);
+                }
+            }
+        }
+        console.log("perk infos", perksCategory, perkTypes);
 
         const gameData: Destiny2GameData = {
             manifestMetadata: manifestInfo.Response,
@@ -99,6 +138,7 @@ class DestinyDataService {
             seasonsLookup: manifestSlice.DestinySeasonDefinition,
             weapons: [],
             weaponsLookup: {},
+            statsLookup: manifestSlice.DestinyStatDefinition,
         };
 
         this.convertToArray(gameData.damageTypes, manifestSlice.DestinyDamageTypeDefinition);
@@ -120,13 +160,14 @@ class DestinyDataService {
             }
         }
 
-        gameData.weapons.sort((a, b) => {
-            // const aSeason: DestinySeasonDefinition = gameData.seasonsLookup[a.seasonHash!];
-            // const bSeason: DestinySeasonDefinition = gameData.seasonsLookup[b.seasonHash!];
-            // return bSeason.seasonNumber - aSeason.seasonNumber;
-            return b.index - a.index;
-        });
+        gameData.weapons.sort((a, b) => b.index - a.index);
         console.log("weapons", gameData.weapons);
+
+        // example of getting perks of a weapon - weapons[1] is taipan, socketEntries[1] is the first entry in the list with randomized plug set hash
+        const socketEntry = gameData.weapons[1].sockets!.socketEntries[1];
+        const plugSet = manifestSlice.DestinyPlugSetDefinition[socketEntry!.randomizedPlugSetHash!];
+        const items = plugSet.reusablePlugItems.map(i => manifestSlice.DestinyInventoryItemDefinition[i.plugItemHash]);
+        console.log("test", socketEntry, plugSet, items);
 
         this.gameDataReactiveWrapper.gameData = gameData;
     }

@@ -25,8 +25,8 @@ function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
 
 <template>
     <div class="app">
-        <Sidebar @tab-selected="onTabSelected" @weapon-selected="onWeaponSelected"></Sidebar>
-        <MainPage :page="selectedPage" :weapon="selectedWeapon"></MainPage>
+        <Sidebar class="sidebar" @tab-selected="onTabSelected" @weapon-selected="onWeaponSelected"></Sidebar>
+        <MainPage class="main" :page="selectedPage" :weapon="selectedWeapon"></MainPage>
     </div>
 </template>
 
@@ -34,10 +34,16 @@ function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
 .app {
     display: flex;
     flex-direction: row;
-    width: 100%;
-    height: 100%;
-    max-width: 100vw;
-    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
+}
+
+.sidebar {
+    width: 400px;
+}
+
+.main {
+    flex-grow: 1;
 }
 </style>
