@@ -9,6 +9,7 @@ import type {
     DestinyItemTierTypeDefinition,
     DestinyManifest,
     DestinyPlugSetDefinition,
+    DestinyPlugWhitelistEntryDefinition,
     DestinySandboxPerkDefinition,
     DestinySeasonDefinition,
     DestinySocketCategoryDefinition,
@@ -120,6 +121,10 @@ class DestinyDataService {
     public isOriginPerkItemCategory = (itemCategoryHash: number) => {
         if (!this.gameDataReactiveWrapper.gameData) return false;
         return this.gameDataReactiveWrapper.gameData.originPerkCategory.hash === itemCategoryHash;
+    }
+
+    public isTrackerPlugCategory = (plug: DestinyPlugWhitelistEntryDefinition) => {
+        return plug.categoryIdentifier === "v400.plugs.weapons.masterworks.trackers";
     }
 
     // Notes

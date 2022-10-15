@@ -1,22 +1,15 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
 import { computed } from 'vue';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition } from 'bungie-api-ts/destiny2';
 import PerkList from '../PerkList.vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
 }>();
 
-const weaponSocketCategories = computed(() => {
-    if (!props.weapon || !props.weapon.sockets) return [];
-    return props.weapon.sockets.socketCategories;
-});
-
-const weaponSockets = computed(() => {
-    if (!props.weapon || !props.weapon.sockets) return [];
-    return props.weapon.sockets.socketEntries;
-});
+const weaponSocketCategories = computed(() => props.weapon?.sockets?.socketCategories || []);
+const weaponSockets = computed(() => props.weapon?.sockets?.socketEntries || []);
 
 const weaponPerkSockets = computed(() => {
     const weaponPerkSocketCategory = weaponSocketCategories.value.find(c => destinyDataService.isWeaponPerkSocketCategory(c.socketCategoryHash));
@@ -24,50 +17,34 @@ const weaponPerkSockets = computed(() => {
     return weaponPerkSocketCategory.socketIndexes.map(i => weaponSockets.value[i]);
 });
 
-const randomPerksSockets = computed(() => {
-    return weaponPerkSockets.value.filter(se => !!se.randomizedPlugSetHash);
-});
-
-const originPerkSocketEntry = computed(() => {
-    if (weaponPerkSockets.value.length === 0) return undefined;
-    return weaponPerkSockets.value
-        // Filter for weapon perk sockets that have a reusable plug set (random roll perks have a randomized plug set)
-        .filter(s => !!s.reusablePlugSetHash)
-        // Get the plug set from each socket entry, get the list of items from each plug set, filter for the sockets where at least 1 item is an origin perk
-        .filter(s => {
-            const plugSet = destinyDataService.getPlugSetDefinition(s.reusablePlugSetHash!);
-            return plugSet
-                && plugSet.reusablePlugItems.some(pi => {
-                    const item = destinyDataService.getItemDefinition(pi.plugItemHash);
-                    return item && item.itemCategoryHashes && item.itemCategoryHashes.some(destinyDataService.isOriginPerkItemCategory);
-                });
-        });
-});
-
-const allPerkSockets = computed(() => {
-    const sockets = [...randomPerksSockets.value];
-    if (originPerkSocketEntry.value) {
-        sockets.push(...originPerkSocketEntry.value);
-    }
-    return sockets;
+const perkSocketsNoTracker = computed(() => {
+    return weaponPerkSockets.value.filter(s => {
+        const type = destinyDataService.getSocketTypeDefinition(s.socketTypeHash);
+        return type && !type.plugWhitelist.some(destinyDataService.isTrackerPlugCategory);
+    });
 });
 
 const perkPlugSets = computed(() => {
     // Either one of the other should be defined of randomizedPlugSetHash and reusablePlugSetHash
-    return allPerkSockets.value.map(ps => destinyDataService.getPlugSetDefinition(ps.randomizedPlugSetHash || ps.reusablePlugSetHash!));
+    return perkSocketsNoTracker.value.map(ps => destinyDataService.getPlugSetDefinition(ps.randomizedPlugSetHash || ps.reusablePlugSetHash!));
 });
 
 const perkOptionListsPerSlot = computed(() => {
-    return perkPlugSets.value.map(ps => ps?.reusablePlugItems.map(pi => destinyDataService.getItemDefinition(pi.plugItemHash)));
+    return perkPlugSets.value.map(ps => {
+        const uniquePlugItems: (DestinyInventoryItemDefinition | undefined)[] = [];
+        const seenPlugItems: { [plugItemHash: number]: boolean } = {};
+        for (const plugItem of ps?.reusablePlugItems || []) {
+            if (!seenPlugItems[plugItem.plugItemHash]) {
+                uniquePlugItems.push(destinyDataService.getItemDefinition(plugItem.plugItemHash));
+                seenPlugItems[plugItem.plugItemHash] = true;
+            }
+        }
+        return uniquePlugItems;
+    });
 });
 
-const curatedPerks = computed(() => {
-    const sockets = [...randomPerksSockets.value];
-    if (originPerkSocketEntry.value) {
-        sockets.push(...originPerkSocketEntry.value);
-    }
-    return sockets.map(s => [destinyDataService.getItemDefinition(s.singleInitialItemHash)]);
-});
+const curatedPerks = computed(() => perkSocketsNoTracker.value.map(s => [destinyDataService.getItemDefinition(s.singleInitialItemHash)]));
+const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
 </script>
 
 <template>
@@ -77,8 +54,10 @@ const curatedPerks = computed(() => {
         <span class="description">
             TO APPLY THE ENHANCED VERSION OF A PERK, CLICK SAID PERK IN THE AREA WITH THE PICTURE OF THE WEAPON.
         </span>
-        <span class="title">Curated Roll</span>
-        <PerkList :perk-option-lists="curatedPerks"></PerkList>
+        <div v-if="hasCuratedPerks">
+            <span class="title">Curated Roll</span>
+            <PerkList :perk-option-lists="curatedPerks"></PerkList>
+        </div>
     </div>
 </template>
 
@@ -86,6 +65,8 @@ const curatedPerks = computed(() => {
 .perks {
     display: flex;
     flex-direction: column;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30'%3E%3Cpath fill='%23fff' opacity='.03' d='M21.747 19.5H30V21h-8.253zm-2.253 2.246h1.5V30h-1.5z'/%3E%3Cpath fill='%23fff' opacity='.15' d='M21.001 21v-1.5h-1.507V21h1.507z'/%3E%3Cpath fill='%23fff' opacity='.03' d='M19.494 0h1.5v3.752h-1.5zm2.253 4.498H30v1.5h-8.253zm-2.253 2.246h1.5v12.01h-1.5zM6.748 4.5H18.75V6H6.748zM4.494 0h1.5v3.754h-1.5zM0 4.5h3.749V6H0z'/%3E%3Cpath fill='%23fff' opacity='.15' d='M5.994 4.5h-1.5V6h1.508V4.5h-.008zm14.996 0h-1.5V6h1.508V4.5h-.008z'/%3E%3Cpath fill='%23fff' opacity='.03' d='M6.738 19.5h12.01V21H6.738zM4.494 6.746h1.5v12.009h-1.5zM0 19.5h3.749V21H0z'/%3E%3Cpath fill='%23fff' opacity='.15' d='M4.494 19.5h1.499V21H4.494z'/%3E%3Cpath fill='%23fff' opacity='.03' d='M4.494 21.746h1.5V30h-1.5z'/%3E%3C/svg%3E");
+    background-size: auto;
 }
 
 .title {
