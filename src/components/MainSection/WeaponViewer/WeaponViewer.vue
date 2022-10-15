@@ -7,13 +7,12 @@ import ModsPanel from './ModsPanel.vue';
 import PerksPanel from './PerksPanel.vue';
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition | null
+    weapon: DestinyInventoryItemDefinition | undefined
 }>();
 </script>
 
 <template>
     <div class="viewer">
-        {{ weapon?.displayProperties?.name }}
         <div class="weapon">
             <WeaponPanel :weapon="weapon"></WeaponPanel>
             <div class="extras">
@@ -24,9 +23,7 @@ const props = defineProps<{
                 </div>
             </div>
         </div>
-        <div>
-            <PerksPanel></PerksPanel>
-        </div>
+        <PerksPanel :weapon="weapon"></PerksPanel>
     </div>
 </template>
 

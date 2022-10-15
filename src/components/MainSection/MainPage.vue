@@ -9,7 +9,7 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     page: PageSelection,
-    weapon: DestinyInventoryItemDefinition | null,
+    weapon: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const isHomeSelected = computed(() => {

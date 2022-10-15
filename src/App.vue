@@ -7,7 +7,7 @@ import { destinyDataService } from "./data/destinyDataService";
 import { PageSelection } from "./data/enums";
 
 const selectedPage = ref(PageSelection.Home);
-const selectedWeapon = ref<DestinyInventoryItemDefinition | null>(null);
+const selectedWeapon = ref<DestinyInventoryItemDefinition | undefined>(undefined);
 
 onMounted(() => {
     destinyDataService.initialize();

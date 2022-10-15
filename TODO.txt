@@ -7,6 +7,8 @@
   - extras (DIM integration, retired perks, comparisons integrations, damage falloff, reload speed)
   - MW (types + slider)
   - mods
-  - perks (+enhanced and curated)
+  - exotic/fixed perk set perks (e.g. y1 weapons)
+  - styling for enhanced perks
+  - empty perk slot icon
 - glossary (will probably need this done manually anyway for the perk descriptions/tooltips)
 - compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
