@@ -5,7 +5,7 @@ import ExtrasPanel from './ExtrasPanel.vue';
 import MasterworkPanel from './MasterworkPanel.vue';
 import ModsPanel from './ModsPanel.vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
-import { ref, VueElement } from 'vue';
+import { ref, VueElement, watch } from 'vue';
 import { computed } from '@vue/reactivity';
 import { hashMapToArray } from '@/data/util';
 
@@ -13,7 +13,9 @@ const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined
 }>();
 
-const selectedPerksMap = ref<{ [column: number]: DestinyInventoryItemDefinition | undefined }>({ 1: undefined, 2: undefined, 3: undefined, 4: undefined });
+watch(() => props.weapon, () => { selectedPerksMap.value = {}; })
+
+const selectedPerksMap = ref<{ [column: number]: DestinyInventoryItemDefinition | undefined }>({ });
 
 const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMap.value[1], selectedPerksMap.value[2], selectedPerksMap.value[3]])
 
@@ -29,7 +31,7 @@ function onPerkSelected(column: number, perk: DestinyInventoryItemDefinition | u
             <div class="extras">
                 <ExtrasPanel></ExtrasPanel>
                 <div>
-                    <MasterworkPanel></MasterworkPanel>
+                    <MasterworkPanel :weapon="weapon"></MasterworkPanel>
                     <ModsPanel></ModsPanel>
                 </div>
             </div>

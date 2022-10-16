@@ -43,12 +43,12 @@ const intrinsicPerk = computed(() => {
 
 <template>
     <div class="selected">
-        <PerkDisplay :perk="intrinsicPerk"></PerkDisplay>
+        <PerkDisplay :perk="intrinsicPerk" full-size></PerkDisplay>
         <PerkDisplay :perk="perk1"></PerkDisplay>
         <PerkDisplay :perk="perk2"></PerkDisplay>
         <PerkDisplay :perk="perk3"></PerkDisplay>
         <PerkDisplay :perk="perk4"></PerkDisplay>
-        <PerkDisplay :perk="masterwork"></PerkDisplay>
+        <PerkDisplay :perk="masterwork" full-size></PerkDisplay>
     </div>
 </template>
 
