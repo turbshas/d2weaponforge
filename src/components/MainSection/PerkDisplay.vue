@@ -6,9 +6,18 @@ const props = defineProps<{
     perk: DestinyInventoryItemDefinition | undefined,
 }>();
 
+const emits = defineEmits<{
+    (e: "click", perk: DestinyInventoryItemDefinition): void
+}>();
+
 function getPerkIcon(perk: DestinyInventoryItemDefinition | undefined) {
     if (!perk) return undefined;
     return destinyDataService.getImageUrl(perk.displayProperties.icon);
+}
+
+function onPerkClick() {
+    if (!props.perk) return;
+    emits("click", props.perk);
 }
 </script>
 
@@ -16,6 +25,7 @@ function getPerkIcon(perk: DestinyInventoryItemDefinition | undefined) {
     <div
         class="perk"
         :style="{ 'background-image': 'url(' + getPerkIcon(perk) +')' }"
+        @click="onPerkClick"
     ></div>
 </template>
 

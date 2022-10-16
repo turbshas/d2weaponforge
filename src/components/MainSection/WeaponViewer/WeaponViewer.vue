@@ -4,17 +4,28 @@ import WeaponPanel from './WeaponPanel/WeaponPanel.vue';
 import ExtrasPanel from './ExtrasPanel.vue';
 import MasterworkPanel from './MasterworkPanel.vue';
 import ModsPanel from './ModsPanel.vue';
-import PerksPanel from './PerksPanel.vue';
+import PerksPanel from './PerksPanel/PerksPanel.vue';
+import { ref, VueElement } from 'vue';
+import { computed } from '@vue/reactivity';
+import { hashMapToArray } from '@/data/util';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined
 }>();
+
+const selectedPerksMap = ref<{ [column: number]: DestinyInventoryItemDefinition | undefined }>({ 1: undefined, 2: undefined, 3: undefined, 4: undefined });
+
+const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMap.value[1], selectedPerksMap.value[2], selectedPerksMap.value[3]])
+
+function onPerkSelected(column: number, perk: DestinyInventoryItemDefinition | undefined) {
+    selectedPerksMap.value[column] = perk;
+}
 </script>
 
 <template>
     <div class="viewer">
         <div class="weapon">
-            <WeaponPanel :weapon="weapon"></WeaponPanel>
+            <WeaponPanel :weapon="weapon" :selected-perks="selectedPerks"></WeaponPanel>
             <div class="extras">
                 <ExtrasPanel></ExtrasPanel>
                 <div>
@@ -23,7 +34,7 @@ const props = defineProps<{
                 </div>
             </div>
         </div>
-        <PerksPanel :weapon="weapon"></PerksPanel>
+        <PerksPanel :weapon="weapon" @perk-selected="onPerkSelected"></PerksPanel>
     </div>
 </template>
 

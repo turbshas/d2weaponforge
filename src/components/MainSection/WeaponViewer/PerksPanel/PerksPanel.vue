@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { destinyDataService } from '@/data/destinyDataService';
 import { computed } from 'vue';
 import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition } from 'bungie-api-ts/destiny2';
-import PerkList from '../PerkList.vue';
+import PerkList from './PerkList.vue';
+import { destinyDataService } from '@/data/destinyDataService';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
+}>();
+
+const emits = defineEmits<{
+    (e: "perkSelected", column: number, perk: DestinyInventoryItemDefinition | undefined): void,
 }>();
 
 const weaponSocketCategories = computed(() => props.weapon?.sockets?.socketCategories || []);
@@ -45,12 +49,16 @@ const perkOptionListsPerSlot = computed(() => {
 
 const curatedPerks = computed(() => perkSocketsNoTracker.value.map(s => [destinyDataService.getItemDefinition(s.singleInitialItemHash)]));
 const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
+
+function onPerkSelected(column: number, perk: DestinyInventoryItemDefinition | undefined) {
+    emits("perkSelected", column, perk);
+}
 </script>
 
 <template>
     <div class="perks">
         <span class="title">Weapon Perks</span>
-        <PerkList :perk-option-lists="perkOptionListsPerSlot"></PerkList>
+        <PerkList :perk-option-lists="perkOptionListsPerSlot" @perk-selected="onPerkSelected"></PerkList>
         <span class="description">
             TO APPLY THE ENHANCED VERSION OF A PERK, CLICK SAID PERK IN THE AREA WITH THE PICTURE OF THE WEAPON.
         </span>

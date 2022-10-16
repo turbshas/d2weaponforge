@@ -4,7 +4,7 @@ import { hashMapToArray } from '@/data/util';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition, DestinyInventoryItemStatDefinition, DestinyItemSocketEntryDefinition, DestinySandboxPerkDefinition } from 'bungie-api-ts/destiny2';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
-import PerksPanel from '../PerksPanel.vue';
+import PerksPanel from '../PerksPanel/PerksPanel.vue';
 import PerkDisplay from '../../PerkDisplay.vue';
 import SelectedPerks from './SelectedPerks.vue';
 
@@ -26,6 +26,7 @@ const shownStats: { [statName: string]: boolean } = {
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
+    selectedPerks: (DestinyInventoryItemDefinition | undefined)[],
 }>();
 
 const screenshot = computed(() => {
@@ -66,9 +67,10 @@ const filteredStats = computed(() => {
     });
 });
 
-const selectedPerks = computed(() => {
-    return [{ socketTypeHash: 1 }, { socketTypeHash: 2 }, { socketTypeHash: 3 }, { socketTypeHash: 4 }] as (Partial<DestinyItemSocketEntryDefinition>)[];
-});
+const firstColumnPerk = computed(() => props.selectedPerks.length > 0 ? props.selectedPerks[0] : undefined);
+const secondColumnPerk = computed(() => props.selectedPerks.length > 1 ? props.selectedPerks[1] : undefined);
+const thirdColumnPerk = computed(() => props.selectedPerks.length > 2 ? props.selectedPerks[2] : undefined);
+const fourthColumnPerk = computed(() => props.selectedPerks.length > 3 ? props.selectedPerks[3] : undefined);
 
 function getStatDefinition(stat: DestinyInventoryItemStatDefinition) {
     return destinyDataService.getStatDefinition(stat.statHash);
@@ -96,10 +98,10 @@ function getStatDefinition(stat: DestinyInventoryItemStatDefinition) {
         <SelectedPerks
             class="perks"
             :weapon="weapon"
-            :perk1="undefined"
-            :perk2="undefined"
-            :perk3="undefined"
-            :perk4="undefined"
+            :perk1="firstColumnPerk"
+            :perk2="secondColumnPerk"
+            :perk3="thirdColumnPerk"
+            :perk4="fourthColumnPerk"
             :masterwork="undefined"
         ></SelectedPerks>
     </div>

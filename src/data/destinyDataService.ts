@@ -18,6 +18,7 @@ import type {
 } from "bungie-api-ts/destiny2/interfaces";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import { reactive } from "vue";
+import { hashMapToArray } from "./util";
 
 interface Destiny2GameData {
     manifestMetadata: DestinyManifest;
@@ -226,10 +227,8 @@ class DestinyDataService {
         }
         console.log("perk infos", perksCategory, perkTypes);
 
-        const itemCategories: DestinyItemCategoryDefinition[] = [];
-        this.convertToArray(itemCategories, manifestSlice.DestinyItemCategoryDefinition);
-        const socketCategories: DestinySocketCategoryDefinition[] = [];
-        this.convertToArray(socketCategories, manifestSlice.DestinySocketCategoryDefinition);
+        const itemCategories = hashMapToArray(manifestSlice.DestinyItemCategoryDefinition);
+        const socketCategories = hashMapToArray(manifestSlice.DestinySocketCategoryDefinition);
 
         // Get ItemCategoryDefinition for "weapon"
         const weaponCategory = itemCategories.find(category => category.displayProperties.name === "Weapon");
@@ -240,17 +239,17 @@ class DestinyDataService {
         const gameData: Destiny2GameData = {
             manifestMetadata: manifestInfo.Response,
 
-            damageTypes: [],
+            damageTypes: hashMapToArray(manifestSlice.DestinyDamageTypeDefinition),
             damageTypesLookup: manifestSlice.DestinyDamageTypeDefinition,
-            energyTypes: [],
+            energyTypes: hashMapToArray(manifestSlice.DestinyEnergyTypeDefinition),
             energyTypesLookup: manifestSlice.DestinyEnergyTypeDefinition,
-            equipmentSlots: [],
+            equipmentSlots: hashMapToArray(manifestSlice.DestinyEquipmentSlotDefinition),
             equipmentSlotsLookup: manifestSlice.DestinyEquipmentSlotDefinition,
             itemCategories: itemCategories,
             itemCategoriesLookup: manifestSlice.DestinyItemCategoryDefinition,
-            itemTierTypes: [],
+            itemTierTypes: hashMapToArray(manifestSlice.DestinyItemTierTypeDefinition),
             itemTierTypesLookup: manifestSlice.DestinyItemTierTypeDefinition,
-            seasons: [],
+            seasons: hashMapToArray(manifestSlice.DestinySeasonDefinition),
             seasonsLookup: manifestSlice.DestinySeasonDefinition,
             weapons: [],
             weaponsLookup: {},
@@ -267,12 +266,6 @@ class DestinyDataService {
             weaponIntrinsicCategory: weaponIntrinsicCategory!,
             weaponPerkCategory: weaponPerkCategory!,
         };
-
-        this.convertToArray(gameData.damageTypes, manifestSlice.DestinyDamageTypeDefinition);
-        this.convertToArray(gameData.energyTypes, manifestSlice.DestinyEnergyTypeDefinition);
-        this.convertToArray(gameData.equipmentSlots, manifestSlice.DestinyEquipmentSlotDefinition);
-        this.convertToArray(gameData.itemTierTypes, manifestSlice.DestinyItemTierTypeDefinition);
-        this.convertToArray(gameData.seasons, manifestSlice.DestinySeasonDefinition);
 
         // Get list of weapons
         for (const key in manifestSlice.DestinyInventoryItemDefinition) {
@@ -294,17 +287,6 @@ class DestinyDataService {
         console.log("test", socketEntry, plugSet, items);
 
         this.gameDataReactiveWrapper.gameData = gameData;
-    }
-
-    private convertToArray = <T>(destination: T[], sourceMap: { [key: number]: T }) => {
-        if (!destination || !sourceMap) return;
-
-        for (const key in sourceMap) {
-            const value = sourceMap[key];
-            if (value) {
-                destination.push(value);
-            }
-        }
     }
 
     private makeRequest = async (config: HttpClientConfig) => {
