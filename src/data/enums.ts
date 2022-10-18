@@ -4,3 +4,9 @@ export enum PageSelection {
     Compare = "Compare",
     Weapon = "Weapon",
 }
+
+export enum StatDisplayType {
+    Bar = "Bar",
+    Angle = "Angle",
+    Number = "Number",
+}

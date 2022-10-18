@@ -16,22 +16,29 @@ const props = defineProps<{
 watch(() => props.weapon, () => { selectedPerksMap.value = {}; })
 
 const selectedPerksMap = ref<{ [column: number]: DestinyInventoryItemDefinition | undefined }>({ });
+const selectedMasterwork = ref<DestinyInventoryItemDefinition | undefined>(undefined);
 
 const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMap.value[1], selectedPerksMap.value[2], selectedPerksMap.value[3]])
 
 function onPerkSelected(column: number, perk: DestinyInventoryItemDefinition | undefined) {
+    console.log("perk selected", perk);
     selectedPerksMap.value[column] = perk;
+}
+
+function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefined) {
+    console.log("masterwork changed", masterwork);
+    selectedMasterwork.value = masterwork;
 }
 </script>
 
 <template>
     <div class="viewer">
         <div class="weapon">
-            <WeaponPanel :weapon="weapon" :selected-perks="selectedPerks"></WeaponPanel>
+            <WeaponPanel :weapon="weapon" :selected-perks="selectedPerks" :masterwork="selectedMasterwork"></WeaponPanel>
             <div class="extras">
                 <ExtrasPanel></ExtrasPanel>
                 <div>
-                    <MasterworkPanel :weapon="weapon"></MasterworkPanel>
+                    <MasterworkPanel :weapon="weapon" @masterwork-changed="onMasterworkChanged"></MasterworkPanel>
                     <ModsPanel></ModsPanel>
                 </div>
             </div>

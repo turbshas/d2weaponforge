@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
+import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
@@ -11,10 +12,15 @@ const emits = defineEmits<{
     (e: "click", perk: DestinyInventoryItemDefinition): void
 }>();
 
-function getPerkIcon(perk: DestinyInventoryItemDefinition | undefined) {
-    if (!perk) return undefined;
-    return destinyDataService.getImageUrl(perk.displayProperties.icon);
-}
+const perkIcon = computed(() => {
+    if (!props.perk) return undefined;
+    return destinyDataService.getImageUrl(props.perk.displayProperties.icon);
+});
+
+const perkWatermark = computed(() => {
+    if (!props.perk || !props.perk.iconWatermark) return undefined;
+    return destinyDataService.getImageUrl(props.perk.iconWatermark);
+});
 
 function onPerkClick() {
     if (!props.perk) return;
@@ -26,9 +32,11 @@ function onPerkClick() {
     <div
         class="perk"
         :class="{ 'random-roll': !fullSize }"
-        :style="{ 'background-image': 'url(' + getPerkIcon(perk) +')' }"
+        :style="{ 'background-image': 'url(' + perkIcon +')' }"
         @click="onPerkClick"
-    ></div>
+    >
+        <img class="perk" v-if="!!perkWatermark" :src="perkWatermark">
+    </div>
 </template>
 
 <style scoped>

@@ -2,11 +2,9 @@
 import { destinyDataService } from '@/data/destinyDataService';
 import { hashMapToArray } from '@/data/util';
 import { computed } from '@vue/reactivity';
-import type { DestinyInventoryItemDefinition, DestinyInventoryItemStatDefinition, DestinyItemSocketEntryDefinition, DestinySandboxPerkDefinition } from 'bungie-api-ts/destiny2';
-import WeaponStatDisplay from './WeaponStatDisplay.vue';
-import PerksPanel from '../PerksPanel/PerksPanel.vue';
-import PerkDisplay from '../../PerkDisplay.vue';
+import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import SelectedPerks from './SelectedPerks.vue';
+import WeaponStatBlock from './WeaponStatBlock.vue';
 
 const shownStats: { [statName: string]: boolean } = {
     "Accuracy": true,
@@ -27,6 +25,7 @@ const shownStats: { [statName: string]: boolean } = {
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
     selectedPerks: (DestinyInventoryItemDefinition | undefined)[],
+    masterwork: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const screenshot = computed(() => {
@@ -71,10 +70,6 @@ const firstColumnPerk = computed(() => props.selectedPerks.length > 0 ? props.se
 const secondColumnPerk = computed(() => props.selectedPerks.length > 1 ? props.selectedPerks[1] : undefined);
 const thirdColumnPerk = computed(() => props.selectedPerks.length > 2 ? props.selectedPerks[2] : undefined);
 const fourthColumnPerk = computed(() => props.selectedPerks.length > 3 ? props.selectedPerks[3] : undefined);
-
-function getStatDefinition(stat: DestinyInventoryItemStatDefinition) {
-    return destinyDataService.getStatDefinition(stat.statHash);
-}
 </script>
 
 <template>
@@ -87,14 +82,12 @@ function getStatDefinition(stat: DestinyInventoryItemStatDefinition) {
             </div>
             <img class="element" :src="element">
         </div>
-        <div class="stats">
-            <WeaponStatDisplay
-                v-for="stat in filteredStats"
-                :key="stat.statHash"
-                :definition="getStatDefinition(stat)"
-                :value="stat"
-            ></WeaponStatDisplay>
-        </div>
+        <WeaponStatBlock
+            class="stats"
+            :stats="filteredStats"
+            :selected-perks="selectedPerks"
+            :masterwork="masterwork"
+        ></WeaponStatBlock>
         <SelectedPerks
             class="perks"
             :weapon="weapon"
@@ -102,7 +95,7 @@ function getStatDefinition(stat: DestinyInventoryItemStatDefinition) {
             :perk2="secondColumnPerk"
             :perk3="thirdColumnPerk"
             :perk4="fourthColumnPerk"
-            :masterwork="undefined"
+            :masterwork="masterwork"
         ></SelectedPerks>
     </div>
 </template>
@@ -143,6 +136,10 @@ function getStatDefinition(stat: DestinyInventoryItemStatDefinition) {
     margin-left: auto;
     width: 50px;
     height: 50px;
+}
+
+.stats {
+    max-width: 50%;
 }
 
 .perks {

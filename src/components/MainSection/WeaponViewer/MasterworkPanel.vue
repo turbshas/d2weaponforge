@@ -1,87 +1,17 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
 import { hashMapToArray } from '@/data/util';
-import { computed } from '@vue/reactivity';
+import { computed, ref } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import { watch } from 'vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
 }>();
 
-const defaultAllowedMasterworks = [
-        "v400.plugs.weapons.masterworks.stat.range",
-        "v400.plugs.weapons.masterworks.stat.stability",
-        "v400.plugs.weapons.masterworks.stat.reload",
-        "v400.plugs.weapons.masterworks.stat.handling",
-];
-const allowedMasterworksPerWeaponType: { [weaponType: string]: string[] } = {
-    "": [
-        "v400.plugs.weapons.masterworks.stat.range",
-        "v400.plugs.weapons.masterworks.stat.stability",
-        "v400.plugs.weapons.masterworks.stat.reload",
-        "v400.plugs.weapons.masterworks.stat.handling",
-        "v400.plugs.weapons.masterworks.stat.damage",
-        "v400.plugs.weapons.masterworks.stat.blast_radius",
-        "v400.plugs.weapons.masterworks.stat.charge_time",
-        "v400.plugs.weapons.masterworks.stat.draw_time",
-        "v400.plugs.weapons.masterworks.stat.projectile_speed",
-        "v400.plugs.weapons.masterworks.stat.accuracy",
-        "v600.plugs.weapons.masterworks.stat.shield_duration",
-    ],
-    "auto": defaultAllowedMasterworks,
-    "handCannon": defaultAllowedMasterworks,
-    "pulse": defaultAllowedMasterworks,
-    "scout": defaultAllowedMasterworks,
-    "sidearm": defaultAllowedMasterworks,
-    "smg": defaultAllowedMasterworks,
-    "shotgun": defaultAllowedMasterworks,
-    "sniper": defaultAllowedMasterworks,
-    "trace": defaultAllowedMasterworks,
-    "machine": defaultAllowedMasterworks,
-    "fusion": [
-        "v400.plugs.weapons.masterworks.stat.range",
-        "v400.plugs.weapons.masterworks.stat.stability",
-        "v400.plugs.weapons.masterworks.stat.reload",
-        "v400.plugs.weapons.masterworks.stat.handling",
-        "v400.plugs.weapons.masterworks.stat.charge_time",
-    ],
-    "lfr": [
-        "v400.plugs.weapons.masterworks.stat.range",
-        "v400.plugs.weapons.masterworks.stat.stability",
-        "v400.plugs.weapons.masterworks.stat.reload",
-        "v400.plugs.weapons.masterworks.stat.handling",
-        "v400.plugs.weapons.masterworks.stat.charge_time",
-    ],
-    "sword": [
-        "v400.plugs.weapons.masterworks.stat.damage",
-    ],
-    "glaive": [
-        "v400.plugs.weapons.masterworks.stat.range",
-        "v400.plugs.weapons.masterworks.stat.reload",
-        "v400.plugs.weapons.masterworks.stat.handling",
-    ],
-    "bow": [
-        "v400.plugs.weapons.masterworks.stat.stability",
-        "v400.plugs.weapons.masterworks.stat.reload",
-        "v400.plugs.weapons.masterworks.stat.handling",
-        "v400.plugs.weapons.masterworks.stat.draw_time",
-        "v400.plugs.weapons.masterworks.stat.accuracy",
-    ],
-    "gl": [
-        "v400.plugs.weapons.masterworks.stat.stability",
-        "v400.plugs.weapons.masterworks.stat.reload",
-        "v400.plugs.weapons.masterworks.stat.handling",
-        "v400.plugs.weapons.masterworks.stat.blast_radius",
-        "v400.plugs.weapons.masterworks.stat.projectile_speed",
-    ],
-    "rocket": [
-        "v400.plugs.weapons.masterworks.stat.stability",
-        "v400.plugs.weapons.masterworks.stat.reload",
-        "v400.plugs.weapons.masterworks.stat.handling",
-        "v400.plugs.weapons.masterworks.stat.blast_radius",
-        "v400.plugs.weapons.masterworks.stat.projectile_speed",
-    ],
-};
+const emits = defineEmits<{
+    (e: "masterworkChanged", masterwork: DestinyInventoryItemDefinition | undefined): void
+}>();
 
 const weaponSocketCategories = computed(() => props.weapon?.sockets?.socketCategories || []);
 const weaponSockets = computed(() => props.weapon?.sockets?.socketEntries || []);
@@ -126,41 +56,40 @@ const masterworkOptionsByStatName = computed(() => {
     return masterworks;
 });
 
-const masterworkOptionsByStat = computed(() => {
-    const masterworks: { [categoryId: string]: DestinyInventoryItemDefinition[] } = {};
-    for (const plugItem of filteredMasterworkOptions.value) {
-        if (!plugItem.plug) continue;
-        const id = plugItem.plug.plugCategoryIdentifier;
-        if (!masterworks[id]) {
-            masterworks[id] = [];
-        }
-        masterworks[id].push(plugItem);
-    }
-    return masterworks;
-})
+const masterworkStatNames = computed(() => Object.keys(masterworkOptionsByStatName.value));
 
-const masterworkStats = computed(() => Object.keys(masterworkOptionsByStatName.value));
+const selectedMasterworkName = ref(masterworkStatNames.value.length > 0 ? masterworkStatNames.value[0] : undefined);
+const masterworkLevel = ref(0);
 
-const text = computed(() => {
-    console.log(
-        weaponModSockets.value.map(s => s.reusablePlugItems.map(item => destinyDataService.getItemDefinition(item.plugItemHash))),
-        weaponModSockets.value.map(s => destinyDataService.getSocketTypeDefinition(s.socketTypeHash)),
-        masterworkSocket.value,
-        masterworkSocket.value ? destinyDataService.getPlugSetDefinition(masterworkSocket.value.reusablePlugSetHash!) : undefined,
-        masterworkOptionsByStat.value,
-    );
-    return "test";
-})
+function emitMasterworkChange(statName: string, level: number) {
+    const masterworkList = masterworkOptionsByStatName.value[statName];
+    // A value of 0 basically disables the masterwork, set to undefined
+    const masterwork = level > 0 ? masterworkList[level - 1] : undefined;
+    emits("masterworkChanged", masterwork);
+}
+
+function onMasterworkChanged(statName: string) {
+    if (selectedMasterworkName.value === statName) return;
+    selectedMasterworkName.value = statName;
+    emitMasterworkChange(selectedMasterworkName.value, masterworkLevel.value);
+}
+
+function onMasterworkLevelChanged() {
+    if (!selectedMasterworkName.value) return;
+    emitMasterworkChange(selectedMasterworkName.value, masterworkLevel.value);
+}
 </script>
 
 <template>
     <div class="masterwork">
         <span>Weapon Masterwork</span>
-        {{ text }}
-        <div v-for="mw in masterworkStats" :key="mw">
-            {{ mw + masterworkOptionsByStatName[mw].length }}
+        <div class="types">
+            <button v-for="name of masterworkStatNames" :key="name" @click="() => onMasterworkChanged(name)">{{ name }}</button>
         </div>
-        <input type="range" min="0" max="10">
+        <div class="level">
+            <span>{{ masterworkLevel }}</span>
+            <input class="slider" type="range" min="0" max="10" v-model="masterworkLevel" @change="onMasterworkLevelChanged">
+        </div>
     </div>
 
 </template>
@@ -169,5 +98,19 @@ const text = computed(() => {
 .masterwork {
     display: flex;
     flex-direction: column;
+}
+
+.types {
+    display: flex;
+    flex-direction: row;
+}
+
+.level {
+    display: flex;
+    flex-direction: row;
+}
+
+.slider {
+    flex-grow: 1;
 }
 </style>

@@ -11,7 +11,7 @@ const props = defineProps<{
     perk2: DestinyInventoryItemDefinition | undefined,
     perk3: DestinyInventoryItemDefinition | undefined,
     perk4: DestinyInventoryItemDefinition | undefined,
-    masterwork: undefined,
+    masterwork: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const weaponSocketCategories = computed(() => {
