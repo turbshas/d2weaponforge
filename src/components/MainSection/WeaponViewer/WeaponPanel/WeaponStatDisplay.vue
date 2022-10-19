@@ -36,6 +36,49 @@ const statDisplayType = computed(() => {
     if (!name.value) return StatDisplayType.Bar;
     return statDisplayTypeMap[name.value] ? statDisplayTypeMap[name.value] : StatDisplayType.Bar;
 });
+
+function recoilDirectionFunction(recoilDirection: number) {
+    // Decay function is a straight line with slope -1, y-intercept 100
+    // Value function is cos wave with period 20 (i.e. multiplier 2*pi/20)
+    const clamped = recoilDirection > 100 ? 100 : (recoilDirection < 0 ? 0 : recoilDirection);
+    const decay = 100 - clamped;
+    const cosine = Math.cos((Math.PI / 10) * clamped);
+    return decay * cosine;
+}
+
+function recoilDirectionWedgeBaseAngle(recoilDirection: number) {
+    const value = recoilDirectionFunction(recoilDirection);
+    // Negative output from the recoil direction function means recoil tends left,
+    // which means the angle needs to be positive (counter-clockwise) relative to a vertical line.
+    // So, negate the result.
+    // Scaled to [-80 deg, 80 deg] - this is what d2gunsmith seems to do
+    return -(value / 100) * (80 * (Math.PI / 180));
+}
+
+function recoilDirectionDeflectionAngle(recoilDirection: number) {
+    const decay = 100 - recoilDirection;
+    // Scale the angle to the range [-pi/2, pi/2]
+    return (decay / 100) * (Math.PI / 2);
+}
+
+function recoilDirectionAngleToCoords(angle: number) {
+    // Since y coords on a computer start at the top and positive is down, need to negate the result of sin.
+    return [Math.cos(angle) + 1, -Math.sin(angle) + 1];
+}
+
+function getSvgPathData(recoilDirection: number) {
+    const baseAngle = recoilDirectionWedgeBaseAngle(recoilDirection) + (Math.PI / 2);
+    const deflectionAngle = recoilDirectionDeflectionAngle(recoilDirection);
+    const [startX, startY] = recoilDirectionAngleToCoords(baseAngle + deflectionAngle);
+    const [endX, endY] = recoilDirectionAngleToCoords(baseAngle - deflectionAngle);
+
+    const arcRadiusX = 1;
+    const arcRadiusY = 1;
+    const xAxisRotation = 0;
+    const largeArcFlag = 0;
+    const sweepAngle = 1;
+    return `M1,1 L${startX},${startY} A${arcRadiusX},${arcRadiusY} ${xAxisRotation} ${largeArcFlag} ${sweepAngle} ${endX},${endY} Z`;
+}
 </script>
 
 <template>
@@ -56,12 +99,11 @@ const statDisplayType = computed(() => {
             </div>
             <div class="angle" v-if="statDisplayType === StatDisplayType.Angle">
                 <span>{{ total }}</span>
-                <div class="test"></div>
-                <svg data-v-0fed067a="" id="recoil-dir" height="12" viewBox="0 0 2 1">
-                    <circle data-v-0fed067a="" r="1" cx="1" cy="1" fill="rgba(24, 30, 37, 1)"></circle>
+                <svg class="pie" height="12" viewBox="0 0 2 1">
+                    <circle class="circle" r="1" cx="1" cy="1"></circle>
                     <path
-                        data-v-0fed067a=""
-                        d="M1,1 L0.21754178444699113,0.377296907897832 A1,1 0 0,1 1.0752188741922206,0.0028329523268155743 Z"
+                        class="path"
+                        :d="getSvgPathData(total)"
                         fill="#fafafa"
                     ></path>
                 </svg>
@@ -74,13 +116,6 @@ const statDisplayType = computed(() => {
 </template>
 
 <style scoped>
-.test {
-    width: 40px;
-    height: 40px;
-    background-image: conic-gradient(orange 64%, transparent);
-    border-radius: 50%
-}
-
 .stat {
     display: flex;
     flex-direction: row;
@@ -127,5 +162,14 @@ const statDisplayType = computed(() => {
 
 .change {
     background-color: blue;
+}
+
+.pie {
+    width: 24px;
+    height: 24px;
+}
+
+.circle {
+    fill: rgba(24, 30, 37, 1);
 }
 </style>

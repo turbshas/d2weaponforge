@@ -278,13 +278,14 @@ class DestinyDataService {
 
         gameData.weapons = gameData.weapons.filter(w => !!w.screenshot);// TODO: weapons without screenshots are presumably crafting menu items?
         gameData.weapons.sort((a, b) => b.index - a.index);
+        // gameData.weapons.sort((a, b) => {
+        //     const seasonA = a.seasonHash ? gameData.seasonsLookup[a.seasonHash] : undefined;
+        //     const seasonB = b.seasonHash ? gameData.seasonsLookup[b.seasonHash!] : undefined;
+        //     const seasonNumberA = seasonA ? seasonA.seasonNumber : -1;
+        //     const seasonNumberB = seasonB ? seasonB.seasonNumber : -1;
+        //     return seasonNumberB - seasonNumberA;
+        // });
         console.log("weapons", gameData.weapons);
-
-        // example of getting perks of a weapon - weapons[1] is taipan, socketEntries[1] is the first entry in the list with randomized plug set hash
-        const socketEntry = gameData.weapons[1].sockets!.socketEntries[1];
-        const plugSet = manifestSlice.DestinyPlugSetDefinition[socketEntry!.randomizedPlugSetHash!];
-        const items = plugSet.reusablePlugItems.map(i => manifestSlice.DestinyInventoryItemDefinition[i.plugItemHash]);
-        console.log("test", socketEntry, plugSet, items);
 
         this.gameDataReactiveWrapper.gameData = gameData;
     }
