@@ -12,6 +12,7 @@ const props = defineProps<{
     perk3: DestinyInventoryItemDefinition | undefined,
     perk4: DestinyInventoryItemDefinition | undefined,
     masterwork: DestinyInventoryItemDefinition | undefined,
+    mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const weaponSocketCategories = computed(() => {
@@ -48,7 +49,8 @@ const intrinsicPerk = computed(() => {
         <PerkDisplay :perk="perk2"></PerkDisplay>
         <PerkDisplay :perk="perk3"></PerkDisplay>
         <PerkDisplay :perk="perk4"></PerkDisplay>
-        <PerkDisplay :perk="masterwork" full-size></PerkDisplay>
+        <PerkDisplay :perk="mod" full-size v-if="!!mod"></PerkDisplay>
+        <PerkDisplay :perk="masterwork" full-size v-if="!!masterwork"></PerkDisplay>
     </div>
 </template>
 

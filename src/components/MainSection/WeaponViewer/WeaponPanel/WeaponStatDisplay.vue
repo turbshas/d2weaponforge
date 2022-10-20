@@ -22,7 +22,10 @@ const name = computed(() => {
     return props.definition && props.definition.displayProperties.name;
 });
 
-const total = computed(() => props.value.value + props.modifier);
+const total = computed(() => {
+    const value = props.value.value + props.modifier;
+    return value < 0 ? 0 : (value > 100 ? 100 : value);
+});
 const modifierSign = computed(() => props.modifier > 0 ? "+" : "");
 const modifierMagnitude = computed(() => Math.abs(props.modifier));
 const changeColor = computed(() => {
@@ -61,7 +64,7 @@ function recoilDirectionDeflectionAngle(recoilDirection: number) {
     return (decay / 100) * (Math.PI / 2);
 }
 
-function recoilDirectionAngleToCoords(angle: number) {
+function recoilDirectionAngleToAbsoluteCoords(angle: number) {
     // Since y coords on a computer start at the top and positive is down, need to negate the result of sin.
     return [Math.cos(angle) + 1, -Math.sin(angle) + 1];
 }
@@ -69,8 +72,8 @@ function recoilDirectionAngleToCoords(angle: number) {
 function getSvgPathData(recoilDirection: number) {
     const baseAngle = recoilDirectionWedgeBaseAngle(recoilDirection) + (Math.PI / 2);
     const deflectionAngle = recoilDirectionDeflectionAngle(recoilDirection);
-    const [startX, startY] = recoilDirectionAngleToCoords(baseAngle + deflectionAngle);
-    const [endX, endY] = recoilDirectionAngleToCoords(baseAngle - deflectionAngle);
+    const [startX, startY] = recoilDirectionAngleToAbsoluteCoords(baseAngle + deflectionAngle);
+    const [endX, endY] = recoilDirectionAngleToAbsoluteCoords(baseAngle - deflectionAngle);
 
     const arcRadiusX = 1;
     const arcRadiusY = 1;

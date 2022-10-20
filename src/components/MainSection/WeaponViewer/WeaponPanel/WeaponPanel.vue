@@ -26,6 +26,7 @@ const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
     selectedPerks: (DestinyInventoryItemDefinition | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
+    mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const screenshot = computed(() => {
@@ -87,6 +88,7 @@ const fourthColumnPerk = computed(() => props.selectedPerks.length > 3 ? props.s
             :stats="filteredStats"
             :selected-perks="selectedPerks"
             :masterwork="masterwork"
+            :mod="mod"
         ></WeaponStatBlock>
         <SelectedPerks
             class="perks"
@@ -96,6 +98,7 @@ const fourthColumnPerk = computed(() => props.selectedPerks.length > 3 ? props.s
             :perk3="thirdColumnPerk"
             :perk4="fourthColumnPerk"
             :masterwork="masterwork"
+            :mod="mod"
         ></SelectedPerks>
     </div>
 </template>

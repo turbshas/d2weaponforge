@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
-import { hashMapToArray } from '@/data/util';
 import { computed, ref } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
-import { watch } from 'vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
