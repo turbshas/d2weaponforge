@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition } from 'bungie-api-ts/destiny2';
+import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import PerkList from './PerkList.vue';
 import { destinyDataService } from '@/data/destinyDataService';
 

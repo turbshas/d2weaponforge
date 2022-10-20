@@ -1,4 +1,5 @@
-<script setup lang="ts">import { destinyDataService } from '@/data/destinyDataService';
+<script setup lang="ts">
+import { destinyDataService } from '@/data/destinyDataService';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed, ref } from 'vue';
 

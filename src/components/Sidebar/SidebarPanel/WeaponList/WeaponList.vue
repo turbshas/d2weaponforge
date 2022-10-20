@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import WeaponStatDisplayVue from '@/components/MainSection/WeaponViewer/WeaponPanel/WeaponStatDisplay.vue';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import WeaponListEntry from './WeaponListEntry.vue';
@@ -8,10 +7,13 @@ const emit = defineEmits(["entry-clicked"]);
 
 const props = defineProps<{
     weapons: DestinyInventoryItemDefinition[],
+    searchString: string,
 }>();
 
 const truncatedWeapons = computed(() => {
-    return props.weapons.slice(0, 50);
+    // If no search, return first 22 items
+    if (!props.searchString) return props.weapons.slice(0, 22);
+    return props.weapons.filter(s => s.displayProperties.name.includes(props.searchString));
 });
 
 function onEntryClicked(weapon: DestinyInventoryItemDefinition) {

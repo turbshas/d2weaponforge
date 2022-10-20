@@ -11,6 +11,7 @@ import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 const emit = defineEmits(["tab-selected", "weapon-selected"]);
 
 const viewingFilter = ref(false);
+const searchString = ref("");
 
 function onTabSelected(tab: PageSelection) {
     emit("tab-selected", tab);
@@ -19,16 +20,24 @@ function onTabSelected(tab: PageSelection) {
 function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
     emit("weapon-selected", weapon);
 }
+
+function onFilterToggled() {
+    viewingFilter.value = !viewingFilter.value;
+}
+
+function onSearchChanged(newSearchString: string) {
+    searchString.value = newSearchString;
+}
 </script>
 
 <template>
     <div class="sidebar">
         <div class="filter-search">
-            <FilterButton></FilterButton>
-            <Searchbar></Searchbar>
+            <FilterButton @filter-toggled="onFilterToggled"></FilterButton>
+            <Searchbar @search-changed="onSearchChanged"></Searchbar>
         </div>
         <TabBar @tab-selected="onTabSelected"></TabBar>
-        <SidebarPanel :viewing-filter="viewingFilter" @weapon-selected="onWeaponSelected"></SidebarPanel>
+        <SidebarPanel :viewing-filter="viewingFilter" :search-string="searchString" @weapon-selected="onWeaponSelected"></SidebarPanel>
     </div>
 </template>
 

@@ -9,11 +9,12 @@ const emit = defineEmits(["weapon-selected"]);
 
 const props = defineProps<{
     viewingFilter: boolean,
+    searchString: string,
 }>();
 
 const weapons = computed(() => {
     return destinyDataService.weapons || [];
-})
+});
 
 function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
     emit("weapon-selected", weapon);
@@ -23,7 +24,7 @@ function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
 <template>
     <div class="panel">
         <FilterWindow v-if="viewingFilter"></FilterWindow>
-        <WeaponList v-else :weapons="weapons" @entry-clicked="onWeaponSelected"></WeaponList>
+        <WeaponList v-else :weapons="weapons" :search-string="searchString" @entry-clicked="onWeaponSelected"></WeaponList>
     </div>
 </template>
 
