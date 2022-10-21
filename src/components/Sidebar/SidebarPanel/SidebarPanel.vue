@@ -13,7 +13,7 @@ const props = defineProps<{
 }>();
 
 const weapons = computed(() => {
-    return destinyDataService.weapons || [];
+    return destinyDataService.weapons;
 });
 
 function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {

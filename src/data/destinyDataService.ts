@@ -66,7 +66,15 @@ class DestinyDataService {
     private gameDataReactiveWrapper: GameDataReactiveWrapper = reactive<GameDataReactiveWrapper>({ gameData: null });
 
     public get weapons() {
-        return this.gameDataReactiveWrapper.gameData && this.gameDataReactiveWrapper.gameData.weapons;
+        return this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.weapons : [];
+    }
+
+    public get damageTypes() {
+        return this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.damageTypes : [];
+    }
+
+    public get itemCategories() {
+        return this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.itemCategories : [];
     }
 
     public initialize = async () => {

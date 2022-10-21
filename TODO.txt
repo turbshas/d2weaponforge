@@ -1,14 +1,19 @@
 - like all the styling
-- virtual scrolling/limited scrolling for weapon list? (prefer whatever loads faster)
+- urls for weapons - contains weapon hash + selected perk hashes
+- optimize loading - load only weapon list first, then everything else in the background
 - ordering weapons by release date to the API (might have to be manual)
 - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
 - filters
 - weapon viewer
   - extras (DIM integration, retired perks, comparisons integrations, damage falloff, reload speed)
-  - MW (types + slider)
-  - mods
   - exotic/fixed perk set perks (e.g. y1 weapons)
+  - origin perk is selectable (goes before weapon mod in weapon panel)
+  - selecting curated perks also selects them in random roll list
   - styling for enhanced perks
+  - styling for sunset perks
+  - styling for sunset weapons
+  - buttons hover effect
+  - perk/mod/weapon/stat tooltips
   - empty perk slot icon
 - glossary (will probably need this done manually anyway for the perk descriptions/tooltips)
 - compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
