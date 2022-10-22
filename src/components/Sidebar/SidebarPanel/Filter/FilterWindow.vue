@@ -1,56 +1,125 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/destinyDataService";
-import type { DestinyDamageTypeDefinition, DestinyItemCategoryDefinition } from "bungie-api-ts/destiny2";
+import type { DestinyDamageTypeDefinition, DestinyItemCategoryDefinition, DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
 import FilterOptionButton from "./FilterOptionButton.vue";
-import autoRifleSvg from "@/assets/WeaponIcons/auto_rifle.svg";
-import bowSvg from "@/assets/WeaponIcons/bow.svg";
-import fusionRifleSvg from "@/assets/WeaponIcons/fusion_rifle.svg";
-import glaiveSvg from "@/assets/WeaponIcons/glaive.svg";
-import grenadeLauncherSvg from "@/assets/WeaponIcons/grenade_launcher.svg";
-import handCannonSvg from "@/assets/WeaponIcons/hand_cannon.svg";
-import linearFusionRifleSvg from "@/assets/WeaponIcons/wire_rifle.svg";
-import machineGunSvg from "@/assets/WeaponIcons/machine_gun.svg";
-import pulseRifleSvg from "@/assets/WeaponIcons/pulse_rifle.svg";
-import rocketLauncherSvg from "@/assets/WeaponIcons/rocket_launcher.svg";
-import scoutRifleSvg from "@/assets/WeaponIcons/scout_rifle.svg";
-import shotgunSvg from "@/assets/WeaponIcons/shotgun.svg";
-import sidearmSvg from "@/assets/WeaponIcons/sidearm.svg";
-import smgSvg from "@/assets/WeaponIcons/smg.svg";
-import sniperRifleSvg from "@/assets/WeaponIcons/sniper_rifle.svg";
-import swordSvg from "@/assets/WeaponIcons/sword.svg";
-import traceRifleSvg from "@/assets/WeaponIcons/trace_rifle.svg";
+import WeaponIcons from "@/assets/WeaponIcons";
+import OriginIcons from "@/assets/OriginIcons";
 
+interface ICollectionsOriginButton {
+    text: string;
+    iconUrl: string;
+}
+
+// This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
+// weapon type, since hash could theoretically change.
 const weaponCategoryIconMap: { [itemRegex: string]: string } = {
-    ".*_auto_rifle": autoRifleSvg,
-    ".*_hand_cannon": handCannonSvg,
-    ".*_pulse_rifle": pulseRifleSvg,
-    ".*_scout_rifle": scoutRifleSvg,
-    "type_weapon_fusion_rifle": fusionRifleSvg,
-    ".*_sniper_rifle": sniperRifleSvg,
-    ".*_shotgun": shotgunSvg,
-    ".*_machinegun": machineGunSvg,
-    ".*_rocket_launcher": rocketLauncherSvg,
-    ".*_sidearm": sidearmSvg,
-    "type_weapon_sword": swordSvg,
-    ".*_grenade_launcher": grenadeLauncherSvg,
-    ".*_fusion_rifle_line": linearFusionRifleSvg,
-    ".*_beam_rifle": traceRifleSvg,
-    "type_weapon_bow": bowSvg,
-    ".*_glaive": glaiveSvg,
-    ".*_submachinegun": smgSvg,
+    ".*_auto_rifle": WeaponIcons.AutoRifle,
+    ".*_hand_cannon": WeaponIcons.HandCannon,
+    ".*_pulse_rifle": WeaponIcons.PulseRifle,
+    ".*_scout_rifle": WeaponIcons.ScoutRifle,
+    "type_weapon_fusion_rifle": WeaponIcons.FusionRifle,
+    ".*_sniper_rifle": WeaponIcons.SniperRifle,
+    ".*_shotgun": WeaponIcons.Shotgun,
+    ".*_machinegun": WeaponIcons.MachineGun,
+    ".*_rocket_launcher": WeaponIcons.RocketLauncher,
+    ".*_sidearm": WeaponIcons.Sidearm,
+    "type_weapon_sword": WeaponIcons.Sword,
+    ".*_grenade_launcher": WeaponIcons.GrenadeLauncher,
+    ".*_fusion_rifle_line": WeaponIcons.LinearFusionRifle,
+    ".*_beam_rifle": WeaponIcons.TraceRifle,
+    "type_weapon_bow": WeaponIcons.Bow,
+    ".*_glaive": WeaponIcons.Glaive,
+    ".*_submachinegun": WeaponIcons.SubmachineGun,
+};
+
+const origins: ICollectionsOriginButton[] = [
+    { text: "World (Current)", iconUrl: "", },
+    { text: "Word (Old)", iconUrl: "", },
+    { text: "Vanguard Ops", iconUrl: OriginIcons.FactionVanguard, },
+    { text: "Crucible", iconUrl: OriginIcons.FactionCrucible, },
+    { text: "Gambit", iconUrl: OriginIcons.FactionGambit, },
+    { text: "Iron Banner", iconUrl: OriginIcons.FactionIronBanner, },
+    { text: "Trials of Osiris", iconUrl: OriginIcons.FactionOsiris, },
+    { text: "Nightfall", iconUrl: OriginIcons.Nightfall, },
+    { text: "King's Fall", iconUrl: "", },
+    { text: "Duality", iconUrl: OriginIcons.Duality, },
+    { text: "Opulent", iconUrl: "", }, // TODO: this would be opulent weapons that were reissued ONLY
+    { text: "Vow of the Disciple", iconUrl: OriginIcons.VowOfTheDisciple, },
+    { text: "Throne World", iconUrl: "", },
+    { text: "30th Anniversary", iconUrl: "", },
+    { text: "Vault of Glass", iconUrl: OriginIcons.VaultOfGlass, },
+    { text: "Europa", iconUrl: OriginIcons.Europa, },
+    { text: "Deep Stone Crypt", iconUrl: "", },
+    { text: "Prophecy Ops", iconUrl: OriginIcons.FactionTheNine, }, // TODO: this would be Trials of the Nine weapons that drop in Prophecy ONLY
+    { text: "Altars of Sorrow", iconUrl: "", },
+    { text: "Pit of Heresy", iconUrl: "", },
+    { text: "Dreambane", iconUrl: "", },
+    { text: "Garden of Salvation", iconUrl: "", },
+    { text: "The Dreaming City", iconUrl: "", },
+    { text: "Last Wish", iconUrl: "", },
+];
+
+const seasonIconMap: { [seasonNumber: number]: string } = {
+    1: "",
+    2: "",
+    3: "",
+    4: "",
+    5: "",
+    6: "",
+    7: "",
+    10: OriginIcons.SeasonWorthy,
 };
 
 const perkFilter = ref("");
+const includeSunsetWeapons = ref(false);
 
 const damageTypes = computed(() => {
-    return destinyDataService.damageTypes.filter(d => !!d.displayProperties.icon);
+    return destinyDataService.damageTypes.filter(d => d.displayProperties.hasIcon);
 });
 
 const weaponCategories = computed(() => {
     return destinyDataService.itemCategories.filter(c => c.itemTypeRegex && weaponCategoryIconMap[c.itemTypeRegex]);
 });
+
+const collectionCategories = computed(() => {
+    // Just seasons right now, TODO: add other collections
+    const collections: ICollectionsOriginButton[] = origins;
+    const seasonCollections = destinyDataService.seasons
+        .filter(s => includeSunsetWeapons.value || !isSunsetSeason(s))
+        .map(s => {
+            const iconUrl = s.displayProperties.hasIcon
+                ? destinyDataService.getImageUrl(s.displayProperties.icon)
+                : seasonIconMap[s.seasonNumber];
+            return {
+                text: s.displayProperties.name || "The Red War",
+                iconUrl: iconUrl,
+            };
+        });
+    return collections.concat(seasonCollections);
+});
+
+const itemTiers = computed(() => {
+    const uniqueTiers: { text: string, }[] = [];
+    const seenTiers: { [name: string]: boolean } = {};
+    const itemTierDefinitions = destinyDataService.itemTiers;
+    itemTierDefinitions.sort((a, b) => a.index - b.index);
+
+    for (const tier of itemTierDefinitions) {
+        if (!seenTiers[tier.displayProperties.name]) {
+            seenTiers[tier.displayProperties.name] = true;
+            uniqueTiers.push({ text: tier.displayProperties.name });
+        }
+    }
+
+    return uniqueTiers;
+});
+
+function isSunsetSeason(season: DestinySeasonDefinition) {
+    // Season of Dawn is last sunset season
+    return season.seasonNumber <= 9;
+}
 
 function getDamageTypeIcon(damageType: DestinyDamageTypeDefinition) {
     return destinyDataService.getImageUrl(damageType.displayProperties.icon);
@@ -77,8 +146,7 @@ function getWeaponCategoryIcon(category: DestinyItemCategoryDefinition) {
                     :key="damage.hash"
                     :text="damage.displayProperties.name"
                     :icon-url="getDamageTypeIcon(damage)"
-                >
-                </FilterOptionButton>
+                ></FilterOptionButton>
             </div>
         </CollapsibleSection>
         <CollapsibleSection name="Weapon">
@@ -89,15 +157,30 @@ function getWeaponCategoryIcon(category: DestinyItemCategoryDefinition) {
                     :text="weapon.displayProperties.name"
                     :icon-url="getWeaponCategoryIcon(weapon)"
                     wide
-                >
-                </FilterOptionButton>
+                ></FilterOptionButton>
             </div>
         </CollapsibleSection>
         <CollapsibleSection name="Collections">
+            <div>
+                <FilterOptionButton
+                    v-for="collection of collectionCategories"
+                    :key="collection.text"
+                    :text="collection.text"
+                    :icon-url="collection.iconUrl"
+                ></FilterOptionButton>
+            </div>
         </CollapsibleSection>
         <CollapsibleSection name="Rarity">
+            <div>
+                <FilterOptionButton
+                    v-for="tier of itemTiers"
+                    :key="tier.text"
+                    :text="tier.text"
+                ></FilterOptionButton>
+            </div>
         </CollapsibleSection>
         <CollapsibleSection name="Sunset">
+            <FilterOptionButton text="Include Sunset Weapons"></FilterOptionButton>
         </CollapsibleSection>
     </div>
 </template>

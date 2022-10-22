@@ -2,14 +2,14 @@
 
 const props = defineProps<{
     text: string,
-    iconUrl: string,
+    iconUrl?: string,
     wide?: boolean,
 }>();
 </script>
 
 <template>
     <button>
-        <img class="icon" :class="{ 'wide': wide }" :src="iconUrl">
+        <img class="icon" :class="{ 'wide': wide }" v-if="!!iconUrl" :src="iconUrl">
         <span>{{ text }}</span>
     </button>
 </template>

@@ -77,6 +77,16 @@ class DestinyDataService {
         return this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.itemCategories : [];
     }
 
+    public get seasons() {
+        const sorted = this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.seasons : []
+        sorted.sort((a, b) => b.seasonNumber - a.seasonNumber);
+        return sorted;
+    }
+
+    public get itemTiers() {
+        return this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.itemTierTypes : [];
+    }
+
     public initialize = async () => {
         if (this.initialized) return;
 
