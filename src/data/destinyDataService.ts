@@ -1,4 +1,3 @@
-import AxiosStatic from "axios";
 import { Destiny2 } from "bungie-api-ts";
 import type {
     DestinyDamageTypeDefinition,
@@ -61,7 +60,6 @@ type GameDataReactiveWrapper = { gameData: Destiny2GameData | null };
 
 class DestinyDataService {
     private initialized: boolean = false;
-    private client = new AxiosStatic.Axios({});
 
     private gameDataReactiveWrapper: GameDataReactiveWrapper = reactive<GameDataReactiveWrapper>({ gameData: null });
 
@@ -309,13 +307,12 @@ class DestinyDataService {
     }
 
     private makeRequest = async (config: HttpClientConfig) => {
-        const response = await this.client.request({
-            method: config.method,
-            url: config.url,
-            params: config.params,
-            data: config.body,
-        });
-        return JSON.parse(response.data);
+        const query = !config.params ? "" : Object.keys(config.params)
+            .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(config.params[k])}`)
+            .join("&");
+        const url = query ? `${config.url}?${query}` : config.url;
+        const response = await fetch(url, { method: config.method, body: config.body, });
+        return await response.json();
     }
 }
 

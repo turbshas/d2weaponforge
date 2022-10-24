@@ -9,7 +9,6 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "axios": "^1.1.2",
     "bungie-api-ts": "^4.19.0",
     "vue": "^3.2.38"
   },

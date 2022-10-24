@@ -1,4 +1,5 @@
 - like all the styling
+- hide redacted/blacklisted entries
 - urls for weapons - contains weapon hash + selected perk hashes
 - optimize loading - load only weapon list first, then everything else in the background
 - ordering weapons by release date to the API (might have to be manual)
