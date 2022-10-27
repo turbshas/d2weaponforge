@@ -20,3 +20,7 @@
 - compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
 - deal with whatever DestinyInventoryItemDefinition.iconWatermark explains in its comment
 - required level for enhanced perks
+- sunset weapons filter
+- collections filters
+- weapon archetype filters
+- support for translations

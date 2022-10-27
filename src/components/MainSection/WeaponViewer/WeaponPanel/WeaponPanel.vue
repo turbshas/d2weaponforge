@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import WeaponIcon from '@/components/WeaponIcon.vue';
 import { destinyDataService } from '@/data/destinyDataService';
 import { hashMapToArray } from '@/data/util';
 import { computed } from '@vue/reactivity';
@@ -31,10 +32,6 @@ const props = defineProps<{
 
 const screenshot = computed(() => {
     return props.weapon ? destinyDataService.getImageUrl(props.weapon.screenshot) : undefined;
-});
-
-const icon = computed(() => {
-    return props.weapon ? destinyDataService.getImageUrl(props.weapon.displayProperties.icon) : undefined;
 });
 
 const name = computed(() => {
@@ -76,7 +73,7 @@ const fourthColumnPerk = computed(() => props.selectedPerks.length > 3 ? props.s
 <template>
     <div class="panel" :style="{ 'background-image': 'url(' + screenshot + ')' }">
         <div class="summary">
-            <img class="icon" :src="icon">
+            <WeaponIcon class="icon" :weapon="weapon"></WeaponIcon>
             <div class="description">
                 <span>{{ name }}</span>
                 <span>{{ type }}</span>

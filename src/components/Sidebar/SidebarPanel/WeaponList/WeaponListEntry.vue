@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
+import WeaponIcon from "@/components/WeaponIcon.vue";
 
 const emit = defineEmits(["entry-clicked"]);
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition,
 }>();
-
-function getIconUrl(imgFileName: string) {
-    return destinyDataService.getImageUrl(imgFileName);
-}
 
 function onEntryClicked() {
     emit("entry-clicked", props.weapon);
@@ -19,8 +16,8 @@ function onEntryClicked() {
 
 <template>
     <div class="entry" @click="onEntryClicked">
-        <img class="icon" :src="getIconUrl(weapon.displayProperties.icon)">
-        {{ weapon.displayProperties.name }}
+        <WeaponIcon class="icon" :weapon="weapon"></WeaponIcon>
+        <span>{{ weapon.displayProperties.name }}</span>
     </div>
 </template>
 
@@ -32,10 +29,12 @@ function onEntryClicked() {
     border-style: solid;
     margin: 5px;
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
 }
 
 .icon {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
 }
 </style>

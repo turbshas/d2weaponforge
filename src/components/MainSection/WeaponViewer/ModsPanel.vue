@@ -33,7 +33,6 @@ const modOptions = computed(() => {
         .map(pi => destinyDataService.getItemDefinition(pi.plugItemHash))
         .filter(pi => !!pi)
         .map(pi => pi!)
-    console.log("mods are", x, x.map(i => i.itemCategoryHashes!.map(j => destinyDataService.getItemCategoryDefinition(j))));
     return x;
 });
 

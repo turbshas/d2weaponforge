@@ -7,7 +7,7 @@ import FilterOptionButton from "./FilterOptionButton.vue";
 import WeaponIcons from "@/assets/WeaponIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
-import type { FilterCategory, FilterPredicate, IFilterButton } from "@/data/types
+import type { FilterCategory, FilterPredicate, IFilterButton } from "@/data/types";
 
 // This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
 // weapon type, since hash could theoretically change.
