@@ -4,7 +4,7 @@ import Searchbar from "./Searchbar.vue";
 import TabBar from "./TabBar.vue";
 import SidebarPanel from "./SidebarPanel/SidebarPanel.vue";
 
-import type { PageSelection } from "@/data/enums";
+import type { PageSelection } from "@/data/types";
 import { ref } from "@vue/reactivity";
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 

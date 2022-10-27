@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { StatDisplayType } from '@/data/enums';
+import { StatDisplayType } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemStatDefinition, DestinyStatDefinition } from 'bungie-api-ts/destiny2';
 

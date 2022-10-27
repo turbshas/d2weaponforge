@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/destinyDataService";
-import type { DestinyDamageTypeDefinition, DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinySeasonDefinition } from "bungie-api-ts/destiny2";
+import type { DestinyInventoryItemDefinition, DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
 import FilterOptionButton from "./FilterOptionButton.vue";
 import WeaponIcons from "@/assets/WeaponIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
-import type { IFilter } from "@/data/interfaces";
+import type { FilterCategory, FilterPredicate, IFilterButton } from "@/data/types
 
 // This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
 // weapon type, since hash could theoretically change.
@@ -32,31 +32,31 @@ const weaponCategoryIconMap: { [itemRegex: string]: string } = {
 };
 
 // TODO: these filters
-const origins: IFilter[] = [
-    { text: "World (Current)", iconUrl: "", filter: () => false, },
-    { text: "Word (Old)", iconUrl: "", filter: () => false, },
-    { text: "Vanguard Ops", iconUrl: OriginIcons.FactionVanguard, filter: () => false, },
-    { text: "Crucible", iconUrl: OriginIcons.FactionCrucible, filter: () => false, },
-    { text: "Gambit", iconUrl: OriginIcons.FactionGambit, filter: () => false, },
-    { text: "Iron Banner", iconUrl: OriginIcons.FactionIronBanner, filter: () => false, },
-    { text: "Trials of Osiris", iconUrl: OriginIcons.FactionOsiris, filter: () => false, },
-    { text: "Nightfall", iconUrl: OriginIcons.Nightfall, filter: () => false, },
-    { text: "King's Fall", iconUrl: "", filter: () => false, },
-    { text: "Duality", iconUrl: OriginIcons.Duality, filter: () => false, },
-    { text: "Opulent", iconUrl: "", filter: () => false, }, // TODO: this would be opulent weapons that were reissued ONLY (unless Include Sunset is checked?)
-    { text: "Vow of the Disciple", iconUrl: OriginIcons.VowOfTheDisciple, filter: () => false, },
-    { text: "Throne World", iconUrl: "", filter: () => false, },
-    { text: "30th Anniversary", iconUrl: "", filter: () => false, },
-    { text: "Vault of Glass", iconUrl: OriginIcons.VaultOfGlass, filter: () => false, },
-    { text: "Europa", iconUrl: OriginIcons.Europa, filter: () => false, },
-    { text: "Deep Stone Crypt", iconUrl: "", filter: () => false, },
-    { text: "Prophecy", iconUrl: OriginIcons.FactionTheNine, filter: () => false, }, // TODO: this would be Trials of the Nine weapons that drop in Prophecy ONLY (unless Include Sunset is checked?)
-    { text: "Altars of Sorrow", iconUrl: "", filter: () => false, },
-    { text: "Pit of Heresy", iconUrl: "", filter: () => false, },
-    { text: "Dreambane", iconUrl: "", filter: () => false, },
-    { text: "Garden of Salvation", iconUrl: "", filter: () => false, },
-    { text: "The Dreaming City", iconUrl: "", filter: () => false, },
-    { text: "Last Wish", iconUrl: "", filter: () => false, },
+const origins: IFilterButton[] = [
+    { text: "World (Current)", iconUrl: "", active: false, filter: () => false, },
+    { text: "Word (Old)", iconUrl: "", active: false, filter: () => false, },
+    { text: "Vanguard Ops", iconUrl: OriginIcons.FactionVanguard, active: false, filter: () => false, },
+    { text: "Crucible", iconUrl: OriginIcons.FactionCrucible, active: false, filter: () => false, },
+    { text: "Gambit", iconUrl: OriginIcons.FactionGambit, active: false, filter: () => false, },
+    { text: "Iron Banner", iconUrl: OriginIcons.FactionIronBanner, active: false, filter: () => false, },
+    { text: "Trials of Osiris", iconUrl: OriginIcons.FactionOsiris, active: false, filter: () => false, },
+    { text: "Nightfall", iconUrl: OriginIcons.Nightfall, active: false, filter: () => false, },
+    { text: "King's Fall", iconUrl: "", active: false, filter: () => false, },
+    { text: "Duality", iconUrl: OriginIcons.Duality, active: false, filter: () => false, },
+    { text: "Opulent", iconUrl: "", active: false, filter: () => false, }, // TODO: this would be opulent weapons that were reissued ONLY (unless Include Sunset is checked?)
+    { text: "Vow of the Disciple", iconUrl: OriginIcons.VowOfTheDisciple, active: false, filter: () => false, },
+    { text: "Throne World", iconUrl: "", active: false, filter: () => false, },
+    { text: "30th Anniversary", iconUrl: "", active: false, filter: () => false, },
+    { text: "Vault of Glass", iconUrl: OriginIcons.VaultOfGlass, active: false, filter: () => false, },
+    { text: "Europa", iconUrl: OriginIcons.Europa, active: false, filter: () => false, },
+    { text: "Deep Stone Crypt", iconUrl: "", active: false, filter: () => false, },
+    { text: "Prophecy", iconUrl: OriginIcons.FactionTheNine, active: false, filter: () => false, }, // TODO: this would be Trials of the Nine weapons that drop in Prophecy ONLY (unless Include Sunset is checked?)
+    { text: "Altars of Sorrow", iconUrl: "", active: false, filter: () => false, },
+    { text: "Pit of Heresy", iconUrl: "", active: false, filter: () => false, },
+    { text: "Dreambane", iconUrl: "", active: false, filter: () => false, },
+    { text: "Garden of Salvation", iconUrl: "", active: false, filter: () => false, },
+    { text: "The Dreaming City", iconUrl: "", active: false, filter: () => false, },
+    { text: "Last Wish", iconUrl: "", active: false, filter: () => false, },
 ];
 
 const seasonIconMap: { [seasonNumber: number]: string } = {
@@ -70,17 +70,21 @@ const seasonIconMap: { [seasonNumber: number]: string } = {
     10: OriginIcons.SeasonWorthy,
 };
 
+const emits = defineEmits<{
+    (e: "filtersApplied", filters: Record<FilterCategory, FilterPredicate[]>): void,
+}>();
+
 const perkFilter = ref("");
 const includeSunsetWeapons = ref(false);
-const activeFilters = ref<{ [category: string]: { [buttonText: string]: boolean } }>({});
 
 const damageTypeFilters = computed(() => {
     return destinyDataService.damageTypes
         .filter(d => d.displayProperties.hasIcon)
         .map(d => {
-            const filter: IFilter = {
+            const filter: IFilterButton = {
                 text: d.displayProperties.name,
                 iconUrl: destinyDataService.getImageUrl(d.displayProperties.icon),
+                active: false,
                 filter: (item: DestinyInventoryItemDefinition) => {
                     return item.damageTypeHashes.includes(d.hash);
                 },
@@ -93,9 +97,10 @@ const weaponCategoryFilters = computed(() => {
     return destinyDataService.itemCategories
         .filter(c => c.itemTypeRegex && weaponCategoryIconMap[c.itemTypeRegex])
         .map(c => {
-            const filter: IFilter = {
+            const filter: IFilterButton = {
                 text: c.displayProperties.name,
                 iconUrl: weaponCategoryIconMap[c.itemTypeRegex],
+                active: false,
                 filter: (item: DestinyInventoryItemDefinition) => {
                     return !!item.itemCategoryHashes && item.itemCategoryHashes.includes(c.hash);
                 },
@@ -113,9 +118,10 @@ const collectionCategoryFilters = computed(() => {
             const iconUrl = s.displayProperties.hasIcon
                 ? destinyDataService.getImageUrl(s.displayProperties.icon)
                 : seasonIconMap[s.seasonNumber];
-            const filter: IFilter = {
+            const filter: IFilterButton = {
                 text: s.displayProperties.name || "The Red War",
                 iconUrl: iconUrl,
+                active: false,
                 filter: (item: DestinyInventoryItemDefinition) => {
                     // TODO: this may not work for a lot of weapons, is there a better way to check?
                     return !!item.seasonHash && item.seasonHash === s.hash;
@@ -128,7 +134,7 @@ const collectionCategoryFilters = computed(() => {
 
 const itemTierFilters = computed(() => {
     // For some reason, the "Basic" (i.e. white-coloured) tier shows up 3 times, grab uniques and sort them
-    const uniqueTiers: IFilter[] = [];
+    const uniqueTiers: IFilterButton[] = [];
     const seenTiers: { [name: string]: boolean } = {};
     const itemTierDefinitions = destinyDataService.itemTiers;
     itemTierDefinitions.sort((a, b) => a.index - b.index);
@@ -139,6 +145,7 @@ const itemTierFilters = computed(() => {
             uniqueTiers.push({
                 text: tier.displayProperties.name,
                 iconUrl: tierIndexToIcon(tier.index),
+                active: false,
                 filter: (item: DestinyInventoryItemDefinition) => {
                     return !!item.inventory && item.inventory.tierTypeHash === tier.hash;
                 }
@@ -150,12 +157,28 @@ const itemTierFilters = computed(() => {
 });
 
 const filterCategories = computed(() => {
-    return [
+    const categories: { name: FilterCategory, filters: IFilterButton[], wide: boolean, }[] = [
         { name: "Damage Type", filters: damageTypeFilters.value, wide: false, },
         { name: "Weapon", filters: weaponCategoryFilters.value, wide: true, },
         { name: "Collections", filters: collectionCategoryFilters.value, wide: false, },
         { name: "Rarity", filters: itemTierFilters.value, wide: false, },
     ];
+    return categories;
+});
+
+const filterCategoryMap = computed(() => {
+    const map: Record<FilterCategory, { [buttonText: string]: IFilterButton }> = {
+        "Damage Type": {},
+        "Weapon": {},
+        "Collections": {},
+        "Rarity": {},
+    };
+    for (const category of filterCategories.value) {
+        for (const filter of category.filters) {
+            map[category.name][filter.text] = filter;
+        }
+    }
+    return map;
 });
 
 function tierIndexToIcon(tierIndex: number) {
@@ -178,15 +201,35 @@ function onPerkFilterChanged() {
     // TODO: stuff
 }
 
-function onFilterButtonToggled(category: string, filter: IFilter, active: boolean) {
-    if (!activeFilters.value[category]) {
-        activeFilters.value[category] = {};
-    }
-    activeFilters.value[category][filter.text] = active;
+function onFilterButtonToggled(category: FilterCategory, filter: IFilterButton, active: boolean) {
+    filterCategoryMap.value[category][filter.text].active = active;
 }
 
 function includeSunsetToggled() {
     includeSunsetWeapons.value = !includeSunsetWeapons.value;
+}
+
+function onApplyFilters() {
+    const filters: Record<FilterCategory, FilterPredicate[]> = {
+        "Damage Type": [],
+        "Weapon": [],
+        "Collections": [],
+        "Rarity": [],
+    };
+
+    for (const category in filterCategoryMap.value) {
+        const filterCategory = category as FilterCategory;
+        const filterButtonMap = filterCategoryMap.value[filterCategory];
+
+        for (const buttonText in filterButtonMap) {
+            const button = filterButtonMap[buttonText];
+            if (button.active) {
+                filters[filterCategory].push(button.filter);
+            }
+        }
+    }
+
+    emits("filtersApplied", filters);
 }
 </script>
 
@@ -194,7 +237,7 @@ function includeSunsetToggled() {
     <div>
         <div>
             <span>Filters</span>
-            <button>Apply Filters</button>
+            <button @click="onApplyFilters">Apply Filters</button>
         </div>
         <CollapsibleSection name="Perks">
             <input type="text" v-model="perkFilter" @input="onPerkFilterChanged">

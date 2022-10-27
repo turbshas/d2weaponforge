@@ -4,7 +4,7 @@ import Sidebar from "@/components/Sidebar/Sidebar.vue";
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { onMounted, ref } from "vue";
 import { destinyDataService } from "./data/destinyDataService";
-import { PageSelection } from "./data/enums";
+import { PageSelection } from "./data/types";
 
 const selectedPage = ref(PageSelection.Home);
 const selectedWeapon = ref<DestinyInventoryItemDefinition | undefined>(undefined);

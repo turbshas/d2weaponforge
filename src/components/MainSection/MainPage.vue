@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PageSelection } from '@/data/enums';
+import { PageSelection } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import HomePage from './HomePage.vue';
 import Glossary from './Glossary.vue';

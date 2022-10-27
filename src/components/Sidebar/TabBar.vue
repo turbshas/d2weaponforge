@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PageSelection } from '@/data/enums';
+import { PageSelection } from '@/data/types';
 
 const emit = defineEmits(["tab-selected"]);
 
