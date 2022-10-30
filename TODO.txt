@@ -18,7 +18,6 @@
   - empty perk slot icon
 - glossary (will probably need this done manually anyway for the perk descriptions/tooltips)
 - compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
-- deal with whatever DestinyInventoryItemDefinition.iconWatermark explains in its comment
 - required level for enhanced perks
 - sunset weapons filter
 - collections filters

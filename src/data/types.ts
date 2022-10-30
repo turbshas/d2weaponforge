@@ -23,3 +23,21 @@ export interface IFilterButton {
     filter: FilterPredicate;
     active: boolean;
 }
+
+export enum ItemTierIndex {
+    Basic = 0,
+    Common = 1,
+    Uncommon = 2,
+    Rare = 3,
+    Legendary = 4,
+    Exotic = 5,
+}
+
+export interface IPerkOption {
+    perk: DestinyInventoryItemDefinition;
+    enhancedPerk?: DestinyInventoryItemDefinition;
+}
+
+export interface IPerkSlotOptions {
+    options: IPerkOption[];
+}

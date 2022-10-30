@@ -113,6 +113,10 @@ class DestinyDataService {
         return this.gameDataReactiveWrapper.gameData?.itemCategoriesLookup[itemCategoryHash];
     }
 
+    public getItemTierDefinition = (itemTierHash: number) => {
+        return this.gameDataReactiveWrapper.gameData?.itemTierTypesLookup[itemTierHash];
+    }
+
     public getPlugSetDefinition = (plugSetHash: number) => {
         return this.gameDataReactiveWrapper.gameData?.plugSetLookup[plugSetHash];
     }
@@ -219,6 +223,7 @@ class DestinyDataService {
                 "DestinySandboxPerkDefinition",
                 "DestinySocketCategoryDefinition",
                 "DestinySocketTypeDefinition",
+                "DestinyPowerCapDefinition",
             ],
         });
         console.log(manifestSlice);

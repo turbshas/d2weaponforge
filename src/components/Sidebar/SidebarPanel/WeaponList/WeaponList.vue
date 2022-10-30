@@ -7,14 +7,7 @@ const emit = defineEmits(["entry-clicked"]);
 
 const props = defineProps<{
     weapons: DestinyInventoryItemDefinition[],
-    searchString: string,
 }>();
-
-const truncatedWeapons = computed(() => {
-    // If no search, return first 22 items
-    if (!props.searchString) return props.weapons.slice(0, 22);
-    return props.weapons.filter(s => s.displayProperties.name.includes(props.searchString));
-});
 
 function onEntryClicked(weapon: DestinyInventoryItemDefinition) {
     emit("entry-clicked", weapon);
@@ -24,7 +17,7 @@ function onEntryClicked(weapon: DestinyInventoryItemDefinition) {
 <template>
     <div class="list">
         <WeaponListEntry
-            v-for="weapon of truncatedWeapons"
+            v-for="weapon of weapons"
             :key="weapon.hash"
             :weapon="weapon"
             @entry-clicked="onEntryClicked"

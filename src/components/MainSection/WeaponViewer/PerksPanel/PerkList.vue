@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { IPerkSlotOptions } from '@/data/types';
 import { computed, ref } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import PerkDisplay from '../../PerkDisplay.vue';
 
 const props = defineProps<{
-    perkOptionLists: ((DestinyInventoryItemDefinition | undefined)[] | undefined)[] | null,
+    perkOptionLists: IPerkSlotOptions[] | null,
 }>();
 
 const emits = defineEmits<{
@@ -38,9 +39,10 @@ function onPerkClicked(column: number, perk: DestinyInventoryItemDefinition) {
             :key="column"
         >
             <PerkDisplay
-                v-for="(perk, index) in slot"
+                v-for="(perk, index) in slot.options"
                 :key="index"
-                :perk="perk"
+                :perk="perk.enhancedPerk || perk.perk"
+                :enhanced="!!perk.enhancedPerk"
                 @click="perk => onPerkClicked(column, perk)"
             ></PerkDisplay>
         </div>

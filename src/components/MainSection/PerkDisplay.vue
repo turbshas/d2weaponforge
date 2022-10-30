@@ -5,6 +5,7 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     perk: DestinyInventoryItemDefinition | undefined,
+    enhanced?: boolean,
     fullSize?: boolean,
 }>();
 
@@ -17,11 +18,6 @@ const perkIcon = computed(() => {
     return destinyDataService.getImageUrl(props.perk.displayProperties.icon);
 });
 
-const perkWatermark = computed(() => {
-    if (!props.perk || !props.perk.iconWatermark) return undefined;
-    return destinyDataService.getImageUrl(props.perk.iconWatermark);
-});
-
 function onPerkClick() {
     if (!props.perk) return;
     emits("click", props.perk);
@@ -31,11 +27,14 @@ function onPerkClick() {
 <template>
     <div
         class="perk"
-        :class="{ 'random-roll': !fullSize }"
+        :class="{ 'random-roll': !fullSize, }"
         :style="{ 'background-image': 'url(' + perkIcon +')' }"
         @click="onPerkClick"
     >
-        <img class="perk" v-if="!!perkWatermark" :src="perkWatermark">
+        <div class="enhanced-gradient-wrapper" v-if="enhanced">
+            <div class="enhanced-gradient"></div>
+        </div>
+        <div class="enhanced-arrow" v-if="enhanced"></div>
     </div>
 </template>
 
@@ -44,6 +43,7 @@ function onPerkClick() {
     width: 48px;
     height: 48px;
     background-size: contain;
+    position: relative;
 }
 
 .random-roll {
@@ -53,5 +53,35 @@ function onPerkClick() {
     background-repeat: no-repeat;
     box-shadow: inset 0 0 0 2px hsla(0,0%,100%,.4);
     border-radius: 50%;
+}
+
+.enhanced-gradient-wrapper {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.enhanced-gradient {
+    position: absolute;
+    top: 50%;
+    bottom: -50%;
+    left: 0;
+    right: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle,rgba(255,206,31,.15) 0,rgba(183,140,37,0) 100%);
+}
+
+.enhanced-arrow {
+    content: "";
+    width: 10px;
+    height: 100%;
+    position: absolute;
+    top: 6px;
+    margin-left: -4px;
+    background: linear-gradient(#ffce1f 0 0) bottom/3px calc(100% - 5px),conic-gradient(from 134deg at top,transparent,#ffce1f 1deg 90deg,transparent 91deg) top/100% 5px;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    clip-path: path("M0,0 A24,24 180 0 0 48,19 L48,0");
 }
 </style>

@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import PerkList from './PerkList.vue';
 import { destinyDataService } from '@/data/destinyDataService';
+import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from '@/data/types';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -35,15 +36,46 @@ const perkPlugSets = computed(() => {
 
 const perkOptionListsPerSlot = computed(() => {
     return perkPlugSets.value.map(ps => {
-        const uniquePlugItems: (DestinyInventoryItemDefinition | undefined)[] = [];
+        const perkOptionsByName: { [name: string]: DestinyInventoryItemDefinition[] } = {};
         const seenPlugItems: { [plugItemHash: number]: boolean } = {};
+
+        // Remove duplicates and group by name to capture normal + enhanced perks together
         for (const plugItem of ps?.reusablePlugItems || []) {
-            if (!seenPlugItems[plugItem.plugItemHash]) {
-                uniquePlugItems.push(destinyDataService.getItemDefinition(plugItem.plugItemHash));
-                seenPlugItems[plugItem.plugItemHash] = true;
+            if (seenPlugItems[plugItem.plugItemHash]) continue;
+            const definition = destinyDataService.getItemDefinition(plugItem.plugItemHash);
+            if (!definition) continue;
+
+            const name = definition.displayProperties.name;
+            if (!perkOptionsByName[name]) {
+                perkOptionsByName[name] = [definition];
+            } else {
+                perkOptionsByName[name].push(definition);
             }
         }
-        return uniquePlugItems;
+
+        const perkOptions: IPerkOption[] = [];
+        for (const key in perkOptionsByName) {
+            const options = perkOptionsByName[key];
+            const perk = options.find(o => {
+                const tier = destinyDataService.getItemTierDefinition(o.inventory!.tierTypeHash);
+                return !!tier && (tier.index === ItemTierIndex.Common);
+            });
+            if (!perk) continue; // If no non-enhanced version, just ignore.
+
+            const perkOption: IPerkOption = {
+                perk: perk,
+                enhancedPerk: options.find(o => {
+                    const tier = destinyDataService.getItemTierDefinition(o.inventory!.tierTypeHash);
+                    return !!tier && tier.index === ItemTierIndex.Uncommon;
+                }),
+            };
+            perkOptions.push(perkOption);
+        }
+
+        const slotOptions: IPerkSlotOptions = {
+            options: perkOptions,
+        };
+        return slotOptions;
     });
 });
 
@@ -51,6 +83,7 @@ const curatedPerks = computed(() => perkSocketsNoTracker.value.map(s => [destiny
 const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
 
 function onPerkSelected(column: number, perk: DestinyInventoryItemDefinition | undefined) {
+    console.log("weapon has perks", perkOptionListsPerSlot.value);
     emits("perkSelected", column, perk);
 }
 </script>
