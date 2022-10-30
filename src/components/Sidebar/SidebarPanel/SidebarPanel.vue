@@ -46,7 +46,7 @@ const filteredWeapons = computed(() => {
                 && checkFilterCategoryOnWeapon(weapon, w);
         })
         // If no search, return first 22 items
-        .filter(s => s.displayProperties.name.includes(props.searchString));
+        .filter(s => s.displayProperties.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
 });
 
 function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: DestinyInventoryItemDefinition) {

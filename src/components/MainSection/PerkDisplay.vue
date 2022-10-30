@@ -5,6 +5,7 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     perk: DestinyInventoryItemDefinition | undefined,
+    retired: boolean,
     enhanced?: boolean,
     fullSize?: boolean,
 }>();
@@ -26,11 +27,15 @@ function onPerkClick() {
 
 <template>
     <div
-        class="perk"
-        :class="{ 'random-roll': !fullSize, }"
-        :style="{ 'background-image': 'url(' + perkIcon +')' }"
+        class="wrapper"
+        :class="{ 'random-roll-wrapper': !fullSize }"
         @click="onPerkClick"
     >
+        <div
+            class="icon"
+            :class="{ 'random-roll-icon': !fullSize, 'retired': retired }"
+            :style="{ 'background-image': 'url(' + perkIcon +')' }"
+        ></div>
         <div class="enhanced-gradient-wrapper" v-if="enhanced">
             <div class="enhanced-gradient"></div>
         </div>
@@ -39,20 +44,36 @@ function onPerkClick() {
 </template>
 
 <style scoped>
-.perk {
+.wrapper {
     width: 48px;
     height: 48px;
-    background-size: contain;
     position: relative;
 }
 
-.random-roll {
+.icon {
+    width: 48px;
+    height: 48px;
+    background-size: contain;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.random-roll-wrapper {
+    box-shadow: inset 0 0 0 2px hsla(0,0%,100%,.4);
+    border-radius: 50%;
+}
+
+.random-roll-icon {
     background-size: 75%;
     background-position-x: 50%;
     background-position-y: center;
     background-repeat: no-repeat;
-    box-shadow: inset 0 0 0 2px hsla(0,0%,100%,.4);
-    border-radius: 50%;
+}
+
+.retired {
+    filter: brightness(0.3);
 }
 
 .enhanced-gradient-wrapper {

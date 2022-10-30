@@ -42,6 +42,7 @@ function onPerkClicked(column: number, perk: DestinyInventoryItemDefinition) {
                 v-for="(perk, index) in slot.options"
                 :key="index"
                 :perk="perk.enhancedPerk || perk.perk"
+                :retired="!perk.currentlyCanRoll"
                 :enhanced="!!perk.enhancedPerk"
                 @click="perk => onPerkClicked(column, perk)"
             ></PerkDisplay>

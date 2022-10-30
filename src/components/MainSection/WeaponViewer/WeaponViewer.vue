@@ -18,7 +18,7 @@ const selectedPerksMap = ref<{ [column: number]: DestinyInventoryItemDefinition 
 const selectedMasterwork = ref<DestinyInventoryItemDefinition | undefined>(undefined);
 const selectedMod = ref<DestinyInventoryItemDefinition | undefined>(undefined);
 
-const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMap.value[1], selectedPerksMap.value[2], selectedPerksMap.value[3]])
+const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMap.value[1], selectedPerksMap.value[2], selectedPerksMap.value[3], selectedPerksMap.value[4]]);
 
 function onPerkSelected(column: number, perk: DestinyInventoryItemDefinition | undefined) {
     selectedPerksMap.value[column] = perk;

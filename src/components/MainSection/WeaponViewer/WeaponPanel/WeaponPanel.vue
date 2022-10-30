@@ -68,6 +68,7 @@ const firstColumnPerk = computed(() => props.selectedPerks.length > 0 ? props.se
 const secondColumnPerk = computed(() => props.selectedPerks.length > 1 ? props.selectedPerks[1] : undefined);
 const thirdColumnPerk = computed(() => props.selectedPerks.length > 2 ? props.selectedPerks[2] : undefined);
 const fourthColumnPerk = computed(() => props.selectedPerks.length > 3 ? props.selectedPerks[3] : undefined);
+const fifthColumnPerk = computed(() => props.selectedPerks.length > 4 ? props.selectedPerks[4] : undefined);
 </script>
 
 <template>
@@ -94,6 +95,7 @@ const fourthColumnPerk = computed(() => props.selectedPerks.length > 3 ? props.s
             :perk2="secondColumnPerk"
             :perk3="thirdColumnPerk"
             :perk4="fourthColumnPerk"
+            :origin-perk="fifthColumnPerk"
             :masterwork="masterwork"
             :mod="mod"
         ></SelectedPerks>

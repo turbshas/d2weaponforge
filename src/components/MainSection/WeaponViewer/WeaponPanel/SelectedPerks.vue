@@ -11,6 +11,7 @@ const props = defineProps<{
     perk2: DestinyInventoryItemDefinition | undefined,
     perk3: DestinyInventoryItemDefinition | undefined,
     perk4: DestinyInventoryItemDefinition | undefined,
+    originPerk: DestinyInventoryItemDefinition | undefined,
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
 }>();
@@ -44,13 +45,14 @@ const intrinsicPerk = computed(() => {
 
 <template>
     <div class="selected">
-        <PerkDisplay :perk="intrinsicPerk" full-size></PerkDisplay>
-        <PerkDisplay :perk="perk1"></PerkDisplay>
-        <PerkDisplay :perk="perk2"></PerkDisplay>
-        <PerkDisplay :perk="perk3"></PerkDisplay>
-        <PerkDisplay :perk="perk4"></PerkDisplay>
-        <PerkDisplay :perk="mod" full-size v-if="!!mod"></PerkDisplay>
-        <PerkDisplay :perk="masterwork" full-size v-if="!!masterwork"></PerkDisplay>
+        <PerkDisplay :perk="intrinsicPerk" :retired="false" full-size></PerkDisplay>
+        <PerkDisplay :perk="perk1" :retired="false"></PerkDisplay>
+        <PerkDisplay :perk="perk2" :retired="false"></PerkDisplay>
+        <PerkDisplay :perk="perk3" :retired="false"></PerkDisplay>
+        <PerkDisplay :perk="perk4" :retired="false"></PerkDisplay>
+        <PerkDisplay :perk="originPerk" :retired="false" v-if="!!originPerk"></PerkDisplay>
+        <PerkDisplay :perk="mod" :retired="false" full-size v-if="!!mod"></PerkDisplay>
+        <PerkDisplay :perk="masterwork" :retired="false" full-size v-if="!!masterwork"></PerkDisplay>
     </div>
 </template>
 

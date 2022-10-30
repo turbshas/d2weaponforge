@@ -36,6 +36,7 @@ export enum ItemTierIndex {
 export interface IPerkOption {
     perk: DestinyInventoryItemDefinition;
     enhancedPerk?: DestinyInventoryItemDefinition;
+    currentlyCanRoll: boolean;
 }
 
 export interface IPerkSlotOptions {

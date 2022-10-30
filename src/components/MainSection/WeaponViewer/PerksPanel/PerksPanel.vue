@@ -37,11 +37,16 @@ const perkPlugSets = computed(() => {
 const perkOptionListsPerSlot = computed(() => {
     return perkPlugSets.value.map(ps => {
         const perkOptionsByName: { [name: string]: DestinyInventoryItemDefinition[] } = {};
+        const currentlyCanRollMap: { [plugItemHash: number]: boolean } = {};
         const seenPlugItems: { [plugItemHash: number]: boolean } = {};
 
         // Remove duplicates and group by name to capture normal + enhanced perks together
         for (const plugItem of ps?.reusablePlugItems || []) {
             if (seenPlugItems[plugItem.plugItemHash]) continue;
+            // TODO: Apparently everything works without this so figure that out
+            // seenPlugItems[plugItem.plugItemHash] = true;
+            currentlyCanRollMap[plugItem.plugItemHash] = plugItem.currentlyCanRoll;
+
             const definition = destinyDataService.getItemDefinition(plugItem.plugItemHash);
             if (!definition) continue;
 
@@ -68,6 +73,7 @@ const perkOptionListsPerSlot = computed(() => {
                     const tier = destinyDataService.getItemTierDefinition(o.inventory!.tierTypeHash);
                     return !!tier && tier.index === ItemTierIndex.Uncommon;
                 }),
+                currentlyCanRoll: currentlyCanRollMap[perk.hash],
             };
             perkOptions.push(perkOption);
         }
@@ -79,11 +85,27 @@ const perkOptionListsPerSlot = computed(() => {
     });
 });
 
-const curatedPerks = computed(() => perkSocketsNoTracker.value.map(s => [destinyDataService.getItemDefinition(s.singleInitialItemHash)]));
+const curatedPerks = computed(() => {
+    return perkSocketsNoTracker.value
+        .map(s => {
+            if (s.singleInitialItemHash) {
+                return destinyDataService.getItemDefinition(s.singleInitialItemHash);
+            } else if (s.randomizedPlugSetHash) {
+                // Origin perk doesn't have an initial item for some reason, have to use the randomized plug set.
+                const plugSet = destinyDataService.getPlugSetDefinition(s.randomizedPlugSetHash);
+                return !!plugSet && plugSet.reusablePlugItems.length > 0
+                    ? destinyDataService.getItemDefinition(plugSet.reusablePlugItems[0].plugItemHash)
+                    : undefined;
+            }
+        })
+        .map(i => i!)
+        .map<IPerkOption>(i => { return { perk: i, currentlyCanRoll: true, }; })
+        .map<IPerkSlotOptions>(o => { return { options: [o] }; });
+});
 const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
 
 function onPerkSelected(column: number, perk: DestinyInventoryItemDefinition | undefined) {
-    console.log("weapon has perks", perkOptionListsPerSlot.value);
+    console.log("perk selected", column, perk);
     emits("perkSelected", column, perk);
 }
 </script>
