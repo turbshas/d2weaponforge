@@ -7,6 +7,7 @@ import ModsPanel from './ModsPanel.vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
 import { ref, watch } from 'vue';
 import { computed } from '@vue/reactivity';
+import type { IPerkOption } from '@/data/types';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined
@@ -14,13 +15,13 @@ const props = defineProps<{
 
 watch(() => props.weapon, () => { selectedPerksMap.value = {}; })
 
-const selectedPerksMap = ref<{ [column: number]: DestinyInventoryItemDefinition | undefined }>({ });
+const selectedPerksMap = ref<{ [column: number]: IPerkOption | undefined }>({ });
 const selectedMasterwork = ref<DestinyInventoryItemDefinition | undefined>(undefined);
 const selectedMod = ref<DestinyInventoryItemDefinition | undefined>(undefined);
 
 const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMap.value[1], selectedPerksMap.value[2], selectedPerksMap.value[3], selectedPerksMap.value[4]]);
 
-function onPerkSelected(column: number, perk: DestinyInventoryItemDefinition | undefined) {
+function onPerkSelected(column: number, perk: IPerkOption | undefined) {
     selectedPerksMap.value[column] = perk;
 }
 

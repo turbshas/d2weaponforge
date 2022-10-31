@@ -23,5 +23,5 @@
 - collections filters
 - weapon archetype filters
 - support for translations
-- selecting curated perks should select the same perk in the random roll list
 - selecting new weapon should reset masterwork
+- selecting curated perk then toggling enhanced makes the icon disappear

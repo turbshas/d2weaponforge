@@ -5,6 +5,7 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     perk: DestinyInventoryItemDefinition | undefined,
+    selected: boolean,
     retired: boolean,
     enhanced?: boolean,
     fullSize?: boolean,
@@ -28,7 +29,7 @@ function onPerkClick() {
 <template>
     <div
         class="wrapper"
-        :class="{ 'random-roll-wrapper': !fullSize }"
+        :class="{ 'random-roll-wrapper': !fullSize, 'selected': selected }"
         @click="onPerkClick"
     >
         <div
@@ -36,7 +37,7 @@ function onPerkClick() {
             :class="{ 'random-roll-icon': !fullSize, 'retired': retired }"
             :style="{ 'background-image': 'url(' + perkIcon +')' }"
         ></div>
-        <div class="enhanced-gradient-wrapper" v-if="enhanced">
+        <div class="enhanced-gradient-wrapper" v-if="enhanced && !selected">
             <div class="enhanced-gradient"></div>
         </div>
         <div class="enhanced-arrow" v-if="enhanced"></div>
@@ -48,6 +49,10 @@ function onPerkClick() {
     width: 48px;
     height: 48px;
     position: relative;
+}
+
+.selected {
+    background-color: #518dba;
 }
 
 .icon {

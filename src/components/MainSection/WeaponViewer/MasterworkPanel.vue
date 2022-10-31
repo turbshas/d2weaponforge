@@ -2,6 +2,7 @@
 import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import { watch } from 'vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -58,6 +59,12 @@ const masterworkStatNames = computed(() => Object.keys(masterworkOptionsByStatNa
 
 const selectedMasterworkName = ref(masterworkStatNames.value.length > 0 ? masterworkStatNames.value[0] : undefined);
 const masterworkLevel = ref(0);
+
+watch(() => props.weapon, () => {
+    selectedMasterworkName.value = masterworkStatNames.value.length > 0 ? masterworkStatNames.value[0] : undefined;
+    masterworkLevel.value = 0;
+    emits("masterworkChanged", undefined);
+});
 
 function emitMasterworkChange(statName: string, level: number) {
     const masterworkList = masterworkOptionsByStatName.value[statName];

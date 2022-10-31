@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import PerkList from './PerkList.vue';
 import { destinyDataService } from '@/data/destinyDataService';
@@ -10,8 +10,14 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-    (e: "perkSelected", column: number, perk: DestinyInventoryItemDefinition | undefined): void,
+    (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
 }>();
+
+const selectedPerks = ref<{ [column: number]: IPerkOption | undefined }>({});
+
+watch(() => props.weapon, () => {
+    selectedPerks.value = {};
+});
 
 const weaponSocketCategories = computed(() => props.weapon?.sockets?.socketCategories || []);
 const weaponSockets = computed(() => props.weapon?.sockets?.socketEntries || []);
@@ -104,8 +110,8 @@ const curatedPerks = computed(() => {
 });
 const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
 
-function onPerkSelected(column: number, perk: DestinyInventoryItemDefinition | undefined) {
-    console.log("perk selected", column, perk);
+function onPerkSelected(column: number, perk: IPerkOption | undefined) {
+    selectedPerks.value[column] = perk;
     emits("perkSelected", column, perk);
 }
 </script>
@@ -113,13 +119,13 @@ function onPerkSelected(column: number, perk: DestinyInventoryItemDefinition | u
 <template>
     <div class="perks">
         <span class="title">Weapon Perks</span>
-        <PerkList :perk-option-lists="perkOptionListsPerSlot" @perk-selected="onPerkSelected"></PerkList>
+        <PerkList :perk-option-lists="perkOptionListsPerSlot" :selected-perks="selectedPerks" @perk-selected="onPerkSelected"></PerkList>
         <span class="description">
             TO APPLY THE ENHANCED VERSION OF A PERK, CLICK SAID PERK IN THE AREA WITH THE PICTURE OF THE WEAPON.
         </span>
         <div v-if="hasCuratedPerks">
             <span class="title">Curated Roll</span>
-            <PerkList :perk-option-lists="curatedPerks"></PerkList>
+            <PerkList :perk-option-lists="curatedPerks" :selected-perks="selectedPerks" @perk-selected="onPerkSelected"></PerkList>
         </div>
     </div>
 </template>

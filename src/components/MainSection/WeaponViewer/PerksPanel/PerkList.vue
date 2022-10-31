@@ -1,33 +1,30 @@
 <script setup lang="ts">
-import type { IPerkSlotOptions } from '@/data/types';
-import { computed, ref } from '@vue/reactivity';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import type { IPerkOption, IPerkSlotOptions } from '@/data/types';
+import { computed } from '@vue/reactivity';
 import PerkDisplay from '../../PerkDisplay.vue';
 
 const props = defineProps<{
     perkOptionLists: IPerkSlotOptions[] | null,
+    selectedPerks: { [column: number]: IPerkOption | undefined },
 }>();
 
 const emits = defineEmits<{
-    (e: "perkSelected", column: number, perk: DestinyInventoryItemDefinition | undefined): void,
+    (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
 }>();
-
-const selectedPerksMap = ref<{ [column: number]: DestinyInventoryItemDefinition | undefined }>({ 1: undefined, 2: undefined, 3: undefined, 4: undefined, });
 
 const perkSlots = computed(() => {
     if (!props.perkOptionLists) return [];
     return props.perkOptionLists;
 });
 
-function onPerkClicked(column: number, perk: DestinyInventoryItemDefinition) {
-    if (selectedPerksMap.value[column] && selectedPerksMap.value[column]!.hash === perk.hash) {
-        // This perk is already selected - unselect it.
-        selectedPerksMap.value[column] = undefined;
-    } else {
-        // New perk was selected
-        selectedPerksMap.value[column] = perk;
-    }
-    emits("perkSelected", column, selectedPerksMap.value[column]);
+function isPerkSelected(column: number, perk: IPerkOption) {
+    return !!props.selectedPerks && !!props.selectedPerks[column] && props.selectedPerks[column]!.perk.hash === perk.perk.hash;
+}
+
+function onPerkClicked(column: number, perk: IPerkOption) {
+    // If perk is already selecting, clicking it again deselects it
+    const newPerk = props.selectedPerks[column] && props.selectedPerks[column]!.perk.hash === perk.perk.hash ? undefined : perk;
+    emits("perkSelected", column, newPerk);
 }
 </script>
 
@@ -42,9 +39,10 @@ function onPerkClicked(column: number, perk: DestinyInventoryItemDefinition) {
                 v-for="(perk, index) in slot.options"
                 :key="index"
                 :perk="perk.enhancedPerk || perk.perk"
+                :selected="isPerkSelected(column, perk)"
                 :retired="!perk.currentlyCanRoll"
                 :enhanced="!!perk.enhancedPerk"
-                @click="perk => onPerkClicked(column, perk)"
+                @click="onPerkClicked(column, perk)"
             ></PerkDisplay>
         </div>
     </div>
