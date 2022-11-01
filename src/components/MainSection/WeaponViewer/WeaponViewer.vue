@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
 import WeaponPanel from './WeaponPanel/WeaponPanel.vue';
-import ExtrasPanel from './ExtrasPanel.vue';
+import ExtrasPanel from './ExtrasPanel/ExtrasPanel.vue';
 import MasterworkPanel from './MasterworkPanel.vue';
 import ModsPanel from './ModsPanel.vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
@@ -44,7 +44,12 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
                 :mod="selectedMod"
             ></WeaponPanel>
             <div class="extras">
-                <ExtrasPanel></ExtrasPanel>
+                <ExtrasPanel
+                    :weapon="weapon"
+                    :selected-perks="selectedPerks"
+                    :masterwork="selectedMasterwork"
+                    :mod="selectedMod"
+                ></ExtrasPanel>
                 <div class="mods-masterwork">
                     <MasterworkPanel :weapon="weapon" @masterwork-changed="onMasterworkChanged"></MasterworkPanel>
                     <ModsPanel :weapon="weapon" @mod-changed="onModChanged"></ModsPanel>

@@ -70,6 +70,7 @@ function emitMasterworkChange(statName: string, level: number) {
     const masterworkList = masterworkOptionsByStatName.value[statName];
     // A value of 0 basically disables the masterwork, set to undefined
     const masterwork = level > 0 ? masterworkList[level - 1] : undefined;
+    console.log("masterwork change", masterworkList);
     emits("masterworkChanged", masterwork);
 }
 
