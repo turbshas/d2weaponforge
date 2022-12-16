@@ -4,6 +4,7 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import PerkList from './PerkList.vue';
 import { destinyDataService } from '@/data/destinyDataService';
 import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from '@/data/types';
+import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -18,6 +19,8 @@ const selectedPerks = ref<{ [column: number]: IPerkOption | undefined }>({});
 watch(() => props.weapon, () => {
     selectedPerks.value = {};
 });
+
+const backgroundUrl = computed(() => PerkPanelBackground);
 
 const weaponSocketCategories = computed(() => props.weapon?.sockets?.socketCategories || []);
 const weaponSockets = computed(() => props.weapon?.sockets?.socketEntries || []);
@@ -117,7 +120,7 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
 </script>
 
 <template>
-    <div class="perks">
+    <div class="perks" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
         <span class="title">Weapon Perks</span>
         <PerkList :perk-option-lists="perkOptionListsPerSlot" :selected-perks="selectedPerks" @perk-selected="onPerkSelected"></PerkList>
         <span class="description">
@@ -134,7 +137,6 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
 .perks {
     display: flex;
     flex-direction: column;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30'%3E%3Cpath fill='%23fff' opacity='.03' d='M21.747 19.5H30V21h-8.253zm-2.253 2.246h1.5V30h-1.5z'/%3E%3Cpath fill='%23fff' opacity='.15' d='M21.001 21v-1.5h-1.507V21h1.507z'/%3E%3Cpath fill='%23fff' opacity='.03' d='M19.494 0h1.5v3.752h-1.5zm2.253 4.498H30v1.5h-8.253zm-2.253 2.246h1.5v12.01h-1.5zM6.748 4.5H18.75V6H6.748zM4.494 0h1.5v3.754h-1.5zM0 4.5h3.749V6H0z'/%3E%3Cpath fill='%23fff' opacity='.15' d='M5.994 4.5h-1.5V6h1.508V4.5h-.008zm14.996 0h-1.5V6h1.508V4.5h-.008z'/%3E%3Cpath fill='%23fff' opacity='.03' d='M6.738 19.5h12.01V21H6.738zM4.494 6.746h1.5v12.009h-1.5zM0 19.5h3.749V21H0z'/%3E%3Cpath fill='%23fff' opacity='.15' d='M4.494 19.5h1.499V21H4.494z'/%3E%3Cpath fill='%23fff' opacity='.03' d='M4.494 21.746h1.5V30h-1.5z'/%3E%3C/svg%3E");
     background-size: auto;
 }
 

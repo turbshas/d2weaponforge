@@ -13,6 +13,12 @@ const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined
 }>();
 
+const emits = defineEmits<{
+    (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
+    (e: "masterworkChanged", masterwork: DestinyInventoryItemDefinition | undefined): void,
+    (e: "modChanged", mod: DestinyInventoryItemDefinition | undefined): void,
+}>();
+
 watch(() => props.weapon, () => { selectedPerksMap.value = {}; })
 
 const selectedPerksMap = ref<{ [column: number]: IPerkOption | undefined }>({ });
@@ -23,14 +29,17 @@ const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMa
 
 function onPerkSelected(column: number, perk: IPerkOption | undefined) {
     selectedPerksMap.value[column] = perk;
+    emits("perkSelected", column, perk);
 }
 
 function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefined) {
     selectedMasterwork.value = masterwork;
+    emits("masterworkChanged", masterwork);
 }
 
 function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
     selectedMod.value = mod;
+    emits("modChanged", mod);
 }
 </script>
 

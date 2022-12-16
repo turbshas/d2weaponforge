@@ -17,3 +17,15 @@
 - weapon archetype filters
 - support for translations
 - selecting curated perk then toggling enhanced makes the icon disappear
+- fix recoil direction indicator when RD > 96
+- arrow indicator for stats
+- idea for comparison page:
+  - each weapon is 1 row
+  - stats only display numbers
+  - perks, intrinsic, origin, MW, and mod in a straight line on the right side
+  - icon + name/type on left side
+  - stats in middle
+  - what should stat arrows display? green only if highest value in list of weapons being compared?
+- create an ISelectedPerk that tracks info about the selected perk like if enhanced is used
+- fix backup mag - it currently just does +30 to the mag (and mag perks)
+- weapon mag size caps

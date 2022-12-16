@@ -15,12 +15,20 @@ const props = defineProps<{
     mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
+// TODO: should probably be in a persistent area so the config stays the same after changing which weapon is selected
 const hideRetired = ref(false);
+const showCraftedBonus = ref(false);
 
 const hideRetiredText = computed(() => hideRetired.value ? "Active" : "Inactive");
+const showCraftedBonusText = computed(() => showCraftedBonus.value ? "Active" : "Inactive");
+
 
 function onHideRetiredClicked() {
     hideRetired.value = !hideRetired.value;
+}
+
+function onShowCraftedBonusClicked() {
+    showCraftedBonus.value = !showCraftedBonus.value;
 }
 </script>
 
@@ -31,8 +39,12 @@ function onHideRetiredClicked() {
         <ExtrasListItem label="Hide Retired Perks">
             <button @click="onHideRetiredClicked">{{ hideRetiredText }}</button>
         </ExtrasListItem>
+        <!-- TODO: add tooltip here that explains what this means - +3 stat bonus for lvl 10 crafted with enhanced intrinsic -->
+        <ExtrasListItem label="Show Crafted Bonus">
+            <button @click="onShowCraftedBonusClicked">{{ showCraftedBonusText }}</button>
+        </ExtrasListItem>
         <AddToComparisons></AddToComparisons>
-        <DamageFalloff></DamageFalloff>
+        <DamageFalloff :weapon="weapon" :selected-perks="selectedPerks" :masterwork="masterwork" :mod="mod"></DamageFalloff>
         <ReloadSpeed></ReloadSpeed>
     </div>
 </template>

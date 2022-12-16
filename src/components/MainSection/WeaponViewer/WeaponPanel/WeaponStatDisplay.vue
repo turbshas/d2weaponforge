@@ -21,8 +21,18 @@ const name = computed(() => {
     return props.definition && props.definition.displayProperties.name;
 });
 
+const adjustedModifier = computed(() => {
+    if (!props.definition) return props.modifier;
+    if (props.definition.displayProperties.name === "Charge Time") return -Math.round(props.modifier * 3.3);
+    if (props.definition.displayProperties.name === "Draw Time") return -props.modifier * 4;
+    return props.modifier;
+});
+
 const total = computed(() => {
-    const value = props.value.value + props.modifier;
+    console.log("stat info:", props.definition, props.value, adjustedModifier.value);
+    const value = props.value.value + adjustedModifier.value;
+    // These values don't exist in the range 0-100 so don't need to be clamped.
+    if (statDisplayType.value === StatDisplayType.Number) return value;
     return value < 0 ? 0 : (value > 100 ? 100 : value);
 });
 const modifierSign = computed(() => props.modifier > 0 ? "+" : "");

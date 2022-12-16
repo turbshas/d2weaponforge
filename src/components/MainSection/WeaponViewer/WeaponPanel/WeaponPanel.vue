@@ -14,6 +14,7 @@ const shownStats: { [statName: string]: boolean } = {
     "Aim Assistance": true,
     "Airborne Effectiveness": true,
     "Charge Time": true,
+    "Draw Time": true,
     "Impact": true,
     "Handling": true,
     "Magazine": true,
