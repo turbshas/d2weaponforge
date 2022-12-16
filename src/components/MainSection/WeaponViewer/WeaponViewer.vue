@@ -5,12 +5,13 @@ import ExtrasPanel from './ExtrasPanel/ExtrasPanel.vue';
 import MasterworkPanel from './MasterworkPanel.vue';
 import ModsPanel from './ModsPanel.vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
-import { ref, watch } from 'vue';
-import { computed } from '@vue/reactivity';
 import type { IPerkOption } from '@/data/types';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined
+    selectedPerks: (IPerkOption | undefined)[],
+    masterwork: DestinyInventoryItemDefinition | undefined,
+    mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const emits = defineEmits<{
@@ -19,26 +20,15 @@ const emits = defineEmits<{
     (e: "modChanged", mod: DestinyInventoryItemDefinition | undefined): void,
 }>();
 
-watch(() => props.weapon, () => { selectedPerksMap.value = {}; })
-
-const selectedPerksMap = ref<{ [column: number]: IPerkOption | undefined }>({ });
-const selectedMasterwork = ref<DestinyInventoryItemDefinition | undefined>(undefined);
-const selectedMod = ref<DestinyInventoryItemDefinition | undefined>(undefined);
-
-const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMap.value[1], selectedPerksMap.value[2], selectedPerksMap.value[3], selectedPerksMap.value[4]]);
-
 function onPerkSelected(column: number, perk: IPerkOption | undefined) {
-    selectedPerksMap.value[column] = perk;
     emits("perkSelected", column, perk);
 }
 
 function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefined) {
-    selectedMasterwork.value = masterwork;
     emits("masterworkChanged", masterwork);
 }
 
 function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
-    selectedMod.value = mod;
     emits("modChanged", mod);
 }
 </script>
@@ -49,15 +39,15 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
             <WeaponPanel
                 :weapon="weapon"
                 :selected-perks="selectedPerks"
-                :masterwork="selectedMasterwork"
-                :mod="selectedMod"
+                :masterwork="masterwork"
+                :mod="mod"
             ></WeaponPanel>
             <div class="extras">
                 <ExtrasPanel
                     :weapon="weapon"
                     :selected-perks="selectedPerks"
-                    :masterwork="selectedMasterwork"
-                    :mod="selectedMod"
+                    :masterwork="masterwork"
+                    :mod="mod"
                 ></ExtrasPanel>
                 <div class="mods-masterwork">
                     <MasterworkPanel :weapon="weapon" @masterwork-changed="onMasterworkChanged"></MasterworkPanel>
@@ -65,7 +55,13 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
                 </div>
             </div>
         </div>
-        <PerksPanel :weapon="weapon" @perk-selected="onPerkSelected"></PerksPanel>
+        <PerksPanel
+            :weapon="weapon"
+            :selected-perks="selectedPerks"
+            :masterwork="masterwork"
+            :mod="mod"
+            @perk-selected="onPerkSelected"
+        ></PerksPanel>
     </div>
 </template>
 

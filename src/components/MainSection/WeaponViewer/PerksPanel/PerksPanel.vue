@@ -8,17 +8,14 @@ import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
+    selectedPerks: (IPerkOption | undefined)[],
+    masterwork: DestinyInventoryItemDefinition | undefined,
+    mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const emits = defineEmits<{
     (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
 }>();
-
-const selectedPerks = ref<{ [column: number]: IPerkOption | undefined }>({});
-
-watch(() => props.weapon, () => {
-    selectedPerks.value = {};
-});
 
 const backgroundUrl = computed(() => PerkPanelBackground);
 
@@ -114,7 +111,6 @@ const curatedPerks = computed(() => {
 const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
 
 function onPerkSelected(column: number, perk: IPerkOption | undefined) {
-    selectedPerks.value[column] = perk;
     emits("perkSelected", column, perk);
 }
 </script>

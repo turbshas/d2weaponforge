@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
+import { computed } from "@vue/reactivity";
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import UrlManager from "./components/UrlManager.vue";
 import { destinyDataService } from "./data/destinyDataService";
 import { PageSelection, type IPerkOption } from "./data/types";
 
 const selectedPage = ref(PageSelection.Home);
 const selectedWeapon = ref<DestinyInventoryItemDefinition | undefined>(undefined);
-const selectedPerks = ref<(IPerkOption | undefined)[]>([undefined, undefined, undefined, undefined, undefined]);
+const selectedPerksMap = ref<{ [column: number]: IPerkOption | undefined }>({ });
 const selectedMasterwork = ref<DestinyInventoryItemDefinition | undefined>(undefined);
 const selectedMod = ref<DestinyInventoryItemDefinition | undefined>(undefined);
+
+const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMap.value[1], selectedPerksMap.value[2], selectedPerksMap.value[3], selectedPerksMap.value[4]]);
 
 onMounted(() => {
     destinyDataService.initialize();
@@ -24,10 +27,13 @@ function onTabSelected(tab: PageSelection) {
 function onWeaponSelected(weapon: DestinyInventoryItemDefinition | undefined) {
     selectedPage.value = PageSelection.Weapon;
     selectedWeapon.value = weapon;
+    selectedPerksMap.value = {};
+    selectedMasterwork.value = undefined;
+    selectedMod.value = undefined;
 }
 
 function onPerkSelected(column: number, perk: IPerkOption | undefined) {
-    selectedPerks.value[column] = perk;
+    selectedPerksMap.value[column] = perk;
 }
 
 function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefined) {
@@ -35,6 +41,28 @@ function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefi
 }
 
 function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
+    selectedMod.value = mod;
+}
+
+function onUrlParsed(
+    weapon: DestinyInventoryItemDefinition | undefined,
+    perkOptions: (IPerkOption | undefined)[],
+    masterwork: DestinyInventoryItemDefinition | undefined,
+    mod: DestinyInventoryItemDefinition | undefined
+) {
+    selectedWeapon.value = weapon;
+    selectedPerksMap.value = {};
+    selectedMasterwork.value = undefined;
+    selectedMod.value = undefined;
+    if (!weapon) {
+        return;
+    }
+
+    selectedPage.value = PageSelection.Weapon;
+    for (let i = 0; i < perkOptions.length; i++) {
+        selectedPerksMap.value[i] = perkOptions[i];
+    }
+    selectedMasterwork.value = masterwork;
     selectedMod.value = mod;
 }
 </script>
@@ -46,16 +74,16 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
             :selected-perks="selectedPerks"
             :masterwork="selectedMasterwork"
             :mod="selectedMod"
-            @weapon-changed="onWeaponSelected"
-            @perk-selected="onPerkSelected"
-            @masterwork-changed="onMasterworkChanged"
-            @mod-changed="onModChanged"
+            @url-parsed="onUrlParsed"
         ></UrlManager>
         <Sidebar class="sidebar" @tab-selected="onTabSelected" @weapon-selected="onWeaponSelected"></Sidebar>
         <MainPage
             class="main"
             :page="selectedPage"
             :weapon="selectedWeapon"
+            :selected-perks="selectedPerks"
+            :masterwork="selectedMasterwork"
+            :mod="selectedMod"
             @perk-selected="onPerkSelected"
             @masterwork-changed="onMasterworkChanged"
             @mod-changed="onModChanged"

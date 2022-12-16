@@ -10,6 +10,9 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 const props = defineProps<{
     page: PageSelection,
     weapon: DestinyInventoryItemDefinition | undefined,
+    selectedPerks: (IPerkOption | undefined)[],
+    masterwork: DestinyInventoryItemDefinition | undefined,
+    mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const emits = defineEmits<{
@@ -56,6 +59,9 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
             class="item"
             v-else-if="isWeaponSelected"
             :weapon="weapon"
+            :selected-perks="selectedPerks"
+            :masterwork="masterwork"
+            :mod="mod"
             @perk-selected="onPerkSelected"
             @masterwork-changed="onMasterworkChanged"
             @mod-changed="onModChanged"

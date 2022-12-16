@@ -3,7 +3,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import type { IPerkOption } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
-import { onMounted, watch } from 'vue';
+import { watch } from 'vue';
 
 
 const props = defineProps<{
@@ -13,14 +13,16 @@ const props = defineProps<{
     mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
+// TODO: might need to convert these to one big event with all data at once
 const emits = defineEmits<{
-    (e: "weaponChanged", weapon: DestinyInventoryItemDefinition | undefined): void,
-    (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
-    (e: "masterworkChanged", masterwork: DestinyInventoryItemDefinition | undefined): void,
-    (e: "modChanged", mod: DestinyInventoryItemDefinition | undefined): void,
+    (e: "urlParsed",
+        weapon: DestinyInventoryItemDefinition | undefined,
+        perks: (IPerkOption | undefined)[],
+        masterwork: DestinyInventoryItemDefinition | undefined,
+        mod: DestinyInventoryItemDefinition | undefined,
+    ): void,
 }>();
 
-const weaponName = computed(() => props.weapon?.displayProperties.name);
 const weaponHash = computed(() => props.weapon?.hash);
 const perkHashes = computed(() => props.selectedPerks.map(p => p?.perk.hash));
 const perk1Hash = computed(() => getPerkHashAtIndex(0));
@@ -51,7 +53,7 @@ function onGameDataChanged() {
     const perkQuery = url.searchParams.get("s");
     if (perkQuery) {
         const perkHashStrings = perkQuery.split(",");
-        const parsedHashes = perkHashStrings.map(Number.parseInt);
+        const parsedHashes = perkHashStrings.map(s => Number.parseInt(s, 10));
         for (let i = 0; i < urlPerkHashes.length; i++) {
             if (parsedHashes.length > i && parsedHashes[i]) {
                 urlPerkHashes[i] = parsedHashes[i];
@@ -67,24 +69,35 @@ function onGameDataChanged() {
         if (!h) return undefined;
         return destinyDataService.getItemDefinition(h);
     });
+    // Perk 1, 2, 3, 4, Origin
     const perks = [allPerks[0], allPerks[1], allPerks[2], allPerks[3], allPerks[6]];
     const masterwork = allPerks[4];
     const mod = allPerks[5];
 
-    emits("weaponChanged", weapon);
-    for (let i = 0; i < perks.length; i++) {
-        const perk = perks[i];
-        if (perk) {
-            // TODO: need to convert perk to IPerkOption to send event
-            emits("perkSelected", i, undefined);
+    const perkSlotOptions = destinyDataService.getPerkOptionsForWeapon(weapon);
+    const allPerkOptions = perkSlotOptions.reduce<IPerkOption[]>((total, current) => { total.push(...current.options); return total; }, []);
+
+    const perkOptionLookup: { [hash: number]: IPerkOption } = {};
+    const enhancedPerksLookup: { [hash: number]: boolean } = {};
+    for (const perkOption of allPerkOptions) {
+        perkOptionLookup[perkOption.perk.hash] = perkOption;
+        if (perkOption.enhancedPerk) {
+            perkOptionLookup[perkOption.enhancedPerk.hash] = perkOption;
+            enhancedPerksLookup[perkOption.enhancedPerk.hash] = true;
         }
     }
-    if (masterwork) {
-        emits("masterworkChanged", masterwork);
-    }
-    if (mod) {
-        emits("modChanged", mod);
-    }
+
+    const perkOptions = perks.map((p, i) => {
+        if (p && perkOptionLookup[p.hash]) {
+            // TODO: need to convert perk to IPerkOption to send event
+            const perkOption = perkOptionLookup[p.hash];
+            if (enhancedPerksLookup[p.hash]) {
+                // TODO: enhanced selection is determined by a different interface - need to figure out what to do here
+            }
+            return perkOption;
+        }
+    });
+    emits("urlParsed", weapon, perkOptions, masterwork, mod);
 }
 
 watch(() => path.value, onPathChanged);

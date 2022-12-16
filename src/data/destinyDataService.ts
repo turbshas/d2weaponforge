@@ -17,6 +17,7 @@ import type {
 } from "bungie-api-ts/destiny2/interfaces";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import { reactive } from "vue";
+import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from "./types";
 import { hashMapToArray } from "./util";
 
 interface Destiny2GameData {
@@ -69,25 +70,25 @@ class DestinyDataService {
     }
 
     public get weapons() {
-        return this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.weapons : [];
+        return this.gameData ? this.gameData.weapons : [];
     }
 
     public get damageTypes() {
-        return this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.damageTypes : [];
+        return this.gameData ? this.gameData.damageTypes : [];
     }
 
     public get itemCategories() {
-        return this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.itemCategories : [];
+        return this.gameData ? this.gameData.itemCategories : [];
     }
 
     public get seasons() {
-        const sorted = this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.seasons : []
+        const sorted = this.gameData ? this.gameData.seasons : []
         sorted.sort((a, b) => b.seasonNumber - a.seasonNumber);
         return sorted;
     }
 
     public get itemTiers() {
-        return this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.itemTierTypes : [];
+        return this.gameData ? this.gameData.itemTierTypes : [];
     }
 
     public initialize = async () => {
@@ -107,54 +108,118 @@ class DestinyDataService {
     }
 
     public getDamageType = (hash: number) => {
-        return this.gameDataReactiveWrapper.gameData?.damageTypesLookup[hash];
+        return this.gameData?.damageTypesLookup[hash];
     }
 
     public getStatDefinition = (statHash: number) => {
-        return this.gameDataReactiveWrapper.gameData?.statsLookup[statHash];
+        return this.gameData?.statsLookup[statHash];
     }
 
     public getItemDefinition = (itemHash: number) => {
-        return this.gameDataReactiveWrapper.gameData?.itemLookup[itemHash];
+        return this.gameData?.itemLookup[itemHash];
     }
 
     public getItemCategoryDefinition = (itemCategoryHash: number) => {
-        return this.gameDataReactiveWrapper.gameData?.itemCategoriesLookup[itemCategoryHash];
+        return this.gameData?.itemCategoriesLookup[itemCategoryHash];
     }
 
     public getItemTierDefinition = (itemTierHash: number) => {
-        return this.gameDataReactiveWrapper.gameData?.itemTierTypesLookup[itemTierHash];
+        return this.gameData?.itemTierTypesLookup[itemTierHash];
     }
 
     public getPlugSetDefinition = (plugSetHash: number) => {
-        return this.gameDataReactiveWrapper.gameData?.plugSetLookup[plugSetHash];
+        return this.gameData?.plugSetLookup[plugSetHash];
     }
     
     public getSocketTypeDefinition = (socketTypeHash: number) => {
-        return this.gameDataReactiveWrapper.gameData?.socketTypeLookup[socketTypeHash];
+        return this.gameData?.socketTypeLookup[socketTypeHash];
     }
 
     public getSocketCategoryDefinition = (socketCategoryHash: number) => {
-        return this.gameDataReactiveWrapper.gameData?.socketCategoryLookup[socketCategoryHash];
+        return this.gameData?.socketCategoryLookup[socketCategoryHash];
     }
 
     public isIntrinsicPerkSocketCategory = (perkItemHash: number) => {
-        if (!this.gameDataReactiveWrapper.gameData) return false;
-        return this.gameDataReactiveWrapper.gameData.weaponIntrinsicCategory.hash === perkItemHash;
+        return !!this.gameData && (this.gameData.weaponIntrinsicCategory.hash === perkItemHash);
     }
 
     public isWeaponPerkSocketCategory = (perkItemHash: number) => {
-        if (!this.gameDataReactiveWrapper.gameData) return false;
-        return this.gameDataReactiveWrapper.gameData.weaponPerkCategory.hash === perkItemHash;
+        return !!this.gameData && (this.gameData.weaponPerkCategory.hash === perkItemHash);
     }
 
     public isOriginPerkItemCategory = (itemCategoryHash: number) => {
-        if (!this.gameDataReactiveWrapper.gameData) return false;
-        return this.gameDataReactiveWrapper.gameData.originPerkCategory.hash === itemCategoryHash;
+        return !!this.gameData && (this.gameData.originPerkCategory.hash === itemCategoryHash);
     }
 
     public isTrackerPlugCategory = (plug: DestinyPlugWhitelistEntryDefinition) => {
         return plug.categoryIdentifier === "v400.plugs.weapons.masterworks.trackers";
+    }
+
+    public getPerkOptionsForWeapon = (weapon: DestinyInventoryItemDefinition) => {
+        const weaponSockets = weapon.sockets?.socketEntries || [];
+        const weaponSocketCategories = weapon.sockets?.socketCategories || [];
+
+        const weaponPerkSocketCategory = weaponSocketCategories.find(c => this.isWeaponPerkSocketCategory(c.socketCategoryHash));
+        const weaponPerkSockets = weaponPerkSocketCategory ? weaponPerkSocketCategory.socketIndexes.map(i => weaponSockets[i]) : [];
+
+        const perkSocketsNoTracker = weaponPerkSockets.filter(s => {
+            const type = this.getSocketTypeDefinition(s.socketTypeHash);
+            return type && !type.plugWhitelist.some(this.isTrackerPlugCategory);
+        });
+
+        // Either one of the other should be defined of randomizedPlugSetHash and reusablePlugSetHash
+        const perkPlugSets = perkSocketsNoTracker.map(ps => this.getPlugSetDefinition(ps.randomizedPlugSetHash || ps.reusablePlugSetHash!));
+        const perkSlotOptions = perkPlugSets.map(this.getPerkOptionsFromPlugSet);
+        return perkSlotOptions;
+    }
+
+    private getPerkOptionsFromPlugSet = (plugSet: DestinyPlugSetDefinition | undefined) => {
+        const perkOptionsByName: { [name: string]: DestinyInventoryItemDefinition[] } = {};
+        const currentlyCanRollMap: { [plugItemHash: number]: boolean } = {};
+        const seenPlugItems: { [plugItemHash: number]: boolean } = {};
+
+        // Remove duplicates and group by name to capture normal + enhanced perks together
+        for (const plugItem of plugSet?.reusablePlugItems || []) {
+            if (seenPlugItems[plugItem.plugItemHash]) continue;
+            // TODO: Apparently everything works without this so figure that out
+            // seenPlugItems[plugItem.plugItemHash] = true;
+            currentlyCanRollMap[plugItem.plugItemHash] = plugItem.currentlyCanRoll;
+
+            const definition = destinyDataService.getItemDefinition(plugItem.plugItemHash);
+            if (!definition) continue;
+
+            const name = definition.displayProperties.name;
+            if (!perkOptionsByName[name]) {
+                perkOptionsByName[name] = [definition];
+            } else {
+                perkOptionsByName[name].push(definition);
+            }
+        }
+
+        const perkOptions: IPerkOption[] = [];
+        for (const key in perkOptionsByName) {
+            const options = perkOptionsByName[key];
+            const perk = options.find(o => {
+                const tier = destinyDataService.getItemTierDefinition(o.inventory!.tierTypeHash);
+                return !!tier && (tier.index === ItemTierIndex.Common);
+            });
+            if (!perk) continue; // If no non-enhanced version, just ignore.
+
+            const perkOption: IPerkOption = {
+                perk: perk,
+                enhancedPerk: options.find(o => {
+                    const tier = destinyDataService.getItemTierDefinition(o.inventory!.tierTypeHash);
+                    return !!tier && tier.index === ItemTierIndex.Uncommon;
+                }),
+                currentlyCanRoll: currentlyCanRollMap[perk.hash],
+            };
+            perkOptions.push(perkOption);
+        }
+
+        const slotOptions: IPerkSlotOptions = {
+            options: perkOptions,
+        };
+        return slotOptions;
     }
 
     // Notes
@@ -297,10 +362,12 @@ class DestinyDataService {
             weaponPerkCategory: weaponPerkCategory!,
         };
 
-        // Get list of weapons
+        // Get list of weapons and perks
         for (const key in manifestSlice.DestinyInventoryItemDefinition) {
             const item = manifestSlice.DestinyInventoryItemDefinition[key];
-            if (!item.redacted && item.displayProperties.name && item.itemCategoryHashes && item.itemCategoryHashes.includes(weaponCategory!.hash)) {
+            if (item.redacted) continue;
+
+            if (item.displayProperties.name && item.itemCategoryHashes && item.itemCategoryHashes.includes(weaponCategory!.hash)) {
                 gameData.weapons.push(item);
                 gameData.weaponsLookup[key] = item;
             }
