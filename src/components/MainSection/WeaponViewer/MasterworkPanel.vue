@@ -6,6 +6,7 @@ import { watch } from 'vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
+    masterwork: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const emits = defineEmits<{
@@ -42,11 +43,8 @@ const filteredMasterworkOptions = computed(() => {
 const masterworkOptionsByStatName = computed(() => {
     const masterworks: { [statName: string]: DestinyInventoryItemDefinition[] } = {};
     for (const plugItem of filteredMasterworkOptions.value) {
-        const increasedStat = plugItem.investmentStats.find(stat => stat.value > 0);
-        if (!increasedStat) continue;
-        const statDefinition = destinyDataService.getStatDefinition(increasedStat.statTypeHash);
-        if (!statDefinition) continue;
-        const name = statDefinition.displayProperties.name
+        const name = getStatNameForMasterwork(plugItem);
+        if (!name) continue;
         if (!masterworks[name]) {
             masterworks[name] = [];
         }
@@ -55,15 +53,29 @@ const masterworkOptionsByStatName = computed(() => {
     return masterworks;
 });
 
+function getStatNameForMasterwork(masterwork: DestinyInventoryItemDefinition) {
+    const increasedStat = masterwork.investmentStats.find(stat => stat.value > 0);
+    if (!increasedStat) return undefined;
+    const statDefinition = destinyDataService.getStatDefinition(increasedStat.statTypeHash);
+    if (!statDefinition) return undefined;
+    return statDefinition.displayProperties.name
+}
+
 const masterworkStatNames = computed(() => Object.keys(masterworkOptionsByStatName.value));
 
-const selectedMasterworkName = ref(masterworkStatNames.value.length > 0 ? masterworkStatNames.value[0] : undefined);
-const masterworkLevel = ref(0);
-
-watch(() => props.weapon, () => {
-    selectedMasterworkName.value = masterworkStatNames.value.length > 0 ? masterworkStatNames.value[0] : undefined;
-    masterworkLevel.value = 0;
-    emits("masterworkChanged", undefined);
+const selectedMasterworkStatName = computed(() => {
+    if (!props.masterwork) {
+        return masterworkStatNames.value.length > 0 ? masterworkStatNames.value[0] : undefined;
+    } else {
+        return getStatNameForMasterwork(props.masterwork);
+    }
+});
+const masterworkLevel = computed(() => {
+    if (!props.masterwork || !selectedMasterworkStatName.value) return 0;
+    const masterworkOptions = masterworkOptionsByStatName.value[selectedMasterworkStatName.value];
+    const masterworkIndex = masterworkOptions.findIndex(mw => mw.hash === props.masterwork!.hash);
+    // Masterworks are 1-indexed, and level 0 masterworks don't actually exist, so would return -1 anyway.
+    return masterworkIndex + 1;
 });
 
 function emitMasterworkChange(statName: string, level: number) {
@@ -75,14 +87,17 @@ function emitMasterworkChange(statName: string, level: number) {
 }
 
 function onMasterworkChanged(statName: string) {
-    if (selectedMasterworkName.value === statName) return;
-    selectedMasterworkName.value = statName;
-    emitMasterworkChange(selectedMasterworkName.value, masterworkLevel.value);
+    if (selectedMasterworkStatName.value === statName) return;
+    emitMasterworkChange(statName, masterworkLevel.value);
 }
 
-function onMasterworkLevelChanged() {
-    if (!selectedMasterworkName.value) return;
-    emitMasterworkChange(selectedMasterworkName.value, masterworkLevel.value);
+function onMasterworkLevelChanged(event: Event) {
+    if (!selectedMasterworkStatName.value) return;
+    if (!event || !event.target) return;
+    const target = event.target as HTMLInputElement;
+    if (!target.value || (!target.valueAsNumber && target.valueAsNumber !== 0)) return;
+    const newValue = target.valueAsNumber;
+    emitMasterworkChange(selectedMasterworkStatName.value, newValue);
 }
 </script>
 
