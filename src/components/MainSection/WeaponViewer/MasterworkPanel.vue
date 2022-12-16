@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
-import { computed, ref } from '@vue/reactivity';
+import { computed, ref, watch } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
-import { watch } from 'vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -63,31 +62,40 @@ function getStatNameForMasterwork(masterwork: DestinyInventoryItemDefinition) {
 
 const masterworkStatNames = computed(() => Object.keys(masterworkOptionsByStatName.value));
 
-const selectedMasterworkStatName = computed(() => {
+const selectedMasterworkStatName = ref(initSelectedStatName());
+const masterworkLevel = ref(initSelectedMasterworkLevel());
+watch(() => props.masterwork, () => {
+    selectedMasterworkStatName.value = initSelectedStatName();
+    masterworkLevel.value = initSelectedMasterworkLevel();
+});
+
+function initSelectedStatName() {
     if (!props.masterwork) {
         return masterworkStatNames.value.length > 0 ? masterworkStatNames.value[0] : undefined;
     } else {
         return getStatNameForMasterwork(props.masterwork);
     }
-});
-const masterworkLevel = computed(() => {
+}
+
+function initSelectedMasterworkLevel() {
     if (!props.masterwork || !selectedMasterworkStatName.value) return 0;
     const masterworkOptions = masterworkOptionsByStatName.value[selectedMasterworkStatName.value];
     const masterworkIndex = masterworkOptions.findIndex(mw => mw.hash === props.masterwork!.hash);
     // Masterworks are 1-indexed, and level 0 masterworks don't actually exist, so would return -1 anyway.
     return masterworkIndex + 1;
-});
+}
 
 function emitMasterworkChange(statName: string, level: number) {
     const masterworkList = masterworkOptionsByStatName.value[statName];
     // A value of 0 basically disables the masterwork, set to undefined
     const masterwork = level > 0 ? masterworkList[level - 1] : undefined;
-    console.log("masterwork change", masterworkList);
     emits("masterworkChanged", masterwork);
 }
 
 function onMasterworkChanged(statName: string) {
     if (selectedMasterworkStatName.value === statName) return;
+    // Needed in the case the MW is changed when the level is still 0.
+    selectedMasterworkStatName.value = statName;
     emitMasterworkChange(statName, masterworkLevel.value);
 }
 

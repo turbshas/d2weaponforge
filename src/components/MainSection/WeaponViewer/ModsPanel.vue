@@ -5,13 +5,12 @@ import { computed, ref } from 'vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
+    mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const emits = defineEmits<{
     (e: "modChanged", mod: DestinyInventoryItemDefinition | undefined): void
 }>();
-
-const currentMod = ref<DestinyInventoryItemDefinition | undefined>(undefined);
 
 const weaponSocketCategories = computed(() => props.weapon?.sockets?.socketCategories || []);
 const weaponSockets = computed(() => props.weapon?.sockets?.socketEntries || []);
@@ -41,12 +40,9 @@ function getModIconUrl(mod: DestinyInventoryItemDefinition) {
 }
 
 function onModClicked(mod: DestinyInventoryItemDefinition) {
-    if (mod.hash === currentMod.value?.hash) {
-        currentMod.value = undefined;
-    } else {
-        currentMod.value = mod;
-    }
-    emits("modChanged", currentMod.value);
+    // Selecting the current mod will de-select it
+    const newMod = mod.hash === props.mod?.hash ? undefined : mod;
+    emits("modChanged", newMod);
 }
 </script>
 
