@@ -8,17 +8,20 @@ import type { PageSelection } from "@/data/types";
 import { ref } from "@vue/reactivity";
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 
-const emit = defineEmits(["tab-selected", "weapon-selected"]);
+const emit = defineEmits<{
+    (e: "weaponSelected", weapon: DestinyInventoryItemDefinition): void,
+    (e: "tabSelected", tab: PageSelection): void,
+}>();
 
 const viewingFilter = ref(false);
 const searchString = ref("");
 
 function onTabSelected(tab: PageSelection) {
-    emit("tab-selected", tab);
+    emit("tabSelected", tab);
 }
 
 function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
-    emit("weapon-selected", weapon);
+    emit("weaponSelected", weapon);
 }
 
 function onFilterToggled() {

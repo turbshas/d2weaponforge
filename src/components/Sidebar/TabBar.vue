@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { PageSelection } from '@/data/types';
 
-const emit = defineEmits(["tab-selected"]);
+const emit = defineEmits<{
+    (e: "tabSelected", tab: PageSelection): void,
+}>();
 
 const tabs = [PageSelection.Home, PageSelection.Glossary, PageSelection.Compare];
 
 function onTabClick(tab: PageSelection) {
-    emit("tab-selected", tab);
+    emit("tabSelected", tab);
 }
 </script>
 

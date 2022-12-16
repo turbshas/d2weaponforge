@@ -64,6 +64,10 @@ class DestinyDataService {
 
     private gameDataReactiveWrapper: GameDataReactiveWrapper = reactive<GameDataReactiveWrapper>({ gameData: null });
 
+    public get gameData() {
+        return this.gameDataReactiveWrapper.gameData;
+    }
+
     public get weapons() {
         return this.gameDataReactiveWrapper.gameData ? this.gameDataReactiveWrapper.gameData.weapons : [];
     }

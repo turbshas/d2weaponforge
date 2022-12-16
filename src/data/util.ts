@@ -7,3 +7,22 @@ export function hashMapToArray<T>(hashMap: { [hash: number]: T }) {
     }
     return ret;
 }
+
+export class Signal<T = undefined> {
+    private nextId: number = 1;
+    private callbacks: { [id: number]: (data: T) => void } = {};
+
+    public subscribe = (callback: (data: T) => void) => {
+        const id = this.nextId;
+        this.nextId += 1;
+        this.callbacks[id] = callback;
+        return () => { delete this.callbacks[id]; };
+    }
+
+    public publish = (data: T) => {
+        for (const key in this.callbacks) {
+            const callback = this.callbacks[key];
+            callback(data);
+        }
+    }
+}

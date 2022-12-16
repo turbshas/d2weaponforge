@@ -6,7 +6,9 @@ import { computed, ref } from "vue";
 import FilterWindow from "./Filter/FilterWindow.vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
 
-const emit = defineEmits(["weapon-selected"]);
+const emit = defineEmits<{
+    (e: "weaponSelected", weapon: DestinyInventoryItemDefinition): void,
+}>();
 
 const props = defineProps<{
     viewingFilter: boolean,
@@ -58,7 +60,7 @@ function onFiltersApplied(newFilters: Record<FilterCategory, FilterPredicate[]>)
 }
 
 function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
-    emit("weapon-selected", weapon);
+    emit("weaponSelected", weapon);
 }
 </script>
 

@@ -39,7 +39,9 @@ const path = computed(() => {
     return `${basePath}?${perkQuery}`;
 });
 
-onMounted(async () => {
+watch(() => destinyDataService.gameData, onGameDataChanged);
+
+function onGameDataChanged() {
     const url = new URL(window.location.href);
     if (!url.pathname) return;
     const weaponHashString = url.pathname.replace("/w/", "").replace("/", "");
@@ -57,8 +59,10 @@ onMounted(async () => {
         }
     }
 
-    await destinyDataService.manifestLoaded;
     const weapon = destinyDataService.getItemDefinition(urlWeaponHash);
+    // If weapon doesn't exist, the other values aren't valid.
+    if (!weapon) return
+
     const allPerks = urlPerkHashes.map(h => {
         if (!h) return undefined;
         return destinyDataService.getItemDefinition(h);
@@ -71,6 +75,7 @@ onMounted(async () => {
     for (let i = 0; i < perks.length; i++) {
         const perk = perks[i];
         if (perk) {
+            // TODO: need to convert perk to IPerkOption to send event
             emits("perkSelected", i, undefined);
         }
     }
@@ -80,7 +85,7 @@ onMounted(async () => {
     if (mod) {
         emits("modChanged", mod);
     }
-});
+}
 
 watch(() => path.value, onPathChanged);
 

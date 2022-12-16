@@ -21,12 +21,7 @@ function onTabSelected(tab: PageSelection) {
     selectedPage.value = tab;
 }
 
-function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
-    // TODO: Putting weapon/perk info in url
-    // Put this somewhere better, capture weapon, perk, mw, and mod?
-    // Can probably put it in a component and parse url during initialization, then fire events when the manifest finishes loading
-    const path = `/w/${weapon.hash}`;
-    window.history.pushState({ pageTitle: `D2Gunsmith - ${weapon.displayProperties.name}`, path: path, }, "", path);
+function onWeaponSelected(weapon: DestinyInventoryItemDefinition | undefined) {
     selectedPage.value = PageSelection.Weapon;
     selectedWeapon.value = weapon;
 }
@@ -51,6 +46,10 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
             :selected-perks="selectedPerks"
             :masterwork="selectedMasterwork"
             :mod="selectedMod"
+            @weapon-changed="onWeaponSelected"
+            @perk-selected="onPerkSelected"
+            @masterwork-changed="onMasterworkChanged"
+            @mod-changed="onModChanged"
         ></UrlManager>
         <Sidebar class="sidebar" @tab-selected="onTabSelected" @weapon-selected="onWeaponSelected"></Sidebar>
         <MainPage
