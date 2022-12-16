@@ -24,7 +24,6 @@ const emits = defineEmits<{
 }>();
 
 const weaponHash = computed(() => props.weapon?.hash);
-const perkHashes = computed(() => props.selectedPerks.map(p => p?.perk.hash));
 const perk1Hash = computed(() => getPerkHashAtIndex(0));
 const perk2Hash = computed(() => getPerkHashAtIndex(1));
 const perk3Hash = computed(() => getPerkHashAtIndex(2));
@@ -89,10 +88,9 @@ function onGameDataChanged() {
 
     const perkOptions = perks.map((p, i) => {
         if (p && perkOptionLookup[p.hash]) {
-            // TODO: need to convert perk to IPerkOption to send event
             const perkOption = perkOptionLookup[p.hash];
             if (enhancedPerksLookup[p.hash]) {
-                // TODO: enhanced selection is determined by a different interface - need to figure out what to do here
+                perkOption.useEnhanced = true;
             }
             return perkOption;
         }
@@ -107,9 +105,11 @@ function onPathChanged() {
 }
 
 function getPerkHashAtIndex(index: number) {
-    if (perkHashes.value.length <= index) return 0;
-    const perkHash = perkHashes.value[index];
-    return perkHash || 0;
+    if (props.selectedPerks.length <= index) return 0;
+    const perkOption = props.selectedPerks[index];
+    if (!perkOption) return 0;
+    const perk = perkOption.useEnhanced ? perkOption.enhancedPerk : perkOption.perk;
+    return perk?.hash || 0;
 }
 </script>
 

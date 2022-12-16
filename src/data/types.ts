@@ -37,6 +37,7 @@ export interface IPerkOption {
     perk: DestinyInventoryItemDefinition;
     enhancedPerk?: DestinyInventoryItemDefinition;
     currentlyCanRoll: boolean;
+    useEnhanced: boolean;
 }
 
 export interface IPerkSlotOptions {

@@ -3,9 +3,8 @@ import WeaponIcon from '@/components/WeaponIcon.vue';
 import { destinyDataService } from '@/data/destinyDataService';
 import type { IPerkOption } from '@/data/types';
 import { hashMapToArray } from '@/data/util';
-import { computed, ref } from '@vue/reactivity';
+import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
-import { watch } from 'vue';
 import SelectedPerks from './SelectedPerks.vue';
 import WeaponStatBlock from './WeaponStatBlock.vue';
 
@@ -32,34 +31,6 @@ const props = defineProps<{
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
 }>();
-
-const isColumnEnhanced = ref<{ [column: number]: boolean }>({});
-
-watch(() => props.weapon, () => {
-    isColumnEnhanced.value = {};
-});
-
-watch(() => props.selectedPerks, (newValue, oldValue) => {
-    if (newValue.length < 3 || oldValue.length < 3) {
-        isColumnEnhanced.value = {};
-        return;
-    }
-    const perk3Old = oldValue[2];
-    const perk3New = newValue[2];
-    if (perk3Old?.perk.hash !== perk3New?.perk.hash) {
-        isColumnEnhanced.value[2] = false;
-    }
-
-    if (newValue.length < 4 || oldValue.length < 4) {
-        isColumnEnhanced.value[3] = false;
-        return;
-    }
-    const perk4Old = oldValue[3];
-    const perk4New = newValue[3];
-    if (perk4Old?.perk.hash !== perk4New?.perk.hash) {
-        isColumnEnhanced.value[3] = false;
-    }
-});
 
 const screenshot = computed(() => {
     return props.weapon ? destinyDataService.getImageUrl(props.weapon.screenshot) : undefined;
@@ -97,16 +68,21 @@ const filteredStats = computed(() => {
 
 const firstColumnPerk = computed(() => props.selectedPerks.length > 0 ? props.selectedPerks[0]?.perk : undefined);
 const secondColumnPerk = computed(() => props.selectedPerks.length > 1 ? props.selectedPerks[1]?.perk : undefined);
+
+const thirdColumnPerkOption = computed(() => props.selectedPerks.length > 2 ? props.selectedPerks[2] : undefined);
+const isThirdEnhanced = computed(() => !!thirdColumnPerkOption.value && thirdColumnPerkOption.value.useEnhanced);
 const thirdColumnPerk = computed(() => {
-    if (props.selectedPerks.length <= 2 || !props.selectedPerks[2]) return undefined;
-    return isColumnEnhanced.value[2] ? props.selectedPerks[2].enhancedPerk: props.selectedPerks[2].perk;
+    if (!thirdColumnPerkOption.value) return undefined;
+    return isThirdEnhanced.value ? thirdColumnPerkOption.value.enhancedPerk : thirdColumnPerkOption.value.perk;
 });
-const isThirdEnhanced = computed(() => !!isColumnEnhanced.value[2]);
+
+const fourthColumnPerkOption = computed(() => props.selectedPerks.length > 3 ? props.selectedPerks[3] : undefined);
+const isFourthEnhanced = computed(() => !!fourthColumnPerkOption.value && fourthColumnPerkOption.value.useEnhanced);
 const fourthColumnPerk = computed(() => {
-    if (props.selectedPerks.length <= 3 || !props.selectedPerks[3]) return undefined;
-    return isColumnEnhanced.value[3] ? props.selectedPerks[3].enhancedPerk: props.selectedPerks[3].perk;
+    if (!fourthColumnPerkOption.value) return undefined;
+    return isFourthEnhanced.value ? fourthColumnPerkOption.value.enhancedPerk : fourthColumnPerkOption.value.perk;
 });
-const isFourthEnhanced = computed(() => !!isColumnEnhanced.value[3]);
+
 const fifthColumnPerk = computed(() => props.selectedPerks.length > 4 ? props.selectedPerks[4]?.perk : undefined);
 
 const currentSelectedPerks = computed(() => {
@@ -114,7 +90,10 @@ const currentSelectedPerks = computed(() => {
 });
 
 function onPerkClicked(column: number) {
-    isColumnEnhanced.value[column] = !isColumnEnhanced.value[column];
+    if (!props.selectedPerks || props.selectedPerks.length <= column) return;
+    const perk = props.selectedPerks[column];
+    if (!perk) return;
+    perk.useEnhanced = !perk.useEnhanced;
 }
 </script>
 

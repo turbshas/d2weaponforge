@@ -212,6 +212,7 @@ class DestinyDataService {
                     return !!tier && tier.index === ItemTierIndex.Uncommon;
                 }),
                 currentlyCanRoll: currentlyCanRollMap[perk.hash],
+                useEnhanced: false,
             };
             perkOptions.push(perkOption);
         }

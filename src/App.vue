@@ -34,6 +34,9 @@ function onWeaponSelected(weapon: DestinyInventoryItemDefinition | undefined) {
 
 function onPerkSelected(column: number, perk: IPerkOption | undefined) {
     selectedPerksMap.value[column] = perk;
+    if (perk) {
+        perk.useEnhanced = false;
+    }
 }
 
 function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefined) {
