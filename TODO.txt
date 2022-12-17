@@ -29,3 +29,7 @@
 - create an ISelectedPerk that tracks info about the selected perk like if enhanced is used
 - fix backup mag - it currently just does +30 to the mag (and mag perks)
 - weapon mag size caps
+- find a way to move stats to a more central location that all components that need stats can look at
+  - right now, need to make modifications (e.g. crafted stat bonus) in multiple locations
+  - this would probably be a part of a rework to process data from the API better
+- hide/set to false "show crafted bonus" when weapon cannot be crafted

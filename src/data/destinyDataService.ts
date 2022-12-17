@@ -277,10 +277,7 @@ class DestinyDataService {
     private refreshGameData = async () => {
 
         // Get manifest slices we care about
-        const start = Date.now();
         const manifestSlice = await destinyApiService.retrieveManifest("en");
-        const end = Date.now();
-        console.log("retrieve manifest took", end - start);
         console.log(manifestSlice);
         let perksCategory: DestinySocketCategoryDefinition | null = null;
         for (const key in manifestSlice.DestinySocketCategoryDefinition) {

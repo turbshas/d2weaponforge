@@ -26,8 +26,8 @@ class DestinyApiService {
         // const cachedManifestPromise = cacheService.getCachedManifest();
         // const [manifestInfo, cachedManifest] = await Promise.all([manifestInfoPromise, cachedManifestPromise]);
         const manifestInfo = await manifestInfoPromise;
-        const cachedManifest: any = null;
 
+        /* TODO: see if reading from cache can be made faster
         if (cachedManifest) {
             const cachedJsonComponentUrls = cachedManifest.manifestInfo.jsonWorldComponentContentPaths["en"];
             const retrievedJsonComponentUrls = manifestInfo.Response.jsonWorldComponentContentPaths["en"];
@@ -37,6 +37,7 @@ class DestinyApiService {
                 return cachedManifest.manifestData;
             }
         }
+        */
 
         // Get manifest slices we care about
         const manifestSlice = await Destiny2.getDestinyManifestSlice(this.makeRequest, {

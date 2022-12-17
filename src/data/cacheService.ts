@@ -23,19 +23,14 @@ interface ICachedManifest {
 
 const ManifestDatabaseName = "d2gunsmith_2_manifest_database";
 const ManifestObjectStoreName = "manifestObjectStore";
-const ManifestInfoIndexName = "manifestInfo";
-const ManifestIndexName = "manifestData";
 const ManifestCacheKey = "d2gunsmith_2_destiny_manifest";
 
 class CacheService {
     public getCachedManifest = async () => {
-        const start = Date.now();
         const db = await this.openIndexedDb();
         const readTransaction = db.transaction(ManifestObjectStoreName, "readonly");
         const manifestObjectStore = readTransaction.objectStore(ManifestObjectStoreName);
         const manifest = await this.getManifestFromObjectStore(manifestObjectStore);
-        const end = Date.now();
-        console.log("retrieving cache took", end - start);
         return manifest;
     }
 
@@ -58,10 +53,7 @@ class CacheService {
             openRequest.onupgradeneeded = () => {
                 const db = openRequest.result;
                 // Use out-of-line keys
-                const objectStore = db.createObjectStore(ManifestObjectStoreName, { autoIncrement: false, });
-                // One column for the manifest info (metadata), one for the manifest itself
-                objectStore.createIndex(ManifestInfoIndexName, ManifestInfoIndexName, { unique: false, });
-                objectStore.createIndex(ManifestIndexName, ManifestIndexName, { unique: false, });
+                db.createObjectStore(ManifestObjectStoreName, { autoIncrement: false, });
             };
         });
     }

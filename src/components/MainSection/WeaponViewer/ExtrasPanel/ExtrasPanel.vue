@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { selectionService } from '@/data/selectionService';
 import type { IPerkOption } from '@/data/types';
-import { computed, ref } from '@vue/reactivity';
+import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import AddToComparisons from './AddToComparisons.vue';
 import DamageFalloff from './DamageFalloff.vue';
@@ -15,20 +16,16 @@ const props = defineProps<{
     mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
-// TODO: should probably be in a persistent area so the config stays the same after changing which weapon is selected
-const hideRetired = ref(false);
-const showCraftedBonus = ref(false);
-
-const hideRetiredText = computed(() => hideRetired.value ? "Active" : "Inactive");
-const showCraftedBonusText = computed(() => showCraftedBonus.value ? "Active" : "Inactive");
+const hideRetiredText = computed(() => selectionService.hideRetiredPerks ? "Active" : "Inactive");
+const showCraftedBonusText = computed(() => selectionService.showCraftedBonus ? "Active" : "Inactive");
 
 
 function onHideRetiredClicked() {
-    hideRetired.value = !hideRetired.value;
+    selectionService.hideRetiredPerks = !selectionService.hideRetiredPerks;
 }
 
 function onShowCraftedBonusClicked() {
-    showCraftedBonus.value = !showCraftedBonus.value;
+    selectionService.showCraftedBonus = !selectionService.showCraftedBonus;
 }
 </script>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
+import { selectionService } from '@/data/selectionService';
 import type { IPerkOption } from '@/data/types';
 import { hashMapToArray } from '@/data/util';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
@@ -73,7 +74,7 @@ const hasRangeValues = computed(() => !!rangeValues.value);
 const allStats = computed(() => {
     const weaponStats = getStatsForItem(props.weapon);
     const perkStats = props.selectedPerks.map(p => getStatsForItem(p?.perk)).reduce((total, current) => total.concat(current), []);
-    const masterworkStats = getStatsForItem(props.masterwork);
+    const masterworkStats = getStatsForItem(props.masterwork).filter(s => selectionService.showCraftedBonus || !s.isConditionallyActive);
     const modStats = getStatsForItem(props.mod);
     console.log("damage falloff props", props);
     console.log("all stats", weaponStats, perkStats, masterworkStats, modStats);
@@ -128,6 +129,7 @@ const text = computed(() => {
 });
 
 function getStatsForItem(item: DestinyInventoryItemDefinition | undefined) {
+    console.log("gettings stats for item", item);
     if (!item) return [];
     if (item.stats) {
         return hashMapToArray(item.stats.stats)

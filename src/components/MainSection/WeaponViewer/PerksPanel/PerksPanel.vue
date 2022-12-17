@@ -5,6 +5,7 @@ import PerkList from './PerkList.vue';
 import { destinyDataService } from '@/data/destinyDataService';
 import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from '@/data/types';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
+import { selectionService } from '@/data/selectionService';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -80,8 +81,11 @@ const perkOptionListsPerSlot = computed(() => {
                     return !!tier && tier.index === ItemTierIndex.Uncommon;
                 }),
                 currentlyCanRoll: currentlyCanRollMap[perk.hash],
+                useEnhanced: false,
             };
-            perkOptions.push(perkOption);
+            if (perkOption.currentlyCanRoll || !selectionService.hideRetiredPerks) {
+                perkOptions.push(perkOption);
+            }
         }
 
         const slotOptions: IPerkSlotOptions = {
@@ -105,7 +109,7 @@ const curatedPerks = computed(() => {
             }
         })
         .map(i => i!)
-        .map<IPerkOption>(i => { return { perk: i, currentlyCanRoll: true, }; })
+        .map<IPerkOption>(i => { return { perk: i, currentlyCanRoll: true, useEnhanced: false, }; })
         .map<IPerkSlotOptions>(o => { return { options: [o] }; });
 });
 const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);

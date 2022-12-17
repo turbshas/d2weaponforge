@@ -19,5 +19,15 @@ class SelectionService {
 
     public get selectedMod() { return this.selectedModWrapper.value; }
     public set selectedMod(value: DestinyInventoryItemDefinition | undefined) { this.selectedModWrapper.value = value; }
+
+    // Preferences - storing them here for lack of a better place
+    private hideRetiredPerksWrapper = ref(false);
+    private showCraftedBonusWrapper = ref(false);
+
+    public get hideRetiredPerks() { return this.hideRetiredPerksWrapper.value; }
+    public set hideRetiredPerks(value: boolean) { this.hideRetiredPerksWrapper.value = value; }
+
+    public get showCraftedBonus() { return this.showCraftedBonusWrapper.value; }
+    public set showCraftedBonus(value: boolean) { this.showCraftedBonusWrapper.value = value; }
 }
 export const selectionService = new SelectionService();

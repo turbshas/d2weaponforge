@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
+import { selectionService } from '@/data/selectionService';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition, DestinyInventoryItemStatDefinition } from 'bungie-api-ts/destiny2';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
@@ -71,7 +72,7 @@ function getModifierForStat(stat: DestinyInventoryItemStatDefinition) {
     const bonusFromMasterwork = props.masterwork
         ? props.masterwork.investmentStats
             .filter(s => s.statTypeHash === stat.statHash)
-            .map(s => s.value)
+            .map(s => selectionService.showCraftedBonus || !s.isConditionallyActive ? s.value : 0)
             .reduce((total, current) => total += current, 0)
         : 0;
     const bonusFromMod = props.mod
