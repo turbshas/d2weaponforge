@@ -17,12 +17,11 @@ import type {
 } from "bungie-api-ts/destiny2/interfaces";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import { reactive } from "vue";
+import { destinyApiService } from "./destinyApiService";
 import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from "./types";
 import { hashMapToArray } from "./util";
 
 interface Destiny2GameData {
-    manifestMetadata: DestinyManifest;
-
     damageTypes: DestinyDamageTypeDefinition[];
     damageTypesLookup: { [hash: number]: DestinyDamageTypeDefinition };
 
@@ -276,31 +275,12 @@ class DestinyDataService {
     //         - memento
     //         - red box pattern extract button
     private refreshGameData = async () => {
-        // Get manifest metadata
-        const manifestInfo = await Destiny2.getDestinyManifest(this.makeRequest);
 
         // Get manifest slices we care about
-        const manifestSlice = await Destiny2.getDestinyManifestSlice(this.makeRequest, {
-            destinyManifest: manifestInfo.Response,
-            language: "en",
-            tableNames: [
-                // Possibly needed for filter
-                "DestinyEnergyTypeDefinition",
-                "DestinyDamageTypeDefinition",
-                "DestinyEquipmentSlotDefinition",
-                "DestinyItemCategoryDefinition",
-                "DestinyItemTierTypeDefinition",
-                "DestinySeasonDefinition",
-                // List of items - need to find weapons
-                "DestinyInventoryItemDefinition",
-                "DestinyPlugSetDefinition",
-                "DestinyStatDefinition",
-                "DestinySandboxPerkDefinition",
-                "DestinySocketCategoryDefinition",
-                "DestinySocketTypeDefinition",
-                "DestinyPowerCapDefinition",
-            ],
-        });
+        const start = Date.now();
+        const manifestSlice = await destinyApiService.retrieveManifest("en");
+        const end = Date.now();
+        console.log("retrieve manifest took", end - start);
         console.log(manifestSlice);
         let perksCategory: DestinySocketCategoryDefinition | null = null;
         for (const key in manifestSlice.DestinySocketCategoryDefinition) {
@@ -333,8 +313,6 @@ class DestinyDataService {
         const weaponPerkCategory = socketCategories.find(category => category.displayProperties.name == "WEAPON PERKS");
 
         const gameData: Destiny2GameData = {
-            manifestMetadata: manifestInfo.Response,
-
             damageTypes: hashMapToArray(manifestSlice.DestinyDamageTypeDefinition),
             damageTypesLookup: manifestSlice.DestinyDamageTypeDefinition,
             energyTypes: hashMapToArray(manifestSlice.DestinyEnergyTypeDefinition),
@@ -363,7 +341,7 @@ class DestinyDataService {
             weaponPerkCategory: weaponPerkCategory!,
         };
 
-        // Get list of weapons and perks
+        // Get list of weapons
         for (const key in manifestSlice.DestinyInventoryItemDefinition) {
             const item = manifestSlice.DestinyInventoryItemDefinition[key];
             if (item.redacted) continue;
@@ -386,15 +364,6 @@ class DestinyDataService {
         console.log("weapons", gameData.weapons);
 
         this.gameDataReactiveWrapper.gameData = gameData;
-    }
-
-    private makeRequest = async (config: HttpClientConfig) => {
-        const query = !config.params ? "" : Object.keys(config.params)
-            .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(config.params[k])}`)
-            .join("&");
-        const url = query ? `${config.url}?${query}` : config.url;
-        const response = await fetch(url, { method: config.method, body: config.body, });
-        return await response.json();
     }
 }
 
