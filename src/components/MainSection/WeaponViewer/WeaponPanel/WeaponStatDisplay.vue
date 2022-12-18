@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { StatDisplayType } from '@/data/types';
+import { DataSearchString, StatDisplayType } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemStatDefinition, DestinyStatDefinition } from 'bungie-api-ts/destiny2';
 
 const statDisplayTypeMap: { [statName: string]: StatDisplayType } = {
-    "Recoil Direction": StatDisplayType.Angle,
-    "Rounds Per Minute": StatDisplayType.Number,
-    "Draw Time": StatDisplayType.Number,
-    "Charge Time": StatDisplayType.Number,
-    "Magazine": StatDisplayType.Number,
+    [DataSearchString.RecoilDirectionStatDefinitionName]: StatDisplayType.Angle,
+    [DataSearchString.RpmStatDefinitionName]: StatDisplayType.Number,
+    [DataSearchString.DrawTimeStatDefinitionName]: StatDisplayType.Number,
+    [DataSearchString.ChargeTimeStatDefinitionName]: StatDisplayType.Number,
+    [DataSearchString.MagSizeStatDefinitionName]: StatDisplayType.Number,
 };
 
 const props = defineProps<{
@@ -23,8 +23,8 @@ const name = computed(() => {
 
 const adjustedModifier = computed(() => {
     if (!props.definition) return props.modifier;
-    if (props.definition.displayProperties.name === "Charge Time") return -Math.round(props.modifier * 3.3);
-    if (props.definition.displayProperties.name === "Draw Time") return -props.modifier * 4;
+    if (props.definition.displayProperties.name === DataSearchString.ChargeTimeStatDefinitionName) return -Math.round(props.modifier * 3.3);
+    if (props.definition.displayProperties.name === DataSearchString.DrawTimeStatDefinitionName) return -props.modifier * 4;
     return props.modifier;
 });
 

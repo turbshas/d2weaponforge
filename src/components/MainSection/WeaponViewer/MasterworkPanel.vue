@@ -2,6 +2,7 @@
 import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref, watch } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import { DataSearchString } from '@/data/types';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -17,12 +18,12 @@ const weaponSockets = computed(() => props.weapon?.sockets?.socketEntries || [])
 
 const weaponModSocketCategory = computed(() => weaponSocketCategories.value.find(c => {
     const socketCategory = destinyDataService.getSocketCategoryDefinition(c.socketCategoryHash);
-    return socketCategory && socketCategory.displayProperties.name === "WEAPON MODS";
+    return socketCategory && socketCategory.displayProperties.name === DataSearchString.WeaponModsSocketCategoryName;
 }));
 const weaponModSockets = computed(() => weaponModSocketCategory.value ? weaponModSocketCategory.value.socketIndexes.map(i => weaponSockets.value[i]) : []);
 const masterworkSocket = computed(() => weaponModSockets.value.find(s => {
     const type = destinyDataService.getSocketTypeDefinition(s.socketTypeHash);
-    return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes("v400.plugs.weapons.masterworks"));
+    return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes(DataSearchString.WeaponMasterworkPlugWhitelistCategoryId));
 }));
 
 const weaponStats = computed(() => {

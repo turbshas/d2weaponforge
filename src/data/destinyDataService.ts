@@ -18,7 +18,7 @@ import type {
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import { reactive } from "vue";
 import { destinyApiService } from "./destinyApiService";
-import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from "./types";
+import { DataSearchString, ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from "./types";
 import { hashMapToArray } from "./util";
 
 interface Destiny2GameData {
@@ -151,7 +151,7 @@ class DestinyDataService {
     }
 
     public isTrackerPlugCategory = (plug: DestinyPlugWhitelistEntryDefinition) => {
-        return plug.categoryIdentifier === "v400.plugs.weapons.masterworks.trackers";
+        return plug.categoryIdentifier === DataSearchString.TrackerCategoryId;
     }
 
     public getPerkOptionsForWeapon = (weapon: DestinyInventoryItemDefinition) => {
@@ -282,7 +282,7 @@ class DestinyDataService {
         let perksCategory: DestinySocketCategoryDefinition | null = null;
         for (const key in manifestSlice.DestinySocketCategoryDefinition) {
             const category = manifestSlice.DestinySocketCategoryDefinition[key];
-            if (category.displayProperties.name === "WEAPON PERKS") {
+            if (category.displayProperties.name === DataSearchString.WeaponPerkSocketCategoryName) {
                 console.log("found perks category", category);
                 perksCategory = category;
                 break;
@@ -304,10 +304,10 @@ class DestinyDataService {
         const socketCategories = hashMapToArray(manifestSlice.DestinySocketCategoryDefinition);
 
         // Get ItemCategoryDefinition for "weapon"
-        const weaponCategory = itemCategories.find(category => category.displayProperties.name === "Weapon");
-        const originPerkCategory = itemCategories.find(category => category.displayProperties.name === "Weapon Mods: Origin Traits");
-        const weaponIntrinsicCategory = socketCategories.find(category => category.displayProperties.name == "INTRINSIC TRAITS");
-        const weaponPerkCategory = socketCategories.find(category => category.displayProperties.name == "WEAPON PERKS");
+        const weaponCategory = itemCategories.find(category => category.displayProperties.name === DataSearchString.WeaponItemCategoryName);
+        const originPerkCategory = itemCategories.find(category => category.displayProperties.name === DataSearchString.WeaponOriginPerkItemCategoryName);
+        const weaponIntrinsicCategory = socketCategories.find(category => category.displayProperties.name === DataSearchString.WeaponIntrinsicPerkCategoryName);
+        const weaponPerkCategory = socketCategories.find(category => category.displayProperties.name === DataSearchString.WeaponPerkSocketCategoryName);
 
         const gameData: Destiny2GameData = {
             damageTypes: hashMapToArray(manifestSlice.DestinyDamageTypeDefinition),

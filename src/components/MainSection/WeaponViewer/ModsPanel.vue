@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
+import { DataSearchString } from '@/data/types';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed, ref } from 'vue';
 
@@ -17,12 +18,12 @@ const weaponSockets = computed(() => props.weapon?.sockets?.socketEntries || [])
 
 const weaponModSocketCategory = computed(() => weaponSocketCategories.value.find(c => {
     const socketCategory = destinyDataService.getSocketCategoryDefinition(c.socketCategoryHash);
-    return socketCategory && socketCategory.displayProperties.name === "WEAPON MODS";
+    return socketCategory && socketCategory.displayProperties.name === DataSearchString.WeaponModsSocketCategoryName;
 }));
 const weaponModSockets = computed(() => weaponModSocketCategory.value ? weaponModSocketCategory.value.socketIndexes.map(i => weaponSockets.value[i]) : []);
 const modSocket = computed(() => weaponModSockets.value.find(s => {
     const type = destinyDataService.getSocketTypeDefinition(s.socketTypeHash);
-    return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes("v400.weapon.mod_empty"));
+    return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes(DataSearchString.WeaponModPlugWhitelistCategoryId));
 }));
 
 const modOptions = computed(() => {

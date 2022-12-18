@@ -1,31 +1,32 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
 import { selectionService } from '@/data/selectionService';
+import { DataSearchString } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition, DestinyInventoryItemStatDefinition } from 'bungie-api-ts/destiny2';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
 
 const statOrdering = [
-    "Impact",
-    "Blast Radius",
+    DataSearchString.ImpactStatName,
+    DataSearchString.BlastRadiusStatName,
 
-    "Range",
-    "Accuracy",
-    "Velocity",
+    DataSearchString.RangeStatName,
+    DataSearchString.AccuracyStatName,
+    DataSearchString.VelocityStatName,
 
-    "Stability",
-    "Handling",
-    "Reload Speed",
-    "Aim Assistance",
-    "Airborne Effectiveness",
-    "Zoom",
-    "Recoil Direction",
+    DataSearchString.StabilityStatName,
+    DataSearchString.HandlingStatName,
+    DataSearchString.ReloadSpeedStatName,
+    DataSearchString.AimAssistanceStatName,
+    DataSearchString.AirborneEffectivenessStatName,
+    DataSearchString.ZoomStatName,
+    DataSearchString.RecoilDirectionStatName,
 
-    "Rounds Per Minute",
-    "Draw Time",
-    "Charge Time",
+    DataSearchString.RpmStatName,
+    DataSearchString.DrawTimeStatName,
+    DataSearchString.ChargeTimeStatName,
 
-    "Magazine",
+    DataSearchString.MagSizeStatName,
 ];
 
 const props = defineProps<{

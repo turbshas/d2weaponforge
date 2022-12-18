@@ -7,28 +7,28 @@ import FilterOptionButton from "./FilterOptionButton.vue";
 import WeaponIcons from "@/assets/WeaponIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
-import type { FilterCategory, FilterPredicate, IFilterButton } from "@/data/types";
+import { DataSearchString, type FilterCategory, type FilterPredicate, type IFilterButton } from "@/data/types";
 
 // This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
 // weapon type, since hash could theoretically change.
 const weaponCategoryIconMap: { [itemRegex: string]: string } = {
-    ".*_auto_rifle": WeaponIcons.AutoRifle,
-    ".*_hand_cannon": WeaponIcons.HandCannon,
-    ".*_pulse_rifle": WeaponIcons.PulseRifle,
-    ".*_scout_rifle": WeaponIcons.ScoutRifle,
-    "type_weapon_fusion_rifle": WeaponIcons.FusionRifle,
-    ".*_sniper_rifle": WeaponIcons.SniperRifle,
-    ".*_shotgun": WeaponIcons.Shotgun,
-    ".*_machinegun": WeaponIcons.MachineGun,
-    ".*_rocket_launcher": WeaponIcons.RocketLauncher,
-    ".*_sidearm": WeaponIcons.Sidearm,
-    "type_weapon_sword": WeaponIcons.Sword,
-    ".*_grenade_launcher": WeaponIcons.GrenadeLauncher,
-    ".*_fusion_rifle_line": WeaponIcons.LinearFusionRifle,
-    ".*_beam_rifle": WeaponIcons.TraceRifle,
-    "type_weapon_bow": WeaponIcons.Bow,
-    ".*_glaive": WeaponIcons.Glaive,
-    ".*_submachinegun": WeaponIcons.SubmachineGun,
+    [DataSearchString.AutoRifleTypeRegex]: WeaponIcons.AutoRifle,
+    [DataSearchString.HandCannonTypeRegex]: WeaponIcons.HandCannon,
+    [DataSearchString.PulseRifleTypeRegex]: WeaponIcons.PulseRifle,
+    [DataSearchString.ScoutRifleTypeRegex]: WeaponIcons.ScoutRifle,
+    [DataSearchString.FusionRifleTypeRegex]: WeaponIcons.FusionRifle,
+    [DataSearchString.SniperRifleTypeRegex]: WeaponIcons.SniperRifle,
+    [DataSearchString.ShotgunTypeRegex]: WeaponIcons.Shotgun,
+    [DataSearchString.MachineGunTypeRegex]: WeaponIcons.MachineGun,
+    [DataSearchString.RocketLauncherTypeRegex]: WeaponIcons.RocketLauncher,
+    [DataSearchString.SidearmTypeRegex]: WeaponIcons.Sidearm,
+    [DataSearchString.SwordTypeRegex]: WeaponIcons.Sword,
+    [DataSearchString.GrenadeLauncherTypeRegex]: WeaponIcons.GrenadeLauncher,
+    [DataSearchString.LinearFusionTypeRegex]: WeaponIcons.LinearFusionRifle,
+    [DataSearchString.TraceRifleTypeRegex]: WeaponIcons.TraceRifle,
+    [DataSearchString.BowTypeRegex]: WeaponIcons.Bow,
+    [DataSearchString.GlaiveTypeRegex]: WeaponIcons.Glaive,
+    [DataSearchString.SubmachinegunTypeRegex]: WeaponIcons.SubmachineGun,
 };
 
 // TODO: these filters

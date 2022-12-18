@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import WeaponIcon from '@/components/WeaponIcon.vue';
 import { destinyDataService } from '@/data/destinyDataService';
-import type { IPerkOption } from '@/data/types';
+import { DataSearchString, type IPerkOption } from '@/data/types';
 import { hashMapToArray } from '@/data/util';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
@@ -9,20 +9,20 @@ import SelectedPerks from './SelectedPerks.vue';
 import WeaponStatBlock from './WeaponStatBlock.vue';
 
 const shownStats: { [statName: string]: boolean } = {
-    "Accuracy": true,
-    "Aim Assistance": true,
-    "Airborne Effectiveness": true,
-    "Charge Time": true,
-    "Draw Time": true,
-    "Impact": true,
-    "Handling": true,
-    "Magazine": true,
-    "Range": true,
-    "Recoil Direction": true,
-    "Reload Speed": true,
-    "Stability": true,
-    "Velocity": true,
-    "Zoom": true,
+    [DataSearchString.AccuracyStatName]: true,
+    [DataSearchString.AimAssistanceStatName]: true,
+    [DataSearchString.AirborneEffectivenessStatName]: true,
+    [DataSearchString.ChargeTimeStatName]: true,
+    [DataSearchString.DrawTimeStatName]: true,
+    [DataSearchString.ImpactStatName]: true,
+    [DataSearchString.HandlingStatName]: true,
+    [DataSearchString.MagSizeStatName]: true,
+    [DataSearchString.RangeStatName]: true,
+    [DataSearchString.RecoilDirectionStatName]: true,
+    [DataSearchString.ReloadSpeedStatName]: true,
+    [DataSearchString.StabilityStatName]: true,
+    [DataSearchString.VelocityStatName]: true,
+    [DataSearchString.ZoomStatName]: true,
 }
 
 const props = defineProps<{
@@ -33,6 +33,7 @@ const props = defineProps<{
 }>();
 
 const screenshot = computed(() => {
+    console.log("selected weapon", props.weapon);
     return props.weapon ? destinyDataService.getImageUrl(props.weapon.screenshot) : undefined;
 });
 
