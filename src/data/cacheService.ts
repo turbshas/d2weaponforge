@@ -1,24 +1,9 @@
-import type { DestinyManifest, DestinyManifestSlice } from "bungie-api-ts/destiny2";
-
-type UsedDestinyManifestSlice = DestinyManifestSlice<(
-    "DestinyEnergyTypeDefinition"
-    | "DestinyDamageTypeDefinition"
-    | "DestinyEquipmentSlotDefinition"
-    | "DestinyItemCategoryDefinition"
-    | "DestinyItemTierTypeDefinition"
-    | "DestinySeasonDefinition"
-    | "DestinyInventoryItemDefinition"
-    | "DestinyPlugSetDefinition"
-    | "DestinyStatDefinition"
-    | "DestinySandboxPerkDefinition"
-    | "DestinySocketCategoryDefinition"
-    | "DestinySocketTypeDefinition"
-    | "DestinyPowerCapDefinition"
-)[]>;
+import type { DestinyManifest } from "bungie-api-ts/destiny2";
+import type { Destiny2GameData } from "./types";
 
 interface ICachedManifest {
     manifestInfo: DestinyManifest;
-    manifestData: UsedDestinyManifestSlice;
+    manifestData: Destiny2GameData;
 }
 
 const ManifestDatabaseName = "d2gunsmith_2_manifest_database";

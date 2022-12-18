@@ -1,4 +1,17 @@
-import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
+import type {
+    DestinyDamageTypeDefinition,
+    DestinyEnergyTypeDefinition,
+    DestinyEquipmentSlotDefinition,
+    DestinyInventoryItemDefinition,
+    DestinyItemCategoryDefinition,
+    DestinyItemTierTypeDefinition,
+    DestinyPlugSetDefinition,
+    DestinySandboxPerkDefinition,
+    DestinySeasonDefinition,
+    DestinySocketCategoryDefinition,
+    DestinySocketTypeDefinition,
+    DestinyStatDefinition
+} from "bungie-api-ts/destiny2";
 
 export enum DataSearchString {
     Adept = "Adept",
@@ -22,6 +35,7 @@ export enum DataSearchString {
     VelocityStatName = "Velocity",
     ZoomStatName = "Zoom",
 
+    ModItemCategoryName = "Mods",
     WeaponItemCategoryName = "Weapon",
     WeaponIntrinsicPerkCategoryName = "INTRINSIC TRAITS",
     WeaponOriginPerkItemCategoryName = "Weapon Mods: Origin Traits",
@@ -80,6 +94,39 @@ export enum ItemTierIndex {
     Rare = 3,
     Legendary = 4,
     Exotic = 5,
+}
+
+export interface Destiny2GameData {
+    damageTypes: DestinyDamageTypeDefinition[];
+    damageTypesLookup: { [hash: number]: DestinyDamageTypeDefinition };
+
+    energyTypes: DestinyEnergyTypeDefinition[];
+    energyTypesLookup: { [hash: number]: DestinyEnergyTypeDefinition };
+
+    equipmentSlots: DestinyEquipmentSlotDefinition[];
+    equipmentSlotsLookup: { [hash: number]: DestinyEquipmentSlotDefinition };
+
+    itemCategories: DestinyItemCategoryDefinition[];
+    itemCategoriesLookup: { [hash: number]: DestinyItemCategoryDefinition };
+
+    itemTierTypes: DestinyItemTierTypeDefinition[];
+    itemTierTypesLookup: { [hash: number]: DestinyItemTierTypeDefinition };
+
+    seasons: DestinySeasonDefinition[];
+    seasonsLookup: { [hash: number]: DestinySeasonDefinition };
+
+    weapons: DestinyInventoryItemDefinition[];
+
+    statsLookup: { [hash: number]: DestinyStatDefinition };
+    itemLookup: { [hash: number]: DestinyInventoryItemDefinition };
+    plugSetLookup: { [hash: number]: DestinyPlugSetDefinition };
+    sandboxPerksLookup: { [hash: number]: DestinySandboxPerkDefinition };
+    socketCategoryLookup: { [hash: number]: DestinySocketCategoryDefinition };
+    socketTypeLookup: { [hash: number]: DestinySocketTypeDefinition };
+
+    originPerkCategory: DestinyItemCategoryDefinition;
+    weaponIntrinsicCategory: DestinySocketCategoryDefinition;
+    weaponPerkCategory: DestinySocketCategoryDefinition;
 }
 
 export interface IPerkOption {

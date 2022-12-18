@@ -73,6 +73,7 @@ const secondColumnPerk = computed(() => props.selectedPerks.length > 1 ? props.s
 const thirdColumnPerkOption = computed(() => props.selectedPerks.length > 2 ? props.selectedPerks[2] : undefined);
 const isThirdEnhanced = computed(() => !!thirdColumnPerkOption.value && thirdColumnPerkOption.value.useEnhanced);
 const thirdColumnPerk = computed(() => {
+    console.log("selected perks", props.weapon, props.selectedPerks, props.masterwork, props.mod);
     if (!thirdColumnPerkOption.value) return undefined;
     return isThirdEnhanced.value ? thirdColumnPerkOption.value.enhancedPerk : thirdColumnPerkOption.value.perk;
 });

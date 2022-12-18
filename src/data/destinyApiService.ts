@@ -1,7 +1,13 @@
 import { Destiny2 } from "bungie-api-ts";
-import type { DestinyManifestLanguage, DestinyManifestSlice } from "bungie-api-ts/destiny2";
+import type {
+    DestinyInventoryItemDefinition,
+    DestinyManifestLanguage,
+    DestinyManifestSlice
+} from "bungie-api-ts/destiny2";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import { cacheService } from "./cacheService";
+import { DataSearchString, type Destiny2GameData } from "./types";
+import { hashMapToArray } from "./util";
 
 type UsedDestinyManifestSlice = DestinyManifestSlice<(
     "DestinyEnergyTypeDefinition"
@@ -23,11 +29,10 @@ class DestinyApiService {
     public retrieveManifest = async (language: DestinyManifestLanguage) => {
         // Get manifest metadata
         const manifestInfoPromise = Destiny2.getDestinyManifest(this.makeRequest);
-        // const cachedManifestPromise = cacheService.getCachedManifest();
-        // const [manifestInfo, cachedManifest] = await Promise.all([manifestInfoPromise, cachedManifestPromise]);
-        const manifestInfo = await manifestInfoPromise;
+        const cachedManifestPromise = cacheService.getCachedManifest();
+        const [manifestInfo, cachedManifest] = await Promise.all([manifestInfoPromise, cachedManifestPromise]);
+        console.log("manifest info", manifestInfo);
 
-        /* TODO: see if reading from cache can be made faster
         if (cachedManifest) {
             const cachedJsonComponentUrls = cachedManifest.manifestInfo.jsonWorldComponentContentPaths["en"];
             const retrievedJsonComponentUrls = manifestInfo.Response.jsonWorldComponentContentPaths["en"];
@@ -37,7 +42,6 @@ class DestinyApiService {
                 return cachedManifest.manifestData;
             }
         }
-        */
 
         // Get manifest slices we care about
         const manifestSlice = await Destiny2.getDestinyManifestSlice(this.makeRequest, {
@@ -62,6 +66,35 @@ class DestinyApiService {
             ],
         });
 
+        console.log(manifestSlice);
+
+        const itemCategories = hashMapToArray(manifestSlice.DestinyItemCategoryDefinition);
+        const socketCategories = hashMapToArray(manifestSlice.DestinySocketCategoryDefinition);
+        const originPerkCategory = itemCategories.find(category => category.displayProperties.name === DataSearchString.WeaponOriginPerkItemCategoryName);
+        const weaponIntrinsicCategory = socketCategories.find(category => category.displayProperties.name === DataSearchString.WeaponIntrinsicPerkCategoryName);
+        const weaponPerkCategory = socketCategories.find(category => category.displayProperties.name === DataSearchString.WeaponPerkSocketCategoryName);
+
+        const weaponCategories = itemCategories.filter(category => category.displayProperties.name === DataSearchString.WeaponItemCategoryName);
+        // Includes anything that modifies an item - perks, mods, masterworks, etc.
+        const modCategories = itemCategories.filter(category => category.displayProperties.name === DataSearchString.ModItemCategoryName);
+        const weaponCategoryHashes = weaponCategories.map(c => c.hash);
+        const modCategoryHashes = modCategories.map(c => c.hash);
+
+        // Remove everything we don't need - this makes loading from cache much faster (and actually usable).
+        // Only doing this for DestinyInventoryItemDefinition as it is by far the largest table.
+        // The others are fairly small and don't need this.
+        const neededItemCategoryHashes = weaponCategoryHashes.concat(modCategoryHashes);
+        const itemHashesToRemove: number[] = [];
+        for (const key in manifestSlice.DestinyInventoryItemDefinition) {
+            const item = manifestSlice.DestinyInventoryItemDefinition[key];
+            if (!!item.itemCategoryHashes && !item.itemCategoryHashes.some(h => neededItemCategoryHashes.includes(h))) {
+                itemHashesToRemove.push(item.hash);
+            }
+        }
+        for (const hash of itemHashesToRemove) {
+            delete manifestSlice.DestinyInventoryItemDefinition[hash];
+        }
+
         // Remove redacted values
         for (const key in manifestSlice) {
             const table = key as keyof UsedDestinyManifestSlice;
@@ -82,9 +115,54 @@ class DestinyApiService {
             }
         }
 
-        cacheService.setCachedManifest({ manifestInfo: manifestInfo.Response, manifestData: manifestSlice, })
+        const weapons: DestinyInventoryItemDefinition[] = [];
+        for (const key in manifestSlice.DestinyInventoryItemDefinition) {
+            const item = manifestSlice.DestinyInventoryItemDefinition[key];
+            // No categories, ignore. No display name means it's probably not an item we care about.
+            if (!item.itemCategoryHashes || !item.displayProperties.name) continue;
+
+            // Seem to be duplicates for some weapons that don't have a screenshot - this
+            // is probably the item used for the crafting menu, so ignore it.
+            if (item.itemCategoryHashes.some(h => weaponCategoryHashes.includes(h)) && !!item.screenshot) {
+                weapons.push(item);
+            }
+        }
+        // Sort the weapons newest to oldest (roughly).
+        // TODO: find a better way to sort, or manually curate the order to show recent weapons.
+        weapons.sort((a, b) => b.index - a.index);
+
+        const gameData: Destiny2GameData = {
+            damageTypes: hashMapToArray(manifestSlice.DestinyDamageTypeDefinition),
+            damageTypesLookup: manifestSlice.DestinyDamageTypeDefinition,
+            energyTypes: hashMapToArray(manifestSlice.DestinyEnergyTypeDefinition),
+            energyTypesLookup: manifestSlice.DestinyEnergyTypeDefinition,
+            equipmentSlots: hashMapToArray(manifestSlice.DestinyEquipmentSlotDefinition),
+            equipmentSlotsLookup: manifestSlice.DestinyEquipmentSlotDefinition,
+            itemCategories: itemCategories,
+            itemCategoriesLookup: manifestSlice.DestinyItemCategoryDefinition,
+            itemTierTypes: hashMapToArray(manifestSlice.DestinyItemTierTypeDefinition),
+            itemTierTypesLookup: manifestSlice.DestinyItemTierTypeDefinition,
+            seasons: hashMapToArray(manifestSlice.DestinySeasonDefinition),
+            seasonsLookup: manifestSlice.DestinySeasonDefinition,
+            weapons: weapons,
+
+            statsLookup: manifestSlice.DestinyStatDefinition,
+            itemLookup: manifestSlice.DestinyInventoryItemDefinition,
+            plugSetLookup: manifestSlice.DestinyPlugSetDefinition,
+            sandboxPerksLookup: manifestSlice.DestinySandboxPerkDefinition,
+            socketCategoryLookup: manifestSlice.DestinySocketCategoryDefinition,
+            socketTypeLookup: manifestSlice.DestinySocketTypeDefinition,
+
+            originPerkCategory: originPerkCategory!,
+            weaponIntrinsicCategory: weaponIntrinsicCategory!,
+            weaponPerkCategory: weaponPerkCategory!,
+        };
+
+        console.log("weapons", gameData.weapons);
+
+        cacheService.setCachedManifest({ manifestInfo: manifestInfo.Response, manifestData: gameData, })
             .catch(err => console.error("Failed to cache manifest.", err));
-        return manifestSlice;
+        return gameData;
     }
 
     private makeRequest = async (config: HttpClientConfig) => {

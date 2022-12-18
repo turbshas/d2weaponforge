@@ -8,6 +8,15 @@ export function hashMapToArray<T>(hashMap: { [hash: number]: T }) {
     return ret;
 }
 
+export function findItemInTable<T>(table: { [hash: number]: T }, predicate: (item: T) => boolean) {
+    for (const key in table) {
+        const item = table[key];
+        if (predicate(item)) {
+            return item;
+        }
+    }
+}
+
 export class Signal<T = undefined> {
     private nextId: number = 1;
     private callbacks: { [id: number]: (data: T) => void } = {};

@@ -1,60 +1,11 @@
-import { Destiny2 } from "bungie-api-ts";
 import type {
-    DestinyDamageTypeDefinition,
-    DestinyEnergyTypeDefinition,
-    DestinyEquipmentSlotDefinition,
     DestinyInventoryItemDefinition,
-    DestinyItemCategoryDefinition,
-    DestinyItemTierTypeDefinition,
-    DestinyManifest,
     DestinyPlugSetDefinition,
     DestinyPlugWhitelistEntryDefinition,
-    DestinySandboxPerkDefinition,
-    DestinySeasonDefinition,
-    DestinySocketCategoryDefinition,
-    DestinySocketTypeDefinition,
-    DestinyStatDefinition
 } from "bungie-api-ts/destiny2/interfaces";
-import type { HttpClientConfig } from "bungie-api-ts/http";
 import { reactive } from "vue";
 import { destinyApiService } from "./destinyApiService";
-import { DataSearchString, ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from "./types";
-import { hashMapToArray } from "./util";
-
-interface Destiny2GameData {
-    damageTypes: DestinyDamageTypeDefinition[];
-    damageTypesLookup: { [hash: number]: DestinyDamageTypeDefinition };
-
-    energyTypes: DestinyEnergyTypeDefinition[];
-    energyTypesLookup: { [hash: number]: DestinyEnergyTypeDefinition };
-
-    equipmentSlots: DestinyEquipmentSlotDefinition[];
-    equipmentSlotsLookup: { [hash: number]: DestinyEquipmentSlotDefinition };
-
-    itemCategories: DestinyItemCategoryDefinition[];
-    itemCategoriesLookup: { [hash: number]: DestinyItemCategoryDefinition };
-
-    itemTierTypes: DestinyItemTierTypeDefinition[];
-    itemTierTypesLookup: { [hash: number]: DestinyItemTierTypeDefinition };
-
-    seasons: DestinySeasonDefinition[];
-    seasonsLookup: { [hash: number]: DestinySeasonDefinition };
-
-    weapons: DestinyInventoryItemDefinition[];
-    weaponsLookup: { [hash: number]: DestinyInventoryItemDefinition };
-
-    statsLookup: { [hash: number]: DestinyStatDefinition };
-    itemLookup: { [hash: number]: DestinyInventoryItemDefinition };
-    plugSetLookup: { [hash: number]: DestinyPlugSetDefinition };
-    sandboxPerksLookup: { [hash: number]: DestinySandboxPerkDefinition };
-    socketCategoryLookup: { [hash: number]: DestinySocketCategoryDefinition };
-    socketTypeLookup: { [hash: number]: DestinySocketTypeDefinition };
-
-    weaponCategory: DestinyItemCategoryDefinition;
-    originPerkCategory: DestinyItemCategoryDefinition;
-    weaponIntrinsicCategory: DestinySocketCategoryDefinition;
-    weaponPerkCategory: DestinySocketCategoryDefinition;
-}
+import { DataSearchString, ItemTierIndex, type Destiny2GameData, type IPerkOption, type IPerkSlotOptions } from "./types";
 
 type GameDataReactiveWrapper = { gameData: Destiny2GameData | null };
 
@@ -277,88 +228,11 @@ class DestinyDataService {
     private refreshGameData = async () => {
 
         // Get manifest slices we care about
-        const manifestSlice = await destinyApiService.retrieveManifest("en");
-        console.log(manifestSlice);
-        let perksCategory: DestinySocketCategoryDefinition | null = null;
-        for (const key in manifestSlice.DestinySocketCategoryDefinition) {
-            const category = manifestSlice.DestinySocketCategoryDefinition[key];
-            if (category.displayProperties.name === DataSearchString.WeaponPerkSocketCategoryName) {
-                console.log("found perks category", category);
-                perksCategory = category;
-                break;
-            }
-        }
-
-        const perkTypes: DestinySocketTypeDefinition[] = [];
-        if (perksCategory) {
-            for (const key in manifestSlice.DestinySocketTypeDefinition) {
-                const type = manifestSlice.DestinySocketTypeDefinition[key];
-                if (type.socketCategoryHash === perksCategory.hash) {
-                    perkTypes.push(type);
-                }
-            }
-        }
-        console.log("perk infos", perksCategory, perkTypes);
-
-        const itemCategories = hashMapToArray(manifestSlice.DestinyItemCategoryDefinition);
-        const socketCategories = hashMapToArray(manifestSlice.DestinySocketCategoryDefinition);
-
-        // Get ItemCategoryDefinition for "weapon"
-        const weaponCategory = itemCategories.find(category => category.displayProperties.name === DataSearchString.WeaponItemCategoryName);
-        const originPerkCategory = itemCategories.find(category => category.displayProperties.name === DataSearchString.WeaponOriginPerkItemCategoryName);
-        const weaponIntrinsicCategory = socketCategories.find(category => category.displayProperties.name === DataSearchString.WeaponIntrinsicPerkCategoryName);
-        const weaponPerkCategory = socketCategories.find(category => category.displayProperties.name === DataSearchString.WeaponPerkSocketCategoryName);
-
-        const gameData: Destiny2GameData = {
-            damageTypes: hashMapToArray(manifestSlice.DestinyDamageTypeDefinition),
-            damageTypesLookup: manifestSlice.DestinyDamageTypeDefinition,
-            energyTypes: hashMapToArray(manifestSlice.DestinyEnergyTypeDefinition),
-            energyTypesLookup: manifestSlice.DestinyEnergyTypeDefinition,
-            equipmentSlots: hashMapToArray(manifestSlice.DestinyEquipmentSlotDefinition),
-            equipmentSlotsLookup: manifestSlice.DestinyEquipmentSlotDefinition,
-            itemCategories: itemCategories,
-            itemCategoriesLookup: manifestSlice.DestinyItemCategoryDefinition,
-            itemTierTypes: hashMapToArray(manifestSlice.DestinyItemTierTypeDefinition),
-            itemTierTypesLookup: manifestSlice.DestinyItemTierTypeDefinition,
-            seasons: hashMapToArray(manifestSlice.DestinySeasonDefinition),
-            seasonsLookup: manifestSlice.DestinySeasonDefinition,
-            weapons: [],
-            weaponsLookup: {},
-
-            statsLookup: manifestSlice.DestinyStatDefinition,
-            itemLookup: manifestSlice.DestinyInventoryItemDefinition,
-            plugSetLookup: manifestSlice.DestinyPlugSetDefinition,
-            sandboxPerksLookup: manifestSlice.DestinySandboxPerkDefinition,
-            socketCategoryLookup: manifestSlice.DestinySocketCategoryDefinition,
-            socketTypeLookup: manifestSlice.DestinySocketTypeDefinition,
-
-            weaponCategory: weaponCategory!,
-            originPerkCategory: originPerkCategory!,
-            weaponIntrinsicCategory: weaponIntrinsicCategory!,
-            weaponPerkCategory: weaponPerkCategory!,
-        };
-
-        // Get list of weapons
-        for (const key in manifestSlice.DestinyInventoryItemDefinition) {
-            const item = manifestSlice.DestinyInventoryItemDefinition[key];
-            if (item.redacted) continue;
-
-            if (item.displayProperties.name && item.itemCategoryHashes && item.itemCategoryHashes.includes(weaponCategory!.hash)) {
-                gameData.weapons.push(item);
-                gameData.weaponsLookup[key] = item;
-            }
-        }
-
-        gameData.weapons = gameData.weapons.filter(w => !!w.screenshot);// TODO: weapons without screenshots are presumably crafting menu items?
-        gameData.weapons.sort((a, b) => b.index - a.index);
-        // gameData.weapons.sort((a, b) => {
-        //     const seasonA = a.seasonHash ? gameData.seasonsLookup[a.seasonHash] : undefined;
-        //     const seasonB = b.seasonHash ? gameData.seasonsLookup[b.seasonHash!] : undefined;
-        //     const seasonNumberA = seasonA ? seasonA.seasonNumber : -1;
-        //     const seasonNumberB = seasonB ? seasonB.seasonNumber : -1;
-        //     return seasonNumberB - seasonNumberA;
-        // });
-        console.log("weapons", gameData.weapons);
+        const start = Date.now();
+        const gameData = await destinyApiService.retrieveManifest("en");
+        const end = Date.now();
+        console.log("loading manifest took", end - start);
+        console.log(gameData);
 
         this.gameDataReactiveWrapper.gameData = gameData;
     }
