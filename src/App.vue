@@ -48,11 +48,13 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
 }
 
 function onUrlParsed(
+    page: PageSelection,
     weapon: DestinyInventoryItemDefinition | undefined,
     perkOptions: (IPerkOption | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined
 ) {
+    selectedPage.value = page;
     selectedWeapon.value = weapon;
     selectedPerksMap.value = {};
     selectedMasterwork.value = undefined;
@@ -73,6 +75,7 @@ function onUrlParsed(
 <template>
     <div class="app">
         <UrlManager
+            :page="selectedPage"
             :weapon="selectedWeapon"
             :selected-perks="selectedPerks"
             :masterwork="selectedMasterwork"

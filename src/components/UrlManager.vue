@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
-import type { IPerkOption } from '@/data/types';
+import { PageSelection, type IPerkOption } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { watch } from 'vue';
 
 
 const props = defineProps<{
+    page: PageSelection,
     weapon: DestinyInventoryItemDefinition | undefined,
     selectedPerks: (IPerkOption | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
@@ -16,6 +17,7 @@ const props = defineProps<{
 // TODO: might need to convert these to one big event with all data at once
 const emits = defineEmits<{
     (e: "urlParsed",
+        page: PageSelection,
         weapon: DestinyInventoryItemDefinition | undefined,
         perks: (IPerkOption | undefined)[],
         masterwork: DestinyInventoryItemDefinition | undefined,
@@ -33,19 +35,39 @@ const masterworkHash = computed(() => props.masterwork ? props.masterwork.hash :
 const modHash = computed(() => props.mod ? props.mod.hash : 0);
 
 const path = computed(() => {
-    // If no weapon is selected, don't set the path
-    if (!weaponHash.value) return undefined;
-    const basePath = `/w/${weaponHash.value}`;
-    const perkQuery = `s=${perk1Hash.value},${perk2Hash.value},${perk3Hash.value},${perk4Hash.value},${masterworkHash.value},${modHash.value},${perk5Hash.value}`;
-    return `${basePath}?${perkQuery}`;
+    if (props.page === PageSelection.Home) {
+        return "/";
+    } else if (props.page === PageSelection.Glossary) {
+        return "/glossary";
+    } else if (props.page === PageSelection.Compare) {
+        return "/compare";
+    } else if (props.page === PageSelection.Weapon) {
+        // If no weapon is selected, don't set the path
+        if (!weaponHash.value) return undefined;
+        const basePath = `/w/${weaponHash.value}`;
+        const perkQuery = `s=${perk1Hash.value},${perk2Hash.value},${perk3Hash.value},${perk4Hash.value},${masterworkHash.value},${modHash.value},${perk5Hash.value}`;
+        return `${basePath}?${perkQuery}`;
+    }
 });
 
 watch(() => destinyDataService.gameData, onGameDataChanged);
 
 function onGameDataChanged() {
     const url = new URL(window.location.href);
-    if (!url.pathname) return;
-    const weaponHashString = url.pathname.replace("/w/", "").replace("/", "");
+    if (!url.pathname) {
+        emits("urlParsed", PageSelection.Home, undefined, [], undefined, undefined);
+        return;
+    }
+
+    const lowerCasePath = url.pathname.toLocaleLowerCase();
+    if (lowerCasePath.includes("glossary")) {
+        emits("urlParsed", PageSelection.Glossary, undefined, [], undefined, undefined);
+        return;
+    } else if (lowerCasePath.includes("compare")) {
+        emits("urlParsed", PageSelection.Compare, undefined, [], undefined, undefined);
+        return;
+    }
+    const weaponHashString = lowerCasePath.replace("/w/", "").replace("/", "");
     const urlWeaponHash = Number.parseInt(weaponHashString);
 
     const urlPerkHashes: number[] = [0, 0, 0, 0, 0, 0, 0]; // Random roll 1, 2, 3, 4, masterwork, mod, origin perk
@@ -95,7 +117,7 @@ function onGameDataChanged() {
             return perkOption;
         }
     });
-    emits("urlParsed", weapon, perkOptions, masterwork, mod);
+    emits("urlParsed", PageSelection.Weapon, weapon, perkOptions, masterwork, mod);
 }
 
 watch(() => path.value, onPathChanged);
