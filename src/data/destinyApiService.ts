@@ -30,7 +30,7 @@ class DestinyApiService {
 
         console.log("manifest info", manifestInfo);
 
-        /*
+        // /*
         if (cachedManifest) {
             const cachedJsonComponentUrls = cachedManifest.manifestInfo.jsonWorldComponentContentPaths["en"];
             const retrievedJsonComponentUrls = manifestInfo.Response.jsonWorldComponentContentPaths["en"];
@@ -40,7 +40,7 @@ class DestinyApiService {
                 return cachedManifest.manifestData;
             }
         }
-        */
+        // */
 
         // Get manifest slices we care about
         const manifestSlice = await Destiny2.getDestinyManifestSlice(this.makeRequest, {

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
-import { computed } from '@vue/reactivity';
+import { computed, ref } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import Tooltip from './Tooltip.vue';
 
 const props = defineProps<{
     perk: DestinyInventoryItemDefinition | undefined,
@@ -20,6 +21,14 @@ const perkIcon = computed(() => {
     return destinyDataService.getImageUrl(props.perk.displayProperties.icon);
 });
 
+const perkElement = ref<HTMLElement | null>(null);
+const tooltipTargetElement = computed(() => props.perk ? perkElement.value : null);
+const tooltipTitle = computed(() => props.perk ? props.perk.displayProperties.name : "");
+const tooltipSubtitle = computed(() => "subtitle");
+const tooltipDescription = computed(() => props.perk ? props.perk.displayProperties.description : "");
+const tooltipEffects = computed(() => "effects");
+const tooltipBonuses = computed(() => "bonuses");
+
 function onPerkClick() {
     if (!props.perk) return;
     emits("click", props.perk);
@@ -28,6 +37,7 @@ function onPerkClick() {
 
 <template>
     <div
+        :ref="(el) => { perkElement = el as HTMLElement | null; }"
         class="wrapper"
         :class="{ 'random-roll-wrapper': !fullSize, 'selected': selected }"
         @click="onPerkClick"
@@ -41,6 +51,14 @@ function onPerkClick() {
             <div class="enhanced-gradient"></div>
         </div>
         <div class="enhanced-arrow" v-if="enhanced"></div>
+        <Tooltip
+            :target-element="tooltipTargetElement"
+            :title="tooltipTitle"
+            :subtitle="tooltipSubtitle"
+            :description="tooltipDescription"
+            :effect="tooltipEffects"
+            :bonuses="tooltipBonuses"
+        ></Tooltip>
     </div>
 </template>
 
