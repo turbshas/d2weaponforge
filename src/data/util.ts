@@ -17,6 +17,17 @@ export function findItemInTable<T>(table: { [hash: number]: T }, predicate: (ite
     }
 }
 
+export function findItemsInTable<T>(table: { [hash: number]: T }, predicate: (item: T) => boolean) {
+    const items: T[] = [];
+    for (const key in table) {
+        const item = table[key];
+        if (predicate(item)) {
+            items.push(item);
+        }
+    }
+    return items;
+}
+
 export class Signal<T = undefined> {
     private nextId: number = 1;
     private callbacks: { [id: number]: (data: T) => void } = {};

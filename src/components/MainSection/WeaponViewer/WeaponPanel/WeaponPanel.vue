@@ -20,6 +20,7 @@ const shownStats: { [statName: string]: boolean } = {
     [DataSearchString.RangeStatName]: true,
     [DataSearchString.RecoilDirectionStatName]: true,
     [DataSearchString.ReloadSpeedStatName]: true,
+    [DataSearchString.RpmStatName]: true,
     [DataSearchString.StabilityStatName]: true,
     [DataSearchString.VelocityStatName]: true,
     [DataSearchString.ZoomStatName]: true,

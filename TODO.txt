@@ -34,3 +34,4 @@
   - this would probably be a part of a rework to process data from the API better
 - hide/set to false "show crafted bonus" when weapon cannot be crafted
 - check out the traitIds property on DestinyInventoryItemDefinition for multi-language support
+- display RPM on appropriate weapons

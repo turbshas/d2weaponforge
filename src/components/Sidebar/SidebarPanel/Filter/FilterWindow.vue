@@ -7,7 +7,13 @@ import FilterOptionButton from "./FilterOptionButton.vue";
 import WeaponIcons from "@/assets/WeaponIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
-import { DataSearchString, type FilterCategory, type FilterPredicate, type IFilterButton } from "@/data/types";
+import { DataSearchString, type FilterCategory, type FilterPredicate, type IArchetypeFilter, type IFilterButton, type IWeaponFilterButton } from "@/data/types";
+import { findItemInTable } from "@/data/util";
+
+interface IArchetypeInfo {
+    text: string;
+    filter: FilterPredicate;
+}
 
 // This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
 // weapon type, since hash could theoretically change.
@@ -30,6 +36,108 @@ const weaponCategoryIconMap: { [itemRegex: string]: string } = {
     [DataSearchString.GlaiveTypeRegex]: WeaponIcons.Glaive,
     [DataSearchString.SubmachinegunTypeRegex]: WeaponIcons.SubmachineGun,
 };
+
+// TODO: some go by charge time, not RPM
+// TODO: there are some duplicate RPMs in a single weapon type - could use impact?
+// TODO: with foundry weapons, there are duplicate RPMs with the same impact - what to do here?
+// TODO: there are duplicate frames with differing impacts
+// TODO: could have each archetype have its own filter predicate? this is probably the way
+// TODO: might want to just do a string compare with the archetype display name
+/*
+const weaponCategoryArchetypeMap: { [itemRegex: string]: IArchetypeInfo[] } = {
+    [DataSearchString.AutoRifleTypeRegex]: [
+        { rpm: 720, text: "Rapid-Fire", filter: item =>  },
+        { rpm: 600, text: "Adaptive" },
+        { rpm: 450, text: "Precision" },
+        { rpm: 450, text: "Lightweight" },
+        { rpm: 360, text: "High-Impact" },
+    ],
+    [DataSearchString.HandCannonTypeRegex]: [
+        { rpm: 120, text: "Aggressive" },
+        { rpm: 140, text: "Adaptive" },
+        { rpm: 180, text: "Precision" },
+    ],
+    [DataSearchString.PulseRifleTypeRegex]: [
+        { rpm: 540, text: "Rapid-Fire" },
+        { rpm: 450, text: "Lightweight" },
+        { rpm: 450, text: "Agg. Burst" },
+        { rpm: 390, text: "Adaptive" },
+        { rpm: 340, text: "High-Impact" },
+    ],
+    [DataSearchString.ScoutRifleTypeRegex]: [
+        { rpm: 260, text: "Veist Rapid-Fire" },
+        { rpm: 260, text: "Rapid-Fire" },
+        { rpm: 200, text: "Lightweight" },
+        { rpm: 180, text: "Precision" },
+        { rpm: 150, text: "High-Impact" },
+    ],
+    [DataSearchString.SidearmTypeRegex]: [
+        { rpm: 491, text: "Adaptive (Burst)" },
+        { rpm: 491, text: "Omolon Adaptive" },
+        { rpm: 450, text: "Suros Rapid-Fire" },
+        { rpm: 325, text: "Aggressive Burst" },
+        { rpm: 360, text: "Lightweight" },
+        { rpm: 300, text: "Adaptive" },
+        { rpm: 260, text: "Precision" },
+    ],
+    [DataSearchString.SubmachinegunTypeRegex]: [
+        { rpm: 900, text: "Adaptive" },
+        { rpm: 900, text: "Lightweight" },
+        { rpm: 750, text: "Aggressive" },
+        { rpm: 600, text: "Precision" },
+    ],
+    [DataSearchString.BowTypeRegex]: [
+        { rpm: 0, text: "Lightweight" },
+        { rpm: 0, text: "Precision" },
+    ],
+    [DataSearchString.ShotgunTypeRegex]: [
+        { rpm: 140, text: "Rapid-Fire" },
+        { rpm: 80, text: "Lightweight" },
+        { rpm: 65, text: "Pinpoint Slug" },
+        { rpm: 65, text: "Precision" },
+        { rpm: 55, text: "Aggressive" },
+    ],
+    [DataSearchString.SniperRifleTypeRegex]: [
+        { rpm: 140, text: "Rapid-Fire" },
+        { rpm: 90, text: "Adaptive" },
+        { rpm: 72, text: "Aggressive" },
+    ],
+    [DataSearchString.FusionRifleTypeRegex]: [
+        { rpm: 460, text: "Rapid-Fire" },
+        { rpm: 660, text: "Adaptive" },
+        { rpm: 740, text: "Precision" },
+        { rpm: 1000, text: "High-Impact" },
+    ],
+    [DataSearchString.TraceRifleTypeRegex]: [],
+    [DataSearchString.GrenadeLauncherTypeRegex]: [
+        { rpm: 150, text: "Rapid-Fire" },
+        { rpm: 120, text: "Adaptive" },
+        { rpm: 100, text: "Precision" },
+        { rpm: 90, text: "Lightweight" },
+        { rpm: 72, text: "Wave-Frame" },
+    ],
+    [DataSearchString.RocketLauncherTypeRegex]: [
+        { rpm: 25, text: "Aggressive" },
+        { rpm: 20, text: "Adaptive" },
+        { rpm: 15, text: "Hakke Precision" },
+        { rpm: 15, text: "Precision" },
+        { rpm: 15, text: "High-Impact" },
+    ],
+    [DataSearchString.LinearFusionTypeRegex]: [
+        { rpm: 533, text: "Precision" },
+        { rpm: 533, text: "Aggressive" },
+    ],
+    [DataSearchString.MachineGunTypeRegex]: [
+        { rpm: 900, text: "Rapid-Fire" },
+        { rpm: 450, text: "Adaptive" },
+        { rpm: 360, text: "High-Impact" },
+    ],
+    [DataSearchString.SwordTypeRegex]: [
+    ],
+    [DataSearchString.GlaiveTypeRegex]: [
+    ],
+};
+// */
 
 // TODO: these filters
 const origins: IFilterButton[] = [
@@ -97,12 +205,21 @@ const weaponCategoryFilters = computed(() => {
     return destinyDataService.itemCategories
         .filter(c => c.itemTypeRegex && weaponCategoryIconMap[c.itemTypeRegex])
         .map(c => {
-            const filter: IFilterButton = {
+            const filter: IWeaponFilterButton = {
                 text: c.displayProperties.name,
                 iconUrl: weaponCategoryIconMap[c.itemTypeRegex],
                 active: false,
+                archetypes: [],
                 filter: (item: DestinyInventoryItemDefinition) => {
-                    return !!item.itemCategoryHashes && item.itemCategoryHashes.includes(c.hash);
+                    if (!item.itemCategoryHashes) return false;
+                    if (!item.itemCategoryHashes.includes(c.hash)) return false;
+                    const activeArchetypeFilters = filter.archetypes.filter(a => a.active);
+                    // If no archetypes chosen, allow all.
+                    if (activeArchetypeFilters.length === 0) return true;
+                    // If no stats, can't check archetype so return false.
+                    if (!item.stats || !destinyDataService.rpmStatDefinition) return false;
+                    const rpmStat = findItemInTable(item.stats.stats, s => s.statHash === destinyDataService.rpmStatDefinition!.hash);
+                    return !!rpmStat && activeArchetypeFilters.some(a => a.filter(item));
                 },
             };
             return filter;
@@ -137,7 +254,6 @@ const itemTierFilters = computed(() => {
     const uniqueTiers: IFilterButton[] = [];
     const seenTiers: { [name: string]: boolean } = {};
     const itemTierDefinitions = destinyDataService.itemTiers;
-    itemTierDefinitions.sort((a, b) => a.index - b.index);
 
     for (const tier of itemTierDefinitions) {
         if (!seenTiers[tier.displayProperties.name]) {
@@ -170,6 +286,7 @@ const filterCategoryMap = computed(() => {
     const map: Record<FilterCategory, { [buttonText: string]: IFilterButton }> = {
         "Damage Type": {},
         "Weapon": {},
+        "Archetype": {},
         "Collections": {},
         "Rarity": {},
     };
@@ -201,8 +318,12 @@ function onPerkFilterChanged() {
     // TODO: stuff
 }
 
-function onFilterButtonToggled(category: FilterCategory, filter: IFilterButton, active: boolean) {
-    filterCategoryMap.value[category][filter.text].active = active;
+function onFilterButtonToggled(filter: IFilterButton, active: boolean) {
+    filter.active = active;
+}
+
+function onArchetypeFilterToggled(archetypeFilter: IArchetypeFilter, active: boolean) {
+    archetypeFilter.active = active;
 }
 
 function includeSunsetToggled() {
@@ -213,6 +334,7 @@ function onApplyFilters() {
     const filters: Record<FilterCategory, FilterPredicate[]> = {
         "Damage Type": [],
         "Weapon": [],
+        "Archetype": [],
         "Collections": [],
         "Rarity": [],
     };
@@ -243,6 +365,22 @@ function onApplyFilters() {
             <input type="text" v-model="perkFilter" @input="onPerkFilterChanged">
         </CollapsibleSection>
         <CollapsibleSection
+            v-for="filter of weaponCategoryFilters"
+            :key="filter.text"
+            name=""
+        >
+            <div class="archetype-group" v-if="filter.active">
+                <FilterOptionButton
+                    v-for="archetype of filter.archetypes"
+                    :key="archetype.text"
+                    :text="archetype.text"
+                    :icon-url="filter.iconUrl"
+                    :wide="true"
+                    @toggled="active => onArchetypeFilterToggled(archetype, active)"
+                ></FilterOptionButton>
+            </div>
+        </CollapsibleSection>
+        <CollapsibleSection
             v-for="category of filterCategories"
             :key="category.name"
             :name="category.name"
@@ -254,7 +392,7 @@ function onApplyFilters() {
                     :text="filter.text"
                     :icon-url="filter.iconUrl"
                     :wide="category.wide"
-                    @toggled="active => onFilterButtonToggled(category.name, filter, active)"
+                    @toggled="active => onFilterButtonToggled(filter, active)"
                 ></FilterOptionButton>
             </div>
         </CollapsibleSection>

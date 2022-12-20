@@ -20,6 +20,7 @@ const filters = ref<Record<FilterCategory, FilterPredicate[]>>({
     "Damage Type": [],
     "Rarity": [],
     "Weapon": [],
+    "Archetype": [],
 });
 
 const weapons = computed(() => {
@@ -28,13 +29,14 @@ const weapons = computed(() => {
 
 const areFiltersChosen = computed(() => {
     return (!!filters.value["Collections"] && filters.value["Collections"].length > 0)
-        && (!!filters.value["Damage Type"] && filters.value["Damage Type"].length > 0)
-        && (!!filters.value["Rarity"] && filters.value["Rarity"].length > 0)
-        && (!!filters.value["Weapon"] && filters.value["Weapon"].length > 0);
+        || (!!filters.value["Damage Type"] && filters.value["Damage Type"].length > 0)
+        || (!!filters.value["Rarity"] && filters.value["Rarity"].length > 0)
+        || (!!filters.value["Weapon"] && filters.value["Weapon"].length > 0);
 });
 
 const filteredWeapons = computed(() => {
     // If no filter or search, return truncated list
+    console.log("filtering weapons", areFiltersChosen.value, !!props.searchString, filters.value);
     if (!areFiltersChosen.value && !props.searchString) return weapons.value.slice(0, 22);
     return weapons.value
         .filter(w => {
@@ -47,7 +49,6 @@ const filteredWeapons = computed(() => {
                 && checkFilterCategoryOnWeapon(rarity, w)
                 && checkFilterCategoryOnWeapon(weapon, w);
         })
-        // If no search, return first 22 items
         .filter(s => s.displayProperties.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
 });
 
@@ -57,6 +58,7 @@ function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: Destin
 
 function onFiltersApplied(newFilters: Record<FilterCategory, FilterPredicate[]>) {
     filters.value = newFilters;
+    console.log("filters are", filters.value);
 }
 
 function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {

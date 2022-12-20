@@ -6,6 +6,7 @@ import type {
 import { reactive } from "vue";
 import { destinyApiService } from "./destinyApiService";
 import { DataSearchString, ItemTierIndex, type Destiny2GameData, type IPerkOption, type IPerkSlotOptions } from "./types";
+import { findItemInTable } from "./util";
 
 type GameDataReactiveWrapper = { gameData: Destiny2GameData | null };
 
@@ -39,6 +40,17 @@ class DestinyDataService {
 
     public get itemTiers() {
         return this.gameData ? this.gameData.itemTierTypes : [];
+    }
+
+    public get basicItemTier() { return this.itemTiers.find(tier => tier.index === ItemTierIndex.Basic); }
+    public get commonItemTier() { return this.itemTiers.find(tier => tier.index === ItemTierIndex.Common); }
+    public get uncommonItemTier() { return this.itemTiers.find(tier => tier.index === ItemTierIndex.Uncommon); }
+    public get rareItemTier() { return this.itemTiers.find(tier => tier.index === ItemTierIndex.Rare); }
+    public get legendaryItemTier() { return this.itemTiers.find(tier => tier.index === ItemTierIndex.Legendary); }
+    public get exoticItemTier() { return this.itemTiers.find(tier => tier.index === ItemTierIndex.Exotic); }
+
+    public get rpmStatDefinition() {
+        return this.gameData ? findItemInTable(this.gameData.statsLookup, i => i.displayProperties.name === DataSearchString.RpmStatName) : undefined;
     }
 
     public initialize = async () => {

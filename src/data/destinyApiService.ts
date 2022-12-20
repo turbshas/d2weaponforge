@@ -1,13 +1,9 @@
 import { Destiny2 } from "bungie-api-ts";
-import type {
-    DestinyInventoryItemDefinition,
-    DestinyManifestLanguage,
-    DestinyManifestSlice
-} from "bungie-api-ts/destiny2";
+import type { DestinyInventoryItemDefinition, DestinyManifestLanguage, DestinyManifestSlice } from "bungie-api-ts/destiny2";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import { cacheService } from "./cacheService";
-import { DataSearchString, type Destiny2GameData } from "./types";
-import { hashMapToArray } from "./util";
+import { DataSearchString, ItemTierIndex, type Destiny2GameData } from "./types";
+import { findItemInTable, hashMapToArray } from "./util";
 
 type UsedDestinyManifestSlice = DestinyManifestSlice<(
     "DestinyEnergyTypeDefinition"
@@ -31,8 +27,10 @@ class DestinyApiService {
         const manifestInfoPromise = Destiny2.getDestinyManifest(this.makeRequest);
         const cachedManifestPromise = cacheService.getCachedManifest();
         const [manifestInfo, cachedManifest] = await Promise.all([manifestInfoPromise, cachedManifestPromise]);
+
         console.log("manifest info", manifestInfo);
 
+        /*
         if (cachedManifest) {
             const cachedJsonComponentUrls = cachedManifest.manifestInfo.jsonWorldComponentContentPaths["en"];
             const retrievedJsonComponentUrls = manifestInfo.Response.jsonWorldComponentContentPaths["en"];
@@ -42,6 +40,7 @@ class DestinyApiService {
                 return cachedManifest.manifestData;
             }
         }
+        */
 
         // Get manifest slices we care about
         const manifestSlice = await Destiny2.getDestinyManifestSlice(this.makeRequest, {
@@ -157,6 +156,8 @@ class DestinyApiService {
             weaponIntrinsicCategory: weaponIntrinsicCategory!,
             weaponPerkCategory: weaponPerkCategory!,
         };
+        // This seems to sort from common -> exotic nicely
+        gameData.itemTierTypes.sort((a, b) => a.index - b.index);
 
         console.log("weapons", gameData.weapons);
 
