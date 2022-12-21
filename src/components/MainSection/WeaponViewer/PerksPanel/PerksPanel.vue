@@ -120,15 +120,25 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
 </script>
 
 <template>
-    <div class="perks" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
-        <span class="title">Weapon Perks</span>
-        <PerkList :perk-option-lists="perkOptionListsPerSlot" :selected-perks="selectedPerks" @perk-selected="onPerkSelected"></PerkList>
+    <div class="perks">
+        <h2 class="title">Weapon Perks</h2>
+        <PerkList
+            :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
+            :perk-option-lists="perkOptionListsPerSlot"
+            :selected-perks="selectedPerks"
+            @perk-selected="onPerkSelected"
+        ></PerkList>
         <span class="description">
             TO APPLY THE ENHANCED VERSION OF A PERK, CLICK SAID PERK IN THE AREA WITH THE PICTURE OF THE WEAPON.
         </span>
         <div v-if="hasCuratedPerks">
-            <span class="title">Curated Roll</span>
-            <PerkList :perk-option-lists="curatedPerks" :selected-perks="selectedPerks" @perk-selected="onPerkSelected"></PerkList>
+            <h2 class="title">Curated Roll</h2>
+            <PerkList
+                :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
+                :perk-option-lists="curatedPerks"
+                :selected-perks="selectedPerks"
+                @perk-selected="onPerkSelected"
+            ></PerkList>
         </div>
     </div>
 </template>
@@ -138,12 +148,42 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
     display: flex;
     flex-direction: column;
     background-size: auto;
+    background-color: #12171c;
+
+    box-shadow: 0 0 40px 0 rgba(0,0,0,.5);
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
 }
 
 .title {
     flex-grow: 0;
-    border-color: white;
-    border-style: solid;
-    border-width: 0 0 1px 0;
+
+    position: relative;
+    opacity: 0.75;
+    margin-top: 0;
+    margin-bottom: 16px;
+    margin-left: 0;
+    margin-right: 0;
+    padding-top: 0;
+    padding-bottom: 8px;
+    padding-left: 0;
+    padding-right: 0;
+
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: 12px;
+}
+.title::before {
+    content: "";
+    position: absolute;
+    display: block;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background-color: #fafafa;
+    opacity: 0.75;
 }
 </style>

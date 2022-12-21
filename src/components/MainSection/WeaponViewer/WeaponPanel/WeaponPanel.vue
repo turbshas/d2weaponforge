@@ -139,9 +139,11 @@ function onPerkClicked(column: number) {
     display: flex;
     flex-direction: column;
     /* aspect ratio of image is 16:9 */
-    width: 800px;
-    height: 450px;
-    background-size: contain;
+    /* width: 800px; */
+    /* height: 570px; */
+    aspect-ratio: 16 / 9;
+    background-size: cover;
+    padding: 16px;
 }
 
 .summary {

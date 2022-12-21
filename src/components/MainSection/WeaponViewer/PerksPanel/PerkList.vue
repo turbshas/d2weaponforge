@@ -34,8 +34,10 @@ function onPerkClicked(column: number, perk: IPerkOption) {
             class="column"
             v-for="(slot, column) in perkSlots"
             :key="column"
+            :class="{ 'first': column === 0, }"
         >
             <PerkDisplay
+                class="perk"
                 v-for="(perk, index) in slot.options"
                 :key="index"
                 :perk="perk.enhancedPerk || perk.perk"
@@ -52,10 +54,46 @@ function onPerkClicked(column: number, perk: IPerkOption) {
 .grid {
     display: flex;
     flex-direction: row;
+    justify-content: center;
+
+    margin-bottom: 24px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .column {
     display: flex;
     flex-direction: column;
+    position: relative;
+
+    margin-left: 20px;
+}
+.column::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background-color: hsla(0,0%,100%,.15);
+}
+@media screen and (min-width: 560px) {
+    .column::before {
+        left: -10px;
+    }
+}
+.column:first-child {
+    margin-left: 0;
+}
+.column:first-child::before {
+    content: none;
+}
+
+.perk {
+    margin-top: 10.8px;
+}
+.perk:first-child {
+    margin-top: 0;
 }
 </style>

@@ -104,13 +104,15 @@ function onUrlParsed(
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    /* TODO: remove this. Faking the width of a scroll bar for testing */
+    margin-right: 17px;
 }
 
 .sidebar {
-    width: 400px;
+    width: 460px;
 }
 
 .main {
-    flex-grow: 1;
+    flex: 1;
 }
 </style>

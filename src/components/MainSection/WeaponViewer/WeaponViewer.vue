@@ -37,29 +37,39 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
     <div class="viewer">
         <div class="weapon">
             <WeaponPanel
-                :weapon="weapon"
-                :selected-perks="selectedPerks"
-                :masterwork="masterwork"
-                :mod="mod"
+                :weapon="props.weapon"
+                :selected-perks="props.selectedPerks"
+                :masterwork="props.masterwork"
+                :mod="props.mod"
             ></WeaponPanel>
             <div class="extras">
                 <ExtrasPanel
-                    :weapon="weapon"
-                    :selected-perks="selectedPerks"
-                    :masterwork="masterwork"
-                    :mod="mod"
+                    :weapon="props.weapon"
+                    :selected-perks="props.selectedPerks"
+                    :masterwork="props.masterwork"
+                    :mod="props.mod"
                 ></ExtrasPanel>
                 <div class="mods-masterwork">
-                    <MasterworkPanel :weapon="weapon" :masterwork="masterwork" @masterwork-changed="onMasterworkChanged"></MasterworkPanel>
-                    <ModsPanel :weapon="weapon" :mod="mod" @mod-changed="onModChanged"></ModsPanel>
+                    <MasterworkPanel
+                        class="mw"
+                        :weapon="props.weapon"
+                        :masterwork="props.masterwork"
+                        @masterwork-changed="onMasterworkChanged"
+                    ></MasterworkPanel>
+                    <ModsPanel
+                        :weapon="props.weapon"
+                        :mod="props.mod"
+                        @mod-changed="onModChanged"
+                    ></ModsPanel>
                 </div>
             </div>
         </div>
         <PerksPanel
-            :weapon="weapon"
-            :selected-perks="selectedPerks"
-            :masterwork="masterwork"
-            :mod="mod"
+            class="perks"
+            :weapon="props.weapon"
+            :selected-perks="props.selectedPerks"
+            :masterwork="props.masterwork"
+            :mod="props.mod"
             @perk-selected="onPerkSelected"
         ></PerksPanel>
     </div>
@@ -72,8 +82,17 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
 }
 
 .weapon {
+    flex: 965;
+
     display: flex;
     flex-direction: column;
+    max-width: 1400px;
+    margin-right: 16px;
+    margin-bottom: 16px;
+}
+
+.perks {
+    flex: 414;
 }
 
 .extras {
@@ -85,5 +104,10 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
     display: flex;
     flex-direction: column;
     width: 500px;
+    margin-left: 16px;
+}
+
+.mw {
+    margin-bottom: 16px;
 }
 </style>
