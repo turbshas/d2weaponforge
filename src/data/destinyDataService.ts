@@ -101,6 +101,10 @@ class DestinyDataService {
         return this.gameData?.socketCategoryLookup[socketCategoryHash];
     }
 
+    public getSandboxPerkDefinition = (perkHash: number) => {
+        return this.gameData?.sandboxPerksLookup[perkHash];
+    }
+
     public isIntrinsicPerkSocketCategory = (perkItemHash: number) => {
         return !!this.gameData && (this.gameData.weaponIntrinsicCategory.hash === perkItemHash);
     }

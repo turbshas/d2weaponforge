@@ -8,7 +8,7 @@ import WeaponIcons from "@/assets/WeaponIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
 import { DataSearchString, type FilterCategory, type FilterPredicate, type IArchetypeFilter, type IFilterButton, type IWeaponFilterButton } from "@/data/types";
-import { findItemInTable } from "@/data/util";
+import { findItemInTable, findItemsInTable } from "@/data/util";
 
 interface IArchetypeInfo {
     text: string;
@@ -226,6 +226,22 @@ const weaponCategoryFilters = computed(() => {
         });
 });
 
+const activeWeaponFilters = computed(() => {
+    const result: IWeaponFilterButton[] = [];
+
+    const weaponFilters = filterCategoryMap.value["Weapon"];
+    console.log("weapon filters", weaponFilters);
+    for (const buttonName in weaponFilters) {
+        const filter = weaponFilters[buttonName] as IWeaponFilterButton;
+        if (filter.active) {
+            console.log("filter is active", filter);
+            result.push(filter);
+        }
+    }
+
+    return result;
+});
+
 const collectionCategoryFilters = computed(() => {
     // Just seasons right now, TODO: add other collections
     const collections = origins;
@@ -320,6 +336,7 @@ function onPerkFilterChanged() {
 
 function onFilterButtonToggled(filter: IFilterButton, active: boolean) {
     filter.active = active;
+    console.log("filter toggled", filter, weaponCategoryFilters.value, activeWeaponFilters.value);
 }
 
 function onArchetypeFilterToggled(archetypeFilter: IArchetypeFilter, active: boolean) {
@@ -364,12 +381,12 @@ function onApplyFilters() {
         <CollapsibleSection name="Perks">
             <input type="text" v-model="perkFilter" @input="onPerkFilterChanged">
         </CollapsibleSection>
-        <CollapsibleSection
-            v-for="filter of weaponCategoryFilters"
-            :key="filter.text"
-            name=""
-        >
-            <div class="archetype-group" v-if="filter.active">
+        <CollapsibleSection name="Archetype" v-show="activeWeaponFilters.length > 0">
+            <div
+                class="archetype-group"
+                v-for="filter of activeWeaponFilters"
+                :key="filter.text"
+            >
                 <FilterOptionButton
                     v-for="archetype of filter.archetypes"
                     :key="archetype.text"

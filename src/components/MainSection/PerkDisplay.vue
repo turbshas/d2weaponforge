@@ -24,10 +24,25 @@ const perkIcon = computed(() => {
 const perkElement = ref<HTMLElement | null>(null);
 const tooltipTargetElement = computed(() => props.perk ? perkElement.value : null);
 const tooltipTitle = computed(() => props.perk ? props.perk.displayProperties.name : "");
-const tooltipSubtitle = computed(() => "subtitle");
+const tooltipSubtitle = computed(() => props.perk ? props.perk.itemTypeDisplayName : "");
 const tooltipDescription = computed(() => props.perk ? props.perk.displayProperties.description : "");
-const tooltipEffects = computed(() => "effects");
-const tooltipBonuses = computed(() => "bonuses");
+// TODO: this require outside data, complete when that is compiled.
+const tooltipEffects = computed(() => "");
+const tooltipBonuses = computed(() => {
+    if (!props.perk) return [];
+    return props.perk.investmentStats.map(s => {
+        const statDef = destinyDataService.getStatDefinition(s.statTypeHash);
+        const name = statDef ? statDef.displayProperties.name : "";
+        return {
+            statName: name,
+            value: s.value,
+        };
+    });
+});
+// TODO: this require outside data, complete when that is compiled.
+const tooltipEnhanced = computed(() => false);
+// TODO: this require outside data, complete when that is compiled.
+const tooltipEnhancedBonus = computed(() => "");
 
 function onPerkClick() {
     if (!props.perk) return;
@@ -58,6 +73,8 @@ function onPerkClick() {
             :description="tooltipDescription"
             :effect="tooltipEffects"
             :bonuses="tooltipBonuses"
+            :enhanced="tooltipEnhanced"
+            :enhanced-bonus="tooltipEnhancedBonus"
         ></Tooltip>
     </div>
 </template>
