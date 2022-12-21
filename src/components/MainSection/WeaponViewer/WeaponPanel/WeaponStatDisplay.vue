@@ -132,10 +132,18 @@ function getSvgPathData(recoilDirection: number) {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+    height: 20px;
 }
 
 .name {
     width: 30%;
+    margin-right: 8px;
+    
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 14px;
+    color: #fafafa;
+    text-shadow: 0 3px 5px #0a0a0a;
     text-align: right;
 }
 

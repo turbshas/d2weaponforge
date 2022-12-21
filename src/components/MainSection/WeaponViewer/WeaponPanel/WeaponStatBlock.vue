@@ -87,7 +87,7 @@ function getModifierForStat(stat: DestinyInventoryItemStatDefinition) {
 </script>
 
 <template>
-    <div>
+    <div class="list">
         <WeaponStatDisplay
             v-for="stat in orderedStats"
             :key="stat.statHash"
@@ -99,5 +99,10 @@ function getModifierForStat(stat: DestinyInventoryItemStatDefinition) {
 </template>
 
 <style scoped>
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
 </style>
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BackgroundImage from "@/assets/background.jpg";
 import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
 import { computed } from "@vue/reactivity";
@@ -18,7 +19,9 @@ const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMa
 
 onMounted(() => {
     destinyDataService.initialize();
-})
+});
+
+const backgroundUrl = computed(() => BackgroundImage);
 
 function onTabSelected(tab: PageSelection) {
     selectedPage.value = tab;
@@ -73,7 +76,7 @@ function onUrlParsed(
 </script>
 
 <template>
-    <div class="app">
+    <div class="app" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
         <UrlManager
             :page="selectedPage"
             :weapon="selectedWeapon"

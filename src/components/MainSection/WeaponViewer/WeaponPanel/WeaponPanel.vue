@@ -181,6 +181,8 @@ function onPerkClicked(column: number) {
 }
 
 .stats {
+    margin-top: 16px;
+    margin-bottom: 6px;
     max-width: 50%;
 }
 
