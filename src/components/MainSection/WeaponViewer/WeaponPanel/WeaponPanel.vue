@@ -105,8 +105,8 @@ function onPerkClicked(column: number) {
         <div class="summary">
             <WeaponIcon class="icon" :weapon="weapon"></WeaponIcon>
             <div class="description">
-                <span>{{ name }}</span>
-                <span>{{ type }}</span>
+                <h1>{{ name }}</h1>
+                <h3>{{ type }}</h3>
             </div>
             <img class="element" :src="element">
         </div>
@@ -152,26 +152,32 @@ function onPerkClicked(column: number) {
 }
 
 .icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 0;
-    border-top: 2px;
-    border-bottom: 2px;
-    border-left: 2px;
-    border-right: 2px;
-    border-style: solid;
-    border-color: white;
+    width: 52px;
+    height: 52px;
+    box-shadow: inset 0 0 0 2px #f5f5f5;
+    margin-right: 16px;
 }
 
 .description {
     display: flex;
     flex-direction: column;
 }
+.description h1 {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 32px;
+    text-transform: uppercase;
+}
+.description h3 {
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
 
 .element {
     margin-left: auto;
-    width: 50px;
-    height: 50px;
+    width: 42px;
+    height: 42px;
 }
 
 .stats {
@@ -179,7 +185,8 @@ function onPerkClicked(column: number) {
 }
 
 .perks {
+    justify-content: flex-end;
     margin-top: auto;
-    margin-right: auto;
+    margin-left: auto;
 }
 </style>

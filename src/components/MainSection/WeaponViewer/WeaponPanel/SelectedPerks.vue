@@ -3,6 +3,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
 import PerkDisplay from '../../PerkDisplay.vue';
+import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 
 
 const props = defineProps<{
@@ -48,21 +49,23 @@ const intrinsicPerk = computed(() => {
     return destinyDataService.getItemDefinition(intrinsicPlugSet.value.reusablePlugItems[0].plugItemHash);
 });
 
+const backgroundUrl = computed(() => PerkPanelBackground);
+
 function onPerkClicked(column: number) {
     emits("perkClicked", column);
 }
 </script>
 
 <template>
-    <div class="selected">
-        <PerkDisplay :perk="intrinsicPerk" :selected="false" :retired="false" full-size></PerkDisplay>
-        <PerkDisplay :perk="perk1" :selected="false" :retired="false"></PerkDisplay>
-        <PerkDisplay :perk="perk2" :selected="false" :retired="false"></PerkDisplay>
-        <PerkDisplay :perk="perk3" :selected="false" :retired="false" :enhanced="isPerk3Enhanced" @click="onPerkClicked(2)"></PerkDisplay>
-        <PerkDisplay :perk="perk4" :selected="false" :retired="false" :enhanced="isPerk4Enhanced" @click="onPerkClicked(3)"></PerkDisplay>
-        <PerkDisplay :perk="originPerk" :selected="false" :retired="false" v-if="!!originPerk"></PerkDisplay>
-        <PerkDisplay :perk="mod" :selected="false" :retired="false" full-size v-if="!!mod"></PerkDisplay>
-        <PerkDisplay :perk="masterwork" :selected="false" :retired="false" full-size v-if="!!masterwork"></PerkDisplay>
+    <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
+        <PerkDisplay class="perk" :perk="intrinsicPerk" :selected="false" :retired="false" full-size></PerkDisplay>
+        <PerkDisplay class="perk" :perk="perk1" :selected="false" :retired="false"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="perk2" :selected="false" :retired="false"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="perk3" :selected="false" :retired="false" :enhanced="isPerk3Enhanced" @click="onPerkClicked(2)"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="perk4" :selected="false" :retired="false" :enhanced="isPerk4Enhanced" @click="onPerkClicked(3)"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="originPerk" :selected="false" :retired="false" v-if="!!originPerk"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="mod" :selected="false" :retired="false" full-size v-if="!!mod"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="masterwork" :selected="false" :retired="false" full-size v-if="!!masterwork"></PerkDisplay>
     </div>
 </template>
 
@@ -70,5 +73,14 @@ function onPerkClicked(column: number) {
 .selected {
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    padding: 8px;
+}
+
+.perk {
+    margin-left: 16px;
+}
+.perk:first-child {
+    margin-left: 0;
 }
 </style>

@@ -186,4 +186,15 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
     background-color: #fafafa;
     opacity: 0.75;
 }
+
+.description {
+    margin-top: -8px;
+    margin-bottom: 8px;
+
+    color: #b78c25;
+    text-align: center;
+    font-family: neue-haas-grotesk-text, "Helvetica Neue", sans-serif;
+    font-size: 12.8px;
+    font-weight: bold;
+}
 </style>
