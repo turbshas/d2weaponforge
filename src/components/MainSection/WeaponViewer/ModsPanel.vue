@@ -3,6 +3,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { DataSearchString } from '@/data/types';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed, ref } from 'vue';
+import PerkDisplay from '../PerkDisplay.vue';
 import BuilderSection from './BuilderSection.vue';
 
 const props = defineProps<{
@@ -37,10 +38,6 @@ const modOptions = computed(() => {
     return x;
 });
 
-function getModIconUrl(mod: DestinyInventoryItemDefinition) {
-    return destinyDataService.getImageUrl(mod.displayProperties.icon);
-}
-
 function onModClicked(mod: DestinyInventoryItemDefinition) {
     // Selecting the current mod will de-select it
     const newMod = mod.hash === props.mod?.hash ? undefined : mod;
@@ -51,22 +48,26 @@ function onModClicked(mod: DestinyInventoryItemDefinition) {
 <template>
     <BuilderSection class="mods" title="Weapon Mods">
         <div class="list">
-            <img
+            <PerkDisplay
                 class="mod"
                 v-for="mod of modOptions"
                 :key="mod.hash"
-                :src="getModIconUrl(mod)"
+                :perk="mod"
+                :selected="false"
+                :retired="false"
+                full-size
                 @click="onModClicked(mod)"
-            >
+            ></PerkDisplay>
         </div>
     </BuilderSection>
 </template>
 
 <style scoped>
 .list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 48px);
+    gap: 8px;
+    justify-content: space-between;
 }
 
 .mod {

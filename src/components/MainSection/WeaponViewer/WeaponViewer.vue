@@ -44,7 +44,6 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
             ></WeaponPanel>
             <div class="extras-mws-mods">
                 <ExtrasPanel
-                    class="extras"
                     :weapon="props.weapon"
                     :selected-perks="props.selectedPerks"
                     :masterwork="props.masterwork"
@@ -97,22 +96,17 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
 }
 
 .extras-mws-mods {
-    display: flex;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 414.467fr 534.083fr;
+    gap: 16px;
     flex-direction: row;
     margin-top: 16px;
 }
 
-.extras {
-    flex: 382.467;
-}
-
 .mods-masterwork {
-    flex: 502.083;
-
     display: flex;
     flex-direction: column;
-    width: 500px;
-    margin-left: 16px;
 }
 
 .mw {

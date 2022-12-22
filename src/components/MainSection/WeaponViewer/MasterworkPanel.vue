@@ -188,7 +188,6 @@ function onMasterworkLevelChanged(event: Event) {
     content: "";
     pointer-events: none;
     position: absolute;
-    z-index: 1;
     top: 50%;
     width: 8px;
     height: 8px;
@@ -230,7 +229,6 @@ function onMasterworkLevelChanged(event: Event) {
     width: 16px;
     height: 16px;
     position: relative;
-    z-index: 2;
     background-color: #1d1c25;
     border-width: 1px;
     border-style: solid;

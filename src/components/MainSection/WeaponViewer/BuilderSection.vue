@@ -1,14 +1,13 @@
 <script setup lang="ts">
 const props = defineProps<{
     title: string,
-    class?: string,
 }>();
 </script>
 
 <template>
     <div class="section">
         <h2 class="title">{{ props.title }}</h2>
-        <slot :class="props.class"></slot>
+        <slot></slot>
     </div>
 </template>
 
