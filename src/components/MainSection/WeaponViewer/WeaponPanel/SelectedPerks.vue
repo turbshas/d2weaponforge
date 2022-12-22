@@ -58,7 +58,7 @@ function onPerkClicked(column: number) {
 
 <template>
     <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
-        <PerkDisplay class="perk" :perk="intrinsicPerk" :selected="false" :retired="false" full-size></PerkDisplay>
+        <PerkDisplay class="perk" :perk="intrinsicPerk" :selected="false" :retired="false" full-size hide-hover></PerkDisplay>
         <PerkDisplay class="perk" :perk="perk1" :selected="false" :retired="false"></PerkDisplay>
         <PerkDisplay class="perk" :perk="perk2" :selected="false" :retired="false"></PerkDisplay>
         <PerkDisplay class="perk" :perk="perk3" :selected="false" :retired="false" :enhanced="isPerk3Enhanced" @click="onPerkClicked(2)"></PerkDisplay>

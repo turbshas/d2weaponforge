@@ -82,7 +82,7 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
 }
 
 .weapon {
-    flex: 965;
+    flex: 964.55;
 
     display: flex;
     flex-direction: column;
@@ -92,7 +92,7 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
 }
 
 .perks {
-    flex: 414;
+    flex: 382.467;
 }
 
 .extras {

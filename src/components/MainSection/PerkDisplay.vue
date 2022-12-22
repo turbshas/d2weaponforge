@@ -10,6 +10,7 @@ const props = defineProps<{
     retired: boolean,
     enhanced?: boolean,
     fullSize?: boolean,
+    hideHover?: boolean,
 }>();
 
 const emits = defineEmits<{
@@ -59,8 +60,8 @@ function onPerkClick() {
     >
         <div
             class="icon"
-            :class="{ 'random-roll-icon': !fullSize, 'retired': retired }"
-            :style="{ 'background-image': 'url(' + perkIcon +')' }"
+            :class="{ 'random-roll-icon': !fullSize, 'retired': retired, 'hover': !hideHover, }"
+            :style="{ 'background-image': 'url(' + perkIcon +')', }"
         ></div>
         <div class="enhanced-gradient-wrapper" v-if="enhanced && !selected">
             <div class="enhanced-gradient"></div>
@@ -98,6 +99,37 @@ function onPerkClick() {
     top: 0;
     left: 0;
     z-index: 10;
+}
+.icon::before, .icon::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+.icon.random-roll-icon::before, .icon.random-roll-icon::after {
+    border-radius: 50%;
+}
+.icon::before {
+    transition: background-color .5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.hover:hover::before {
+    box-shadow: inset 0 0 0 2px #ccc;
+    background-color: hsla(0, 0%, 100%, 0.4)
+}
+.icon::after {
+    transition: 
+        box-shadow 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+        transform 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+        opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1)
+    ;
+}
+.hover:focus::after, .hover:hover::after {
+    box-shadow: 0 0 0 1px #fafafa;
+    transform: scale(1.085) translateZ(0);
+    opacity: 1;
 }
 
 .random-roll-wrapper {

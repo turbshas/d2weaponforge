@@ -37,11 +37,6 @@ const total = computed(() => {
 });
 const modifierSign = computed(() => props.modifier > 0 ? "+" : "");
 const modifierMagnitude = computed(() => Math.abs(props.modifier));
-const changeColor = computed(() => {
-    if (props.modifier > 0) return "green";
-    else if (props.modifier < 0) return "red";
-    else return "black";
-});
 const filledWidthPercent = computed(() => props.modifier > 0 ? props.value.value : total.value);
 
 const statDisplayType = computed(() => {
@@ -98,30 +93,38 @@ function getSvgPathData(recoilDirection: number) {
         <span class="name">{{ name }}</span>
         <div class="display">
             <div class="bar" v-if="statDisplayType === StatDisplayType.Bar">
-                <div class="value">
-                    <span class="current" :style="{ color: changeColor }">{{ total }}</span>
-                    <span class="modifier" :style="{ color: changeColor }" v-if="modifier !== 0">({{ modifierSign + modifier }})</span>
+                <div class="value" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">
+                    <span>{{ total }}</span>
+                    <span class="modifier">({{ modifierSign + modifier }})</span>
                 </div>
                 <div class="filled" :style="{ 'width': filledWidthPercent + '%' }"></div>
                 <div
                     class="change"
-                    :style="{ 'width': modifierMagnitude + '%', 'background-color': changeColor }"
+                    :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }"
+                    :style="{ 'width': modifierMagnitude + '%', }"
                     v-if="modifier !== 0"
                 ></div>
             </div>
-            <div class="angle" v-if="statDisplayType === StatDisplayType.Angle">
-                <span>{{ total }}</span>
-                <svg class="pie" height="12" viewBox="0 0 2 1">
+
+            <div class="number" v-else>
+                <span class="text" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">{{ total }}</span>
+                <div class="arrow" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }"></div>
+
+                <svg class="pie" height="12" viewBox="0 0 2 1" v-if="statDisplayType === StatDisplayType.Angle">
                     <circle class="circle" r="1" cx="1" cy="1"></circle>
                     <path
                         class="path"
+                        v-if="total <= 96"
                         :d="getSvgPathData(total)"
-                        fill="#fafafa"
                     ></path>
+                    <line
+                        v-if="total > 96"
+                        x1="1" y1="2"
+                        x2="1" y2="0"
+                        stroke="white"
+                        stroke-width="0.1"
+                    ></line>
                 </svg>
-            </div>
-            <div class="number" v-if="statDisplayType === StatDisplayType.Number">
-                {{ total }}
             </div>
         </div>
     </div>
@@ -145,6 +148,7 @@ function getSvgPathData(recoilDirection: number) {
     color: #fafafa;
     text-shadow: 0 3px 5px #0a0a0a;
     text-align: right;
+    align-self: center;
 }
 
 .display {
@@ -152,44 +156,100 @@ function getSvgPathData(recoilDirection: number) {
     display: flex;
 }
 
+/* bar display styles */
 .bar {
     position: relative;
     display: flex;
     flex-direction: row;
-    width: 70%;
-    background-color: grey;
+    width: 100%;
+    background-color: hsla(0, 0%, 98%, 0.2);
 }
-
-.value {
+.bar .value {
     position: absolute;
-    left: 0;
+    top: 0;
+    left: 4px;
+    z-index: 10;
+    height: 100%;
+    line-height: 100%;
+    font-size: 12px;
+    font-weight: 500;
+    color: #05070a;
+
     display: flex;
     flex-direction: row;
-    z-index: 10;
+    justify-content: center;
+    align-items: center;
+}
+.bar .value.positive {
+    color: #33613a;
+}
+.bar .value.negative {
+    color: #732522;
+}
+.bar .value.positive, .bar .value.negative {
+    font-weight: 600;
+}
+.bar .modifier {
+    margin-left: 4px;
+    font-weight: 500;
+}
+.bar .filled {
+    background-color: #fafafa;
+}
+.bar .change.positive {
+    background-color: #5aa366;
+}
+.bar .change.negative {
+    background-color: #973835;
 }
 
-.current {
-    color: black;
+/* Recoil direction styles */
+.number {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
 }
-
-.modifier {
-    color: black;
+.number .text {
+    font-size: 16px;
+    color: #fafafa;
+    text-shadow: 0 3px 5px #0a0a0a;
+    align-self: center;
 }
-
-.filled {
-    background-color: white;
+.number .positive {
+    color: #68cc79;
 }
-
-.change {
-    background-color: blue;
+.number .negative {
+    color: #e25954;
 }
-
-.pie {
+.number .pie {
     width: 24px;
-    height: 24px;
+    height: 12px;
+    margin-left: 10px;
+    align-self: center;
+    fill: #fafafa;
+}
+.number .circle {
+    fill: rgba(24, 30, 37, 1);
 }
 
-.circle {
-    fill: rgba(24, 30, 37, 1);
+.arrow {
+    margin-left: 6px;
+    align-self: center;
+
+    border-left-width: 4.8px;
+    border-right-width: 4.8px;
+    border-bottom-width: 9.6px;
+    border-color: transparent;
+    border-style: solid;
+    display: none;
+}
+.arrow.positive, .arrow.negative {
+    display: block;
+}
+.arrow.positive {
+    border-bottom-color: #68cc79;
+}
+.arrow.negative {
+    border-bottom-color: #e25954;
 }
 </style>
