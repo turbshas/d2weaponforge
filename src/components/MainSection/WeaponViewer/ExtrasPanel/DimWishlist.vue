@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import OptionButton from '@/components/OptionButton.vue';
 import type { IPerkOption } from '@/data/types';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import ExtrasListItem from './ExtrasListItem.vue';
+import DimIcon from '@/assets/dim_icon.svg';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -17,8 +19,8 @@ function copyWishlistItem() {
 </script>
 
 <template>
-    <ExtrasListItem label="DIM Wishlist">
-        <button @click="copyWishlistItem">Copy Wishlist Item</button>
+    <ExtrasListItem label="DIM Wishlist" :icon-url="DimIcon">
+        <OptionButton text="Copy Wishlist Item" @click="copyWishlistItem"></OptionButton>
     </ExtrasListItem>
 </template>
 

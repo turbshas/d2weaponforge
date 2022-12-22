@@ -1,32 +1,24 @@
 - like all the styling
-- hide redacted/blacklisted entries
-- urls for weapons - contains weapon hash + selected perk hashes
-- optimize loading - load only weapon list first, then everything else in the background
 - ordering weapons by release date to the API (might have to be manual)
 - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
 - filters
 - weapon viewer
   - extras (DIM integration, retired perks, comparisons integrations, damage falloff, reload speed)
-  - buttons hover effect
-  - perk/mod/weapon/stat tooltips
 - glossary (will probably need this done manually anyway for the perk descriptions/tooltips)
 - compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
-- required level for enhanced perks
-- sunset weapons filter
-- collections filters
-- weapon archetype filters
-- support for translations
-- selecting curated perk then toggling enhanced makes the icon disappear
-- fix recoil direction indicator when RD > 96
-- arrow indicator for stats
-- idea for comparison page:
+  - ideas:
   - each weapon is 1 row
   - stats only display numbers
   - perks, intrinsic, origin, MW, and mod in a straight line on the right side
   - icon + name/type on left side
   - stats in middle
   - what should stat arrows display? green only if highest value in list of weapons being compared?
-- create an ISelectedPerk that tracks info about the selected perk like if enhanced is used
+- required level for enhanced perks
+- sunset weapons filter
+- collections filters
+- weapon archetype filters
+- support for translations
+- selecting curated perk then toggling enhanced makes the icon disappear
 - fix backup mag - it currently just does +30 to the mag (and mag perks)
 - weapon mag size caps
 - find a way to move stats to a more central location that all components that need stats can look at
@@ -34,5 +26,4 @@
   - this would probably be a part of a rework to process data from the API better
 - hide/set to false "show crafted bonus" when weapon cannot be crafted
 - check out the traitIds property on DestinyInventoryItemDefinition for multi-language support
-- display RPM on appropriate weapons
 - button to hide components on top of weapon panel so screenshot can be viewed

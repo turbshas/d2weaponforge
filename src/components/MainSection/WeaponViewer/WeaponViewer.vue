@@ -65,7 +65,6 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
             </div>
         </div>
         <PerksPanel
-            class="perks"
             :weapon="props.weapon"
             :selected-perks="props.selectedPerks"
             :masterwork="props.masterwork"
@@ -77,22 +76,17 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
 
 <style scoped>
 .viewer {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 964.55fr 414.467fr;
+    gap: 16px;
 }
 
 .weapon {
-    flex: 964.55;
-
     display: flex;
     flex-direction: column;
     max-width: 1400px;
-    margin-right: 16px;
     margin-bottom: 16px;
-}
-
-.perks {
-    flex: 382.467;
 }
 
 .extras-mws-mods {

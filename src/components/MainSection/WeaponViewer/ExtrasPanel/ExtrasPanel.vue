@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import OptionButton from '@/components/OptionButton.vue';
 import { selectionService } from '@/data/selectionService';
 import type { IPerkOption } from '@/data/types';
 import { computed } from '@vue/reactivity';
@@ -32,16 +33,16 @@ function onShowCraftedBonusClicked() {
 
 <template>
     <BuilderSection title="Extras">
-        <DimWishlist :weapon="weapon" :selected-perks="selectedPerks"></DimWishlist>
+        <DimWishlist :weapon="props.weapon" :selected-perks="props.selectedPerks"></DimWishlist>
         <ExtrasListItem label="Hide Retired Perks">
-            <button @click="onHideRetiredClicked">{{ hideRetiredText }}</button>
+            <OptionButton :text="hideRetiredText" @click="onHideRetiredClicked"></OptionButton>
         </ExtrasListItem>
         <!-- TODO: add tooltip here that explains what this means - +3 stat bonus for lvl 10 crafted with enhanced intrinsic -->
         <ExtrasListItem label="Show Crafted Bonus">
-            <button @click="onShowCraftedBonusClicked">{{ showCraftedBonusText }}</button>
+            <OptionButton :text="showCraftedBonusText" @click="onShowCraftedBonusClicked"></OptionButton>
         </ExtrasListItem>
         <AddToComparisons></AddToComparisons>
-        <DamageFalloff :weapon="weapon" :selected-perks="selectedPerks" :masterwork="masterwork" :mod="mod"></DamageFalloff>
+        <DamageFalloff :weapon="props.weapon" :selected-perks="props.selectedPerks" :masterwork="props.masterwork" :mod="props.mod"></DamageFalloff>
         <ReloadSpeed></ReloadSpeed>
     </BuilderSection>
 </template>
