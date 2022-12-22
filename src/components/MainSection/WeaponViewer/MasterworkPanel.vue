@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { DataSearchString } from '@/data/types';
 import BuilderSection from './BuilderSection.vue';
+import OptionButton from '@/components/OptionButton.vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -114,11 +115,19 @@ function onMasterworkLevelChanged(event: Event) {
 <template>
     <BuilderSection class="masterwork" title="Weapon Masterwork">
         <div class="types">
-            <button class="type" v-for="name of masterworkStatNames" :key="name" @click="() => onMasterworkChanged(name)">{{ name }}</button>
+            <OptionButton
+                class="type"
+                v-for="name of masterworkStatNames"
+                :key="name"
+                :text="name"
+                @toggled="() => onMasterworkChanged(name)"
+            ></OptionButton>
         </div>
         <div class="level">
-            <span>{{ masterworkLevel }}</span>
-            <input class="slider" type="range" min="0" max="10" v-model="masterworkLevel" @change="onMasterworkLevelChanged">
+            <span class="text">{{ masterworkLevel }}</span>
+            <div class="slider-wrapper">
+                <input class="slider" type="range" min="0" max="10" v-model="masterworkLevel" @change="onMasterworkLevelChanged">
+            </div>
         </div>
     </BuilderSection>
 
@@ -140,9 +149,93 @@ function onMasterworkLevelChanged(event: Event) {
 .level {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+.text {
+    width: 24px;
+    height: 24px;
+    box-sizing: content-box;
+    margin-right: 8px;
+    padding: 8px;
+
+    background-color: hsla(0, 0%, 100%, 0.05);
+    box-shadow: inset 0 0 0 1px #f5f5f5;
+
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    color: #fafafa;
+}
+
+.slider-wrapper {
+    flex-grow: 1;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-shadow: inset 0 0 0 1px #f5f5f5;
+}
+.slider-wrapper::before, .slider-wrapper::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+
+    background-color: #1d1c25;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #fafafa;
+    transform: translateY(-50%) rotate(45deg);
+}
+.slider-wrapper::before {
+    left: calc(16px + 2px);
+}
+.slider-wrapper::after {
+    right: calc(16px + 2px);
 }
 
 .slider {
-    flex-grow: 1;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding-top: 1.6px;
+    padding-bottom: 1.6px;
+    cursor: pointer;
+}
+.slider::-webkit-slider-runnable-track, .slider::-moz-range-track {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #fafafa;
+    height: 2px
+}
+.slider::-webkit-slider-thumb, .slider::-moz-range-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    width: 16px;
+    height: 16px;
+    position: relative;
+    z-index: 2;
+    background-color: #1d1c25;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #fafafa;
+    cursor: grab;
+    transform: rotate(45deg);
 }
 </style>
