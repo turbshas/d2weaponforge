@@ -6,6 +6,7 @@ import PerkDisplay from '../../../Common/PerkDisplay.vue';
 const props = defineProps<{
     perkOptionLists: IPerkSlotOptions[] | null,
     selectedPerks: { [column: number]: IPerkOption | undefined },
+    hideEnhanced?: boolean,
 }>();
 
 const emits = defineEmits<{
@@ -43,7 +44,7 @@ function onPerkClicked(column: number, perk: IPerkOption) {
                 :perk="perk.enhancedPerk || perk.perk"
                 :selected="isPerkSelected(column, perk)"
                 :retired="!perk.currentlyCanRoll"
-                :enhanced="!!perk.enhancedPerk"
+                :enhanced="!!perk.enhancedPerk && !props.hideEnhanced"
                 @click="onPerkClicked(column, perk)"
             ></PerkDisplay>
         </div>

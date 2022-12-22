@@ -86,7 +86,12 @@ class DestinyApiService {
         const itemHashesToRemove: number[] = [];
         for (const key in manifestSlice.DestinyInventoryItemDefinition) {
             const item = manifestSlice.DestinyInventoryItemDefinition[key];
-            if (!!item.itemCategoryHashes && !item.itemCategoryHashes.some(h => neededItemCategoryHashes.includes(h))) {
+            if (
+                (!item.itemCategoryHashes || !item.itemCategoryHashes.some(h => neededItemCategoryHashes.includes(h)))
+                &&
+                // Some perks don't have any item categories.
+                (!item.plug || item.plug.plugCategoryIdentifier !== DataSearchString.FramesPlugCategoryId)
+                ) {
                 itemHashesToRemove.push(item.hash);
             }
         }

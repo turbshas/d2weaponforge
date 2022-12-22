@@ -69,6 +69,7 @@ class DestinyDataService {
         return `https://www.bungie.net${imgFileName}`;
     }
 
+
     public getDamageType = (hash: number) => {
         return this.gameData?.damageTypesLookup[hash];
     }
@@ -133,16 +134,16 @@ class DestinyDataService {
             return type && !type.plugWhitelist.some(this.isTrackerPlugCategory);
         });
 
-        // Either one of the other should be defined of randomizedPlugSetHash and reusablePlugSetHash
+        // Either one or the other should be defined of randomizedPlugSetHash and reusablePlugSetHash
         const perkPlugSets = perkSocketsNoTracker.map(ps => this.getPlugSetDefinition(ps.randomizedPlugSetHash || ps.reusablePlugSetHash!));
         const perkSlotOptions = perkPlugSets.map(this.getPerkOptionsFromPlugSet);
         return perkSlotOptions;
     }
 
     private getPerkOptionsFromPlugSet = (plugSet: DestinyPlugSetDefinition | undefined) => {
-        const perkOptionsByName: { [name: string]: DestinyInventoryItemDefinition[] } = {};
         const currentlyCanRollMap: { [plugItemHash: number]: boolean } = {};
         const seenPlugItems: { [plugItemHash: number]: boolean } = {};
+        const perksInSlot: DestinyInventoryItemDefinition[] = [];
 
         // Remove duplicates and group by name to capture normal + enhanced perks together
         for (const plugItem of plugSet?.reusablePlugItems || []) {
@@ -153,30 +154,27 @@ class DestinyDataService {
 
             const definition = destinyDataService.getItemDefinition(plugItem.plugItemHash);
             if (!definition) continue;
-
-            const name = definition.displayProperties.name;
-            if (!perkOptionsByName[name]) {
-                perkOptionsByName[name] = [definition];
-            } else {
-                perkOptionsByName[name].push(definition);
-            }
+            perksInSlot.push(definition);
         }
 
+        const normalPerks = perksInSlot.filter(p => {
+            if (!p.inventory) return false;
+            const itemTier = this.getItemTierDefinition(p.inventory.tierTypeHash);
+            return itemTier && itemTier.index === ItemTierIndex.Common;
+        });
+        const enhancedPerks = perksInSlot.filter(p => {
+            if (!p.inventory) return false;
+            const itemTier = this.getItemTierDefinition(p.inventory.tierTypeHash);
+            return itemTier && itemTier.index === ItemTierIndex.Uncommon;
+        });
+
         const perkOptions: IPerkOption[] = [];
-        for (const key in perkOptionsByName) {
-            const options = perkOptionsByName[key];
-            const perk = options.find(o => {
-                const tier = destinyDataService.getItemTierDefinition(o.inventory!.tierTypeHash);
-                return !!tier && (tier.index === ItemTierIndex.Common);
-            });
-            if (!perk) continue; // If no non-enhanced version, just ignore.
+        for (const perk of normalPerks) {
+            const enhancedPerk = enhancedPerks.find(p => p.displayProperties.name.includes(perk.displayProperties.name));
 
             const perkOption: IPerkOption = {
                 perk: perk,
-                enhancedPerk: options.find(o => {
-                    const tier = destinyDataService.getItemTierDefinition(o.inventory!.tierTypeHash);
-                    return !!tier && tier.index === ItemTierIndex.Uncommon;
-                }),
+                enhancedPerk: enhancedPerk,
                 currentlyCanRoll: currentlyCanRollMap[perk.hash],
                 useEnhanced: false,
             };

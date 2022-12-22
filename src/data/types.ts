@@ -15,6 +15,7 @@ import type {
 
 export enum DataSearchString {
     Adept = "Adept",
+    FramesPlugCategoryId = "frames",
     RangefinderPerkName = "Rangefinder",
     TrackerCategoryId = "v400.plugs.weapons.masterworks.trackers",
 

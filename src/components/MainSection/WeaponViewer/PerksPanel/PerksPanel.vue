@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import PerkList from './PerkList.vue';
 import { destinyDataService } from '@/data/destinyDataService';
-import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from '@/data/types';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 import { selectionService } from '@/data/selectionService';
 import BuilderSection from '../../../Common/BuilderSection.vue';
+import type { IPerkOption, IPerkSlotOptions } from '@/data/types';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -37,80 +37,25 @@ const perkSocketsNoTracker = computed(() => {
     });
 });
 
-const perkPlugSets = computed(() => {
-    // Either one of the other should be defined of randomizedPlugSetHash and reusablePlugSetHash
-    return perkSocketsNoTracker.value.map(ps => destinyDataService.getPlugSetDefinition(ps.randomizedPlugSetHash || ps.reusablePlugSetHash!));
-});
-
 const perkOptionListsPerSlot = computed(() => {
-    return perkPlugSets.value.map(ps => {
-        const perkOptionsByName: { [name: string]: DestinyInventoryItemDefinition[] } = {};
-        const currentlyCanRollMap: { [plugItemHash: number]: boolean } = {};
-        const seenPlugItems: { [plugItemHash: number]: boolean } = {};
-
-        // Remove duplicates and group by name to capture normal + enhanced perks together
-        for (const plugItem of ps?.reusablePlugItems || []) {
-            if (seenPlugItems[plugItem.plugItemHash]) continue;
-            // TODO: Apparently everything works without this so figure that out
-            // seenPlugItems[plugItem.plugItemHash] = true;
-            currentlyCanRollMap[plugItem.plugItemHash] = plugItem.currentlyCanRoll;
-
-            const definition = destinyDataService.getItemDefinition(plugItem.plugItemHash);
-            if (!definition) continue;
-
-            const name = definition.displayProperties.name;
-            if (!perkOptionsByName[name]) {
-                perkOptionsByName[name] = [definition];
-            } else {
-                perkOptionsByName[name].push(definition);
-            }
-        }
-
-        const perkOptions: IPerkOption[] = [];
-        for (const key in perkOptionsByName) {
-            const options = perkOptionsByName[key];
-            const perk = options.find(o => {
-                const tier = destinyDataService.getItemTierDefinition(o.inventory!.tierTypeHash);
-                return !!tier && (tier.index === ItemTierIndex.Common);
-            });
-            if (!perk) continue; // If no non-enhanced version, just ignore.
-
-            const perkOption: IPerkOption = {
-                perk: perk,
-                enhancedPerk: options.find(o => {
-                    const tier = destinyDataService.getItemTierDefinition(o.inventory!.tierTypeHash);
-                    return !!tier && tier.index === ItemTierIndex.Uncommon;
-                }),
-                currentlyCanRoll: currentlyCanRollMap[perk.hash],
-                useEnhanced: false,
-            };
-            if (perkOption.currentlyCanRoll || !selectionService.hideRetiredPerks) {
-                perkOptions.push(perkOption);
-            }
-        }
-
-        const slotOptions: IPerkSlotOptions = {
-            options: perkOptions,
-        };
-        return slotOptions;
-    });
+    if (!props.weapon) return [];
+    return destinyDataService.getPerkOptionsForWeapon(props.weapon);
 });
 
 const curatedPerks = computed(() => {
     return perkSocketsNoTracker.value
-        .map(s => {
+        .map((s, index) => {
+            const perkSlotOptions = perkOptionListsPerSlot.value[index];
             if (s.singleInitialItemHash) {
-                return destinyDataService.getItemDefinition(s.singleInitialItemHash);
+                return perkSlotOptions.options.find(o => o.perk.hash === s.singleInitialItemHash);
             } else if (s.randomizedPlugSetHash) {
                 // Origin perk doesn't have an initial item for some reason, have to use the randomized plug set.
                 const plugSet = destinyDataService.getPlugSetDefinition(s.randomizedPlugSetHash);
-                return !!plugSet && plugSet.reusablePlugItems.length > 0
-                    ? destinyDataService.getItemDefinition(plugSet.reusablePlugItems[0].plugItemHash)
-                    : undefined;
+                const itemHash = !!plugSet && plugSet.reusablePlugItems.length > 0 ? plugSet.reusablePlugItems[0].plugItemHash : undefined;
+                return perkSlotOptions.options.find(o => o.perk.hash === itemHash);
             }
         })
         .map(i => i!)
-        .map<IPerkOption>(i => { return { perk: i, currentlyCanRoll: true, useEnhanced: false, }; })
         .map<IPerkSlotOptions>(o => { return { options: [o] }; });
 });
 const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
@@ -163,6 +108,7 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
                 :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
                 :perk-option-lists="curatedPerks"
                 :selected-perks="selectedPerks"
+                hide-enhanced
                 @perk-selected="onPerkSelected"
             ></PerkList>
         </div>
