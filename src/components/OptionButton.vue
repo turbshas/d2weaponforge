@@ -11,18 +11,18 @@ const emits = defineEmits<{
     (e: "toggled", active: boolean): void,
 }>();
 
-const filterOn = ref(false);
+const buttonOn = ref(false);
 
-function onFilterToggled() {
-    filterOn.value = !filterOn.value;
-    emits("toggled", filterOn.value);
+function onButtonToggled() {
+    buttonOn.value = !buttonOn.value;
+    emits("toggled", buttonOn.value);
 }
 </script>
 
 <template>
-    <button class="button" :class="{ 'active': filterOn }" @click="onFilterToggled">
-        <img class="icon" :class="{ 'wide': wide }" v-if="!!iconUrl" :src="iconUrl">
-        <span>{{ text }}</span>
+    <button class="button" :class="{ 'active': buttonOn }" @click="onButtonToggled">
+        <img class="icon" :class="{ 'wide': props.wide }" v-if="!!props.iconUrl" :src="props.iconUrl">
+        <span>{{ props.text }}</span>
     </button>
 </template>
 

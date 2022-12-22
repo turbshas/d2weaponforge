@@ -3,7 +3,7 @@ import { destinyDataService } from "@/data/destinyDataService";
 import type { DestinyInventoryItemDefinition, DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
-import FilterOptionButton from "./FilterOptionButton.vue";
+import FilterOptionButton from "../../../OptionButton.vue";
 import WeaponIcons from "@/assets/WeaponIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
