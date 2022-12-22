@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import OptionButton from '@/components/OptionButton.vue';
+import OptionButton from '@/components/Common/OptionButton.vue';
 import { selectionService } from '@/data/selectionService';
 import type { IPerkOption } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
-import BuilderSection from '../BuilderSection.vue';
+import BuilderSection from '../../../Common/BuilderSection.vue';
 import AddToComparisons from './AddToComparisons.vue';
 import DamageFalloff from './DamageFalloff.vue';
 import DimWishlist from './DimWishlist.vue';
-import ExtrasListItem from './ExtrasListItem.vue';
+import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 import ReloadSpeed from './ReloadSpeed.vue';
 
 const props = defineProps<{

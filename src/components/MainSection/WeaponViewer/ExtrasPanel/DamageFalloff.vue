@@ -5,7 +5,7 @@ import { DataSearchString, type IPerkOption } from '@/data/types';
 import { hashMapToArray } from '@/data/util';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
-import ExtrasListItem from './ExtrasListItem.vue';
+import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 
 // TODO: right now we only display hip-fire/ADS falloff start distance but this stores all relevant info in case that changes
 interface IWeaponRangeValues {

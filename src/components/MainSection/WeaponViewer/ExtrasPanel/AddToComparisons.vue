@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import OptionButton from '@/components/OptionButton.vue';
-import ExtrasListItem from './ExtrasListItem.vue';
+import OptionButton from '@/components/Common/OptionButton.vue';
+import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 
 </script>
 

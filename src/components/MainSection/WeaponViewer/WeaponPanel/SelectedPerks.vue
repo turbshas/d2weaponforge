@@ -2,7 +2,7 @@
 import { destinyDataService } from '@/data/destinyDataService';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
-import PerkDisplay from '../../PerkDisplay.vue';
+import PerkDisplay from '../../../Common/PerkDisplay.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 
 

@@ -3,8 +3,8 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { DataSearchString } from '@/data/types';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed, ref } from 'vue';
-import PerkDisplay from '../PerkDisplay.vue';
-import BuilderSection from './BuilderSection.vue';
+import PerkDisplay from '../../Common/PerkDisplay.vue';
+import BuilderSection from '../../Common/BuilderSection.vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,

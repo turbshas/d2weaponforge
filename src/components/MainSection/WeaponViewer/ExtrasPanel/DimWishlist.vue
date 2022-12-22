@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import OptionButton from '@/components/OptionButton.vue';
+import OptionButton from '@/components/Common/OptionButton.vue';
 import type { IPerkOption } from '@/data/types';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
-import ExtrasListItem from './ExtrasListItem.vue';
+import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 import DimIcon from '@/assets/dim_icon.svg';
 
 const props = defineProps<{

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IPerkOption, IPerkSlotOptions } from '@/data/types';
 import { computed } from '@vue/reactivity';
-import PerkDisplay from '../../PerkDisplay.vue';
+import PerkDisplay from '../../../Common/PerkDisplay.vue';
 
 const props = defineProps<{
     perkOptionLists: IPerkSlotOptions[] | null,

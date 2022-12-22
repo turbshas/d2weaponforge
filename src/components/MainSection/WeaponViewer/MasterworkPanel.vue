@@ -3,8 +3,8 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref, watch } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { DataSearchString } from '@/data/types';
-import BuilderSection from './BuilderSection.vue';
-import OptionButton from '@/components/OptionButton.vue';
+import BuilderSection from '../../Common/BuilderSection.vue';
+import OptionButton from '@/components/Common/OptionButton.vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,

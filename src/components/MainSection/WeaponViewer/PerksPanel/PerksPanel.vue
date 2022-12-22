@@ -6,7 +6,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from '@/data/types';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 import { selectionService } from '@/data/selectionService';
-import BuilderSection from '../BuilderSection.vue';
+import BuilderSection from '../../../Common/BuilderSection.vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
