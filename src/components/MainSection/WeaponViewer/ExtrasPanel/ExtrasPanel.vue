@@ -3,6 +3,7 @@ import { selectionService } from '@/data/selectionService';
 import type { IPerkOption } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import BuilderSection from '../BuilderSection.vue';
 import AddToComparisons from './AddToComparisons.vue';
 import DamageFalloff from './DamageFalloff.vue';
 import DimWishlist from './DimWishlist.vue';
@@ -30,8 +31,7 @@ function onShowCraftedBonusClicked() {
 </script>
 
 <template>
-    <div>
-        Extras
+    <BuilderSection title="Extras">
         <DimWishlist :weapon="weapon" :selected-perks="selectedPerks"></DimWishlist>
         <ExtrasListItem label="Hide Retired Perks">
             <button @click="onHideRetiredClicked">{{ hideRetiredText }}</button>
@@ -43,7 +43,7 @@ function onShowCraftedBonusClicked() {
         <AddToComparisons></AddToComparisons>
         <DamageFalloff :weapon="weapon" :selected-perks="selectedPerks" :masterwork="masterwork" :mod="mod"></DamageFalloff>
         <ReloadSpeed></ReloadSpeed>
-    </div>
+    </BuilderSection>
 </template>
 
 <style scoped>

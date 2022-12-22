@@ -3,6 +3,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { DataSearchString } from '@/data/types';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed, ref } from 'vue';
+import BuilderSection from './BuilderSection.vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -48,8 +49,7 @@ function onModClicked(mod: DestinyInventoryItemDefinition) {
 </script>
 
 <template>
-    <div class="mods">
-        <span>Weapon Mods</span>
+    <BuilderSection class="mods" title="Weapon Mods">
         <div class="list">
             <img
                 class="mod"
@@ -59,7 +59,7 @@ function onModClicked(mod: DestinyInventoryItemDefinition) {
                 @click="onModClicked(mod)"
             >
         </div>
-    </div>
+    </BuilderSection>
 </template>
 
 <style scoped>

@@ -3,6 +3,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref, watch } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { DataSearchString } from '@/data/types';
+import BuilderSection from './BuilderSection.vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -111,28 +112,29 @@ function onMasterworkLevelChanged(event: Event) {
 </script>
 
 <template>
-    <div class="masterwork">
-        <span>Weapon Masterwork</span>
+    <BuilderSection class="masterwork" title="Weapon Masterwork">
         <div class="types">
-            <button v-for="name of masterworkStatNames" :key="name" @click="() => onMasterworkChanged(name)">{{ name }}</button>
+            <button class="type" v-for="name of masterworkStatNames" :key="name" @click="() => onMasterworkChanged(name)">{{ name }}</button>
         </div>
         <div class="level">
             <span>{{ masterworkLevel }}</span>
             <input class="slider" type="range" min="0" max="10" v-model="masterworkLevel" @change="onMasterworkLevelChanged">
         </div>
-    </div>
+    </BuilderSection>
 
 </template>
 
 <style scoped>
-.masterwork {
-    display: flex;
-    flex-direction: column;
-}
-
 .types {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.type {
+    margin-bottom: 8px;
+    margin-right: 8px;
 }
 
 .level {

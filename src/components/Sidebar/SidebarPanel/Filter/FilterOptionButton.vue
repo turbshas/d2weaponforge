@@ -31,7 +31,7 @@ function onFilterToggled() {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    background-color: hsla(0,0%,100%,.05);
+    background-color: hsla(0, 0%, 100%, 0.05);
     color: #fafafa;
 }
 

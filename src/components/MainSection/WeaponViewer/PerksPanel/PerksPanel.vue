@@ -6,6 +6,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from '@/data/types';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 import { selectionService } from '@/data/selectionService';
+import BuilderSection from '../BuilderSection.vue';
 
 const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
@@ -120,6 +121,31 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
 </script>
 
 <template>
+    <!--
+    <div>
+        <BuilderSection title="Weapon Perks">
+            <PerkList
+                :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
+                :perk-option-lists="perkOptionListsPerSlot"
+                :selected-perks="selectedPerks"
+                @perk-selected="onPerkSelected"
+            ></PerkList>
+        </BuilderSection>
+        <span class="description">
+            TO APPLY THE ENHANCED VERSION OF A PERK, CLICK SAID PERK IN THE AREA WITH THE PICTURE OF THE WEAPON.
+        </span>
+        <div v-if="hasCuratedPerks">
+            <BuilderSection title="Curated Roll">
+                <PerkList
+                    :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
+                    :perk-option-lists="curatedPerks"
+                    :selected-perks="selectedPerks"
+                    @perk-selected="onPerkSelected"
+                ></PerkList>
+            </BuilderSection>
+        </div>
+    </div>
+    -->
     <div class="perks">
         <h2 class="title">Weapon Perks</h2>
         <PerkList
@@ -147,14 +173,10 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
 .perks {
     display: flex;
     flex-direction: column;
-    background-size: auto;
-    background-color: #12171c;
-
+    padding: 16px;
     box-shadow: 0 0 40px 0 rgba(0,0,0,.5);
-    padding-top: 16px;
-    padding-bottom: 16px;
-    padding-left: 16px;
-    padding-right: 16px;
+    background-color: #12171c;
+    background-size: auto;
 }
 
 .title {
