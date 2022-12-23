@@ -2,6 +2,7 @@
 const props = defineProps<{
     text: string,
     active: boolean,
+    large?: boolean,
     iconUrl?: string,
     wide?: boolean,
 }>();
@@ -16,9 +17,9 @@ function onButtonToggled() {
 </script>
 
 <template>
-    <button class="button" :class="{ 'active': props.active }" @click="onButtonToggled">
+    <button class="button" :class="{ 'active': props.active, 'large': props.large, }" @click="onButtonToggled">
         <img class="icon" :class="{ 'wide': props.wide }" v-if="!!props.iconUrl" :src="props.iconUrl">
-        <span>{{ props.text }}</span>
+        <span class="text">{{ props.text }}</span>
     </button>
 </template>
 
@@ -26,9 +27,8 @@ function onButtonToggled() {
 .button {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     justify-content: space-between;
-    align-items: stretch;
+    align-items: center;
     cursor: pointer;
 
     padding-top: 5.6px;
@@ -75,15 +75,25 @@ function onButtonToggled() {
     background-color: #b78c25;
 }
 
+.large {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
 .icon {
-    display: block;
+    width: 38px;
     max-width: 18px;
     max-height: 18px;
+    margin-right: 8px;
     color: white;
 }
 
 .wide {
     max-width: 38px;
+}
+
+.text {
+    white-space: nowrap;
 }
 </style>
 

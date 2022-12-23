@@ -6,7 +6,7 @@ import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 
 <template>
     <ExtrasListItem label="Comparisons">
-        <OptionButton text="Add to Comparisons"></OptionButton>
+        <OptionButton text="Add to Comparisons" :active="false"></OptionButton>
     </ExtrasListItem>
 </template>
 

@@ -3,13 +3,12 @@ import { destinyDataService } from "@/data/destinyDataService";
 import type { DestinyInventoryItemDefinition, DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
-import FilterOptionButton from "../../../Common/OptionButton.vue";
 import WeaponIcons from "@/assets/WeaponIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
 import { DataSearchString, type FilterCategory, type FilterPredicate, type IArchetypeFilter, type IFilterButton, type IWeaponFilterButton } from "@/data/types";
-import { findItemInTable, findItemsInTable } from "@/data/util";
-import OptionButton from "../../../Common/OptionButton.vue";
+import { findItemInTable } from "@/data/util";
+import OptionButton from "@/components/Common/OptionButton.vue";
 
 interface IArchetypeInfo {
     text: string;
@@ -390,15 +389,16 @@ function onApplyFilters() {
                 v-for="filter of activeWeaponFilters"
                 :key="filter.text"
             >
-                <FilterOptionButton
+                <OptionButton
                     v-for="archetype of filter.archetypes"
                     :key="archetype.text"
                     :text="archetype.text"
                     :active="archetype.active"
                     :icon-url="filter.iconUrl"
-                    :wide="true"
+                    large
+                    wide
                     @toggled="active => onArchetypeFilterToggled(archetype, active)"
-                ></FilterOptionButton>
+                ></OptionButton>
             </div>
         </CollapsibleSection>
 
@@ -408,24 +408,27 @@ function onApplyFilters() {
             :name="category.name"
         >
             <div class="button-list">
-                <FilterOptionButton
+                <OptionButton
                     v-for="filter of category.filters"
                     :key="filter.text"
                     :text="filter.text"
                     :active="filter.active"
                     :icon-url="filter.iconUrl"
+                    large
                     :wide="category.wide"
                     @toggled="active => onFilterButtonToggled(filter, active)"
-                ></FilterOptionButton>
+                ></OptionButton>
             </div>
         </CollapsibleSection>
 
         <CollapsibleSection name="Sunset">
-            <FilterOptionButton
-                text="Include Sunset Weapons"
-                :active="includeSunsetWeapons"
-                @toggled="includeSunsetToggled"
-            ></FilterOptionButton>
+            <div class="button-list">
+                <OptionButton
+                    text="Include Sunset Weapons"
+                    :active="includeSunsetWeapons"
+                    @toggled="includeSunsetToggled"
+                ></OptionButton>
+            </div>
         </CollapsibleSection>
     </div>
 </template>
@@ -437,7 +440,10 @@ function onApplyFilters() {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 16px;
+    padding-top: 16px;
+    padding-bottom: 32px;
+    padding-left: 16px;
+    padding-right: 16px;
 }
 
 .header {
@@ -459,5 +465,7 @@ function onApplyFilters() {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
 }
 </style>

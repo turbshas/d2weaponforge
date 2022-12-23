@@ -29,3 +29,5 @@
 - change option buttons to have a parameter for being active or not instead of storing state
 - cache certain options
 - MW tooltip says it gives +3 to other stats (crafted/adept bonus)
+- sort weapon filter buttons
+- fix weapon filters not lighting up
