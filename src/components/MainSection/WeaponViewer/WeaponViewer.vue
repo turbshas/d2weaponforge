@@ -86,7 +86,7 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
     display: flex;
     flex-direction: column;
     max-width: 1400px;
-    margin-bottom: 16px;
+    padding-bottom: 160px;
 }
 
 .extras-mws-mods {

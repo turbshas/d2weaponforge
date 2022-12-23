@@ -36,9 +36,8 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
 </script>
 
 <template>
-    <!--
-    <div>
-        <BuilderSection title="Weapon Perks">
+    <div class="perks">
+        <BuilderSection title="Weapon Perks" class="no-shadow">
             <PerkList
                 :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
                 :perk-option-lists="perkOptionListsPerSlot"
@@ -46,34 +45,10 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
                 @perk-selected="onPerkSelected"
             ></PerkList>
         </BuilderSection>
-        <span class="description">
+        <span class="note">
             TO APPLY THE ENHANCED VERSION OF A PERK, CLICK SAID PERK IN THE AREA WITH THE PICTURE OF THE WEAPON.
         </span>
-        <div v-if="hasCuratedPerks">
-            <BuilderSection title="Curated Roll">
-                <PerkList
-                    :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
-                    :perk-option-lists="curatedPerks"
-                    :selected-perks="selectedPerks"
-                    @perk-selected="onPerkSelected"
-                ></PerkList>
-            </BuilderSection>
-        </div>
-    </div>
-    -->
-    <div class="perks">
-        <h2 class="title">Weapon Perks</h2>
-        <PerkList
-            :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
-            :perk-option-lists="perkOptionListsPerSlot"
-            :selected-perks="selectedPerks"
-            @perk-selected="onPerkSelected"
-        ></PerkList>
-        <span class="description">
-            TO APPLY THE ENHANCED VERSION OF A PERK, CLICK SAID PERK IN THE AREA WITH THE PICTURE OF THE WEAPON.
-        </span>
-        <div v-if="hasCuratedPerks">
-            <h2 class="title">Curated Roll</h2>
+        <BuilderSection title="Curated Roll" class="no-shadow" v-if="hasCuratedPerks">
             <PerkList
                 :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
                 :perk-option-lists="curatedPerks"
@@ -81,7 +56,7 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
                 hide-enhanced
                 @perk-selected="onPerkSelected"
             ></PerkList>
-        </div>
+        </BuilderSection>
     </div>
 </template>
 
@@ -89,43 +64,17 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
 .perks {
     display: flex;
     flex-direction: column;
-    padding: 16px;
     box-shadow: 0 0 40px 0 rgba(0,0,0,.5);
     background-color: #12171c;
     background-size: auto;
+    margin-bottom: auto;
 }
 
-.title {
-    flex-grow: 0;
-
-    position: relative;
-    opacity: 0.75;
-    margin-top: 0;
-    margin-bottom: 16px;
-    margin-left: 0;
-    margin-right: 0;
-    padding-top: 0;
-    padding-bottom: 8px;
-    padding-left: 0;
-    padding-right: 0;
-
-    text-transform: uppercase;
-    font-weight: 500;
-    font-size: 12px;
-}
-.title::before {
-    content: "";
-    position: absolute;
-    display: block;
-    left: 0;
-    bottom: 0;
-    height: 1px;
-    width: 100%;
-    background-color: #fafafa;
-    opacity: 0.75;
+.no-shadow {
+    box-shadow: none;
 }
 
-.description {
+.note {
     margin-top: -8px;
     margin-bottom: 8px;
 

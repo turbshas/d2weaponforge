@@ -35,4 +35,3 @@
   - convert to using rem instead of px
 - accessibility
 - tab bar text isn't centered properly
-- add curated to IWeapon

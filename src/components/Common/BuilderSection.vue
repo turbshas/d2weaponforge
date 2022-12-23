@@ -15,6 +15,7 @@ const props = defineProps<{
 .section {
     display: flex;
     flex-direction: column;
+    margin-bottom: auto;
     padding: 16px;
     box-shadow: 0 0 40px 0 rgba(0,0,0,.5);
     background-color: #12171c;
