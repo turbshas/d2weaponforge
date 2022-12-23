@@ -36,7 +36,7 @@ function onSearchChanged(newSearchString: string) {
 <template>
     <div class="sidebar">
         <div class="filter-search">
-            <FilterButton @filter-toggled="onFilterToggled"></FilterButton>
+            <FilterButton :active="viewingFilter" @filter-toggled="onFilterToggled"></FilterButton>
             <Searchbar @search-changed="onSearchChanged"></Searchbar>
         </div>
         <TabBar @tab-selected="onTabSelected"></TabBar>
@@ -49,9 +49,17 @@ function onSearchChanged(newSearchString: string) {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: hsla(0, 0%, 98%, 0.25);
+    background-color: rgba(5, 7, 10, 0.9254901961);
 }
 
 .filter-search {
     display: flex;
+
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: hsla(0, 0%, 98%, 0.25);
 }
 </style>

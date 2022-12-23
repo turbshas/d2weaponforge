@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import FilterIcon from '@/assets/filter_icon.svg';
+
+const props = defineProps<{
+    active: boolean,
+}>();
 
 const emits = defineEmits<{
     (e: "filterToggled"): void
 }>();
-
-const x = ref("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj4KICAKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC44MzMzMzMzMzMzMzMzMzM0LDAsMCwwLjgzMzMzMzMzMzMzMzMzMzQsMCwwKSI+PHBhdGggZD0iTTIzLjg5LjU1QTEsMSwwLDAsMCwyMywwSDFBMSwxLDAsMCwwLC4xMS41NSwxLDEsMCwwLDAsLjIsMS42TDksMTMuNDJWMjJhMiwyLDAsMCwwLDIsMiwyLDIsMCwwLDAsMS4yLS40bDItMS41YTIsMiwwLDAsMCwuOC0xLjZWMTMuNDJMMjMuOCwxLjZBMSwxLDAsMCwwLDIzLjg5LjU1Wk01LjQyLDIuMiw5LjM2LDcuNDVhLjU0LjU0LDAsMCwxLC4xLjNWOWEuNDkuNDksMCwwLDEtLjM0LjQ3LjQ4LjQ4LDAsMCwxLS41Ni0uMTdMMy42MiwyLjhhLjQ5LjQ5LDAsMCwxLS4wNS0uNTJBLjUuNSwwLDAsMSw0LDJINUEuNTQuNTQsMCwwLDEsNS40MiwyLjJaIiBzdHlsZT0iZmlsbDogI2ZhZmFmYSI+PC9wYXRoPjwvZz48L3N2Zz4=");
 
 function onButtonClicked() {
     emits("filterToggled");
@@ -13,8 +15,29 @@ function onButtonClicked() {
 </script>
 
 <template>
-    <button @click="onButtonClicked">Filter<img :src="x"></button>
+    <button class="button" :class="{ 'active': props.active }" @click="onButtonClicked">
+        <img :src="FilterIcon">
+    </button>
 </template>
 
 <style scoped>
+.button {
+    cursor: pointer;
+
+    padding: 16px;
+    border-top: none;
+    border-left: none;
+    border-bottom: none;
+
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: hsla(0, 0%, 98%, 0.25);
+    border-radius: 0;
+    background: transparent;
+
+    transition: background-color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.active {
+    background-color: #518dba;
+}
 </style>

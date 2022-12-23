@@ -14,10 +14,7 @@ function onHeaderClicked() {
 
 <template>
     <div class="section">
-        <div class="header" @click="onHeaderClicked">
-            <span>ARROW ICON HERE</span>
-            <span>{{ name }}</span>
-        </div>
+        <div class="header" :class="{ 'expanded': isExpanded, }" @click="onHeaderClicked">{{ props.name }}</div>
         <slot v-if="isExpanded"></slot>
     </div>
 </template>
@@ -29,7 +26,47 @@ function onHeaderClicked() {
 }
 
 .header {
+    cursor: pointer;
+    position: relative;
     display: flex;
     flex-direction: row;
+    align-items: center;
+
+    padding-bottom: 8px;
+
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    opacity: 0.75;
+
+    transition: color 0.4s ease;
+}
+.header:hover {
+    color: #b78c25;
+}
+.header::before {
+    content: "";
+    width: 0;
+    height: 0;
+    margin-right: 8px;
+
+    border-top: 5.6px solid transparent;
+    border-bottom: 5.6px solid transparent;
+    border-left: 5.6px solid #fafafa;
+
+    transition: transform 0.4s ease;
+}
+.header.expanded::before {
+    transform: rotate(90deg);
+}
+.header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background-color: #fafafa;
+    opacity: 0.75
 }
 </style>

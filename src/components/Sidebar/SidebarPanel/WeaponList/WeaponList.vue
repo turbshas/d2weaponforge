@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import WeaponListEntry from './WeaponListEntry.vue';
 
@@ -17,7 +16,7 @@ function onEntryClicked(weapon: DestinyInventoryItemDefinition) {
 <template>
     <div class="list">
         <WeaponListEntry
-            v-for="weapon of weapons"
+            v-for="weapon of props.weapons"
             :key="weapon.hash"
             :weapon="weapon"
             @entry-clicked="onEntryClicked"
@@ -27,6 +26,11 @@ function onEntryClicked(weapon: DestinyInventoryItemDefinition) {
 
 <style scoped>
 .list {
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
 }
 </style>

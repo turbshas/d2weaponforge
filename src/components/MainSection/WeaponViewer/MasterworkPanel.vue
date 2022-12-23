@@ -144,6 +144,7 @@ function onMasterworkLevelChanged(event: Event) {
                 v-for="name of masterworkStatNames"
                 :key="name"
                 :text="name"
+                :active="selectedMasterworkStatName === name"
                 @toggled="() => onMasterworkChanged(name)"
             ></OptionButton>
         </div>

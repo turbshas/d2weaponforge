@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
 const props = defineProps<{
     text: string,
+    active: boolean,
     iconUrl?: string,
     wide?: boolean,
 }>();
@@ -11,16 +10,13 @@ const emits = defineEmits<{
     (e: "toggled", active: boolean): void,
 }>();
 
-const buttonOn = ref(false);
-
 function onButtonToggled() {
-    buttonOn.value = !buttonOn.value;
-    emits("toggled", buttonOn.value);
+    emits("toggled", !props.active);
 }
 </script>
 
 <template>
-    <button class="button" :class="{ 'active': buttonOn }" @click="onButtonToggled">
+    <button class="button" :class="{ 'active': props.active }" @click="onButtonToggled">
         <img class="icon" :class="{ 'wide': props.wide }" v-if="!!props.iconUrl" :src="props.iconUrl">
         <span>{{ props.text }}</span>
     </button>

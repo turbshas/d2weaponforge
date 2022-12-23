@@ -9,6 +9,7 @@ import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
 import { DataSearchString, type FilterCategory, type FilterPredicate, type IArchetypeFilter, type IFilterButton, type IWeaponFilterButton } from "@/data/types";
 import { findItemInTable, findItemsInTable } from "@/data/util";
+import OptionButton from "../../../Common/OptionButton.vue";
 
 interface IArchetypeInfo {
     text: string;
@@ -373,14 +374,16 @@ function onApplyFilters() {
 </script>
 
 <template>
-    <div>
-        <div>
-            <span>Filters</span>
-            <button @click="onApplyFilters">Apply Filters</button>
+    <div class="filters">
+        <div class="header">
+            <span class="title">Filters</span>
+            <OptionButton text="Apply Filters" :active="true" @click="onApplyFilters"></OptionButton>
         </div>
+
         <CollapsibleSection name="Perks">
             <input type="text" v-model="perkFilter" @input="onPerkFilterChanged">
         </CollapsibleSection>
+
         <CollapsibleSection name="Archetype" v-show="activeWeaponFilters.length > 0">
             <div
                 class="archetype-group"
@@ -391,12 +394,14 @@ function onApplyFilters() {
                     v-for="archetype of filter.archetypes"
                     :key="archetype.text"
                     :text="archetype.text"
+                    :active="archetype.active"
                     :icon-url="filter.iconUrl"
                     :wide="true"
                     @toggled="active => onArchetypeFilterToggled(archetype, active)"
                 ></FilterOptionButton>
             </div>
         </CollapsibleSection>
+
         <CollapsibleSection
             v-for="category of filterCategories"
             :key="category.name"
@@ -407,19 +412,49 @@ function onApplyFilters() {
                     v-for="filter of category.filters"
                     :key="filter.text"
                     :text="filter.text"
+                    :active="filter.active"
                     :icon-url="filter.iconUrl"
                     :wide="category.wide"
                     @toggled="active => onFilterButtonToggled(filter, active)"
                 ></FilterOptionButton>
             </div>
         </CollapsibleSection>
+
         <CollapsibleSection name="Sunset">
-            <FilterOptionButton text="Include Sunset Weapons" @toggled="includeSunsetToggled"></FilterOptionButton>
+            <FilterOptionButton
+                text="Include Sunset Weapons"
+                :active="includeSunsetWeapons"
+                @toggled="includeSunsetToggled"
+            ></FilterOptionButton>
         </CollapsibleSection>
     </div>
 </template>
 
 <style scoped>
+.filters {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    font-size: 19.2px;
+    font-weight: 600;
+    line-height: 19.2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
 .button-list {
     display: flex;
     flex-direction: row;

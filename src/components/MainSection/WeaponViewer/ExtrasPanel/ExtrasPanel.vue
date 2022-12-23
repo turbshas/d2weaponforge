@@ -35,11 +35,11 @@ function onShowCraftedBonusClicked() {
     <BuilderSection title="Extras">
         <DimWishlist :weapon="props.weapon" :selected-perks="props.selectedPerks"></DimWishlist>
         <ExtrasListItem label="Hide Retired Perks">
-            <OptionButton :text="hideRetiredText" @click="onHideRetiredClicked"></OptionButton>
+            <OptionButton :text="hideRetiredText" :active="selectionService.hideRetiredPerks" @click="onHideRetiredClicked"></OptionButton>
         </ExtrasListItem>
         <!-- TODO: add tooltip here that explains what this means - +3 stat bonus for lvl 10 crafted with enhanced intrinsic -->
         <ExtrasListItem label="Show Crafted Bonus">
-            <OptionButton :text="showCraftedBonusText" @click="onShowCraftedBonusClicked"></OptionButton>
+            <OptionButton :text="showCraftedBonusText" :active="selectionService.showCraftedBonus" @click="onShowCraftedBonusClicked"></OptionButton>
         </ExtrasListItem>
         <AddToComparisons></AddToComparisons>
         <DamageFalloff :weapon="props.weapon" :selected-perks="props.selectedPerks" :masterwork="props.masterwork" :mod="props.mod"></DamageFalloff>
