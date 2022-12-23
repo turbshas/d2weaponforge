@@ -31,18 +31,13 @@ class DestinyApiService {
             destinyManifest: manifestInfo.Response,
             language: language,
             tableNames: [
-                // Possibly needed for filter
-                "DestinyEnergyTypeDefinition",
                 "DestinyDamageTypeDefinition",
-                "DestinyEquipmentSlotDefinition",
                 "DestinyItemCategoryDefinition",
                 "DestinyItemTierTypeDefinition",
                 "DestinySeasonDefinition",
-                // List of items - need to find weapons
                 "DestinyInventoryItemDefinition",
                 "DestinyPlugSetDefinition",
                 "DestinyStatDefinition",
-                "DestinySandboxPerkDefinition",
                 "DestinySocketCategoryDefinition",
                 "DestinySocketTypeDefinition",
                 "DestinyPowerCapDefinition",
@@ -62,10 +57,6 @@ class DestinyApiService {
         const gameData: Destiny2GameData = {
             damageTypes: manifestProcessor.damageTypes,
             damageTypesLookup: manifestProcessor.damageTypeLookup,
-            energyTypes: manifestProcessor.energyTypes,
-            energyTypesLookup: manifestProcessor.energyTypeLookup,
-            equipmentSlots: manifestProcessor.equipmentSlots,
-            equipmentSlotsLookup: manifestProcessor.equipmentSlotsLookup,
             itemCategories: manifestProcessor.itemCategories,
             itemCategoriesLookup: manifestProcessor.itemCategoriesLookup,
             itemTierTypes: manifestProcessor.itemTierTypes,
@@ -78,7 +69,6 @@ class DestinyApiService {
             statsLookup: manifestProcessor.statsLookup,
             itemLookup: manifestProcessor.itemLookup,
             plugSetLookup: manifestProcessor.plugSetLookup,
-            sandboxPerksLookup: manifestProcessor.sandboxPerksLookup,
             socketCategoryLookup: manifestProcessor.socketCategoryLookup,
             socketTypeLookup: manifestProcessor.socketTypeLookup,
 

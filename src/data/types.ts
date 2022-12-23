@@ -1,7 +1,5 @@
 import type {
     DestinyDamageTypeDefinition,
-    DestinyEnergyTypeDefinition,
-    DestinyEquipmentSlotDefinition,
     DestinyInventoryItemDefinition,
     DestinyItemCategoryDefinition,
     DestinyItemTierTypeDefinition,
@@ -15,16 +13,13 @@ import type {
 } from "bungie-api-ts/destiny2";
 
 export type UsedDestinyManifestSlice = DestinyManifestSlice<(
-    "DestinyEnergyTypeDefinition"
-    | "DestinyDamageTypeDefinition"
-    | "DestinyEquipmentSlotDefinition"
+    "DestinyDamageTypeDefinition"
     | "DestinyItemCategoryDefinition"
     | "DestinyItemTierTypeDefinition"
     | "DestinySeasonDefinition"
     | "DestinyInventoryItemDefinition"
     | "DestinyPlugSetDefinition"
     | "DestinyStatDefinition"
-    | "DestinySandboxPerkDefinition"
     | "DestinySocketCategoryDefinition"
     | "DestinySocketTypeDefinition"
     | "DestinyPowerCapDefinition"
@@ -136,12 +131,6 @@ export interface Destiny2GameData {
     damageTypes: DestinyDamageTypeDefinition[];
     damageTypesLookup: { [hash: number]: DestinyDamageTypeDefinition };
 
-    energyTypes: DestinyEnergyTypeDefinition[];
-    energyTypesLookup: { [hash: number]: DestinyEnergyTypeDefinition };
-
-    equipmentSlots: DestinyEquipmentSlotDefinition[];
-    equipmentSlotsLookup: { [hash: number]: DestinyEquipmentSlotDefinition };
-
     itemCategories: DestinyItemCategoryDefinition[];
     itemCategoriesLookup: { [hash: number]: DestinyItemCategoryDefinition };
 
@@ -157,7 +146,6 @@ export interface Destiny2GameData {
     statsLookup: { [hash: number]: DestinyStatDefinition };
     itemLookup: { [hash: number]: DestinyInventoryItemDefinition };
     plugSetLookup: { [hash: number]: DestinyPlugSetDefinition };
-    sandboxPerksLookup: { [hash: number]: DestinySandboxPerkDefinition };
     socketCategoryLookup: { [hash: number]: DestinySocketCategoryDefinition };
     socketTypeLookup: { [hash: number]: DestinySocketTypeDefinition };
 

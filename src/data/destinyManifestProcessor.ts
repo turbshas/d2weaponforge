@@ -285,20 +285,19 @@ export class DestinyManifestProcessor {
 
     public get damageTypes() { return hashMapToArray(this.manifest.DestinyDamageTypeDefinition); }
     public get damageTypeLookup() { return this.manifest.DestinyDamageTypeDefinition; }
-    public get energyTypes() { return hashMapToArray(this.manifest.DestinyEnergyTypeDefinition); }
-    public get energyTypeLookup() { return this.manifest.DestinyEnergyTypeDefinition; }
-    public get equipmentSlots() { return hashMapToArray(this.manifest.DestinyEquipmentSlotDefinition); }
-    public get equipmentSlotsLookup() { return this.manifest.DestinyEquipmentSlotDefinition; }
     public get itemCategoriesLookup() { return this.manifest.DestinyItemCategoryDefinition; }
     public get itemTierTypes() { return hashMapToArray(this.manifest.DestinyItemTierTypeDefinition); }
     public get itemTierTypesLookup() { return this.manifest.DestinyItemTierTypeDefinition; }
-    public get seasons() { return hashMapToArray(this.manifest.DestinySeasonDefinition); }
+    public get seasons() {
+        const list = hashMapToArray(this.manifest.DestinySeasonDefinition);
+        list.sort((a, b) => b.seasonNumber - a.seasonNumber);
+        return list;
+    }
     public get seasonsLookup() { return this.manifest.DestinySeasonDefinition; }
 
     public get statsLookup() { return this.manifest.DestinyStatDefinition; }
     public get itemLookup() { return this.manifest.DestinyInventoryItemDefinition; }
     public get plugSetLookup() { return this.manifest.DestinyPlugSetDefinition; }
-    public get sandboxPerksLookup() { return this.manifest.DestinySandboxPerkDefinition; }
     public get socketCategoryLookup() { return this.manifest.DestinySocketCategoryDefinition; }
     public get socketTypeLookup() { return this.manifest.DestinySocketTypeDefinition; }
 }
