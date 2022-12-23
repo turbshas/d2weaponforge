@@ -96,20 +96,31 @@ export class DestinyManifestProcessor {
     private getWeaponPerkInfo = (weaponItem: DestinyInventoryItemDefinition): IWeapon => {
         const weaponSocketCategories = weaponItem.sockets?.socketCategories || [];
         const weaponSockets = weaponItem.sockets?.socketEntries || [];
-        const intrinsic = this.getIntrinsicFromSockets(weaponSockets, weaponSocketCategories);
-        const perkOptions = this.getPerkOptionsFromSockets(weaponSockets, weaponSocketCategories);
+
+        const intrinsicSocketCategory = weaponSocketCategories.find(c => this.isIntrinsicPerkSocketCategory(c.socketCategoryHash));
+        const weaponPerkSocketCategory = weaponSocketCategories.find(c => this.isWeaponPerkSocketCategory(c.socketCategoryHash));
+        const weaponPerkSockets = weaponPerkSocketCategory ? weaponPerkSocketCategory.socketIndexes.map(i => weaponSockets[i]) : [];
+
+        const perkSocketsNoTracker = weaponPerkSockets.filter(s => {
+            const type = this.getSocketTypeDefinition(s.socketTypeHash);
+            return type && !type.plugWhitelist.some(this.isTrackerPlugCategory);
+        });
+
+        const intrinsic = this.getIntrinsicFromSockets(weaponSockets, intrinsicSocketCategory!);
+        const perkOptions = this.getPerkOptionsFromSockets(perkSocketsNoTracker);
+        const curated = this.getCuratedFromPerkSockets(perkSocketsNoTracker, perkOptions);
 
         return {
             weapon: weaponItem,
             intrinsic: intrinsic,
             perks: perkOptions,
+            curated: curated,
         };
     }
 
-    private getIntrinsicFromSockets = (sockets: DestinyItemSocketEntryDefinition[], socketCategories: DestinyItemSocketCategoryDefinition[]) => {
-        const intrinsicSocketCategory = socketCategories.find(c => this.isIntrinsicPerkSocketCategory(c.socketCategoryHash));
-        const intrinsicPerkSocketEntry = intrinsicSocketCategory && intrinsicSocketCategory.socketIndexes.length > 0
-            ? sockets[intrinsicSocketCategory.socketIndexes[0]]
+    private getIntrinsicFromSockets = (sockets: DestinyItemSocketEntryDefinition[], socketCategory: DestinyItemSocketCategoryDefinition) => {
+        const intrinsicPerkSocketEntry = socketCategory && socketCategory.socketIndexes.length > 0
+            ? sockets[socketCategory.socketIndexes[0]]
             : undefined;
 
         const intrinsicPlugSet = intrinsicPerkSocketEntry && intrinsicPerkSocketEntry.reusablePlugSetHash
@@ -122,17 +133,9 @@ export class DestinyManifestProcessor {
         return intrinsicPerk;
     }
 
-    private getPerkOptionsFromSockets = (sockets: DestinyItemSocketEntryDefinition[], socketCategories: DestinyItemSocketCategoryDefinition[]) => {
-        const weaponPerkSocketCategory = socketCategories.find(c => this.isWeaponPerkSocketCategory(c.socketCategoryHash));
-        const weaponPerkSockets = weaponPerkSocketCategory ? weaponPerkSocketCategory.socketIndexes.map(i => sockets[i]) : [];
-
-        const perkSocketsNoTracker = weaponPerkSockets.filter(s => {
-            const type = this.getSocketTypeDefinition(s.socketTypeHash);
-            return type && !type.plugWhitelist.some(this.isTrackerPlugCategory);
-        });
-
+    private getPerkOptionsFromSockets = (perkSockets: DestinyItemSocketEntryDefinition[]) => {
         // Either one or the other should be defined of randomizedPlugSetHash and reusablePlugSetHash
-        const perkPlugSets = perkSocketsNoTracker.map(ps => this.getPlugSetDefinition(ps.randomizedPlugSetHash || ps.reusablePlugSetHash!));
+        const perkPlugSets = perkSockets.map(ps => this.getPlugSetDefinition(ps.randomizedPlugSetHash || ps.reusablePlugSetHash!));
         const perkSlotOptions = perkPlugSets.map(this.getPerkOptionsFromPlugSet);
         return perkSlotOptions;
     }
@@ -182,6 +185,29 @@ export class DestinyManifestProcessor {
             options: perkOptions,
         };
         return slotOptions;
+    }
+
+    private getCuratedFromPerkSockets = (perkSockets: DestinyItemSocketEntryDefinition[], randomRollPerkOptions: IPerkSlotOptions[]) => {
+        return perkSockets
+            .map((s, index) => {
+                const perkSlotOptions = randomRollPerkOptions[index] || [];
+                if (s.singleInitialItemHash) {
+                    const perkOption = perkSlotOptions.options.find(o => o.perk.hash === s.singleInitialItemHash);
+                    // Sometimes, a curated perk is a perk that the weapon cannot normally roll. Construct a new
+                    // perk option object in this case, as there's nothing to match up with anyway.
+                    if (perkOption) return perkOption;
+                    const perkItem = this.getItemDefinition(s.singleInitialItemHash);
+                    return { perk: perkItem, enhancedPerk: undefined, currentlyCanRoll: true, useEnhanced: false, } as IPerkOption;
+                } else if (s.randomizedPlugSetHash) {
+                    // Origin perk doesn't have an initial item for some reason, have to use the randomized plug set.
+                    const plugSet = this.getPlugSetDefinition(s.randomizedPlugSetHash);
+                    const itemHash = !!plugSet && plugSet.reusablePlugItems.length > 0 ? plugSet.reusablePlugItems[0].plugItemHash : undefined;
+                    return perkSlotOptions.options.find(o => o.perk.hash === itemHash);
+                }
+            })
+            .map(i => i!)
+            // Checking for undefined here to have better defined behavior, but it really should never be undefined.
+            .map<IPerkSlotOptions>(o => { return { options: o ? [o] : [] }; });
     }
 
     private getItemDefinition = (hash: number) => {

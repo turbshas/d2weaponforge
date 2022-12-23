@@ -4,7 +4,6 @@ import type { HttpClientConfig } from "bungie-api-ts/http";
 import { cacheService } from "./cacheService";
 import { DestinyManifestProcessor } from "./destinyManifestProcessor";
 import type { Destiny2GameData, IWeapon } from "./types";
-import { hashMapToArray } from "./util";
 
 class DestinyApiService {
     public retrieveManifest = async (language: DestinyManifestLanguage) => {
@@ -17,8 +16,8 @@ class DestinyApiService {
 
         // /*
         if (cachedManifest) {
-            const cachedJsonComponentUrls = cachedManifest.manifestInfo.jsonWorldComponentContentPaths["en"];
-            const retrievedJsonComponentUrls = manifestInfo.Response.jsonWorldComponentContentPaths["en"];
+            const cachedJsonComponentUrls = cachedManifest.manifestInfo.jsonWorldComponentContentPaths[language];
+            const retrievedJsonComponentUrls = manifestInfo.Response.jsonWorldComponentContentPaths[language];
             // Apparently the URLs are better for checking the manifest version as they contain a
             // hash of the contents, and sometimes this will change without the actual version changing.
             if (cachedJsonComponentUrls["DestinyInventoryItemDefinition"] === retrievedJsonComponentUrls["DestinyInventoryItemDefinition"]) {

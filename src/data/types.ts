@@ -98,6 +98,7 @@ export interface IWeapon {
     weapon: DestinyInventoryItemDefinition;
     intrinsic: DestinyInventoryItemDefinition | undefined;
     perks: IPerkSlotOptions[];
+    curated: IPerkSlotOptions[];
 }
 
 export type FilterCategory = "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";

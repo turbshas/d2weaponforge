@@ -2,10 +2,9 @@
 import { computed } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import PerkList from './PerkList.vue';
-import { destinyDataService } from '@/data/destinyDataService';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 import BuilderSection from '../../../Common/BuilderSection.vue';
-import type { IPerkOption, IPerkSlotOptions, IWeapon } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/types';
 
 const props = defineProps<{
     weapon: IWeapon | undefined,
@@ -20,52 +19,14 @@ const emits = defineEmits<{
 
 const backgroundUrl = computed(() => PerkPanelBackground);
 
-const weaponSocketCategories = computed(() => props.weapon?.weapon.sockets?.socketCategories || []);
-const weaponSockets = computed(() => props.weapon?.weapon.sockets?.socketEntries || []);
-
-const weaponPerkSockets = computed(() => {
-    const weaponPerkSocketCategory = weaponSocketCategories.value.find(c => destinyDataService.isWeaponPerkSocketCategory(c.socketCategoryHash));
-    if (!weaponPerkSocketCategory) return [];
-    return weaponPerkSocketCategory.socketIndexes.map(i => weaponSockets.value[i]);
-});
-
-const perkSocketsNoTracker = computed(() => {
-    return weaponPerkSockets.value.filter(s => {
-        const type = destinyDataService.getSocketTypeDefinition(s.socketTypeHash);
-        return type && !type.plugWhitelist.some(destinyDataService.isTrackerPlugCategory);
-    });
-});
-
 const perkOptionListsPerSlot = computed(() => {
     if (!props.weapon) return [];
     return props.weapon.perks;
 });
 
 const curatedPerks = computed(() => {
-    return perkSocketsNoTracker.value
-        .map((s, index) => {
-            let perkSlotOptions = perkOptionListsPerSlot.value[index];
-            if (!perkSlotOptions) {
-                console.log("no perk slot options for", props.weapon);
-                perkSlotOptions = { options: [] };
-            }
-            if (s.singleInitialItemHash) {
-                const perkOption = perkSlotOptions.options.find(o => o.perk.hash === s.singleInitialItemHash);
-                // Sometimes, a curated perk is a perk that the weapon cannot normally roll. Construct a new
-                // perk option object in this case, as there's nothing to match up with anyway.
-                if (perkOption) return perkOption;
-                const perkItem = destinyDataService.getItemDefinition(s.singleInitialItemHash);
-                return { perk: perkItem, enhancedPerk: undefined, currentlyCanRoll: true, useEnhanced: false, } as IPerkOption;
-            } else if (s.randomizedPlugSetHash) {
-                // Origin perk doesn't have an initial item for some reason, have to use the randomized plug set.
-                const plugSet = destinyDataService.getPlugSetDefinition(s.randomizedPlugSetHash);
-                const itemHash = !!plugSet && plugSet.reusablePlugItems.length > 0 ? plugSet.reusablePlugItems[0].plugItemHash : undefined;
-                return perkSlotOptions.options.find(o => o.perk.hash === itemHash);
-            }
-        })
-        .map(i => i!)
-        // Checking for undefined here to have better defined behavior, but it really should never be undefined.
-        .map<IPerkSlotOptions>(o => { return { options: o ? [o] : [] }; });
+    if (!props.weapon) return [];
+    return props.weapon.curated;
 });
 const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
 
