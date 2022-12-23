@@ -18,7 +18,6 @@
 - collections filters
 - weapon archetype filters
 - support for translations
-- selecting curated perk then toggling enhanced makes the icon disappear
 - fix backup mag - it currently just does +30 to the mag (and mag perks)
 - weapon mag size caps
 - find a way to move stats to a more central location that all components that need stats can look at

@@ -47,7 +47,12 @@ const curatedPerks = computed(() => {
         .map((s, index) => {
             const perkSlotOptions = perkOptionListsPerSlot.value[index];
             if (s.singleInitialItemHash) {
-                return perkSlotOptions.options.find(o => o.perk.hash === s.singleInitialItemHash);
+                const perkOption = perkSlotOptions.options.find(o => o.perk.hash === s.singleInitialItemHash);
+                // Sometimes, a curated perk is a perk that the weapon cannot normally roll. Construct a new
+                // perk option object in this case, as there's nothing to match up with anyway.
+                if (perkOption) return perkOption;
+                const perkItem = destinyDataService.getItemDefinition(s.singleInitialItemHash);
+                return { perk: perkItem, enhancedPerk: undefined, currentlyCanRoll: true, useEnhanced: false, } as IPerkOption;
             } else if (s.randomizedPlugSetHash) {
                 // Origin perk doesn't have an initial item for some reason, have to use the randomized plug set.
                 const plugSet = destinyDataService.getPlugSetDefinition(s.randomizedPlugSetHash);
@@ -56,7 +61,8 @@ const curatedPerks = computed(() => {
             }
         })
         .map(i => i!)
-        .map<IPerkSlotOptions>(o => { return { options: [o] }; });
+        // Checking for undefined here to have better defined behavior, but it really should never be undefined.
+        .map<IPerkSlotOptions>(o => { return { options: o ? [o] : [] }; });
 });
 const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
 

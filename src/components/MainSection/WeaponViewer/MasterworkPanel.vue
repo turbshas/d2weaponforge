@@ -15,6 +15,13 @@ const emits = defineEmits<{
     (e: "masterworkChanged", masterwork: DestinyInventoryItemDefinition | undefined): void
 }>();
 
+const weaponCategories = computed(() => {
+    if (!props.weapon || !props.weapon.itemCategoryHashes) return undefined;
+    return destinyDataService.itemCategories
+        .filter(c => !!c.itemTypeRegex)
+        .filter(c => props.weapon!.itemCategoryHashes!.includes(c.hash));
+});
+
 const weaponSocketCategories = computed(() => props.weapon?.sockets?.socketCategories || []);
 const weaponSockets = computed(() => props.weapon?.sockets?.socketEntries || []);
 
@@ -35,11 +42,27 @@ const weaponStats = computed(() => {
 
 const filteredMasterworkOptions = computed(() => {
     if (!masterworkSocket.value) return [];
+
+    const categoryRegexList = weaponCategories.value ? weaponCategories.value.map(c => c.itemTypeRegex) : [];
+    const isSword = categoryRegexList.includes(DataSearchString.SwordTypeRegex);
+    const isBow = categoryRegexList.includes(DataSearchString.BowTypeRegex);
+
     return masterworkSocket.value.reusablePlugItems
         .map(pi => destinyDataService.getItemDefinition(pi.plugItemHash))
         // TODO: the conditionally active thing is for adepts or crafted weapon > lvl 20, maybe find a better way to do this?
         .filter(mwItem => mwItem && mwItem.investmentStats.every(stat => !!weaponStats.value[stat.statTypeHash] || stat.isConditionallyActive))
-        .map(i => i!);
+        .map(i => i!)
+        .filter(mwItem => {
+            const name = getStatNameForMasterwork(mwItem);
+            if (categoryRegexList.length === 0) return true;
+            // Impact only applies to swords.
+            if (name === DataSearchString.ImpactStatName) return isSword;
+            // Swords can only have impact.
+            if (isSword) return name === DataSearchString.ImpactStatName;
+            // Bows have both draw time and charge time, and should only display draw time.
+            if (name === DataSearchString.ChargeTimeStatName) return !isBow;
+            return true;
+        });
 });
 
 const masterworkOptionsByStatName = computed(() => {
@@ -68,6 +91,7 @@ const masterworkStatNames = computed(() => Object.keys(masterworkOptionsByStatNa
 const selectedMasterworkStatName = ref(initSelectedStatName());
 const masterworkLevel = ref(initSelectedMasterworkLevel());
 watch(() => props.masterwork, () => {
+    console.log("masterwork is", props.masterwork);
     selectedMasterworkStatName.value = initSelectedStatName();
     masterworkLevel.value = initSelectedMasterworkLevel();
 });
@@ -154,6 +178,10 @@ function onMasterworkLevelChanged(event: Event) {
 }
 
 .text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
     width: 24px;
     height: 24px;
     box-sizing: content-box;

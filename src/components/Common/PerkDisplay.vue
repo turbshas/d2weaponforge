@@ -21,6 +21,10 @@ const perkIcon = computed(() => {
     if (!props.perk) return undefined;
     return destinyDataService.getImageUrl(props.perk.displayProperties.icon);
 });
+const perkWatermark = computed(() => {
+    if (!props.perk || !props.perk.iconWatermark) return undefined;
+    return destinyDataService.getImageUrl(props.perk.iconWatermark);
+});
 
 const perkElement = ref<HTMLElement | null>(null);
 const tooltipTargetElement = computed(() => props.perk ? perkElement.value : null);
@@ -62,7 +66,9 @@ function onPerkClick() {
             class="icon"
             :class="{ 'random-roll-icon': !fullSize, 'retired': retired, 'hover': !hideHover, }"
             :style="{ 'background-image': 'url(' + perkIcon +')', }"
-        ></div>
+        >
+            <img class="icon" v-if="perkWatermark" :src="perkWatermark">
+        </div>
         <div class="enhanced-gradient-wrapper" v-if="enhanced && !selected">
             <div class="enhanced-gradient"></div>
         </div>
