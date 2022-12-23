@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
-import WeaponIcon from "@/components/WeaponIcon.vue";
+import WeaponIcon from "@/components/Common/WeaponIcon.vue";
 
 const emit = defineEmits(["entry-clicked"]);
 

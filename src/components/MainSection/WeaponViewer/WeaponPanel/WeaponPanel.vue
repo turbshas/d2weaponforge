@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WeaponIcon from '@/components/WeaponIcon.vue';
+import WeaponIcon from '@/components/Common/WeaponIcon.vue';
 import { destinyDataService } from '@/data/destinyDataService';
 import { DataSearchString, type IPerkOption } from '@/data/types';
 import { hashMapToArray } from '@/data/util';
