@@ -380,7 +380,13 @@ function onApplyFilters() {
         </div>
 
         <CollapsibleSection name="Perks">
-            <input type="text" v-model="perkFilter" @input="onPerkFilterChanged">
+            <input
+                class="perk-search"
+                type="text"
+                placeholder="Filter for specific perks"
+                v-model="perkFilter"
+                @input="onPerkFilterChanged"
+            >
         </CollapsibleSection>
 
         <CollapsibleSection name="Archetype" v-show="activeWeaponFilters.length > 0">
@@ -458,6 +464,33 @@ function onApplyFilters() {
     font-weight: 600;
     line-height: 19.2px;
     letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.perk-search {
+    order: 1;
+    color: #fafafa;
+    background: none;
+    font-size: 16px;
+    font-family: neue-haas-grotesk-text,"Helvetica Neue",sans-serif;
+    line-height: 16px;
+
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: hsla(0, 0%, 100%, 0.5);
+    border-radius: 0;
+    border-top: none;
+}
+.perk-search::placeholder {
+    font-size: 12px;
+    font-family: neue-haas-grotesk-text,"Helvetica Neue",sans-serif;
+    line-height: 16px;
+    letter-spacing: 2px;
     text-transform: uppercase;
 }
 
