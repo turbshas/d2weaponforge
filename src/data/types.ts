@@ -5,6 +5,7 @@ import type {
     DestinyInventoryItemDefinition,
     DestinyItemCategoryDefinition,
     DestinyItemTierTypeDefinition,
+    DestinyManifestSlice,
     DestinyPlugSetDefinition,
     DestinySandboxPerkDefinition,
     DestinySeasonDefinition,
@@ -12,6 +13,22 @@ import type {
     DestinySocketTypeDefinition,
     DestinyStatDefinition
 } from "bungie-api-ts/destiny2";
+
+export type UsedDestinyManifestSlice = DestinyManifestSlice<(
+    "DestinyEnergyTypeDefinition"
+    | "DestinyDamageTypeDefinition"
+    | "DestinyEquipmentSlotDefinition"
+    | "DestinyItemCategoryDefinition"
+    | "DestinyItemTierTypeDefinition"
+    | "DestinySeasonDefinition"
+    | "DestinyInventoryItemDefinition"
+    | "DestinyPlugSetDefinition"
+    | "DestinyStatDefinition"
+    | "DestinySandboxPerkDefinition"
+    | "DestinySocketCategoryDefinition"
+    | "DestinySocketTypeDefinition"
+    | "DestinyPowerCapDefinition"
+)[]>;
 
 export enum DataSearchString {
     Adept = "Adept",
@@ -131,7 +148,8 @@ export interface Destiny2GameData {
     seasons: DestinySeasonDefinition[];
     seasonsLookup: { [hash: number]: DestinySeasonDefinition };
 
-    weapons: DestinyInventoryItemDefinition[];
+    weapons: IWeapon[];
+    weaponsLookup: { [weaponHash: number]: IWeapon };
 
     statsLookup: { [hash: number]: DestinyStatDefinition };
     itemLookup: { [hash: number]: DestinyInventoryItemDefinition };

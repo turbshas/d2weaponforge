@@ -1,25 +1,10 @@
 import { Destiny2 } from "bungie-api-ts";
-import type { DestinyInventoryItemDefinition, DestinyManifestLanguage, DestinyManifestSlice } from "bungie-api-ts/destiny2";
+import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import { cacheService } from "./cacheService";
-import { DataSearchString, ItemTierIndex, type Destiny2GameData } from "./types";
-import { findItemInTable, hashMapToArray } from "./util";
-
-type UsedDestinyManifestSlice = DestinyManifestSlice<(
-    "DestinyEnergyTypeDefinition"
-    | "DestinyDamageTypeDefinition"
-    | "DestinyEquipmentSlotDefinition"
-    | "DestinyItemCategoryDefinition"
-    | "DestinyItemTierTypeDefinition"
-    | "DestinySeasonDefinition"
-    | "DestinyInventoryItemDefinition"
-    | "DestinyPlugSetDefinition"
-    | "DestinyStatDefinition"
-    | "DestinySandboxPerkDefinition"
-    | "DestinySocketCategoryDefinition"
-    | "DestinySocketTypeDefinition"
-    | "DestinyPowerCapDefinition"
-)[]>;
+import { DestinyManifestProcessor } from "./destinyManifestProcessor";
+import type { Destiny2GameData, IWeapon } from "./types";
+import { hashMapToArray } from "./util";
 
 class DestinyApiService {
     public retrieveManifest = async (language: DestinyManifestLanguage) => {
@@ -67,102 +52,41 @@ class DestinyApiService {
 
         console.log(manifestSlice);
 
-        const itemCategories = hashMapToArray(manifestSlice.DestinyItemCategoryDefinition);
-        const socketCategories = hashMapToArray(manifestSlice.DestinySocketCategoryDefinition);
-        const originPerkCategory = itemCategories.find(category => category.displayProperties.name === DataSearchString.WeaponOriginPerkItemCategoryName);
-        const weaponIntrinsicCategory = socketCategories.find(category => category.displayProperties.name === DataSearchString.WeaponIntrinsicPerkCategoryName);
-        const weaponPerkCategory = socketCategories.find(category => category.displayProperties.name === DataSearchString.WeaponPerkSocketCategoryName);
+        const manifestProcessor = new DestinyManifestProcessor(manifestSlice);
 
-        const weaponCategories = itemCategories.filter(category => category.displayProperties.name === DataSearchString.WeaponItemCategoryName);
-        // Includes anything that modifies an item - perks, mods, masterworks, etc.
-        const modCategories = itemCategories.filter(category => category.displayProperties.name === DataSearchString.ModItemCategoryName);
-        const weaponCategoryHashes = weaponCategories.map(c => c.hash);
-        const modCategoryHashes = modCategories.map(c => c.hash);
-
-        // Remove everything we don't need - this makes loading from cache much faster (and actually usable).
-        // Only doing this for DestinyInventoryItemDefinition as it is by far the largest table.
-        // The others are fairly small and don't need this.
-        const neededItemCategoryHashes = weaponCategoryHashes.concat(modCategoryHashes);
-        const itemHashesToRemove: number[] = [];
-        for (const key in manifestSlice.DestinyInventoryItemDefinition) {
-            const item = manifestSlice.DestinyInventoryItemDefinition[key];
-            if (
-                (!item.itemCategoryHashes || !item.itemCategoryHashes.some(h => neededItemCategoryHashes.includes(h)))
-                &&
-                // Some perks don't have any item categories.
-                (!item.plug || item.plug.plugCategoryIdentifier !== DataSearchString.FramesPlugCategoryId)
-                ) {
-                itemHashesToRemove.push(item.hash);
-            }
+        const weapons = manifestProcessor.weapons;
+        const weaponsLookup: { [weaponItemHash: number]: IWeapon } = {};
+        for (const weapon of weapons) {
+            weaponsLookup[weapon.weapon.hash] = weapon;
         }
-        for (const hash of itemHashesToRemove) {
-            delete manifestSlice.DestinyInventoryItemDefinition[hash];
-        }
-
-        // Remove redacted values
-        for (const key in manifestSlice) {
-            const table = key as keyof UsedDestinyManifestSlice;
-            const component = manifestSlice[table];
-
-            // Add the redacted items to a list as we can't modify a collection while iterating it.
-            const itemHashesToRemove: number[] = [];
-            for (const hash in component) {
-                const item = component[hash];
-                if (item.redacted) {
-                    itemHashesToRemove.push(item.hash);
-                }
-            }
-
-            // Remove redacted items
-            for (const hash of itemHashesToRemove) {
-                delete component[hash];
-            }
-        }
-
-        const weapons: DestinyInventoryItemDefinition[] = [];
-        for (const key in manifestSlice.DestinyInventoryItemDefinition) {
-            const item = manifestSlice.DestinyInventoryItemDefinition[key];
-            // No categories, ignore. No display name means it's probably not an item we care about.
-            if (!item.itemCategoryHashes || !item.displayProperties.name) continue;
-
-            // Seem to be duplicates for some weapons that don't have a screenshot - this
-            // is probably the item used for the crafting menu, so ignore it.
-            if (item.itemCategoryHashes.some(h => weaponCategoryHashes.includes(h)) && !!item.screenshot) {
-                weapons.push(item);
-            }
-        }
-        // Sort the weapons newest to oldest (roughly).
-        // TODO: find a better way to sort, or manually curate the order to show recent weapons.
-        weapons.sort((a, b) => b.index - a.index);
 
         const gameData: Destiny2GameData = {
-            damageTypes: hashMapToArray(manifestSlice.DestinyDamageTypeDefinition),
-            damageTypesLookup: manifestSlice.DestinyDamageTypeDefinition,
-            energyTypes: hashMapToArray(manifestSlice.DestinyEnergyTypeDefinition),
-            energyTypesLookup: manifestSlice.DestinyEnergyTypeDefinition,
-            equipmentSlots: hashMapToArray(manifestSlice.DestinyEquipmentSlotDefinition),
-            equipmentSlotsLookup: manifestSlice.DestinyEquipmentSlotDefinition,
-            itemCategories: itemCategories,
-            itemCategoriesLookup: manifestSlice.DestinyItemCategoryDefinition,
-            itemTierTypes: hashMapToArray(manifestSlice.DestinyItemTierTypeDefinition),
-            itemTierTypesLookup: manifestSlice.DestinyItemTierTypeDefinition,
-            seasons: hashMapToArray(manifestSlice.DestinySeasonDefinition),
-            seasonsLookup: manifestSlice.DestinySeasonDefinition,
+            damageTypes: manifestProcessor.damageTypes,
+            damageTypesLookup: manifestProcessor.damageTypeLookup,
+            energyTypes: manifestProcessor.energyTypes,
+            energyTypesLookup: manifestProcessor.energyTypeLookup,
+            equipmentSlots: manifestProcessor.equipmentSlots,
+            equipmentSlotsLookup: manifestProcessor.equipmentSlotsLookup,
+            itemCategories: manifestProcessor.itemCategories,
+            itemCategoriesLookup: manifestProcessor.itemCategoriesLookup,
+            itemTierTypes: manifestProcessor.itemTierTypes,
+            itemTierTypesLookup: manifestProcessor.itemTierTypesLookup,
+            seasons: manifestProcessor.seasons,
+            seasonsLookup: manifestProcessor.seasonsLookup,
             weapons: weapons,
+            weaponsLookup: weaponsLookup,
 
-            statsLookup: manifestSlice.DestinyStatDefinition,
-            itemLookup: manifestSlice.DestinyInventoryItemDefinition,
-            plugSetLookup: manifestSlice.DestinyPlugSetDefinition,
-            sandboxPerksLookup: manifestSlice.DestinySandboxPerkDefinition,
-            socketCategoryLookup: manifestSlice.DestinySocketCategoryDefinition,
-            socketTypeLookup: manifestSlice.DestinySocketTypeDefinition,
+            statsLookup: manifestProcessor.statsLookup,
+            itemLookup: manifestProcessor.itemLookup,
+            plugSetLookup: manifestProcessor.plugSetLookup,
+            sandboxPerksLookup: manifestProcessor.sandboxPerksLookup,
+            socketCategoryLookup: manifestProcessor.socketCategoryLookup,
+            socketTypeLookup: manifestProcessor.socketTypeLookup,
 
-            originPerkCategory: originPerkCategory!,
-            weaponIntrinsicCategory: weaponIntrinsicCategory!,
-            weaponPerkCategory: weaponPerkCategory!,
+            originPerkCategory: manifestProcessor.originPerkCategory!,
+            weaponIntrinsicCategory: manifestProcessor.weaponIntrinsicCategory!,
+            weaponPerkCategory: manifestProcessor.weaponPerkCategory!,
         };
-        // This seems to sort from common -> exotic nicely
-        gameData.itemTierTypes.sort((a, b) => a.index - b.index);
 
         console.log("weapons", gameData.weapons);
 

@@ -8,20 +8,20 @@ import { destinyApiService } from "./destinyApiService";
 import { DataSearchString, ItemTierIndex, type IWeapon, type Destiny2GameData, type IPerkOption, type IPerkSlotOptions } from "./types";
 import { findItemInTable } from "./util";
 
-type GameDataReactiveWrapper = { gameData: Destiny2GameData | null, weapons: IWeapon[], weaponLookup: { [hash: number]: IWeapon | undefined } };
+type GameDataReactiveWrapper = { gameData: Destiny2GameData | null, };
 
 class DestinyDataService {
     private initialized: boolean = false;
     public manifestLoaded: Promise<void> | null = null;
 
-    private gameDataReactiveWrapper: GameDataReactiveWrapper = reactive<GameDataReactiveWrapper>({ gameData: null, weapons: [], weaponLookup: {}, });
+    private gameDataReactiveWrapper: GameDataReactiveWrapper = reactive<GameDataReactiveWrapper>({ gameData: null, });
 
     public get gameData() {
         return this.gameDataReactiveWrapper.gameData;
     }
 
     public get weapons() {
-        return this.gameDataReactiveWrapper.weapons;
+        return this.gameData ? this.gameData.weapons : [];
     }
 
     public get damageTypes() {
@@ -70,7 +70,7 @@ class DestinyDataService {
     }
 
     public getWeapon = (hash: number) => {
-        return this.gameDataReactiveWrapper.weaponLookup[hash];
+        return this.gameData?.weaponsLookup[hash];
     }
 
     public getDamageType = (hash: number) => {
@@ -271,21 +271,6 @@ class DestinyDataService {
         console.log(gameData);
 
         this.gameDataReactiveWrapper.gameData = gameData;
-        const weapons = gameData.weapons.map<IWeapon>(w => {
-            const intrinsic = this.getIntrinsicForWeapon(w);
-            const perks = this.getPerkOptionsForWeapon(w);
-            return {
-                weapon: w,
-                intrinsic: intrinsic,
-                perks: perks,
-            };
-        });
-        const lookup: { [hash: number]: IWeapon | undefined } = {};
-        for (const weapon of weapons) {
-            lookup[weapon.weapon.hash] = weapon;
-        }
-        this.gameDataReactiveWrapper.weapons = weapons;
-        this.gameDataReactiveWrapper.weaponLookup = lookup;
     }
 }
 
