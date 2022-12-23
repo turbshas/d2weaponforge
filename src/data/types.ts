@@ -77,6 +77,12 @@ export enum StatDisplayType {
     Number = "Number",
 }
 
+export interface IWeapon {
+    weapon: DestinyInventoryItemDefinition;
+    intrinsic: DestinyInventoryItemDefinition | undefined;
+    perks: IPerkSlotOptions[];
+}
+
 export type FilterCategory = "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";
 
 export type FilterPredicate = (item: DestinyInventoryItemDefinition) => boolean;
@@ -85,7 +91,6 @@ export interface IFilterButton {
     text: string;
     iconUrl: string;
     filter: FilterPredicate;
-    active: boolean;
 }
 
 export interface IArchetypeFilter {

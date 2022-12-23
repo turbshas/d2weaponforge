@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { destinyDataService } from '@/data/destinyDataService';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
@@ -7,7 +6,7 @@ import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition | undefined,
+    intrinsic: DestinyInventoryItemDefinition | undefined,
     perk1: DestinyInventoryItemDefinition | undefined,
     perk2: DestinyInventoryItemDefinition | undefined,
     perk3: DestinyInventoryItemDefinition | undefined,
@@ -23,32 +22,6 @@ const emits = defineEmits<{
     (e: "perkClicked", column: number): void,
 }>();
 
-const weaponSocketCategories = computed(() => {
-    if (!props.weapon || !props.weapon.sockets) return [];
-    return props.weapon.sockets.socketCategories;
-});
-
-const weaponSockets = computed(() => {
-    if (!props.weapon || !props.weapon.sockets) return [];
-    return props.weapon.sockets.socketEntries;
-});
-
-const intrinsicPerkSocketEntry = computed(() => {
-    const intrinsicSocketCategory = weaponSocketCategories.value.find(c => destinyDataService.isIntrinsicPerkSocketCategory(c.socketCategoryHash));
-    if (!intrinsicSocketCategory || intrinsicSocketCategory.socketIndexes.length === 0) return undefined;
-    return weaponSockets.value[intrinsicSocketCategory.socketIndexes[0]];
-});
-
-const intrinsicPlugSet = computed(() => {
-    if (!intrinsicPerkSocketEntry.value || !intrinsicPerkSocketEntry.value.reusablePlugSetHash) return undefined;
-    return destinyDataService.getPlugSetDefinition(intrinsicPerkSocketEntry.value.reusablePlugSetHash);
-});
-
-const intrinsicPerk = computed(() => {
-    if (!intrinsicPlugSet.value || intrinsicPlugSet.value.reusablePlugItems.length === 0) return undefined;
-    return destinyDataService.getItemDefinition(intrinsicPlugSet.value.reusablePlugItems[0].plugItemHash);
-});
-
 const backgroundUrl = computed(() => PerkPanelBackground);
 
 function onPerkClicked(column: number) {
@@ -58,14 +31,14 @@ function onPerkClicked(column: number) {
 
 <template>
     <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
-        <PerkDisplay class="perk" :perk="intrinsicPerk" :selected="false" :retired="false" full-size hide-hover></PerkDisplay>
-        <PerkDisplay class="perk" :perk="perk1" :selected="false" :retired="false"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="perk2" :selected="false" :retired="false"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="perk3" :selected="false" :retired="false" :enhanced="isPerk3Enhanced" @click="onPerkClicked(2)"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="perk4" :selected="false" :retired="false" :enhanced="isPerk4Enhanced" @click="onPerkClicked(3)"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="originPerk" :selected="false" :retired="false" v-if="!!originPerk"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="mod" :selected="false" :retired="false" full-size v-if="!!mod"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="masterwork" :selected="false" :retired="false" full-size v-if="!!masterwork"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="props.intrinsic" :selected="false" :retired="false" full-size hide-hover></PerkDisplay>
+        <PerkDisplay class="perk" :perk="props.perk1" :selected="false" :retired="false"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="props.perk2" :selected="false" :retired="false"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="props.perk3" :selected="false" :retired="false" :enhanced="isPerk3Enhanced" @click="onPerkClicked(2)"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="props.perk4" :selected="false" :retired="false" :enhanced="isPerk4Enhanced" @click="onPerkClicked(3)"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="props.originPerk" :selected="false" :retired="false" v-if="!!originPerk"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="props.mod" :selected="false" :retired="false" full-size v-if="!!mod"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="props.masterwork" :selected="false" :retired="false" full-size v-if="!!masterwork"></PerkDisplay>
     </div>
 </template>
 

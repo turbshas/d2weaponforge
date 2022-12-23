@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
-import { PageSelection, type IPerkOption } from '@/data/types';
+import { PageSelection, type IPerkOption, type IWeapon } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { watch } from 'vue';
@@ -18,7 +18,7 @@ const props = defineProps<{
 const emits = defineEmits<{
     (e: "urlParsed",
         page: PageSelection,
-        weapon: DestinyInventoryItemDefinition | undefined,
+        weapon: IWeapon | undefined,
         perks: (IPerkOption | undefined)[],
         masterwork: DestinyInventoryItemDefinition | undefined,
         mod: DestinyInventoryItemDefinition | undefined,
@@ -82,7 +82,7 @@ function onGameDataChanged() {
         }
     }
 
-    const weapon = destinyDataService.getItemDefinition(urlWeaponHash);
+    const weapon = destinyDataService.getWeapon(urlWeaponHash);
     // If weapon doesn't exist, the other values aren't valid.
     if (!weapon) return
 
@@ -95,7 +95,7 @@ function onGameDataChanged() {
     const masterwork = allPerks[4];
     const mod = allPerks[5];
 
-    const perkSlotOptions = destinyDataService.getPerkOptionsForWeapon(weapon);
+    const perkSlotOptions = weapon.perks;
     const allPerkOptions = perkSlotOptions.reduce<IPerkOption[]>((total, current) => { total.push(...current.options); return total; }, []);
 
     const perkOptionLookup: { [hash: number]: IPerkOption } = {};

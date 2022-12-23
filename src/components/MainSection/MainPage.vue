@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PageSelection, type IPerkOption } from '@/data/types';
+import { PageSelection, type IPerkOption, type IWeapon } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import HomePage from './HomePage.vue';
 import Glossary from './Glossary.vue';
@@ -9,7 +9,7 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     page: PageSelection,
-    weapon: DestinyInventoryItemDefinition | undefined,
+    weapon: IWeapon | undefined,
     selectedPerks: (IPerkOption | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
@@ -71,6 +71,8 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
 
 <style scoped>
 .main {
+    overflow-x: hidden;
+    overflow-y: scroll;
     display: flex;
     justify-content: center;
     margin-left: 16px;

@@ -10,6 +10,12 @@ import { DataSearchString, type FilterCategory, type FilterPredicate, type IArch
 import { findItemInTable } from "@/data/util";
 import OptionButton from "@/components/Common/OptionButton.vue";
 
+interface ICategoryInfo {
+    name: FilterCategory;
+    filters: IFilterButton[];
+    wide: boolean;
+}
+
 interface IArchetypeInfo {
     text: string;
     filter: FilterPredicate;
@@ -141,30 +147,30 @@ const weaponCategoryArchetypeMap: { [itemRegex: string]: IArchetypeInfo[] } = {
 
 // TODO: these filters
 const origins: IFilterButton[] = [
-    { text: "World (Current)", iconUrl: "", active: false, filter: () => false, },
-    { text: "Word (Old)", iconUrl: "", active: false, filter: () => false, },
-    { text: "Vanguard Ops", iconUrl: OriginIcons.FactionVanguard, active: false, filter: () => false, },
-    { text: "Crucible", iconUrl: OriginIcons.FactionCrucible, active: false, filter: () => false, },
-    { text: "Gambit", iconUrl: OriginIcons.FactionGambit, active: false, filter: () => false, },
-    { text: "Iron Banner", iconUrl: OriginIcons.FactionIronBanner, active: false, filter: () => false, },
-    { text: "Trials of Osiris", iconUrl: OriginIcons.FactionOsiris, active: false, filter: () => false, },
-    { text: "Nightfall", iconUrl: OriginIcons.Nightfall, active: false, filter: () => false, },
-    { text: "King's Fall", iconUrl: "", active: false, filter: () => false, },
-    { text: "Duality", iconUrl: OriginIcons.Duality, active: false, filter: () => false, },
-    { text: "Opulent", iconUrl: "", active: false, filter: () => false, }, // TODO: this would be opulent weapons that were reissued ONLY (unless Include Sunset is checked?)
-    { text: "Vow of the Disciple", iconUrl: OriginIcons.VowOfTheDisciple, active: false, filter: () => false, },
-    { text: "Throne World", iconUrl: "", active: false, filter: () => false, },
-    { text: "30th Anniversary", iconUrl: "", active: false, filter: () => false, },
-    { text: "Vault of Glass", iconUrl: OriginIcons.VaultOfGlass, active: false, filter: () => false, },
-    { text: "Europa", iconUrl: OriginIcons.Europa, active: false, filter: () => false, },
-    { text: "Deep Stone Crypt", iconUrl: "", active: false, filter: () => false, },
-    { text: "Prophecy", iconUrl: OriginIcons.FactionTheNine, active: false, filter: () => false, }, // TODO: this would be Trials of the Nine weapons that drop in Prophecy ONLY (unless Include Sunset is checked?)
-    { text: "Altars of Sorrow", iconUrl: "", active: false, filter: () => false, },
-    { text: "Pit of Heresy", iconUrl: "", active: false, filter: () => false, },
-    { text: "Dreambane", iconUrl: "", active: false, filter: () => false, },
-    { text: "Garden of Salvation", iconUrl: "", active: false, filter: () => false, },
-    { text: "The Dreaming City", iconUrl: "", active: false, filter: () => false, },
-    { text: "Last Wish", iconUrl: "", active: false, filter: () => false, },
+    { text: "World (Current)", iconUrl: "", filter: () => false, },
+    { text: "Word (Old)", iconUrl: "", filter: () => false, },
+    { text: "Vanguard Ops", iconUrl: OriginIcons.FactionVanguard, filter: () => false, },
+    { text: "Crucible", iconUrl: OriginIcons.FactionCrucible, filter: () => false, },
+    { text: "Gambit", iconUrl: OriginIcons.FactionGambit, filter: () => false, },
+    { text: "Iron Banner", iconUrl: OriginIcons.FactionIronBanner, filter: () => false, },
+    { text: "Trials of Osiris", iconUrl: OriginIcons.FactionOsiris, filter: () => false, },
+    { text: "Nightfall", iconUrl: OriginIcons.Nightfall, filter: () => false, },
+    { text: "King's Fall", iconUrl: "", filter: () => false, },
+    { text: "Duality", iconUrl: OriginIcons.Duality, filter: () => false, },
+    { text: "Opulent", iconUrl: "", filter: () => false, }, // TODO: this would be opulent weapons that were reissued ONLY (unless Include Sunset is checked?)
+    { text: "Vow of the Disciple", iconUrl: OriginIcons.VowOfTheDisciple, filter: () => false, },
+    { text: "Throne World", iconUrl: "", filter: () => false, },
+    { text: "30th Anniversary", iconUrl: "", filter: () => false, },
+    { text: "Vault of Glass", iconUrl: OriginIcons.VaultOfGlass, filter: () => false, },
+    { text: "Europa", iconUrl: OriginIcons.Europa, filter: () => false, },
+    { text: "Deep Stone Crypt", iconUrl: "", filter: () => false, },
+    { text: "Prophecy", iconUrl: OriginIcons.FactionTheNine, filter: () => false, }, // TODO: this would be Trials of the Nine weapons that drop in Prophecy ONLY (unless Include Sunset is checked?)
+    { text: "Altars of Sorrow", iconUrl: "", filter: () => false, },
+    { text: "Pit of Heresy", iconUrl: "", filter: () => false, },
+    { text: "Dreambane", iconUrl: "", filter: () => false, },
+    { text: "Garden of Salvation", iconUrl: "", filter: () => false, },
+    { text: "The Dreaming City", iconUrl: "", filter: () => false, },
+    { text: "Last Wish", iconUrl: "", filter: () => false, },
 ];
 
 const seasonIconMap: { [seasonNumber: number]: string } = {
@@ -184,6 +190,13 @@ const emits = defineEmits<{
 
 const perkFilter = ref("");
 const includeSunsetWeapons = ref(false);
+const activeFilters = ref<Record<FilterCategory, { [filterText: string]: boolean }>>({
+    "Archetype": {},
+    "Collections": {},
+    "Damage Type": {},
+    "Rarity": {},
+    "Weapon": {},
+});
 
 const damageTypeFilters = computed(() => {
     return destinyDataService.damageTypes
@@ -192,7 +205,6 @@ const damageTypeFilters = computed(() => {
             const filter: IFilterButton = {
                 text: d.displayProperties.name,
                 iconUrl: destinyDataService.getImageUrl(d.displayProperties.icon),
-                active: false,
                 filter: (item: DestinyInventoryItemDefinition) => {
                     return item.damageTypeHashes.includes(d.hash);
                 },
@@ -208,7 +220,6 @@ const weaponCategoryFilters = computed(() => {
             const filter: IWeaponFilterButton = {
                 text: c.displayProperties.name,
                 iconUrl: weaponCategoryIconMap[c.itemTypeRegex],
-                active: false,
                 archetypes: [],
                 filter: (item: DestinyInventoryItemDefinition) => {
                     if (!item.itemCategoryHashes) return false;
@@ -226,22 +237,6 @@ const weaponCategoryFilters = computed(() => {
         });
 });
 
-const activeWeaponFilters = computed(() => {
-    const result: IWeaponFilterButton[] = [];
-
-    const weaponFilters = filterCategoryMap.value["Weapon"];
-    console.log("weapon filters", weaponFilters);
-    for (const buttonName in weaponFilters) {
-        const filter = weaponFilters[buttonName] as IWeaponFilterButton;
-        if (filter.active) {
-            console.log("filter is active", filter);
-            result.push(filter);
-        }
-    }
-
-    return result;
-});
-
 const collectionCategoryFilters = computed(() => {
     // Just seasons right now, TODO: add other collections
     const collections = origins;
@@ -254,7 +249,6 @@ const collectionCategoryFilters = computed(() => {
             const filter: IFilterButton = {
                 text: s.displayProperties.name || "The Red War",
                 iconUrl: iconUrl,
-                active: false,
                 filter: (item: DestinyInventoryItemDefinition) => {
                     // TODO: this may not work for a lot of weapons, is there a better way to check?
                     return !!item.seasonHash && item.seasonHash === s.hash;
@@ -277,7 +271,6 @@ const itemTierFilters = computed(() => {
             uniqueTiers.push({
                 text: tier.displayProperties.name,
                 iconUrl: tierIndexToIcon(tier.index),
-                active: false,
                 filter: (item: DestinyInventoryItemDefinition) => {
                     return !!item.inventory && item.inventory.tierTypeHash === tier.hash;
                 }
@@ -288,30 +281,26 @@ const itemTierFilters = computed(() => {
     return uniqueTiers;
 });
 
-const filterCategories = computed(() => {
-    const categories: { name: FilterCategory, filters: IFilterButton[], wide: boolean, }[] = [
-        { name: "Damage Type", filters: damageTypeFilters.value, wide: false, },
-        { name: "Weapon", filters: weaponCategoryFilters.value, wide: true, },
-        { name: "Collections", filters: collectionCategoryFilters.value, wide: false, },
-        { name: "Rarity", filters: itemTierFilters.value, wide: false, },
-    ];
-    return categories;
+const damageTypeFilterCategory = computed<ICategoryInfo>(() => {
+    return { name: "Weapon", filters: damageTypeFilters.value, activeFilters: {}, wide: false };
+});
+const weaponFilterCategory = computed<ICategoryInfo>(() => {
+    return { name: "Weapon", filters: weaponCategoryFilters.value, activeFilters: {}, wide: true };
+});
+const collectionsFilterCategory = computed<ICategoryInfo>(() => {
+    return { name: "Weapon", filters: collectionCategoryFilters.value, activeFilters: {}, wide: false };
+});
+const rarityFilterCategory = computed<ICategoryInfo>(() => {
+    return { name: "Weapon", filters: itemTierFilters.value, activeFilters: {}, wide: false };
 });
 
-const filterCategoryMap = computed(() => {
-    const map: Record<FilterCategory, { [buttonText: string]: IFilterButton }> = {
-        "Damage Type": {},
-        "Weapon": {},
-        "Archetype": {},
-        "Collections": {},
-        "Rarity": {},
-    };
-    for (const category of filterCategories.value) {
-        for (const filter of category.filters) {
-            map[category.name][filter.text] = filter;
-        }
-    }
-    return map;
+const filterCategories = computed(() => {
+    return [damageTypeFilterCategory.value, weaponFilterCategory.value, collectionsFilterCategory.value, rarityFilterCategory.value];
+});
+
+const activeWeaponFilters = computed(() => {
+    const activeFilterMap = activeFilters.value[weaponFilterCategory.value.name];
+    return weaponCategoryFilters.value.filter(f => activeFilterMap[f.text]);
 });
 
 function tierIndexToIcon(tierIndex: number) {
@@ -334,9 +323,8 @@ function onPerkFilterChanged() {
     // TODO: stuff
 }
 
-function onFilterButtonToggled(filter: IFilterButton, active: boolean) {
-    filter.active = active;
-    console.log("filter toggled", filter, weaponCategoryFilters.value, activeWeaponFilters.value);
+function onFilterButtonToggled(category: ICategoryInfo, filter: IFilterButton, active: boolean) {
+    activeFilters.value[category.name][filter.text] = active;
 }
 
 function onArchetypeFilterToggled(archetypeFilter: IArchetypeFilter, active: boolean) {
@@ -356,14 +344,11 @@ function onApplyFilters() {
         "Rarity": [],
     };
 
-    for (const category in filterCategoryMap.value) {
-        const filterCategory = category as FilterCategory;
-        const filterButtonMap = filterCategoryMap.value[filterCategory];
-
-        for (const buttonText in filterButtonMap) {
-            const button = filterButtonMap[buttonText];
-            if (button.active) {
-                filters[filterCategory].push(button.filter);
+    for (const category of filterCategories.value) {
+        for (const filter of category.filters) {
+            const active = activeFilters.value[category.name][filter.text];
+            if (active) {
+                filters[category.name].push(filter.filter);
             }
         }
     }
@@ -418,11 +403,11 @@ function onApplyFilters() {
                     v-for="filter of category.filters"
                     :key="filter.text"
                     :text="filter.text"
-                    :active="filter.active"
+                    :active="!!activeFilters[category.name][filter.text]"
                     :icon-url="filter.iconUrl"
                     large
                     :wide="category.wide"
-                    @toggled="active => onFilterButtonToggled(filter, active)"
+                    @toggled="active => onFilterButtonToggled(category, filter, active)"
                 ></OptionButton>
             </div>
         </CollapsibleSection>
@@ -492,6 +477,9 @@ function onApplyFilters() {
     line-height: 16px;
     letter-spacing: 2px;
     text-transform: uppercase;
+}
+.perk-search:focus {
+    outline: none;
 }
 
 .button-list {

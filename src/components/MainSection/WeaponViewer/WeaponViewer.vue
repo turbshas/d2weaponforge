@@ -5,10 +5,10 @@ import ExtrasPanel from './ExtrasPanel/ExtrasPanel.vue';
 import MasterworkPanel from './MasterworkPanel.vue';
 import ModsPanel from './ModsPanel.vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
-import type { IPerkOption } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/types';
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition | undefined
+    weapon: IWeapon | undefined
     selectedPerks: (IPerkOption | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
@@ -44,7 +44,7 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
             ></WeaponPanel>
             <div class="extras-mws-mods">
                 <ExtrasPanel
-                    :weapon="props.weapon"
+                    :weapon="props.weapon?.weapon"
                     :selected-perks="props.selectedPerks"
                     :masterwork="props.masterwork"
                     :mod="props.mod"
@@ -52,12 +52,12 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
                 <div class="mods-masterwork">
                     <MasterworkPanel
                         class="mw"
-                        :weapon="props.weapon"
+                        :weapon="props.weapon?.weapon"
                         :masterwork="props.masterwork"
                         @masterwork-changed="onMasterworkChanged"
                     ></MasterworkPanel>
                     <ModsPanel
-                        :weapon="props.weapon"
+                        :weapon="props.weapon?.weapon"
                         :mod="props.mod"
                         @mod-changed="onModChanged"
                     ></ModsPanel>

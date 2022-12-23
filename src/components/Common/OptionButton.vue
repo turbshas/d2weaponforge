@@ -66,7 +66,7 @@ function onButtonToggled() {
         transform 0.3s ease 0s
     ;
 }
-.button:hover::after, .button:focus::after {
+.button:hover::after /*, .button:focus::after */ {
     opacity: 0.8;
     transform: scale(1);
 }

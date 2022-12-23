@@ -4,13 +4,13 @@ import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
 import { computed } from "@vue/reactivity";
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import UrlManager from "./components/UrlManager.vue";
 import { destinyDataService } from "./data/destinyDataService";
-import { PageSelection, type IPerkOption } from "./data/types";
+import { PageSelection, type IPerkOption, type IWeapon } from "./data/types";
 
 const selectedPage = ref(PageSelection.Home);
-const selectedWeapon = ref<DestinyInventoryItemDefinition | undefined>(undefined);
+const selectedWeapon = ref<IWeapon | undefined>(undefined);
 const selectedPerksMap = ref<{ [column: number]: IPerkOption | undefined }>({ });
 const selectedMasterwork = ref<DestinyInventoryItemDefinition | undefined>(undefined);
 const selectedMod = ref<DestinyInventoryItemDefinition | undefined>(undefined);
@@ -27,7 +27,7 @@ function onTabSelected(tab: PageSelection) {
     selectedPage.value = tab;
 }
 
-function onWeaponSelected(weapon: DestinyInventoryItemDefinition | undefined) {
+function onWeaponSelected(weapon: IWeapon | undefined) {
     selectedPage.value = PageSelection.Weapon;
     selectedWeapon.value = weapon;
     selectedPerksMap.value = {};
@@ -52,7 +52,7 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
 
 function onUrlParsed(
     page: PageSelection,
-    weapon: DestinyInventoryItemDefinition | undefined,
+    weapon: IWeapon | undefined,
     perkOptions: (IPerkOption | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined
@@ -79,7 +79,7 @@ function onUrlParsed(
     <div class="app" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
         <UrlManager
             :page="selectedPage"
-            :weapon="selectedWeapon"
+            :weapon="selectedWeapon?.weapon"
             :selected-perks="selectedPerks"
             :masterwork="selectedMasterwork"
             :mod="selectedMod"
@@ -107,8 +107,6 @@ function onUrlParsed(
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    /* TODO: remove this. Faking the width of a scroll bar for testing */
-    margin-right: 17px;
 }
 
 .sidebar {

@@ -5,23 +5,23 @@ import type {
 } from "bungie-api-ts/destiny2/interfaces";
 import { reactive } from "vue";
 import { destinyApiService } from "./destinyApiService";
-import { DataSearchString, ItemTierIndex, type Destiny2GameData, type IPerkOption, type IPerkSlotOptions } from "./types";
+import { DataSearchString, ItemTierIndex, type IWeapon, type Destiny2GameData, type IPerkOption, type IPerkSlotOptions } from "./types";
 import { findItemInTable } from "./util";
 
-type GameDataReactiveWrapper = { gameData: Destiny2GameData | null };
+type GameDataReactiveWrapper = { gameData: Destiny2GameData | null, weapons: IWeapon[], weaponLookup: { [hash: number]: IWeapon | undefined } };
 
 class DestinyDataService {
     private initialized: boolean = false;
     public manifestLoaded: Promise<void> | null = null;
 
-    private gameDataReactiveWrapper: GameDataReactiveWrapper = reactive<GameDataReactiveWrapper>({ gameData: null });
+    private gameDataReactiveWrapper: GameDataReactiveWrapper = reactive<GameDataReactiveWrapper>({ gameData: null, weapons: [], weaponLookup: {}, });
 
     public get gameData() {
         return this.gameDataReactiveWrapper.gameData;
     }
 
     public get weapons() {
-        return this.gameData ? this.gameData.weapons : [];
+        return this.gameDataReactiveWrapper.weapons;
     }
 
     public get damageTypes() {
@@ -69,6 +69,9 @@ class DestinyDataService {
         return `https://www.bungie.net${imgFileName}`;
     }
 
+    public getWeapon = (hash: number) => {
+        return this.gameDataReactiveWrapper.weaponLookup[hash];
+    }
 
     public getDamageType = (hash: number) => {
         return this.gameData?.damageTypesLookup[hash];
@@ -120,6 +123,25 @@ class DestinyDataService {
 
     public isTrackerPlugCategory = (plug: DestinyPlugWhitelistEntryDefinition) => {
         return plug.categoryIdentifier === DataSearchString.TrackerCategoryId;
+    }
+
+    public getIntrinsicForWeapon = (weapon: DestinyInventoryItemDefinition) => {
+        const weaponSocketCategories = weapon.sockets?.socketCategories || [];
+        const weaponSockets = weapon.sockets?.socketEntries || [];
+
+        const intrinsicSocketCategory = weaponSocketCategories.find(c => this.isIntrinsicPerkSocketCategory(c.socketCategoryHash));
+        const intrinsicPerkSocketEntry = intrinsicSocketCategory && intrinsicSocketCategory.socketIndexes.length > 0
+            ? weaponSockets[intrinsicSocketCategory.socketIndexes[0]]
+            : undefined;
+
+        const intrinsicPlugSet = intrinsicPerkSocketEntry && intrinsicPerkSocketEntry.reusablePlugSetHash
+            ? this.getPlugSetDefinition(intrinsicPerkSocketEntry.reusablePlugSetHash)
+            : undefined;
+
+        const intrinsicPerk = intrinsicPlugSet && intrinsicPlugSet.reusablePlugItems.length > 0
+            ? this.getItemDefinition(intrinsicPlugSet.reusablePlugItems[0].plugItemHash)
+            : undefined;
+        return intrinsicPerk;
     }
 
     public getPerkOptionsForWeapon = (weapon: DestinyInventoryItemDefinition) => {
@@ -249,6 +271,21 @@ class DestinyDataService {
         console.log(gameData);
 
         this.gameDataReactiveWrapper.gameData = gameData;
+        const weapons = gameData.weapons.map<IWeapon>(w => {
+            const intrinsic = this.getIntrinsicForWeapon(w);
+            const perks = this.getPerkOptionsForWeapon(w);
+            return {
+                weapon: w,
+                intrinsic: intrinsic,
+                perks: perks,
+            };
+        });
+        const lookup: { [hash: number]: IWeapon | undefined } = {};
+        for (const weapon of weapons) {
+            lookup[weapon.weapon.hash] = weapon;
+        }
+        this.gameDataReactiveWrapper.weapons = weapons;
+        this.gameDataReactiveWrapper.weaponLookup = lookup;
     }
 }
 

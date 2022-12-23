@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import type { IWeapon } from '@/data/types';
 import WeaponListEntry from './WeaponListEntry.vue';
 
-const emit = defineEmits(["entry-clicked"]);
-
 const props = defineProps<{
-    weapons: DestinyInventoryItemDefinition[],
+    weapons: IWeapon[],
 }>();
 
-function onEntryClicked(weapon: DestinyInventoryItemDefinition) {
-    emit("entry-clicked", weapon);
+const emit = defineEmits<{
+    (e: "entryClicked", weapon: IWeapon): void,
+}>();
+
+function onEntryClicked(weapon: IWeapon) {
+    emit("entryClicked", weapon);
 }
 </script>
 
@@ -17,7 +19,7 @@ function onEntryClicked(weapon: DestinyInventoryItemDefinition) {
     <div class="list">
         <WeaponListEntry
             v-for="weapon of props.weapons"
-            :key="weapon.hash"
+            :key="weapon.weapon.hash"
             :weapon="weapon"
             @entry-clicked="onEntryClicked"
         ></WeaponListEntry>

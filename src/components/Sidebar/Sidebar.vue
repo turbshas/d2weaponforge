@@ -4,12 +4,11 @@ import Searchbar from "./Searchbar.vue";
 import TabBar from "./TabBar.vue";
 import SidebarPanel from "./SidebarPanel/SidebarPanel.vue";
 
-import type { PageSelection } from "@/data/types";
+import type { IWeapon, PageSelection } from "@/data/types";
 import { ref } from "@vue/reactivity";
-import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 
 const emit = defineEmits<{
-    (e: "weaponSelected", weapon: DestinyInventoryItemDefinition): void,
+    (e: "weaponSelected", weapon: IWeapon): void,
     (e: "tabSelected", tab: PageSelection): void,
 }>();
 
@@ -20,7 +19,7 @@ function onTabSelected(tab: PageSelection) {
     emit("tabSelected", tab);
 }
 
-function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
+function onWeaponSelected(weapon: IWeapon) {
     emit("weaponSelected", weapon);
 }
 

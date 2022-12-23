@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import WeaponIcon from '@/components/Common/WeaponIcon.vue';
 import { destinyDataService } from '@/data/destinyDataService';
-import { DataSearchString, type IPerkOption } from '@/data/types';
+import { DataSearchString, type IPerkOption, type IWeapon } from '@/data/types';
 import { hashMapToArray } from '@/data/util';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
@@ -27,7 +27,7 @@ const shownStats: { [statName: string]: boolean } = {
 }
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition | undefined,
+    weapon: IWeapon | undefined,
     selectedPerks: (IPerkOption | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
@@ -35,20 +35,20 @@ const props = defineProps<{
 
 const screenshot = computed(() => {
     console.log("selected weapon", props.weapon);
-    return props.weapon ? destinyDataService.getImageUrl(props.weapon.screenshot) : undefined;
+    return props.weapon ? destinyDataService.getImageUrl(props.weapon.weapon.screenshot) : undefined;
 });
 
 const name = computed(() => {
-    return props.weapon ? props.weapon.displayProperties.name : undefined;
+    return props.weapon ? props.weapon.weapon.displayProperties.name : undefined;
 });
 
 const type = computed(() => {
-    return props.weapon ? props.weapon.itemTypeDisplayName : undefined;
+    return props.weapon ? props.weapon.weapon.itemTypeDisplayName : undefined;
 });
 
 const element = computed(() => {
     if (!props.weapon) return undefined;
-    const damageTypeHash = props.weapon.defaultDamageTypeHash;
+    const damageTypeHash = props.weapon.weapon.defaultDamageTypeHash;
     if (!damageTypeHash) return undefined;
     const damageType = destinyDataService.getDamageType(damageTypeHash);
     if (!damageType) return undefined;
@@ -56,8 +56,8 @@ const element = computed(() => {
 });
 
 const stats = computed(() => {
-    if (!props.weapon || !props.weapon.stats) return [];
-    return hashMapToArray(props.weapon.stats.stats);
+    if (!props.weapon || !props.weapon.weapon.stats) return [];
+    return hashMapToArray(props.weapon.weapon.stats.stats);
 });
 
 // TODO make this not as gross, should probably do some data processing in destinyDataService so fewer lookups are required by vue components
@@ -103,7 +103,7 @@ function onPerkClicked(column: number) {
 <template>
     <div class="panel" :style="{ 'background-image': 'url(' + screenshot + ')' }">
         <div class="summary">
-            <WeaponIcon class="icon" :weapon="weapon"></WeaponIcon>
+            <WeaponIcon class="icon" :weapon="props.weapon?.weapon"></WeaponIcon>
             <div class="description">
                 <h1>{{ name }}</h1>
                 <h3>{{ type }}</h3>
@@ -119,7 +119,7 @@ function onPerkClicked(column: number) {
         ></WeaponStatBlock>
         <SelectedPerks
             class="perks"
-            :weapon="weapon"
+            :intrinsic="weapon?.intrinsic"
             :perk1="firstColumnPerk"
             :perk2="secondColumnPerk"
             :perk3="thirdColumnPerk"

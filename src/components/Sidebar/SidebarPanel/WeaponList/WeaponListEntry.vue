@@ -1,26 +1,28 @@
 <script setup lang="ts">
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
 import WeaponIcon from "@/components/Common/WeaponIcon.vue";
 import { computed } from 'vue';
-
-const emit = defineEmits(["entry-clicked"]);
+import type { IWeapon } from '@/data/types';
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition,
+    weapon: IWeapon,
 }>();
 
-const href = computed(() => props.weapon ? `/w/${props.weapon.hash}` : "");
+const emit = defineEmits<{
+    (e: "entryClicked", weapon: IWeapon): void,
+}>();
+
+const href = computed(() => props.weapon ? `/w/${props.weapon.weapon.hash}` : "");
 
 function onEntryClicked(e: Event) {
-    emit("entry-clicked", props.weapon);
+    emit("entryClicked", props.weapon);
     e.preventDefault();
 }
 </script>
 
 <template>
     <a class="entry" :href="href" @click="onEntryClicked">
-        <WeaponIcon class="icon" :weapon="weapon"></WeaponIcon>
-        <span class="text">{{ weapon.displayProperties.name }}</span>
+        <WeaponIcon class="icon" :weapon="props.weapon.weapon"></WeaponIcon>
+        <span class="text">{{ props.weapon.weapon.displayProperties.name }}</span>
     </a>
 </template>
 

@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/destinyDataService";
-import type { FilterCategory, FilterPredicate } from "@/data/types";
+import type { FilterCategory, FilterPredicate, IWeapon } from "@/data/types";
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
 import FilterWindow from "./Filter/FilterWindow.vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
 
-const emit = defineEmits<{
-    (e: "weaponSelected", weapon: DestinyInventoryItemDefinition): void,
-}>();
-
 const props = defineProps<{
     viewingFilter: boolean,
     searchString: string,
+}>();
+
+const emit = defineEmits<{
+    (e: "weaponSelected", weapon: IWeapon): void,
 }>();
 
 const filters = ref<Record<FilterCategory, FilterPredicate[]>>({
@@ -44,12 +44,12 @@ const filteredWeapons = computed(() => {
             const damageTypes = filters.value["Damage Type"];
             const rarity = filters.value["Rarity"];
             const weapon = filters.value["Weapon"];
-            return checkFilterCategoryOnWeapon(collections, w)
-                && checkFilterCategoryOnWeapon(damageTypes, w)
-                && checkFilterCategoryOnWeapon(rarity, w)
-                && checkFilterCategoryOnWeapon(weapon, w);
+            return checkFilterCategoryOnWeapon(collections, w.weapon)
+                && checkFilterCategoryOnWeapon(damageTypes, w.weapon)
+                && checkFilterCategoryOnWeapon(rarity, w.weapon)
+                && checkFilterCategoryOnWeapon(weapon, w.weapon);
         })
-        .filter(s => s.displayProperties.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
+        .filter(s => s.weapon.displayProperties.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
 });
 
 function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: DestinyInventoryItemDefinition) {
@@ -61,7 +61,7 @@ function onFiltersApplied(newFilters: Record<FilterCategory, FilterPredicate[]>)
     console.log("filters are", filters.value);
 }
 
-function onWeaponSelected(weapon: DestinyInventoryItemDefinition) {
+function onWeaponSelected(weapon: IWeapon) {
     emit("weaponSelected", weapon);
 }
 </script>
