@@ -57,7 +57,7 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
                         @masterwork-changed="onMasterworkChanged"
                     ></MasterworkPanel>
                     <ModsPanel
-                        :weapon="props.weapon?.weapon"
+                        :weapon="props.weapon"
                         :mod="props.mod"
                         @mod-changed="onModChanged"
                     ></ModsPanel>

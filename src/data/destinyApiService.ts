@@ -14,7 +14,7 @@ class DestinyApiService {
 
         console.log("manifest info", manifestInfo);
 
-        // /*
+        /*
         if (cachedManifest) {
             const cachedJsonComponentUrls = cachedManifest.manifestInfo.jsonWorldComponentContentPaths[language];
             const retrievedJsonComponentUrls = manifestInfo.Response.jsonWorldComponentContentPaths[language];

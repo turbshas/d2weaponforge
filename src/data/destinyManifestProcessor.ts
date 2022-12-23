@@ -99,22 +99,30 @@ export class DestinyManifestProcessor {
 
         const intrinsicSocketCategory = weaponSocketCategories.find(c => this.isIntrinsicPerkSocketCategory(c.socketCategoryHash));
         const weaponPerkSocketCategory = weaponSocketCategories.find(c => this.isWeaponPerkSocketCategory(c.socketCategoryHash));
-        const weaponPerkSockets = weaponPerkSocketCategory ? weaponPerkSocketCategory.socketIndexes.map(i => weaponSockets[i]) : [];
+        const weaponModSocketCategory = weaponSocketCategories.find(c => {
+            const socketCategory = this.getSocketCategoryDefinition(c.socketCategoryHash);
+            return socketCategory && socketCategory.displayProperties.name === DataSearchString.WeaponModsSocketCategoryName;
+        });
 
+        const weaponPerkSockets = weaponPerkSocketCategory ? weaponPerkSocketCategory.socketIndexes.map(i => weaponSockets[i]) : [];
         const perkSocketsNoTracker = weaponPerkSockets.filter(s => {
             const type = this.getSocketTypeDefinition(s.socketTypeHash);
             return type && !type.plugWhitelist.some(this.isTrackerPlugCategory);
         });
 
+        const weaponModSockets = weaponModSocketCategory ? weaponModSocketCategory.socketIndexes.map(i => weaponSockets[i]) : [];
+
         const intrinsic = this.getIntrinsicFromSockets(weaponSockets, intrinsicSocketCategory!);
         const perkOptions = this.getPerkOptionsFromSockets(perkSocketsNoTracker);
         const curated = this.getCuratedFromPerkSockets(perkSocketsNoTracker, perkOptions);
+        const mods = this.getModOptionsFromSockets(weaponModSockets, weaponModSocketCategory);
 
         return {
             weapon: weaponItem,
             intrinsic: intrinsic,
             perks: perkOptions,
             curated: curated,
+            mods: mods,
         };
     }
 
@@ -210,6 +218,23 @@ export class DestinyManifestProcessor {
             .map<IPerkSlotOptions>(o => { return { options: o ? [o] : [] }; });
     }
 
+    private getModOptionsFromSockets = (modSockets: DestinyItemSocketEntryDefinition[], x: DestinyItemSocketCategoryDefinition | undefined) => {
+        const modSocket = modSockets.find(s => {
+            const type = this.getSocketTypeDefinition(s.socketTypeHash);
+            return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes(DataSearchString.WeaponModPlugWhitelistCategoryId));
+        });
+
+        if (!modSocket || !modSocket.reusablePlugSetHash) return [];
+
+        // TODO: it seems like the adept mods are placed in the modSocket.reusablePlugItems property
+        const plugSet = this.getPlugSetDefinition(modSocket.reusablePlugSetHash);
+        if (!plugSet) return [];
+        return plugSet!.reusablePlugItems
+            .map(pi => this.getItemDefinition(pi.plugItemHash))
+            .filter(pi => !!pi)
+            .map(pi => pi!)
+    }
+
     private getItemDefinition = (hash: number) => {
         return this.manifest.DestinyInventoryItemDefinition[hash];
     }
@@ -224,6 +249,10 @@ export class DestinyManifestProcessor {
 
     private getSocketTypeDefinition = (hash: number) => {
         return this.manifest.DestinySocketTypeDefinition[hash];
+    }
+
+    private getSocketCategoryDefinition = (hash: number) => {
+        return this.manifest.DestinySocketCategoryDefinition[hash];
     }
 
     private isIntrinsicPerkSocketCategory = (perkItemHash: number) => {

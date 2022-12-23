@@ -99,6 +99,7 @@ export interface IWeapon {
     intrinsic: DestinyInventoryItemDefinition | undefined;
     perks: IPerkSlotOptions[];
     curated: IPerkSlotOptions[];
+    mods: DestinyInventoryItemDefinition[];
 }
 
 export type FilterCategory = "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";
