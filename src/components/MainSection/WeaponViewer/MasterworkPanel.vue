@@ -2,12 +2,12 @@
 import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref, watch } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
-import { DataSearchString } from '@/data/types';
+import { DataSearchString, type IWeapon } from '@/data/types';
 import BuilderSection from '../../Common/BuilderSection.vue';
 import OptionButton from '@/components/Common/OptionButton.vue';
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition | undefined,
+    weapon: IWeapon | undefined,
     masterwork: DestinyInventoryItemDefinition | undefined,
 }>();
 
@@ -16,42 +16,26 @@ const emits = defineEmits<{
 }>();
 
 const weaponCategories = computed(() => {
-    if (!props.weapon || !props.weapon.itemCategoryHashes) return undefined;
+    if (!props.weapon || !props.weapon.weapon.itemCategoryHashes) return [];
     return destinyDataService.itemCategories
         .filter(c => !!c.itemTypeRegex)
-        .filter(c => props.weapon!.itemCategoryHashes!.includes(c.hash));
+        .filter(c => props.weapon!.weapon.itemCategoryHashes!.includes(c.hash));
 });
 
-const weaponSocketCategories = computed(() => props.weapon?.sockets?.socketCategories || []);
-const weaponSockets = computed(() => props.weapon?.sockets?.socketEntries || []);
-
-const weaponModSocketCategory = computed(() => weaponSocketCategories.value.find(c => {
-    const socketCategory = destinyDataService.getSocketCategoryDefinition(c.socketCategoryHash);
-    return socketCategory && socketCategory.displayProperties.name === DataSearchString.WeaponModsSocketCategoryName;
-}));
-const weaponModSockets = computed(() => weaponModSocketCategory.value ? weaponModSocketCategory.value.socketIndexes.map(i => weaponSockets.value[i]) : []);
-const masterworkSocket = computed(() => weaponModSockets.value.find(s => {
-    const type = destinyDataService.getSocketTypeDefinition(s.socketTypeHash);
-    return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes(DataSearchString.WeaponMasterworkPlugWhitelistCategoryId));
-}));
-
 const weaponStats = computed(() => {
-    if (!props.weapon || !props.weapon.stats) return [];
-    return props.weapon.stats.stats;
+    if (!props.weapon || !props.weapon.weapon.stats) return [];
+    return props.weapon.weapon.stats.stats;
 });
 
 const filteredMasterworkOptions = computed(() => {
-    if (!masterworkSocket.value) return [];
+    if (!props.weapon) return [];
 
-    const categoryRegexList = weaponCategories.value ? weaponCategories.value.map(c => c.itemTypeRegex) : [];
+    const categoryRegexList = weaponCategories.value.map(c => c.itemTypeRegex);
     const isSword = categoryRegexList.includes(DataSearchString.SwordTypeRegex);
     const isBow = categoryRegexList.includes(DataSearchString.BowTypeRegex);
 
-    return masterworkSocket.value.reusablePlugItems
-        .map(pi => destinyDataService.getItemDefinition(pi.plugItemHash))
-        // TODO: the conditionally active thing is for adepts or crafted weapon > lvl 20, maybe find a better way to do this?
+    return props.weapon.masterworks
         .filter(mwItem => mwItem && mwItem.investmentStats.every(stat => !!weaponStats.value[stat.statTypeHash] || stat.isConditionallyActive))
-        .map(i => i!)
         .filter(mwItem => {
             const name = getStatNameForMasterwork(mwItem);
             if (categoryRegexList.length === 0) return true;

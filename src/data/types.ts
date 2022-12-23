@@ -99,6 +99,7 @@ export interface IWeapon {
     intrinsic: DestinyInventoryItemDefinition | undefined;
     perks: IPerkSlotOptions[];
     curated: IPerkSlotOptions[];
+    masterworks: DestinyInventoryItemDefinition[];
     mods: DestinyInventoryItemDefinition[];
 }
 
