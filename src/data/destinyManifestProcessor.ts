@@ -247,7 +247,8 @@ export class DestinyManifestProcessor {
         if (!plugSet) return [];
         return plugSet!.reusablePlugItems
             .map(pi => this.getItemDefinition(pi.plugItemHash))
-            .filter(pi => !!pi)
+            // The only mod that has this plug category ID is the empty mod slot which is useless here.
+            .filter(pi => pi && pi.plug && pi.plug.plugCategoryIdentifier !== DataSearchString.WeaponModPlugWhitelistCategoryId)
             .map(pi => pi!)
     }
 

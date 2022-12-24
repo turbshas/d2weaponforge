@@ -5,7 +5,6 @@ import type {
     DestinyItemTierTypeDefinition,
     DestinyManifestSlice,
     DestinyPlugSetDefinition,
-    DestinySandboxPerkDefinition,
     DestinySeasonDefinition,
     DestinySocketCategoryDefinition,
     DestinySocketTypeDefinition,
@@ -26,11 +25,16 @@ export type UsedDestinyManifestSlice = DestinyManifestSlice<(
 )[]>;
 
 export enum DataSearchString {
+    // Adept names
     Adept = "Adept",
+    Harrowed = "Harrowed",
+    Timelost = "Timelost",
+
     FramesPlugCategoryId = "frames",
     RangefinderPerkName = "Rangefinder",
     TrackerCategoryId = "v400.plugs.weapons.masterworks.trackers",
 
+    // Stat names
     AccuracyStatName = "Accuracy",
     AimAssistanceStatName = "Aim Assistance",
     AirborneEffectivenessStatName = "Airborne Effectiveness",
@@ -57,6 +61,7 @@ export enum DataSearchString {
     WeaponModsSocketCategoryName = "WEAPON MODS",
     WeaponModPlugWhitelistCategoryId = "v400.weapon.mod_empty",
 
+    // Weapon categories
     AutoRifleTypeRegex = ".*_auto_rifle",
     BowTypeRegex = "type_weapon_bow",
     HandCannonTypeRegex = ".*_hand_cannon",
@@ -74,6 +79,103 @@ export enum DataSearchString {
     SubmachinegunTypeRegex = ".*_submachinegun",
     SwordTypeRegex = "type_weapon_sword",
     TraceRifleTypeRegex = ".*_beam_rifle",
+
+    // Weapon Archetypes
+    Adaptive = "Adaptive",
+    AdaptiveBurst = "Adaptive (Burst)",
+    Aggressive = "Aggressive",
+    AggressiveBurst = "Agg. Burst", // Or Aggressive Burst?
+    Caster = "Caster",
+    HakkePrecision = "Hakke Precision",
+    HighImpact = "High-Impact",
+    Lightweight = "Lightweight",
+    OmolonAdaptive = "Omolon Adaptive",
+    PinpointSlug = "Pinpoint Slug",
+    Precision = "Precision",
+    RapidFire = "Rapid-Fire",
+    SurosRapidFire = "Suros Rapid-Fire",
+    VeistRapidFire = "Veist Rapid-Fire",
+    Vortex = "Vortex",
+    WaveFrame = "Wave-Frame",
+}
+
+export enum WeaponArchetypeRpm {
+    AutoAdaptive = 600,
+    AutoHighImpact = 360,
+    AutoLightweight = 450,
+    AutoPrecision = 450,
+    AutoRapidFire = 720,
+
+    BowLightweight = 580,
+    BowPrecision = 684,
+
+    FusionAdaptive = 660,
+    FusionHighImpact = 960,
+    FusionPrecision = 780,
+    FusionRapidFire = 500,
+
+    GrenadeAdaptive = 120,
+    GrenadeLightweight = 90,
+    GrenadePrecision = 100,
+    GrenadeRapidFire = 150,
+    GrenadeWave = 72,
+
+    HandCannonAdaptive = 140,
+    HandCannonAggressive = 120,
+    HandCannonPrecision = 180,
+
+    LinearAggressive = 533,
+    LinearPrecision = 533,
+
+    MachineGunAdaptive = 450,
+    MachineGunHighImpact = 360,
+    MachineGunRapidFire = 900,
+
+    PulseAdaptive = 390,
+    PulseAggBurst = 450,
+    PulseHighImpact = 340,
+    PulseLightweight = 450,
+    PulseRapidFire = 540,
+
+    RocketAdaptive = 20,
+    RocketAggressive = 25,
+    RocketHakkePrecision = 15,
+    RocketHighImpact = 15,
+    RocketPrecision = 15,
+
+    ScoutHighImpact = 150,
+    ScoutLightweight = 200,
+    ScoutPrecision = 180,
+    ScoutRapidFire = 260,
+    ScoutVeistRapidFire = 260,
+
+    SidearmAdaptive = 300,
+    SidearmAdaptiveBurst = 491,
+    SidearmAggressiveBurst = 325,
+    SidearmLightweight = 360,
+    SidearmOmolonAdaptive = 491,
+    SidearmPrecision = 260,
+    SidearmSurosRapidFire = 450,
+
+    ShotgunAggressive = 55,
+    ShotgunLightweight = 80,
+    ShotgunPinpointSlug = 65,
+    ShotgunPrecision = 65,
+    ShotgunRapidFire = 140,
+
+    SmgAdaptive = 900,
+    SmgAggressive = 750,
+    SmgLightweight = 900,
+    SmgPrecision = 600,
+
+    SniperAdaptive = 90,
+    SniperAggressive = 72,
+    SniperRapidFire = 140,
+
+    SwordAdaptive = -1,
+    SwordAggressive = -1,
+    SwordCaster = -1,
+    SwordVortex = -1,
 }
 
 export enum PageSelection {
@@ -100,7 +202,7 @@ export interface IWeapon {
 
 export type FilterCategory = "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";
 
-export type FilterPredicate = (item: DestinyInventoryItemDefinition) => boolean;
+export type FilterPredicate = (item: IWeapon) => boolean;
 
 export interface IFilterButton {
     text: string;
@@ -111,7 +213,6 @@ export interface IFilterButton {
 export interface IArchetypeFilter {
     text: string;
     filter: FilterPredicate;
-    active: boolean;
 }
 
 export interface IWeaponFilterButton extends IFilterButton {

@@ -44,15 +44,15 @@ const filteredWeapons = computed(() => {
             const damageTypes = filters.value["Damage Type"];
             const rarity = filters.value["Rarity"];
             const weapon = filters.value["Weapon"];
-            return checkFilterCategoryOnWeapon(collections, w.weapon)
-                && checkFilterCategoryOnWeapon(damageTypes, w.weapon)
-                && checkFilterCategoryOnWeapon(rarity, w.weapon)
-                && checkFilterCategoryOnWeapon(weapon, w.weapon);
+            return checkFilterCategoryOnWeapon(collections, w)
+                && checkFilterCategoryOnWeapon(damageTypes, w)
+                && checkFilterCategoryOnWeapon(rarity, w)
+                && checkFilterCategoryOnWeapon(weapon, w);
         })
         .filter(s => s.weapon.displayProperties.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
 });
 
-function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: DestinyInventoryItemDefinition) {
+function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: IWeapon) {
     return !category || category.length === 0 || category.some(predicate => predicate(weapon));
 }
 

@@ -6,7 +6,7 @@ import CollapsibleSection from "./CollapsibleSection.vue";
 import WeaponIcons from "@/assets/WeaponIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
-import { DataSearchString, type FilterCategory, type FilterPredicate, type IArchetypeFilter, type IFilterButton, type IWeaponFilterButton } from "@/data/types";
+import { DataSearchString, WeaponArchetypeRpm, type FilterCategory, type FilterPredicate, type IArchetypeFilter, type IFilterButton, type IWeapon, type IWeaponFilterButton } from "@/data/types";
 import { findItemInTable } from "@/data/util";
 import OptionButton from "@/components/Common/OptionButton.vue";
 
@@ -14,11 +14,6 @@ interface ICategoryInfo {
     name: FilterCategory;
     filters: IFilterButton[];
     wide: boolean;
-}
-
-interface IArchetypeInfo {
-    text: string;
-    filter: FilterPredicate;
 }
 
 // This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
@@ -49,101 +44,132 @@ const weaponCategoryIconMap: { [itemRegex: string]: string } = {
 // TODO: there are duplicate frames with differing impacts
 // TODO: could have each archetype have its own filter predicate? this is probably the way
 // TODO: might want to just do a string compare with the archetype display name
-/*
-const weaponCategoryArchetypeMap: { [itemRegex: string]: IArchetypeInfo[] } = {
+const weaponCategoryArchetypeMap: { [itemRegex: string]: IArchetypeFilter[] } = {
     [DataSearchString.AutoRifleTypeRegex]: [
-        { rpm: 720, text: "Rapid-Fire", filter: item =>  },
-        { rpm: 600, text: "Adaptive" },
-        { rpm: 450, text: "Precision" },
-        { rpm: 450, text: "Lightweight" },
-        { rpm: 360, text: "High-Impact" },
+        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.AutoRapidFire),
+        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.AutoAdaptive),
+        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.AutoPrecision),
+        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.AutoLightweight),
+        createArchetypeFilterFromRpm(DataSearchString.HighImpact, WeaponArchetypeRpm.AutoHighImpact),
     ],
     [DataSearchString.HandCannonTypeRegex]: [
-        { rpm: 120, text: "Aggressive" },
-        { rpm: 140, text: "Adaptive" },
-        { rpm: 180, text: "Precision" },
+        createArchetypeFilterFromRpm(DataSearchString.Aggressive, WeaponArchetypeRpm.HandCannonAdaptive),
+        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.HandCannonAggressive),
+        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.HandCannonPrecision),
     ],
     [DataSearchString.PulseRifleTypeRegex]: [
-        { rpm: 540, text: "Rapid-Fire" },
-        { rpm: 450, text: "Lightweight" },
-        { rpm: 450, text: "Agg. Burst" },
-        { rpm: 390, text: "Adaptive" },
-        { rpm: 340, text: "High-Impact" },
+        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.PulseRapidFire),
+        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.PulseLightweight),
+        createArchetypeFilterFromRpm(DataSearchString.AggressiveBurst, WeaponArchetypeRpm.PulseAggBurst),
+        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.PulseAdaptive),
+        createArchetypeFilterFromRpm(DataSearchString.HighImpact, WeaponArchetypeRpm.PulseHighImpact),
     ],
     [DataSearchString.ScoutRifleTypeRegex]: [
-        { rpm: 260, text: "Veist Rapid-Fire" },
-        { rpm: 260, text: "Rapid-Fire" },
-        { rpm: 200, text: "Lightweight" },
-        { rpm: 180, text: "Precision" },
-        { rpm: 150, text: "High-Impact" },
+        createArchetypeFilterFromRpm(DataSearchString.VeistRapidFire, WeaponArchetypeRpm.ScoutVeistRapidFire),
+        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.ScoutRapidFire),
+        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.ScoutLightweight),
+        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.ScoutPrecision),
+        createArchetypeFilterFromRpm(DataSearchString.HighImpact, WeaponArchetypeRpm.ScoutHighImpact),
     ],
     [DataSearchString.SidearmTypeRegex]: [
-        { rpm: 491, text: "Adaptive (Burst)" },
-        { rpm: 491, text: "Omolon Adaptive" },
-        { rpm: 450, text: "Suros Rapid-Fire" },
-        { rpm: 325, text: "Aggressive Burst" },
-        { rpm: 360, text: "Lightweight" },
-        { rpm: 300, text: "Adaptive" },
-        { rpm: 260, text: "Precision" },
+        createArchetypeFilterFromRpm(DataSearchString.AdaptiveBurst, WeaponArchetypeRpm.SidearmAdaptiveBurst),
+        createArchetypeFilterFromRpm(DataSearchString.OmolonAdaptive, WeaponArchetypeRpm.SidearmOmolonAdaptive),
+        createArchetypeFilterFromRpm(DataSearchString.SurosRapidFire, WeaponArchetypeRpm.SidearmSurosRapidFire),
+        createArchetypeFilterFromRpm(DataSearchString.AggressiveBurst, WeaponArchetypeRpm.SidearmAggressiveBurst),
+        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.SidearmLightweight),
+        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.SidearmAdaptive),
+        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.SidearmPrecision),
     ],
     [DataSearchString.SubmachinegunTypeRegex]: [
-        { rpm: 900, text: "Adaptive" },
-        { rpm: 900, text: "Lightweight" },
-        { rpm: 750, text: "Aggressive" },
-        { rpm: 600, text: "Precision" },
+        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.SmgAdaptive),
+        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.SmgLightweight),
+        createArchetypeFilterFromRpm(DataSearchString.Aggressive, WeaponArchetypeRpm.SmgAggressive),
+        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.SmgPrecision),
     ],
     [DataSearchString.BowTypeRegex]: [
-        { rpm: 0, text: "Lightweight" },
-        { rpm: 0, text: "Precision" },
+        createArchetypeFilterFromChargeTime(DataSearchString.Lightweight, WeaponArchetypeRpm.BowLightweight),
+        createArchetypeFilterFromChargeTime(DataSearchString.Precision, WeaponArchetypeRpm.BowPrecision),
     ],
     [DataSearchString.ShotgunTypeRegex]: [
-        { rpm: 140, text: "Rapid-Fire" },
-        { rpm: 80, text: "Lightweight" },
-        { rpm: 65, text: "Pinpoint Slug" },
-        { rpm: 65, text: "Precision" },
-        { rpm: 55, text: "Aggressive" },
+        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.ShotgunRapidFire),
+        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.ShotgunLightweight),
+        createArchetypeFilterFromRpm(DataSearchString.PinpointSlug, WeaponArchetypeRpm.ShotgunPinpointSlug),
+        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.ShotgunPrecision),
+        createArchetypeFilterFromRpm(DataSearchString.Aggressive, WeaponArchetypeRpm.ShotgunAggressive),
     ],
     [DataSearchString.SniperRifleTypeRegex]: [
-        { rpm: 140, text: "Rapid-Fire" },
-        { rpm: 90, text: "Adaptive" },
-        { rpm: 72, text: "Aggressive" },
+        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.SniperRapidFire),
+        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.SniperAdaptive),
+        createArchetypeFilterFromRpm(DataSearchString.Aggressive, WeaponArchetypeRpm.SniperAggressive),
     ],
     [DataSearchString.FusionRifleTypeRegex]: [
-        { rpm: 460, text: "Rapid-Fire" },
-        { rpm: 660, text: "Adaptive" },
-        { rpm: 740, text: "Precision" },
-        { rpm: 1000, text: "High-Impact" },
+        createArchetypeFilterFromChargeTime(DataSearchString.RapidFire, WeaponArchetypeRpm.FusionRapidFire),
+        createArchetypeFilterFromChargeTime(DataSearchString.Adaptive, WeaponArchetypeRpm.FusionAdaptive),
+        createArchetypeFilterFromChargeTime(DataSearchString.Precision, WeaponArchetypeRpm.FusionPrecision),
+        createArchetypeFilterFromChargeTime(DataSearchString.HighImpact, WeaponArchetypeRpm.FusionHighImpact),
     ],
     [DataSearchString.TraceRifleTypeRegex]: [],
     [DataSearchString.GrenadeLauncherTypeRegex]: [
-        { rpm: 150, text: "Rapid-Fire" },
-        { rpm: 120, text: "Adaptive" },
-        { rpm: 100, text: "Precision" },
-        { rpm: 90, text: "Lightweight" },
-        { rpm: 72, text: "Wave-Frame" },
+        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.GrenadeRapidFire),
+        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.GrenadeAdaptive),
+        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.GrenadeLightweight),
+        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.GrenadeLightweight),
+        createArchetypeFilterFromRpm(DataSearchString.WaveFrame, WeaponArchetypeRpm.GrenadeWave),
     ],
     [DataSearchString.RocketLauncherTypeRegex]: [
-        { rpm: 25, text: "Aggressive" },
-        { rpm: 20, text: "Adaptive" },
-        { rpm: 15, text: "Hakke Precision" },
-        { rpm: 15, text: "Precision" },
-        { rpm: 15, text: "High-Impact" },
+        createArchetypeFilterFromRpm(DataSearchString.Aggressive, WeaponArchetypeRpm.RocketAggressive),
+        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.RocketAdaptive),
+        createArchetypeFilterFromRpm(DataSearchString.HakkePrecision, WeaponArchetypeRpm.RocketHakkePrecision),
+        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.RocketPrecision),
+        createArchetypeFilterFromRpm(DataSearchString.HighImpact, WeaponArchetypeRpm.RocketHighImpact),
     ],
     [DataSearchString.LinearFusionTypeRegex]: [
-        { rpm: 533, text: "Precision" },
-        { rpm: 533, text: "Aggressive" },
+        createArchetypeFilterFromChargeTime(DataSearchString.Precision, WeaponArchetypeRpm.LinearPrecision),
+        createArchetypeFilterFromChargeTime(DataSearchString.Aggressive, WeaponArchetypeRpm.LinearAggressive),
     ],
     [DataSearchString.MachineGunTypeRegex]: [
-        { rpm: 900, text: "Rapid-Fire" },
-        { rpm: 450, text: "Adaptive" },
-        { rpm: 360, text: "High-Impact" },
+        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.MachineGunRapidFire),
+        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.MachineGunAdaptive),
+        createArchetypeFilterFromRpm(DataSearchString.HighImpact, WeaponArchetypeRpm.MachineGunHighImpact),
     ],
     [DataSearchString.SwordTypeRegex]: [
+        createArchetypeFilter(DataSearchString.Adaptive),
+        createArchetypeFilter(DataSearchString.Aggressive),
+        createArchetypeFilter(DataSearchString.Caster),
+        createArchetypeFilter(DataSearchString.Vortex),
     ],
     [DataSearchString.GlaiveTypeRegex]: [
     ],
 };
-// */
+
+function createArchetypeFilter(archetypeName: string): IArchetypeFilter {
+    return {
+        text: `${archetypeName}`,
+        // For now, only compare using archetype name.
+        filter: weapon => checkArchetypeName(weapon, archetypeName),
+    };
+}
+
+function createArchetypeFilterFromRpm(archetypeName: string, rpm: number): IArchetypeFilter {
+    return {
+        text: `${rpm} RPM // ${archetypeName}`,
+        // For now, only compare using archetype name.
+        filter: weapon => checkArchetypeName(weapon, archetypeName),
+    };
+}
+
+function createArchetypeFilterFromChargeTime(archetypeName: string, chargeTime: number): IArchetypeFilter {
+    return {
+        text: `${chargeTime} ms // ${archetypeName}`,
+        // For now, only compare using archetype name.
+        filter: weapon => checkArchetypeName(weapon, archetypeName),
+    };
+}
+
+function checkArchetypeName(weapon: IWeapon, archetypeName: string) {
+    if (!weapon.intrinsic) return false;
+    return weapon.intrinsic.displayProperties.name.includes(archetypeName);
+}
 
 // TODO: these filters
 const origins: IFilterButton[] = [
@@ -205,8 +231,8 @@ const damageTypeFilters = computed(() => {
             const filter: IFilterButton = {
                 text: d.displayProperties.name,
                 iconUrl: destinyDataService.getImageUrl(d.displayProperties.icon),
-                filter: (item: DestinyInventoryItemDefinition) => {
-                    return item.damageTypeHashes.includes(d.hash);
+                filter: (item: IWeapon) => {
+                    return item.weapon.damageTypeHashes.includes(d.hash);
                 },
             };
             return filter;
@@ -220,17 +246,17 @@ const weaponCategoryFilters = computed(() => {
             const filter: IWeaponFilterButton = {
                 text: c.displayProperties.name,
                 iconUrl: weaponCategoryIconMap[c.itemTypeRegex],
-                archetypes: [],
-                filter: (item: DestinyInventoryItemDefinition) => {
-                    if (!item.itemCategoryHashes) return false;
-                    if (!item.itemCategoryHashes.includes(c.hash)) return false;
-                    const activeArchetypeFilters = filter.archetypes.filter(a => a.active);
+                archetypes: weaponCategoryArchetypeMap[c.itemTypeRegex],
+                filter: (item: IWeapon) => {
+                    const weapon = item.weapon;
+                    if (!weapon.itemCategoryHashes) return false;
+                    if (!weapon.itemCategoryHashes.includes(c.hash)) return false;
+                    const activeArchetypeFilters = filter.archetypes.filter(a => activeFilters.value["Archetype"][a.text]);
                     // If no archetypes chosen, allow all.
                     if (activeArchetypeFilters.length === 0) return true;
-                    // If no stats, can't check archetype so return false.
-                    if (!item.stats || !destinyDataService.rpmStatDefinition) return false;
-                    const rpmStat = findItemInTable(item.stats.stats, s => s.statHash === destinyDataService.rpmStatDefinition!.hash);
-                    return !!rpmStat && activeArchetypeFilters.some(a => a.filter(item));
+                    // If no intrinsic, can't check archetype so return false.
+                    if (!item.intrinsic) return false;
+                    return activeArchetypeFilters.some(a => a.filter(item));
                 },
             };
             return filter;
@@ -249,9 +275,9 @@ const collectionCategoryFilters = computed(() => {
             const filter: IFilterButton = {
                 text: s.displayProperties.name || "The Red War",
                 iconUrl: iconUrl,
-                filter: (item: DestinyInventoryItemDefinition) => {
+                filter: (item: IWeapon) => {
                     // TODO: this may not work for a lot of weapons, is there a better way to check?
-                    return !!item.seasonHash && item.seasonHash === s.hash;
+                    return !!item.weapon.seasonHash && item.weapon.seasonHash === s.hash;
                 },
             };
             return filter;
@@ -271,8 +297,8 @@ const itemTierFilters = computed(() => {
             uniqueTiers.push({
                 text: tier.displayProperties.name,
                 iconUrl: tierIndexToIcon(tier.index),
-                filter: (item: DestinyInventoryItemDefinition) => {
-                    return !!item.inventory && item.inventory.tierTypeHash === tier.hash;
+                filter: (item: IWeapon) => {
+                    return !!item.weapon.inventory && item.weapon.inventory.tierTypeHash === tier.hash;
                 }
             });
         }
@@ -303,6 +329,8 @@ const activeWeaponFilters = computed(() => {
     return weaponCategoryFilters.value.filter(f => activeFilterMap[f.text]);
 });
 
+const activeWeaponFiltersWithArchetypes = computed(() => activeWeaponFilters.value.filter(f => f.archetypes.length > 0));
+
 function tierIndexToIcon(tierIndex: number) {
     switch (tierIndex) {
         case 1: return TierIcons.Basic;
@@ -327,8 +355,12 @@ function onFilterButtonToggled(category: ICategoryInfo, filter: IFilterButton, a
     activeFilters.value[category.name][filter.text] = active;
 }
 
+function isArchetypeActive(archetypeFilter: IArchetypeFilter) {
+    return activeFilters.value["Archetype"][archetypeFilter.text];
+}
+
 function onArchetypeFilterToggled(archetypeFilter: IArchetypeFilter, active: boolean) {
-    archetypeFilter.active = active;
+    activeFilters.value["Archetype"][archetypeFilter.text] = active;
 }
 
 function includeSunsetToggled() {
@@ -374,17 +406,17 @@ function onApplyFilters() {
             >
         </CollapsibleSection>
 
-        <CollapsibleSection name="Archetype" v-show="activeWeaponFilters.length > 0">
+        <CollapsibleSection name="Archetype" v-if="activeWeaponFiltersWithArchetypes.length > 0">
             <div
-                class="archetype-group"
-                v-for="filter of activeWeaponFilters"
+                class="button-list"
+                v-for="filter of activeWeaponFiltersWithArchetypes"
                 :key="filter.text"
             >
                 <OptionButton
                     v-for="archetype of filter.archetypes"
                     :key="archetype.text"
                     :text="archetype.text"
-                    :active="archetype.active"
+                    :active="isArchetypeActive(archetype)"
                     :icon-url="filter.iconUrl"
                     large
                     wide
