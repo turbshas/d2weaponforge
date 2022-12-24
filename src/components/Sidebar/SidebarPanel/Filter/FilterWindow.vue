@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/destinyDataService";
-import type { DestinyInventoryItemDefinition, DestinySeasonDefinition } from "bungie-api-ts/destiny2";
+import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
 import WeaponIcons from "@/assets/WeaponIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
-import { DataSearchString, WeaponArchetypeRpm, type FilterCategory, type FilterPredicate, type IArchetypeFilter, type IFilterButton, type IWeapon, type IWeaponFilterButton } from "@/data/types";
-import { findItemInTable } from "@/data/util";
+import { DataSearchString, WeaponArchetypeRpm, type FilterCategory, type FilterPredicate, type IAppliedFilters, type IArchetypeFilter, type IFilterButton, type IWeapon, type IWeaponFilterButton } from "@/data/types";
 import OptionButton from "@/components/Common/OptionButton.vue";
 
 interface ICategoryInfo {
@@ -38,12 +37,6 @@ const weaponCategoryIconMap: { [itemRegex: string]: string } = {
     [DataSearchString.SubmachinegunTypeRegex]: WeaponIcons.SubmachineGun,
 };
 
-// TODO: some go by charge time, not RPM
-// TODO: there are some duplicate RPMs in a single weapon type - could use impact?
-// TODO: with foundry weapons, there are duplicate RPMs with the same impact - what to do here?
-// TODO: there are duplicate frames with differing impacts
-// TODO: could have each archetype have its own filter predicate? this is probably the way
-// TODO: might want to just do a string compare with the archetype display name
 const weaponCategoryArchetypeMap: { [itemRegex: string]: IArchetypeFilter[] } = {
     [DataSearchString.AutoRifleTypeRegex]: [
         createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.AutoRapidFire),
@@ -211,7 +204,7 @@ const seasonIconMap: { [seasonNumber: number]: string } = {
 };
 
 const emits = defineEmits<{
-    (e: "filtersApplied", filters: Record<FilterCategory, FilterPredicate[]>): void,
+    (e: "filtersApplied", applied: IAppliedFilters): void,
 }>();
 
 const perkFilter = ref("");
@@ -267,7 +260,7 @@ const collectionCategoryFilters = computed(() => {
     // Just seasons right now, TODO: add other collections
     const collections = origins;
     const seasonCollections = destinyDataService.seasons
-        .filter(s => includeSunsetWeapons.value || !isSunsetSeason(s))
+        .filter(s => includeSunsetWeapons.value || !destinyDataService.isSeasonSunset(s))
         .map(s => {
             const iconUrl = s.displayProperties.hasIcon
                 ? destinyDataService.getImageUrl(s.displayProperties.icon)
@@ -342,11 +335,6 @@ function tierIndexToIcon(tierIndex: number) {
     }
 }
 
-function isSunsetSeason(season: DestinySeasonDefinition) {
-    // Season of Dawn is last sunset season
-    return season.seasonNumber <= 9;
-}
-
 function onPerkFilterChanged() {
     // TODO: stuff
 }
@@ -368,24 +356,24 @@ function includeSunsetToggled() {
 }
 
 function onApplyFilters() {
-    const filters: Record<FilterCategory, FilterPredicate[]> = {
-        "Damage Type": [],
-        "Weapon": [],
-        "Archetype": [],
-        "Collections": [],
-        "Rarity": [],
+    const appliedFilters: IAppliedFilters = {
+        includeSunsetWeapons: includeSunsetWeapons.value,
+        collectionsFilters: findActiveFilterPredicates(collectionsFilterCategory.value),
+        damageFilters: findActiveFilterPredicates(damageTypeFilterCategory.value),
+        rarityFilters: findActiveFilterPredicates(rarityFilterCategory.value),
+        weaponFilters: findActiveFilterPredicates(weaponFilterCategory.value),
+        perkNames: [],
     };
 
-    for (const category of filterCategories.value) {
-        for (const filter of category.filters) {
-            const active = activeFilters.value[category.name][filter.text];
-            if (active) {
-                filters[category.name].push(filter.filter);
-            }
-        }
-    }
+    emits("filtersApplied", appliedFilters);
+}
 
-    emits("filtersApplied", filters);
+function findActiveFilterPredicates(category: ICategoryInfo) {
+    const categoryName = category.name;
+    const activeFilterMap = activeFilters.value[categoryName];
+    return category.filters
+        .filter(f => activeFilterMap[f.text])
+        .map(f => f.filter);
 }
 </script>
 

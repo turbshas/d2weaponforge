@@ -219,6 +219,15 @@ export interface IWeaponFilterButton extends IFilterButton {
     archetypes: IArchetypeFilter[];
 }
 
+export interface IAppliedFilters {
+    includeSunsetWeapons: boolean;
+    collectionsFilters: FilterPredicate[];
+    damageFilters: FilterPredicate[];
+    rarityFilters: FilterPredicate[];
+    weaponFilters: FilterPredicate[];
+    perkNames: string[];
+}
+
 export enum ItemTierIndex {
     Basic = 0,
     Common = 1,

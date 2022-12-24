@@ -1,3 +1,4 @@
+import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { reactive } from "vue";
 import { destinyApiService } from "./destinyApiService";
 import { DataSearchString, type Destiny2GameData } from "./types";
@@ -70,6 +71,15 @@ class DestinyDataService {
 
     public getItemDefinition = (itemHash: number) => {
         return this.gameData?.itemLookup[itemHash];
+    }
+
+    public getSeasonDefinition = (seasonHash: number) => {
+        return this.gameData?.seasonsLookup[seasonHash];
+    }
+
+    public isSeasonSunset = (season: DestinySeasonDefinition) => {
+        // Season of Dawn is last sunset season
+        return !season || season.seasonNumber <= 9;
     }
 
     // Notes

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/destinyDataService";
-import type { FilterCategory, FilterPredicate, IWeapon } from "@/data/types";
-import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
+import type { FilterPredicate, IAppliedFilters, IWeapon } from "@/data/types";
 import { computed, ref } from "vue";
 import FilterWindow from "./Filter/FilterWindow.vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
@@ -15,12 +14,13 @@ const emit = defineEmits<{
     (e: "weaponSelected", weapon: IWeapon): void,
 }>();
 
-const filters = ref<Record<FilterCategory, FilterPredicate[]>>({
-    "Collections": [],
-    "Damage Type": [],
-    "Rarity": [],
-    "Weapon": [],
-    "Archetype": [],
+const filters = ref<IAppliedFilters>({
+    includeSunsetWeapons: false,
+    collectionsFilters: [],
+    damageFilters: [],
+    rarityFilters: [],
+    weaponFilters: [],
+    perkNames: [],
 });
 
 const weapons = computed(() => {
@@ -28,37 +28,41 @@ const weapons = computed(() => {
 });
 
 const areFiltersChosen = computed(() => {
-    return (!!filters.value["Collections"] && filters.value["Collections"].length > 0)
-        || (!!filters.value["Damage Type"] && filters.value["Damage Type"].length > 0)
-        || (!!filters.value["Rarity"] && filters.value["Rarity"].length > 0)
-        || (!!filters.value["Weapon"] && filters.value["Weapon"].length > 0);
+    return filters.value.includeSunsetWeapons
+        || filters.value.collectionsFilters.length > 0
+        || filters.value.damageFilters.length > 0
+        || filters.value.rarityFilters.length > 0
+        || filters.value.weaponFilters.length > 0
+        || filters.value.perkNames.length > 0;
 });
 
 const filteredWeapons = computed(() => {
     // If no filter or search, return truncated list
     console.log("filtering weapons", areFiltersChosen.value, !!props.searchString, filters.value);
-    if (!areFiltersChosen.value && !props.searchString) return weapons.value.slice(0, 22);
+    if (!areFiltersChosen.value && !props.searchString) {
+        return weapons.value.filter(w => !isWeaponSunset(w)).slice(0, 22);
+    }
+
     return weapons.value
-        .filter(w => {
-            const collections = filters.value["Collections"];
-            const damageTypes = filters.value["Damage Type"];
-            const rarity = filters.value["Rarity"];
-            const weapon = filters.value["Weapon"];
-            return checkFilterCategoryOnWeapon(collections, w)
-                && checkFilterCategoryOnWeapon(damageTypes, w)
-                && checkFilterCategoryOnWeapon(rarity, w)
-                && checkFilterCategoryOnWeapon(weapon, w);
-        })
+        .filter(w => !filters.value.includeSunsetWeapons || !isWeaponSunset(w))
+        .filter(w => checkFilterCategoryOnWeapon(filters.value.collectionsFilters, w))
+        .filter(w => checkFilterCategoryOnWeapon(filters.value.damageFilters, w))
+        .filter(w => checkFilterCategoryOnWeapon(filters.value.rarityFilters, w))
+        .filter(w => checkFilterCategoryOnWeapon(filters.value.weaponFilters, w))
         .filter(s => s.weapon.displayProperties.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
 });
+
+function isWeaponSunset(weapon: IWeapon) {
+    // TODO: make this actually correct
+    return !!weapon.weapon.iconWatermarkShelved;
+}
 
 function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: IWeapon) {
     return !category || category.length === 0 || category.some(predicate => predicate(weapon));
 }
 
-function onFiltersApplied(newFilters: Record<FilterCategory, FilterPredicate[]>) {
+function onFiltersApplied(newFilters: IAppliedFilters) {
     filters.value = newFilters;
-    console.log("filters are", filters.value);
 }
 
 function onWeaponSelected(weapon: IWeapon) {

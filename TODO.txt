@@ -15,7 +15,6 @@
 - required level for enhanced perks
 - sunset weapons filter
 - collections filters
-- weapon archetype filters
 - support for translations
 - fix backup mag - it currently just does +30 to the mag (and mag perks)
 - weapon mag size caps
@@ -35,3 +34,5 @@
   - convert to using rem instead of px
 - accessibility
 - tab bar text isn't centered properly
+- move constants to a central location if possible, even just another file
+- move data search strings to service to support changing the language
