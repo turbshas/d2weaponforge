@@ -5,6 +5,8 @@ const props = defineProps<{
     targetElement: HTMLElement | null,
     title: string,
     subtitle: string,
+    requiredCraftedLevel: number | undefined,
+    requiredCraftedLevelEnhanced: number | undefined,
     description: string,
     effect: string | null,
     bonuses: { statName: string, value: number }[],
@@ -22,6 +24,8 @@ const showTooltip = computed(() => !!props.targetElement && mouseIsHovering.valu
 const tooltipTop = computed(() => `${mouseY.value}px`);
 const tooltipLeft = computed(() => `${mouseX.value - tooltipWidth}px`);
 const showBonuses = computed(() => props.bonuses && props.bonuses.length > 0);
+const requiredLevelText = computed(() => `Lv${props.requiredCraftedLevel}`)
+const requiredEnhancedLevelText = computed(() => `Lv${props.requiredCraftedLevelEnhanced}`)
 
 watch(() => props.targetElement, (newValue, oldValue) => {
     if (oldValue) {
@@ -67,7 +71,10 @@ function textForStatValue(value: number) {
     <div class="tooltip" :style="{ 'top': tooltipTop, 'left': tooltipLeft, }" v-show="showTooltip">
         <div class="header">
             <h4 class="title">{{ props.title }}</h4>
-            <div class="subtitle">{{ props.subtitle }}</div>
+            <div class="subtitle">
+                {{ props.subtitle }}
+                <span class="level" v-if="!!props.requiredCraftedLevel">{{ requiredLevelText }}</span>
+            </div>
         </div>
 
         <div class="body">
@@ -87,7 +94,10 @@ function textForStatValue(value: number) {
             </div>
         </div>
         <div class="enhanced" v-if="props.enhanced">
-            <div class="enhanced-title">Enhanced Benefits</div>
+            <div class="enhanced-title">
+                Enhanced Benefits
+                <span class="level" v-if="!!props.requiredCraftedLevelEnhanced">{{ requiredEnhancedLevelText }}</span>
+            </div>
             <div class="enhanced-bonus">{{ props.enhancedBonus }}</div>
         </div>
     </div>
@@ -129,11 +139,17 @@ function textForStatValue(value: number) {
 }
 
 .subtitle {
+    display: flex;
     margin-top: 4px;
     font-size: 14.4px;
     font-weight: 500;
 
     text-transform: capitalize;
+}
+
+.level {
+    margin-left: auto;
+    text-transform: none;
 }
 
 .body {
@@ -228,6 +244,7 @@ function textForStatValue(value: number) {
     background: linear-gradient(0deg, rgba(183, 140, 37, 0), rgba(255, 206, 31, 0.1));
 }
 .enhanced-title {
+    display: flex;
     margin-bottom: 4px;
     font-size: 11.2px;
     font-family: neue-haas-grotesk-text, "Helvetica Neue", sans-serif;

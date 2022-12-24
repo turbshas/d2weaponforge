@@ -163,6 +163,7 @@ export class DestinyManifestProcessor {
 
     private getPerkOptionsFromPlugSet = (plugSet: DestinyPlugSetDefinition | undefined) => {
         const currentlyCanRollMap: { [plugItemHash: number]: boolean } = {};
+        const requiredCraftedLevel: { [plugItemHash: number]: number | undefined } = {};
         const seenPlugItems: { [plugItemHash: number]: boolean } = {};
         const perksInSlot: DestinyInventoryItemDefinition[] = [];
 
@@ -172,6 +173,9 @@ export class DestinyManifestProcessor {
             // TODO: Apparently everything works without this so figure that out
             // seenPlugItems[plugItem.plugItemHash] = true;
             currentlyCanRollMap[plugItem.plugItemHash] = plugItem.currentlyCanRoll;
+            if (plugItem.craftingRequirements) {
+                requiredCraftedLevel[plugItem.plugItemHash] = plugItem.craftingRequirements.requiredLevel;
+            }
 
             const definition = this.getItemDefinition(plugItem.plugItemHash);
             if (!definition) continue;
@@ -195,7 +199,9 @@ export class DestinyManifestProcessor {
 
             const perkOption: IPerkOption = {
                 perk: perk,
+                requiredCraftedLevel: requiredCraftedLevel[perk.hash],
                 enhancedPerk: enhancedPerk,
+                requiredCraftedLevelEnhanced: enhancedPerk ? requiredCraftedLevel[enhancedPerk.hash] : undefined,
                 currentlyCanRoll: currentlyCanRollMap[perk.hash],
                 useEnhanced: false,
             };

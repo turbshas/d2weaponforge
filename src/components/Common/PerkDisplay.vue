@@ -6,6 +6,8 @@ import Tooltip from './Tooltip.vue';
 
 const props = defineProps<{
     perk: DestinyInventoryItemDefinition | undefined,
+    requiredCraftedLevel: number | undefined,
+    requiredCraftedLevelEnhanced: number | undefined,
     selected: boolean,
     retired: boolean,
     enhanced?: boolean,
@@ -77,6 +79,8 @@ function onPerkClick() {
             :target-element="tooltipTargetElement"
             :title="tooltipTitle"
             :subtitle="tooltipSubtitle"
+            :required-crafted-level="props.requiredCraftedLevel"
+            :required-crafted-level-enhanced="props.requiredCraftedLevelEnhanced"
             :description="tooltipDescription"
             :effect="tooltipEffects"
             :bonuses="tooltipBonuses"

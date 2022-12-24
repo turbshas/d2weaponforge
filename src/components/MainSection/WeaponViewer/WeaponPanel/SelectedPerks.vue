@@ -31,14 +31,37 @@ function onPerkClicked(column: number) {
 
 <template>
     <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
-        <PerkDisplay class="perk" :perk="props.intrinsic" :selected="false" :retired="false" full-size hide-hover></PerkDisplay>
-        <PerkDisplay class="perk" :perk="props.perk1" :selected="false" :retired="false"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="props.perk2" :selected="false" :retired="false"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="props.perk3" :selected="false" :retired="false" :enhanced="isPerk3Enhanced" @click="onPerkClicked(2)"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="props.perk4" :selected="false" :retired="false" :enhanced="isPerk4Enhanced" @click="onPerkClicked(3)"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="props.originPerk" :selected="false" :retired="false" v-if="!!originPerk"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="props.mod" :selected="false" :retired="false" full-size v-if="!!mod"></PerkDisplay>
-        <PerkDisplay class="perk" :perk="props.masterwork" :selected="false" :retired="false" full-size v-if="!!masterwork"></PerkDisplay>
+        <PerkDisplay class="perk" :perk="props.intrinsic"
+            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
+            :selected="false" :retired="false" full-size hide-hover></PerkDisplay>
+
+        <PerkDisplay class="perk" :perk="props.perk1"
+            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
+            :selected="false" :retired="false"></PerkDisplay>
+
+        <PerkDisplay class="perk" :perk="props.perk2"
+            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
+            :selected="false" :retired="false"></PerkDisplay>
+
+        <PerkDisplay class="perk" :perk="props.perk3"
+            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
+            :selected="false" :retired="false" :enhanced="isPerk3Enhanced" @click="onPerkClicked(2)"></PerkDisplay>
+
+        <PerkDisplay class="perk" :perk="props.perk4"
+            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
+            :selected="false" :retired="false" :enhanced="isPerk4Enhanced" @click="onPerkClicked(3)"></PerkDisplay>
+
+        <PerkDisplay class="perk" :perk="props.originPerk"
+            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
+            :selected="false" :retired="false" v-if="!!originPerk"></PerkDisplay>
+
+        <PerkDisplay class="perk" :perk="props.mod"
+            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
+            :selected="false" :retired="false" full-size v-if="!!mod"></PerkDisplay>
+
+        <PerkDisplay class="perk" :perk="props.masterwork"
+            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
+            :selected="false" :retired="false" full-size v-if="!!masterwork"></PerkDisplay>
     </div>
 </template>
 

@@ -34,6 +34,8 @@ function onModClicked(mod: DestinyInventoryItemDefinition) {
                 v-for="mod of modOptions"
                 :key="mod.hash"
                 :perk="mod"
+                :required-crafted-level="undefined"
+                :required-crafted-level-enhanced="undefined"
                 :selected="false"
                 :retired="false"
                 full-size

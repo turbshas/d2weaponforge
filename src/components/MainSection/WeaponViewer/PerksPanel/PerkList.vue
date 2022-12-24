@@ -42,6 +42,8 @@ function onPerkClicked(column: number, perk: IPerkOption) {
                 v-for="(perk, index) in slot.options"
                 :key="index"
                 :perk="perk.enhancedPerk || perk.perk"
+                :required-crafted-level="perk.requiredCraftedLevel"
+                :required-crafted-level-enhanced="perk.requiredCraftedLevelEnhanced"
                 :selected="isPerkSelected(column, perk)"
                 :retired="!perk.currentlyCanRoll"
                 :enhanced="!!perk.enhancedPerk && !props.hideEnhanced"

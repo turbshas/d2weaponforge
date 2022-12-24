@@ -266,7 +266,9 @@ export interface Destiny2GameData {
 
 export interface IPerkOption {
     perk: DestinyInventoryItemDefinition;
+    requiredCraftedLevel: number | undefined;
     enhancedPerk?: DestinyInventoryItemDefinition;
+    requiredCraftedLevelEnhanced: number | undefined;
     currentlyCanRoll: boolean;
     useEnhanced: boolean;
 }
