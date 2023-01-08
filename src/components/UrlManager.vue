@@ -36,15 +36,15 @@ const modHash = computed(() => props.mod ? props.mod.hash : 0);
 
 const path = computed(() => {
     if (props.page === PageSelection.Home) {
-        return "/";
+        return "./";
     } else if (props.page === PageSelection.Glossary) {
-        return "/glossary";
+        return "./glossary";
     } else if (props.page === PageSelection.Compare) {
-        return "/compare";
+        return "./compare";
     } else if (props.page === PageSelection.Weapon) {
         // If no weapon is selected, don't set the path
         if (!weaponHash.value) return undefined;
-        const basePath = `/w/${weaponHash.value}`;
+        const basePath = `./w/${weaponHash.value}`;
         const perkQuery = `s=${perk1Hash.value},${perk2Hash.value},${perk3Hash.value},${perk4Hash.value},${masterworkHash.value},${modHash.value},${perk5Hash.value}`;
         return `${basePath}?${perkQuery}`;
     }
