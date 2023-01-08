@@ -5,6 +5,7 @@ import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { watch } from 'vue';
 
+const rootBasePath = import.meta.env.BASE_URL;
 
 const props = defineProps<{
     page: PageSelection,
@@ -36,15 +37,15 @@ const modHash = computed(() => props.mod ? props.mod.hash : 0);
 
 const path = computed(() => {
     if (props.page === PageSelection.Home) {
-        return "./";
+        return `${rootBasePath}`;
     } else if (props.page === PageSelection.Glossary) {
-        return "./glossary";
+        return `${rootBasePath}/glossary`;
     } else if (props.page === PageSelection.Compare) {
-        return "./compare";
+        return `${rootBasePath}/compare`;
     } else if (props.page === PageSelection.Weapon) {
         // If no weapon is selected, don't set the path
         if (!weaponHash.value) return undefined;
-        const basePath = `./w/${weaponHash.value}`;
+        const basePath = `${rootBasePath}/w/${weaponHash.value}`;
         const perkQuery = `s=${perk1Hash.value},${perk2Hash.value},${perk3Hash.value},${perk4Hash.value},${masterworkHash.value},${modHash.value},${perk5Hash.value}`;
         return `${basePath}?${perkQuery}`;
     }
@@ -67,7 +68,14 @@ function onGameDataChanged() {
         emits("urlParsed", PageSelection.Compare, undefined, [], undefined, undefined);
         return;
     }
-    const weaponHashString = lowerCasePath.replace("/w/", "").replace("/", "");
+    const weaponHashSearch = "/w/";
+    const weaponHashDelimiterIndex = lowerCasePath.indexOf(weaponHashSearch);
+    if (weaponHashDelimiterIndex < 0) {
+        // No weapon hash
+        return;
+    }
+    const weaponHashStringIndex = weaponHashDelimiterIndex + weaponHashSearch.length;
+    const weaponHashString = lowerCasePath.substring(weaponHashStringIndex);
     const urlWeaponHash = Number.parseInt(weaponHashString);
 
     const urlPerkHashes: number[] = [0, 0, 0, 0, 0, 0, 0]; // Random roll 1, 2, 3, 4, masterwork, mod, origin perk
