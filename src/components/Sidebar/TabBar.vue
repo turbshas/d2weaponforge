@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { PageSelection } from '@/data/types';
 
+const rootBasePath = import.meta.env.BASE_URL;
+
 const emit = defineEmits<{
     (e: "tabSelected", tab: PageSelection): void,
 }>();
@@ -8,7 +10,7 @@ const emit = defineEmits<{
 const tabs = [PageSelection.Home, PageSelection.Glossary, PageSelection.Compare];
 
 function hrefForTab(tab: PageSelection) {
-    return `./${tab}`;
+    return `${rootBasePath}/${tab}`;
 }
 
 function onTabClick(e: Event, tab: PageSelection) {

@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "./",
+  base: process.env.BASE_PATH || "/d2weaponforge",
   plugins: [vue()],
   resolve: {
     alias: {
