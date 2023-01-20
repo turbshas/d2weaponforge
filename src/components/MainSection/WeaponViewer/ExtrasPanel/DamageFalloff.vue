@@ -27,10 +27,10 @@ const weaponCategoryRangeValuesMap: { [itemRegex: string]: IWeaponRangeValues } 
     [DataSearchString.AutoRifleTypeRegex]: { baseFalloffStart: 10.8, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
     [DataSearchString.HandCannonTypeRegex]: { baseFalloffStart: 16, hipFireRangePerStat: 0.096, zoomAdjustment: 0.25, },
     // TODO: pulse rifles are all over the place in zoom/"modified zoom multiplier"
-    [DataSearchString.PulseRifleTypeRegex]: { baseFalloffStart: 15, hipFireRangePerStat: 0.08, zoomAdjustment: 0.25, },
+    [DataSearchString.PulseRifleTypeRegex]: { baseFalloffStart: 15, hipFireRangePerStat: 0.0685, zoomAdjustment: 0.25, },
     [DataSearchString.ScoutRifleTypeRegex]: { baseFalloffStart: 29.2, hipFireRangePerStat: 0.169, zoomAdjustment: 1.25, },
     [DataSearchString.SidearmTypeRegex]: { baseFalloffStart: 11.6, hipFireRangePerStat: 0.034, zoomAdjustment: 0.25, },
-    [DataSearchString.SubmachinegunTypeRegex]: { baseFalloffStart: 6.3, hipFireRangePerStat: 0.126, zoomAdjustment: 1.25, },
+    [DataSearchString.SubmachinegunTypeRegex]: { baseFalloffStart: 8.19, hipFireRangePerStat: 0.114, zoomAdjustment: 1.25, },
 
     [DataSearchString.FusionRifleTypeRegex]: { baseFalloffStart: 8.2, hipFireRangePerStat: 0.036, zoomAdjustment: 2, },
     [DataSearchString.TraceRifleTypeRegex]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
