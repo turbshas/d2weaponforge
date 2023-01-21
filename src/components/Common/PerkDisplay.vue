@@ -101,7 +101,7 @@ function onPerkClick() {
     </button>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .wrapper {
     width: 48px;
     height: 48px;
@@ -109,16 +109,16 @@ function onPerkClick() {
     background-color: transparent;
     border: none;
     padding: 0;
-}
 
-/* The circle around the icon */
-.random-roll {
-    box-shadow: inset 0 0 0 2px hsla(0,0%,100%,.4);
-    border-radius: 50%;
-}
+    &.selected {
+        background-color: #518dba;
+    }
 
-.selected {
-    background-color: #518dba;
+    /* The circle around the icon */
+    &.random-roll {
+        box-shadow: inset 0 0 0 2px hsla(0,0%,100%,.4);
+        border-radius: 50%;
+    }
 }
 
 .icon-wrapper {
@@ -126,34 +126,48 @@ function onPerkClick() {
     width: 100%;
     height: 100%;
     z-index: 10;
+
+    &.retired {
+        filter: brightness(0.3);
+    }
+
+    /* This section is for the hover effect on perks. */
+    &::before, &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        /* For random roll perks, make the hover a circle instead of square. */
+        /* This applies when the parent has class "random-roll" */
+        .random-roll & {
+            border-radius: 50%;
+        }
+    }
+    &::before {
+        transition: background-color .5s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    &::after {
+        transition: 
+            box-shadow 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+            transform 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+            opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1)
+        ;
+    }
 }
 
-.retired {
-    filter: brightness(0.3);
-}
-
-/* This section is for the hover effect on perks. */
-.icon-wrapper::before, .icon-wrapper::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-.icon-wrapper::before {
-    transition: background-color .5s cubic-bezier(0.19, 1, 0.22, 1);
-}
-.icon-wrapper::after {
-    transition: 
-        box-shadow 0.4s cubic-bezier(0.19, 1, 0.22, 1),
-        transform 0.4s cubic-bezier(0.19, 1, 0.22, 1),
-        opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1)
-    ;
-}
-/* For random roll perks, make the hover a circle instead of square. */
-.random-roll .icon-wrapper::before, .random-roll .icon-wrapper::after {
-    border-radius: 50%;
+.hover {
+    &:hover::before {
+        box-shadow: inset 0 0 0 2px #ccc;
+        background-color: hsla(0, 0%, 100%, 0.4)
+    }
+    &:focus::after, &:hover::after {
+        box-shadow: 0 0 0 1px #fafafa;
+        transform: scale(1.085) translateZ(0);
+        opacity: 1;
+    }
 }
 
 .icon {
@@ -162,27 +176,18 @@ function onPerkClick() {
     position: absolute;
     top: 0;
     left: 0;
-}
-.random-roll .icon {
-    width: 75%;
-    height: 75%;
-    top: 12.5%;
-    left: 12.5%;
-}
 
-.watermark {
-    z-index: 11;
-}
+    &.watermark {
+        z-index: 11;
+    }
 
-/* Activates the hover effect */
-.hover:hover::before {
-    box-shadow: inset 0 0 0 2px #ccc;
-    background-color: hsla(0, 0%, 100%, 0.4)
-}
-.hover:focus::after, .hover:hover::after {
-    box-shadow: 0 0 0 1px #fafafa;
-    transform: scale(1.085) translateZ(0);
-    opacity: 1;
+    /* This applies when the parent has class "random-roll" */
+    .random-roll & {
+        width: 75%;
+        height: 75%;
+        top: 12.5%;
+        left: 12.5%;
+    }
 }
 
 .enhanced-gradient-wrapper {

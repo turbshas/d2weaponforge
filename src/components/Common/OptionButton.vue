@@ -27,7 +27,7 @@ function onButtonToggled() {
     </button>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .button {
     display: flex;
     flex-direction: row;
@@ -52,37 +52,37 @@ function onButtonToggled() {
     letter-spacing: 1px;
     text-transform: uppercase;
     text-decoration: none;
-}
-.button::after {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    pointer-events: none;
-    width: calc(100% + 4px);
-    height: calc(100% + 4px);
 
-    box-shadow: 0 0 0 2px #f5f5f5;
-    opacity: 0;
-    transform: scale(1.1);
-    transition:
-        opacity 0.2s ease 0s,
-        transform 0.3s ease 0s
-    ;
-}
-.button:hover::after /*, .button:focus::after */ {
-    opacity: 0.8;
-    transform: scale(1);
-}
+    &.active {
+        background-color: darken(#b78c25, 10%);
+    }
 
-.active {
-    /* background-color: #b78c25; */
-    background-color: #89691b;
-}
+    &.large {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
 
-.large {
-    padding-left: 12px;
-    padding-right: 12px;
+    &::after {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        pointer-events: none;
+        width: calc(100% + 4px);
+        height: calc(100% + 4px);
+
+        box-shadow: 0 0 0 2px #f5f5f5;
+        opacity: 0;
+        transform: scale(1.1);
+        transition:
+            opacity 0.2s ease 0s,
+            transform 0.3s ease 0s
+        ;
+    }
+    &:hover::after, &:focus::after {
+        opacity: 0.8;
+        transform: scale(1);
+    }
 }
 
 .icon {
@@ -91,14 +91,13 @@ function onButtonToggled() {
     max-height: 18px;
     margin-right: 8px;
     color: white;
-}
 
-.wide {
-    max-width: 38px;
+    &.wide {
+        max-width: 38px;
+    }
 }
 
 .text {
     white-space: nowrap;
 }
 </style>
-
