@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import ElementLabel from "@/components/Common/ElementLabel.vue";
 
 const emits = defineEmits<{
     (e: "searchChanged", searchString: string): void,
@@ -10,15 +11,24 @@ const searchString = ref("");
 function onSearchChanged() {
     emits("searchChanged", searchString.value);
 }
+
+const searchBarLabel = "Weapon name searchbar";
 </script>
 
 <template>
-    <input class="search" type="text" placeholder="Search..." v-model="searchString" @input="onSearchChanged">
+    <ElementLabel class="wrapper" :text="searchBarLabel">
+        <input class="search" type="text" placeholder="Search..." v-model="searchString" @input="onSearchChanged">
+    </ElementLabel>
 </template>
 
 <style scoped>
+.wrapper {
+    display: flex;
+}
+
 .search {
     flex: 1;
+
     padding-top: 8px;
     padding-bottom: 8px;
     padding-left: 16px;

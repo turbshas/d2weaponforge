@@ -12,11 +12,14 @@ const emits = defineEmits<{
 function onButtonClicked() {
     emits("filterToggled");
 }
+
+const filterButtonLabel = "Open Filter Pane";
+const filterButtonImageLabel = "Filter Icon";
 </script>
 
 <template>
-    <button class="button" :class="{ 'active': props.active }" @click="onButtonClicked">
-        <img :src="FilterIcon">
+    <button class="button" :class="{ 'active': props.active }" @click="onButtonClicked" :aria-label="filterButtonLabel">
+        <img :src="FilterIcon" :alt="filterButtonImageLabel">
     </button>
 </template>
 

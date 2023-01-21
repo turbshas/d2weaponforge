@@ -72,7 +72,8 @@ function onButtonToggled() {
 }
 
 .active {
-    background-color: #b78c25;
+    /* background-color: #b78c25; */
+    background-color: #89691b;
 }
 
 .large {

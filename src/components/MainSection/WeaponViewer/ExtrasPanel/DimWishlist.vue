@@ -26,7 +26,7 @@ function copyWishlistItem() {
 </script>
 
 <template>
-    <ExtrasListItem label="DIM Wishlist" :icon-url="DimIcon">
+    <ExtrasListItem label="DIM Wishlist" :icon-url="DimIcon" icon-alt-text="Icon: Destiny Item Manager">
         <OptionButton text="Copy Wishlist Item" :active="buttonOn" @click="copyWishlistItem"></OptionButton>
     </ExtrasListItem>
 </template>

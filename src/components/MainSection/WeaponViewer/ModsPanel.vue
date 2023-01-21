@@ -39,7 +39,7 @@ function onModClicked(mod: DestinyInventoryItemDefinition) {
                 :selected="false"
                 :retired="false"
                 full-size
-                @click="onModClicked(mod)"
+                @perk-clicked="onModClicked(mod)"
             ></PerkDisplay>
         </div>
     </BuilderSection>

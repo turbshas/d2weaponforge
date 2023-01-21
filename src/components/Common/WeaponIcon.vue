@@ -7,14 +7,10 @@ const props = defineProps<{
     weapon: DestinyInventoryItemDefinition | undefined,
 }>();
 
-const baseIcon = computed(() => {
-    return props.weapon
-        && props.weapon.displayProperties
-        && props.weapon.displayProperties.icon
-        && destinyDataService.getImageUrl(props.weapon.displayProperties.icon);
-});
+const baseIconPath = computed(() => props.weapon && props.weapon.displayProperties && props.weapon.displayProperties.icon);
+const baseIcon = computed(() => baseIconPath.value && destinyDataService.getImageUrl(baseIconPath.value));
 
-const watermark = computed(() => {
+const watermarkPath = computed(() => {
     // Priority here: weapon.quality.displayVersionWatermarkIcons -> weapon.iconWatermarkShelved -> weapon.iconWatermark
     return props.weapon
         && (
@@ -22,23 +18,41 @@ const watermark = computed(() => {
                 props.weapon.quality
                 && props.weapon.quality.displayVersionWatermarkIcons.length > 0
                 && props.weapon.quality.displayVersionWatermarkIcons[0]
-                && destinyDataService.getImageUrl(props.weapon.quality.displayVersionWatermarkIcons[0])
+                && props.weapon.quality.displayVersionWatermarkIcons[0]
             )
-            || (props.weapon.iconWatermarkShelved && destinyDataService.getImageUrl(props.weapon.iconWatermarkShelved))
-            || (props.weapon.iconWatermark && destinyDataService.getImageUrl(props.weapon.iconWatermark))
+            || (props.weapon.iconWatermarkShelved && props.weapon.iconWatermarkShelved)
+            || (props.weapon.iconWatermark && props.weapon.iconWatermark)
         );
 });
+const watermark = computed(() => watermarkPath.value && destinyDataService.getImageUrl(watermarkPath.value));
+
+const iconLabel = computed(() => props.weapon ? `Weapon Icon: ${props.weapon.displayProperties.name}` : "");
+const watermarkLabel = "Season of release watermark";
 </script>
 
 <template>
-    <div class="base" :style="{ 'background-image': 'url(' + baseIcon + ')' }">
-        <img :src="watermark">
+    <div class="wrapper">
+        <img class="base-icon" :src="baseIcon" :alt="iconLabel">
+        <img class="watermark" :src="watermark" :alt="watermarkLabel">
     </div>
 </template>
 
 <style scoped>
-.base {
+.wrapper {
     display: flex;
-    background-size: contain;
+    position: relative;
+}
+
+.base-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.watermark {
+    z-index: 2;
 }
 </style>

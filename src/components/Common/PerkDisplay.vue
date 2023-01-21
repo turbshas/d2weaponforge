@@ -3,6 +3,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import Tooltip from './Tooltip.vue';
+import ElementLabel from './ElementLabel.vue';
 
 const props = defineProps<{
     perk: DestinyInventoryItemDefinition | undefined,
@@ -16,9 +17,10 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-    (e: "click", perk: DestinyInventoryItemDefinition): void
+    (e: "perkClicked", perk: DestinyInventoryItemDefinition): void
 }>();
 
+const perkName = computed(() => props.perk && props.perk.displayProperties && props.perk.displayProperties.name || "Empty");
 const perkIcon = computed(() => {
     if (!props.perk) return undefined;
     return destinyDataService.getImageUrl(props.perk.displayProperties.icon);
@@ -27,6 +29,10 @@ const perkWatermark = computed(() => {
     if (!props.perk || !props.perk.iconWatermark) return undefined;
     return destinyDataService.getImageUrl(props.perk.iconWatermark);
 });
+const perkId = computed(() => `perk_id_${perkName.value}`);
+const perkLabel = computed(() => `Perk: ${perkName.value}`);
+const perkIconLabel = computed(() => `Perk Icon: ${perkName.value}`);
+const perkWatermarkLabel = computed(() => `Perk Watermark: ${perkName.value}`);
 
 const perkElement = ref<HTMLElement | null>(null);
 const tooltipTargetElement = computed(() => props.perk ? perkElement.value : null);
@@ -53,28 +59,33 @@ const tooltipEnhancedBonus = computed(() => "");
 
 function onPerkClick() {
     if (!props.perk) return;
-    emits("click", props.perk);
+    emits("perkClicked", props.perk);
 }
 </script>
 
 <template>
-    <div
+    <button
+        :id="perkId"
         :ref="(el) => { perkElement = el as HTMLElement | null; }"
         class="wrapper"
-        :class="{ 'random-roll-wrapper': !fullSize, 'selected': selected }"
+        :class="{ 'random-roll': !fullSize, 'selected': selected }"
         @click="onPerkClick"
+        tabindex="0"
     >
+        <ElementLabel :for-id="perkId" :text="perkLabel"></ElementLabel>
         <div
-            class="icon"
-            :class="{ 'random-roll-icon': !fullSize, 'retired': retired, 'hover': !hideHover, }"
-            :style="{ 'background-image': 'url(' + perkIcon +')', }"
+            class="icon-wrapper"
+            :class="{ 'retired': retired, 'hover': !hideHover, }"
         >
-            <img class="icon" v-if="perkWatermark" :src="perkWatermark">
+            <img class="icon" v-if="perkIcon" :src="perkIcon" :alt="perkIconLabel">
+            <img class="icon watermark" v-if="perkWatermark" :src="perkWatermark" :alt="perkWatermarkLabel">
         </div>
+
         <div class="enhanced-gradient-wrapper" v-if="enhanced && !selected">
             <div class="enhanced-gradient"></div>
         </div>
         <div class="enhanced-arrow" v-if="enhanced"></div>
+
         <Tooltip
             :target-element="tooltipTargetElement"
             :title="tooltipTitle"
@@ -87,7 +98,7 @@ function onPerkClick() {
             :enhanced="tooltipEnhanced"
             :enhanced-bonus="tooltipEnhancedBonus"
         ></Tooltip>
-    </div>
+    </button>
 </template>
 
 <style scoped>
@@ -95,46 +106,78 @@ function onPerkClick() {
     width: 48px;
     height: 48px;
     position: relative;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+}
+
+/* The circle around the icon */
+.random-roll {
+    box-shadow: inset 0 0 0 2px hsla(0,0%,100%,.4);
+    border-radius: 50%;
 }
 
 .selected {
     background-color: #518dba;
 }
 
-.icon {
-    width: 48px;
-    height: 48px;
-    background-size: contain;
-    position: absolute;
-    top: 0;
-    left: 0;
+.icon-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
     z-index: 10;
 }
-.icon::before, .icon::after {
+
+.retired {
+    filter: brightness(0.3);
+}
+
+/* This section is for the hover effect on perks. */
+.icon-wrapper::before, .icon-wrapper::after {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2;
 }
-.icon.random-roll-icon::before, .icon.random-roll-icon::after {
-    border-radius: 50%;
-}
-.icon::before {
+.icon-wrapper::before {
     transition: background-color .5s cubic-bezier(0.19, 1, 0.22, 1);
 }
-.hover:hover::before {
-    box-shadow: inset 0 0 0 2px #ccc;
-    background-color: hsla(0, 0%, 100%, 0.4)
-}
-.icon::after {
+.icon-wrapper::after {
     transition: 
         box-shadow 0.4s cubic-bezier(0.19, 1, 0.22, 1),
         transform 0.4s cubic-bezier(0.19, 1, 0.22, 1),
         opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1)
     ;
+}
+/* For random roll perks, make the hover a circle instead of square. */
+.random-roll .icon-wrapper::before, .random-roll .icon-wrapper::after {
+    border-radius: 50%;
+}
+
+.icon {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.random-roll .icon {
+    width: 75%;
+    height: 75%;
+    top: 12.5%;
+    left: 12.5%;
+}
+
+.watermark {
+    z-index: 11;
+}
+
+/* Activates the hover effect */
+.hover:hover::before {
+    box-shadow: inset 0 0 0 2px #ccc;
+    background-color: hsla(0, 0%, 100%, 0.4)
 }
 .hover:focus::after, .hover:hover::after {
     box-shadow: 0 0 0 1px #fafafa;
@@ -142,24 +185,11 @@ function onPerkClick() {
     opacity: 1;
 }
 
-.random-roll-wrapper {
-    box-shadow: inset 0 0 0 2px hsla(0,0%,100%,.4);
-    border-radius: 50%;
-}
-
-.random-roll-icon {
-    background-size: 75%;
-    background-position-x: 50%;
-    background-position-y: center;
-    background-repeat: no-repeat;
-}
-
-.retired {
-    filter: brightness(0.3);
-}
-
 .enhanced-gradient-wrapper {
+    position: absolute;
     overflow: hidden;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     border-radius: 50%;
@@ -182,6 +212,7 @@ function onPerkClick() {
     position: absolute;
     top: 6px;
     margin-left: -4px;
+    z-index: 10;
     background: linear-gradient(#ffce1f 0 0) bottom/3px calc(100% - 5px),conic-gradient(from 134deg at top,transparent,#ffce1f 1deg 90deg,transparent 91deg) top/100% 5px;
     background-origin: content-box;
     background-repeat: no-repeat;

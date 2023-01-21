@@ -45,11 +45,11 @@ function onPerkClicked(column: number) {
 
         <PerkDisplay class="perk" :perk="props.perk3"
             :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
-            :selected="false" :retired="false" :enhanced="isPerk3Enhanced" @click="onPerkClicked(2)"></PerkDisplay>
+            :selected="false" :retired="false" :enhanced="isPerk3Enhanced" @perk-clicked="onPerkClicked(2)"></PerkDisplay>
 
         <PerkDisplay class="perk" :perk="props.perk4"
             :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
-            :selected="false" :retired="false" :enhanced="isPerk4Enhanced" @click="onPerkClicked(3)"></PerkDisplay>
+            :selected="false" :retired="false" :enhanced="isPerk4Enhanced" @perk-clicked="onPerkClicked(3)"></PerkDisplay>
 
         <PerkDisplay class="perk" :perk="props.originPerk"
             :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"

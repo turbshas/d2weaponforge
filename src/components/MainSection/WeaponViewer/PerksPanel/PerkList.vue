@@ -47,7 +47,7 @@ function onPerkClicked(column: number, perk: IPerkOption) {
                 :selected="isPerkSelected(column, perk)"
                 :retired="!perk.currentlyCanRoll"
                 :enhanced="!!perk.enhancedPerk && !props.hideEnhanced"
-                @click="onPerkClicked(column, perk)"
+                @perk-clicked="onPerkClicked(column, perk)"
             ></PerkDisplay>
         </div>
     </div>
