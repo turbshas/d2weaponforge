@@ -8,6 +8,7 @@ import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
 import { DataSearchString, WeaponArchetypeRpm, type FilterCategory, type FilterPredicate, type IAppliedFilters, type IArchetypeFilter, type IFilterButton, type IWeapon, type IWeaponFilterButton } from "@/data/types";
 import OptionButton from "@/components/Common/OptionButton.vue";
+import ElementLabel from "@/components/Common/ElementLabel.vue";
 
 interface ICategoryInfo {
     name: FilterCategory;
@@ -301,16 +302,16 @@ const itemTierFilters = computed(() => {
 });
 
 const damageTypeFilterCategory = computed<ICategoryInfo>(() => {
-    return { name: "Weapon", filters: damageTypeFilters.value, activeFilters: {}, wide: false };
+    return { name: "Damage Type", filters: damageTypeFilters.value, activeFilters: {}, wide: false };
 });
 const weaponFilterCategory = computed<ICategoryInfo>(() => {
     return { name: "Weapon", filters: weaponCategoryFilters.value, activeFilters: {}, wide: true };
 });
 const collectionsFilterCategory = computed<ICategoryInfo>(() => {
-    return { name: "Weapon", filters: collectionCategoryFilters.value, activeFilters: {}, wide: false };
+    return { name: "Collections", filters: collectionCategoryFilters.value, activeFilters: {}, wide: false };
 });
 const rarityFilterCategory = computed<ICategoryInfo>(() => {
-    return { name: "Weapon", filters: itemTierFilters.value, activeFilters: {}, wide: false };
+    return { name: "Rarity", filters: itemTierFilters.value, activeFilters: {}, wide: false };
 });
 
 const filterCategories = computed(() => {
@@ -385,13 +386,15 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
         </div>
 
         <CollapsibleSection name="Perks">
-            <input
-                class="perk-search"
-                type="text"
-                placeholder="Filter for specific perks"
-                v-model="perkFilter"
-                @input="onPerkFilterChanged"
-            >
+            <ElementLabel text="Perk filter text box" class="perk-search-wrapper">
+                <input
+                    class="perk-search"
+                    type="text"
+                    placeholder="Filter for specific perks"
+                    v-model="perkFilter"
+                    @input="onPerkFilterChanged"
+                >
+            </ElementLabel>
         </CollapsibleSection>
 
         <CollapsibleSection name="Archetype" v-if="activeWeaponFiltersWithArchetypes.length > 0">
@@ -472,7 +475,12 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
     text-transform: uppercase;
 }
 
+.perk-search-wrapper {
+    display: flex;
+}
 .perk-search {
+    flex: 1;
+
     order: 1;
     color: #fafafa;
     background: none;
