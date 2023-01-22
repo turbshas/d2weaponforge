@@ -3,7 +3,17 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
+import type { ICraftingInfo } from '@/data/types';
 
+// Remove this if I refactor this component
+interface ISelectedPerkDisplay {
+    perk: DestinyInventoryItemDefinition | undefined;
+    craftingInfo: ICraftingInfo | undefined;
+    enhanced: boolean;
+    fullSize: boolean;
+    hideHover: boolean;
+    onPerkClicked: () => void;
+}
 
 const props = defineProps<{
     intrinsic: DestinyInventoryItemDefinition | undefined,
@@ -24,6 +34,26 @@ const emits = defineEmits<{
 
 const backgroundUrl = computed(() => PerkPanelBackground);
 
+const perks = computed(() => {
+    const perkList: ISelectedPerkDisplay[] = [
+        { perk: props.intrinsic, craftingInfo: undefined, fullSize: true,  hideHover: true,  enhanced: false, onPerkClicked: () => {}, },
+        { perk: props.perk1,     craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
+        { perk: props.perk2,     craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
+        { perk: props.perk3,     craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: props.isPerk3Enhanced, onPerkClicked: () => onPerkClicked(2), },
+        { perk: props.perk4,     craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: props.isPerk4Enhanced, onPerkClicked: () => onPerkClicked(3), },
+    ];
+    if (!!props.originPerk) {
+        perkList.push({ perk: props.originPerk, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+    }
+    if (!!props.mod) {
+        perkList.push({ perk: props.mod, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+    }
+    if (!!props.masterwork) {
+        perkList.push({ perk: props.masterwork, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+    }
+    return perkList;
+});
+
 function onPerkClicked(column: number) {
     emits("perkClicked", column);
 }
@@ -31,37 +61,19 @@ function onPerkClicked(column: number) {
 
 <template>
     <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
-        <PerkDisplay class="perk" :perk="props.intrinsic"
-            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
-            :selected="false" :retired="false" full-size hide-hover></PerkDisplay>
-
-        <PerkDisplay class="perk" :perk="props.perk1"
-            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
-            :selected="false" :retired="false"></PerkDisplay>
-
-        <PerkDisplay class="perk" :perk="props.perk2"
-            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
-            :selected="false" :retired="false"></PerkDisplay>
-
-        <PerkDisplay class="perk" :perk="props.perk3"
-            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
-            :selected="false" :retired="false" :enhanced="isPerk3Enhanced" @click="onPerkClicked(2)"></PerkDisplay>
-
-        <PerkDisplay class="perk" :perk="props.perk4"
-            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
-            :selected="false" :retired="false" :enhanced="isPerk4Enhanced" @click="onPerkClicked(3)"></PerkDisplay>
-
-        <PerkDisplay class="perk" :perk="props.originPerk"
-            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
-            :selected="false" :retired="false" v-if="!!originPerk"></PerkDisplay>
-
-        <PerkDisplay class="perk" :perk="props.mod"
-            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
-            :selected="false" :retired="false" full-size v-if="!!mod"></PerkDisplay>
-
-        <PerkDisplay class="perk" :perk="props.masterwork"
-            :required-crafted-level="undefined" :required-crafted-level-enhanced="undefined"
-            :selected="false" :retired="false" full-size v-if="!!masterwork"></PerkDisplay>
+        <PerkDisplay
+            v-for="perk of perks"
+            :key="perk.perk?.hash"
+            class="perk"
+            :perk="perk.perk"
+            :crafting-info="perk.craftingInfo"
+            :enhanced="perk.enhanced"
+            :full-size="perk.fullSize"
+            :hide-hover="perk.hideHover"
+            :selected="false"
+            :retired="false"
+            @perk-clicked="perk.onPerkClicked()"
+        ></PerkDisplay>
     </div>
 </template>
 

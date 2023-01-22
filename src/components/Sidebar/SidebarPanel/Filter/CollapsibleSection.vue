@@ -13,8 +13,12 @@ function onHeaderClicked() {
 </script>
 
 <template>
-    <div class="section">
-        <div class="header" :class="{ 'expanded': isExpanded, }" @click="onHeaderClicked">{{ props.name }}</div>
+    <div class="section" :aria-expanded="isExpanded">
+        <button
+            class="header"
+            :class="{ 'expanded': isExpanded, }"
+            @click="onHeaderClicked"
+        >{{ props.name }}</button>
         <slot v-if="isExpanded"></slot>
     </div>
 </template>
@@ -34,10 +38,13 @@ function onHeaderClicked() {
 
     padding-bottom: 8px;
 
+    color: var(--color-text);
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;
     opacity: 0.75;
+    background-color: transparent;
+    border: none;
 
     transition: color 0.4s ease;
 }

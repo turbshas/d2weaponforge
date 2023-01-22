@@ -12,17 +12,19 @@ const emit = defineEmits<{
 }>();
 
 const href = computed(() => props.weapon ? `/w/${props.weapon.weapon.hash}` : "");
+const weaponName = computed(() => props.weapon.weapon.displayProperties.name);
 
 function onEntryClicked(e: Event) {
     emit("entryClicked", props.weapon);
+    console.log(props.weapon)
     e.preventDefault();
 }
 </script>
 
 <template>
     <a class="entry" :href="href" @click="onEntryClicked">
+        <span class="text">{{ weaponName }}</span>
         <WeaponIcon class="icon" :weapon="props.weapon.weapon"></WeaponIcon>
-        <span class="text">{{ props.weapon.weapon.displayProperties.name }}</span>
     </a>
 </template>
 
@@ -31,7 +33,11 @@ function onEntryClicked(e: Event) {
     cursor: pointer;
     position: relative;
     display: flex;
-    flex-direction: row;
+    /*
+    Items are placed backwards in the template, then flowed in row-reverse
+    to make the weapon name appear first in the accessibility label.
+    */
+    flex-direction: row-reverse;
 
     background: hsla(0, 0%, 100%, 0.05);
     box-shadow: inset 0 0 0 1px #f5f5f5;

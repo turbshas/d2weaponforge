@@ -50,10 +50,14 @@ const element = computed(() => {
     if (!props.weapon) return undefined;
     const damageTypeHash = props.weapon.weapon.defaultDamageTypeHash;
     if (!damageTypeHash) return undefined;
-    const damageType = destinyDataService.getDamageType(damageTypeHash);
-    if (!damageType) return undefined;
-    return destinyDataService.getImageUrl(damageType.displayProperties.icon);
+    return destinyDataService.getDamageType(damageTypeHash);
 });
+const elementName = computed(() => element.value ? element.value.displayProperties.name : "None");
+const elementIcon = computed(() => {
+    if (!element.value) return undefined;
+    return destinyDataService.getImageUrl(element.value.displayProperties.icon);
+});
+const elementLabel = computed(() => `Element Type: ${elementName.value}`);
 
 const stats = computed(() => {
     if (!props.weapon || !props.weapon.weapon.stats) return [];
@@ -108,7 +112,7 @@ function onPerkClicked(column: number) {
                 <h1>{{ name }}</h1>
                 <h3>{{ type }}</h3>
             </div>
-            <img class="element" :src="element">
+            <img class="element" :src="elementIcon" :alt="elementLabel">
         </div>
         <WeaponStatBlock
             class="stats"

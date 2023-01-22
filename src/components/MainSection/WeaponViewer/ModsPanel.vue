@@ -34,12 +34,11 @@ function onModClicked(mod: DestinyInventoryItemDefinition) {
                 v-for="mod of modOptions"
                 :key="mod.hash"
                 :perk="mod"
-                :required-crafted-level="undefined"
-                :required-crafted-level-enhanced="undefined"
+                :crafting-info="undefined"
                 :selected="false"
                 :retired="false"
                 full-size
-                @click="onModClicked(mod)"
+                @perk-clicked="onModClicked(mod)"
             ></PerkDisplay>
         </div>
     </BuilderSection>

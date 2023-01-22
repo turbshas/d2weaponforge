@@ -266,11 +266,15 @@ export interface Destiny2GameData {
 
 export interface IPerkOption {
     perk: DestinyInventoryItemDefinition;
-    requiredCraftedLevel: number | undefined;
     enhancedPerk?: DestinyInventoryItemDefinition;
-    requiredCraftedLevelEnhanced: number | undefined;
+    craftingInfo: ICraftingInfo | undefined;
     currentlyCanRoll: boolean;
     useEnhanced: boolean;
+}
+
+export interface ICraftingInfo {
+    requiredLevel: number | undefined;
+    requiredLevelEnhanced: number | undefined;
 }
 
 export interface IPerkSlotOptions {

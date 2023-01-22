@@ -163,7 +163,7 @@ export class DestinyManifestProcessor {
 
     private getPerkOptionsFromPlugSet = (plugSet: DestinyPlugSetDefinition | undefined) => {
         const currentlyCanRollMap: { [plugItemHash: number]: boolean } = {};
-        const requiredCraftedLevel: { [plugItemHash: number]: number | undefined } = {};
+        const requiredCraftedLevelMap: { [plugItemHash: number]: number | undefined } = {};
         const seenPlugItems: { [plugItemHash: number]: boolean } = {};
         const perksInSlot: DestinyInventoryItemDefinition[] = [];
 
@@ -174,7 +174,7 @@ export class DestinyManifestProcessor {
             // seenPlugItems[plugItem.plugItemHash] = true;
             currentlyCanRollMap[plugItem.plugItemHash] = plugItem.currentlyCanRoll;
             if (plugItem.craftingRequirements) {
-                requiredCraftedLevel[plugItem.plugItemHash] = plugItem.craftingRequirements.requiredLevel;
+                requiredCraftedLevelMap[plugItem.plugItemHash] = plugItem.craftingRequirements.requiredLevel;
             }
 
             const definition = this.getItemDefinition(plugItem.plugItemHash);
@@ -197,11 +197,18 @@ export class DestinyManifestProcessor {
         for (const perk of normalPerks) {
             const enhancedPerk = enhancedPerks.find(p => p.displayProperties.name.includes(perk.displayProperties.name));
 
+            const craftedLevel = requiredCraftedLevelMap[perk.hash];
+            const enhancedCraftedLevel = enhancedPerk ? requiredCraftedLevelMap[enhancedPerk.hash] : undefined;
             const perkOption: IPerkOption = {
                 perk: perk,
-                requiredCraftedLevel: requiredCraftedLevel[perk.hash],
                 enhancedPerk: enhancedPerk,
-                requiredCraftedLevelEnhanced: enhancedPerk ? requiredCraftedLevel[enhancedPerk.hash] : undefined,
+                // Some perks have no base crafted level (can be crafted at level 0), but do have an enhanced crafted level
+                craftingInfo: craftedLevel || enhancedCraftedLevel ?
+                    {
+                        requiredLevel: craftedLevel,
+                        requiredLevelEnhanced: enhancedCraftedLevel
+                    }
+                    : undefined,
                 currentlyCanRoll: currentlyCanRollMap[perk.hash],
                 useEnhanced: false,
             };

@@ -20,6 +20,7 @@ const props = defineProps<{
 const name = computed(() => {
     return props.definition && props.definition.displayProperties.name;
 });
+const recoilDirectionPieLabel = "Recoil Direction Angle Graphic";
 
 const adjustedModifier = computed(() => {
     if (!props.definition) return props.modifier;
@@ -43,6 +44,8 @@ const statDisplayType = computed(() => {
     if (!name.value) return StatDisplayType.Bar;
     return statDisplayTypeMap[name.value] ? statDisplayTypeMap[name.value] : StatDisplayType.Bar;
 });
+const isBarDisplayType = computed(() => statDisplayType.value === StatDisplayType.Bar);
+const isAngleDisplayType = computed(() => statDisplayType.value === StatDisplayType.Angle);
 
 function recoilDirectionFunction(recoilDirection: number) {
     // Decay function is a straight line with slope -1, y-intercept 100
@@ -92,7 +95,7 @@ function getSvgPathData(recoilDirection: number) {
     <div class="stat">
         <span class="name">{{ name }}</span>
         <div class="display">
-            <div class="bar" v-if="statDisplayType === StatDisplayType.Bar">
+            <div class="bar" v-if="isBarDisplayType">
                 <div class="value" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">
                     <span>{{ total }}</span>
                     <span class="modifier">({{ modifierSign + modifier }})</span>
@@ -110,7 +113,13 @@ function getSvgPathData(recoilDirection: number) {
                 <span class="text" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">{{ total }}</span>
                 <div class="arrow" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }"></div>
 
-                <svg class="pie" height="12" viewBox="0 0 2 1" v-if="statDisplayType === StatDisplayType.Angle">
+                <svg
+                    class="pie"
+                    height="12"
+                    viewBox="0 0 2 1"
+                    v-if="isAngleDisplayType"
+                    :aria-label="recoilDirectionPieLabel"
+                >
                     <circle class="circle" r="1" cx="1" cy="1"></circle>
                     <path
                         class="path"

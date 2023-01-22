@@ -1,14 +1,18 @@
-<script setup lang="ts">
+<script setup lang="ts">import { computed } from 'vue';
+
 const props = defineProps<{
     label: string,
     iconUrl?: string,
+    iconAltText?: string,
 }>();
+
+const altText = computed(() => props.iconAltText || "");
 </script>
 
 <template>
     <div class="item">
         <div class="label">
-            <img class="image" v-if="!!props.iconUrl" :src="props.iconUrl">
+            <img class="image" v-if="!!props.iconUrl" :src="props.iconUrl" :alt="altText">
             <span>{{ props.label }}</span>
         </div>
         <slot></slot>

@@ -5,6 +5,7 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { DataSearchString, type IWeapon } from '@/data/types';
 import BuilderSection from '../../Common/BuilderSection.vue';
 import OptionButton from '@/components/Common/OptionButton.vue';
+import ElementLabel from '@/components/Common/ElementLabel.vue';
 
 const props = defineProps<{
     weapon: IWeapon | undefined,
@@ -118,6 +119,8 @@ function onMasterworkLevelChanged(event: Event) {
     const newValue = target.valueAsNumber;
     emitMasterworkChange(selectedMasterworkStatName.value, newValue);
 }
+
+const masterworkLevelSliderLabel = "Masterwork Level Slider";
 </script>
 
 <template>
@@ -134,9 +137,9 @@ function onMasterworkLevelChanged(event: Event) {
         </div>
         <div class="level">
             <span class="text">{{ masterworkLevel }}</span>
-            <div class="slider-wrapper">
+            <ElementLabel class="slider-wrapper" :text="masterworkLevelSliderLabel">
                 <input class="slider" type="range" min="0" max="10" v-model="masterworkLevel" @change="onMasterworkLevelChanged">
-            </div>
+            </ElementLabel>
         </div>
     </BuilderSection>
 
@@ -204,6 +207,7 @@ function onMasterworkLevelChanged(event: Event) {
     top: 50%;
     width: 8px;
     height: 8px;
+    z-index: 1;
 
     background-color: #1d1c25;
     border-width: 1px;
