@@ -389,7 +389,7 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
             <ElementLabel text="Perk filter text box" class="perk-search-wrapper">
                 <input
                     class="perk-search"
-                    type="text"
+                    type="search"
                     placeholder="Filter for specific perks"
                     v-model="perkFilter"
                     @input="onPerkFilterChanged"

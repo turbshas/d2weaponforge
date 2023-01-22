@@ -27,7 +27,7 @@ const watermarkPath = computed(() => {
 const watermark = computed(() => watermarkPath.value && destinyDataService.getImageUrl(watermarkPath.value));
 
 const iconLabel = computed(() => props.weapon ? `Weapon Icon: ${props.weapon.displayProperties.name}` : "");
-const watermarkLabel = "Season of release watermark";
+const watermarkLabel = "Watermark: Season of release";
 </script>
 
 <template>

@@ -17,7 +17,7 @@ const searchBarLabel = "Weapon name searchbar";
 
 <template>
     <ElementLabel class="wrapper" :text="searchBarLabel">
-        <input class="search" type="text" placeholder="Search..." v-model="searchString" @input="onSearchChanged">
+        <input class="search" type="search" placeholder="Search..." v-model="searchString" @input="onSearchChanged">
     </ElementLabel>
 </template>
 

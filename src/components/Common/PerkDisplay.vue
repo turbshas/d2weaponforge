@@ -4,11 +4,11 @@ import { computed, ref } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import Tooltip from './Tooltip.vue';
 import ElementLabel from './ElementLabel.vue';
+import type { ICraftingInfo } from '@/data/types';
 
 const props = defineProps<{
     perk: DestinyInventoryItemDefinition | undefined,
-    requiredCraftedLevel: number | undefined,
-    requiredCraftedLevelEnhanced: number | undefined,
+    craftingInfo: ICraftingInfo | undefined,
     selected: boolean,
     retired: boolean,
     enhanced?: boolean,
@@ -90,8 +90,7 @@ function onPerkClick() {
             :target-element="tooltipTargetElement"
             :title="tooltipTitle"
             :subtitle="tooltipSubtitle"
-            :required-crafted-level="props.requiredCraftedLevel"
-            :required-crafted-level-enhanced="props.requiredCraftedLevelEnhanced"
+            :crafting-info="props.craftingInfo"
             :description="tooltipDescription"
             :effect="tooltipEffects"
             :bonuses="tooltipBonuses"

@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import type { ICraftingInfo } from '@/data/types';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
     targetElement: HTMLElement | null,
     title: string,
     subtitle: string,
-    requiredCraftedLevel: number | undefined,
-    requiredCraftedLevelEnhanced: number | undefined,
+    craftingInfo: ICraftingInfo | undefined,
     description: string,
     effect: string | null,
     bonuses: { statName: string, value: number }[],
@@ -24,8 +24,11 @@ const showTooltip = computed(() => !!props.targetElement && mouseIsHovering.valu
 const tooltipTop = computed(() => `${mouseY.value}px`);
 const tooltipLeft = computed(() => `${mouseX.value - tooltipWidth}px`);
 const showBonuses = computed(() => props.bonuses && props.bonuses.length > 0);
-const requiredLevelText = computed(() => `Lv${props.requiredCraftedLevel}`)
-const requiredEnhancedLevelText = computed(() => `Lv${props.requiredCraftedLevelEnhanced}`)
+
+const requiredCraftLevel = computed(() => props.craftingInfo && props.craftingInfo.requiredLevel);
+const requiredCraftLevelEnhanced = computed(() => props.craftingInfo && props.craftingInfo.requiredLevelEnhanced);
+const requiredLevelText = computed(() => requiredCraftLevel.value ? `Lv${requiredCraftLevel.value}` : "");
+const requiredEnhancedLevelText = computed(() => requiredCraftLevelEnhanced.value ? `Lv${requiredCraftLevelEnhanced.value}` : "");
 
 watch(() => props.targetElement, (newValue, oldValue) => {
     if (oldValue) {
@@ -73,7 +76,7 @@ function textForStatValue(value: number) {
             <h4 class="title">{{ props.title }}</h4>
             <div class="subtitle">
                 {{ props.subtitle }}
-                <span class="level" v-if="!!props.requiredCraftedLevel">{{ requiredLevelText }}</span>
+                <span class="level" v-if="!!requiredCraftLevel">{{ requiredLevelText }}</span>
             </div>
         </div>
 
@@ -96,7 +99,7 @@ function textForStatValue(value: number) {
         <div class="enhanced" v-if="props.enhanced">
             <div class="enhanced-title">
                 Enhanced Benefits
-                <span class="level" v-if="!!props.requiredCraftedLevelEnhanced">{{ requiredEnhancedLevelText }}</span>
+                <span class="level" v-if="!!requiredCraftLevelEnhanced">{{ requiredEnhancedLevelText }}</span>
             </div>
             <div class="enhanced-bonus">{{ props.enhancedBonus }}</div>
         </div>
@@ -118,6 +121,7 @@ function textForStatValue(value: number) {
     background-color: black;
     color: #eee;
     line-height: 1.4;
+    text-align: left;
 }
 
 .header {

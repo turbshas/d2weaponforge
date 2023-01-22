@@ -4,7 +4,7 @@ import { computed } from '@vue/reactivity';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 
 const props = defineProps<{
-    perkOptionLists: IPerkSlotOptions[] | null,
+    perkOptionLists: IPerkSlotOptions[] | undefined,
     selectedPerks: { [column: number]: IPerkOption | undefined },
     hideEnhanced?: boolean,
 }>();
@@ -42,8 +42,7 @@ function onPerkClicked(column: number, perk: IPerkOption) {
                 v-for="(perk, index) in slot.options"
                 :key="index"
                 :perk="perk.enhancedPerk || perk.perk"
-                :required-crafted-level="perk.requiredCraftedLevel"
-                :required-crafted-level-enhanced="perk.requiredCraftedLevelEnhanced"
+                :crafting-info="perk.craftingInfo"
                 :selected="isPerkSelected(column, perk)"
                 :retired="!perk.currentlyCanRoll"
                 :enhanced="!!perk.enhancedPerk && !props.hideEnhanced"
