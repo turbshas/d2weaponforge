@@ -202,7 +202,8 @@ export class DestinyManifestProcessor {
             const perkOption: IPerkOption = {
                 perk: perk,
                 enhancedPerk: enhancedPerk,
-                craftingInfo: craftedLevel ?
+                // Some perks have no base crafted level (can be crafted at level 0), but do have an enhanced crafted level
+                craftingInfo: craftedLevel || enhancedCraftedLevel ?
                     {
                         requiredLevel: craftedLevel,
                         requiredLevelEnhanced: enhancedCraftedLevel

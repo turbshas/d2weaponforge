@@ -273,7 +273,7 @@ export interface IPerkOption {
 }
 
 export interface ICraftingInfo {
-    requiredLevel: number;
+    requiredLevel: number | undefined;
     requiredLevelEnhanced: number | undefined;
 }
 
