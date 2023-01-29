@@ -1,8 +1,6 @@
 - ordering weapons by release date to the API (might have to be manual)
-- if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
-- filters
-- weapon viewer
-  - extras (comparisons integrations, damage falloff, reload speed)
+  - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
+
 - glossary (will probably need this done manually anyway for the perk descriptions/tooltips)
 - compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
   - ideas:
@@ -15,27 +13,23 @@
 - required level for enhanced perks
 - sunset weapons filter
 - collections filters
-- support for translations
-- fix backup mag - it currently just does +30 to the mag (and mag perks)
-- weapon mag size caps
-- find a way to move stats to a more central location that all components that need stats can look at
-  - right now, need to make modifications (e.g. crafted stat bonus) in multiple locations
-  - this would probably be a part of a rework to process data from the API better
 - hide/set to false "show crafted bonus" when weapon cannot be crafted
-- check out the traitIds property on DestinyInventoryItemDefinition for multi-language support
 - button to hide components on top of weapon panel so screenshot can be viewed
-- change option buttons to have a parameter for being active or not instead of storing state
 - cache certain options
 - MW tooltip says it gives +3 to other stats (crafted/adept bonus)
 - sort weapon filter buttons
-- fix weapon filters not lighting up
 - styling cleanup:
   - put common values into variables in base.css
   - convert to using rem instead of px
-- accessibility
 - tab bar text isn't centered properly
+
 - move constants to a central location if possible, even just another file
 - move data search strings to service to support changing the language
-- reload modifiers seem to all apply as a percentage of the base mag, i.e. tac mag + backup mag on succession is 0.1 * 3 + 0.3 * 3, rather than multiplying together
+- support for translations
+
+- weapon viewer
+  - extras (comparisons integrations, damage falloff, reload speed)
 - process weapons into wrapper classes, including stats and display info
-- use statGroup.scaledStat.displayAsNumeric instead of map in WeaponStatDisplay.vue
+  - find a way to move stats to a more central location that all components that need stats can look at
+    - right now, need to make modifications (e.g. crafted stat bonus) in multiple locations
+    - this would probably be a part of a rework to process data from the API better
