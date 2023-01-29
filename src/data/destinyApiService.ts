@@ -2,7 +2,7 @@ import { Destiny2 } from "bungie-api-ts";
 import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import { cacheService } from "./cacheService";
-import { dataSearchStringService } from "./dataSearchStringService";
+import { DataSearchStrings } from "./dataSearchStringService";
 import { DestinyManifestProcessor } from "./destinyManifestProcessor";
 import type { Destiny2GameData, IWeapon } from "./types";
 
@@ -10,7 +10,7 @@ const CurrentCachedManifestVersion = 1;
 
 class DestinyApiService {
     public retrieveManifest = async (language: DestinyManifestLanguage) => {
-        dataSearchStringService.setLanguage(language);
+        DataSearchStrings.setLanguage(language);
 
         // Get manifest metadata
         const manifestInfoPromise = Destiny2.getDestinyManifest(this.makeRequest);
@@ -80,10 +80,6 @@ class DestinyApiService {
             plugSetLookup: manifestProcessor.plugSetLookup,
             socketCategoryLookup: manifestProcessor.socketCategoryLookup,
             socketTypeLookup: manifestProcessor.socketTypeLookup,
-
-            originPerkCategory: manifestProcessor.originPerkCategory!,
-            weaponIntrinsicCategory: manifestProcessor.weaponIntrinsicCategory!,
-            weaponPerkCategory: manifestProcessor.weaponPerkCategory!,
         };
 
         cacheService.setCachedManifest({

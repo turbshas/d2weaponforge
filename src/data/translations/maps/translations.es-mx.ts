@@ -19,14 +19,6 @@ const translations: IDataSearchStrings = {
         vortex: "",
         waveFrame: "",
     },
-    categoryNames: {
-        modItem: "",
-        weaponIntrinsicPerk: "",
-        weaponItem: "",
-        weaponModsSocket: "",
-        weaponOriginPerk: "",
-        weaponPerkSocket: "",
-    },
     stats: {
         accuracyStatName: "",
         aimAssistanceStatName: "",

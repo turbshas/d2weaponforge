@@ -1,23 +1,26 @@
-import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryDefinition, DestinyPlugSetDefinition, DestinyPlugWhitelistEntryDefinition } from "bungie-api-ts/destiny2";
-import { dataSearchStringService } from "./dataSearchStringService";
+import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyPlugItemCraftingRequirements, DestinyPlugWhitelistEntryDefinition, DestinySocketTypeDefinition } from "bungie-api-ts/destiny2";
+import { DataSearchStrings } from "./dataSearchStringService";
 import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions, type IWeapon, type UsedDestinyManifestSlice } from "./types";
-import { findItemInTable, hashMapToArray } from "./util";
+import { hashMapToArray } from "./util";
+
+interface IResolvedPlugItem {
+    craftingRequirements: DestinyPlugItemCraftingRequirements;
+    currentlyCanRoll: boolean;
+    item: DestinyInventoryItemDefinition;
+}
+
+interface IResolvedPlugSet {
+    index: number;
+    socketType: DestinySocketTypeDefinition | undefined;
+    singleInitialItemHash: number;
+    randomizedItems: IResolvedPlugItem[];
+    reusableItems: IResolvedPlugItem[];
+}
 
 export class DestinyManifestProcessor {
-    public readonly itemCategories;
-    public readonly originPerkCategory;
-    public readonly weaponIntrinsicCategory;
-    public readonly weaponPerkCategory;
-
     constructor(
         private readonly manifest: UsedDestinyManifestSlice
     ) {
-        this.itemCategories = hashMapToArray(manifest.DestinyItemCategoryDefinition);
-        this.originPerkCategory = this.itemCategories.find(category => category.displayProperties.name === dataSearchStringService.CategoryNames.WeaponOriginPerk);
-
-        this.weaponIntrinsicCategory = findItemInTable(this.socketCategoryLookup, category => category.displayProperties.name === dataSearchStringService.CategoryNames.WeaponIntrinsicPerk);
-        this.weaponPerkCategory = findItemInTable(this.socketCategoryLookup, category => category.displayProperties.name === dataSearchStringService.CategoryNames.WeaponPerkSocket);
-
         this.stripRedactedAndUnneeded();
     }
 
@@ -26,41 +29,41 @@ export class DestinyManifestProcessor {
         // Only doing this for DestinyInventoryItemDefinition as it is by far the largest table.
         // The others are fairly small and don't need this.
         const allowedPlugCategoryIds = [
-            dataSearchStringService.CategoryIDs.IntrinsicPlug,
+            DataSearchStrings.CategoryIDs.IntrinsicPlug,
 
-            dataSearchStringService.CategoryIDs.BarrelsPlug,
-            dataSearchStringService.CategoryIDs.BladesPlug,
-            dataSearchStringService.CategoryIDs.BowstringsPlug,
-            dataSearchStringService.CategoryIDs.HaftsPlug,
-            dataSearchStringService.CategoryIDs.ScopesPlug,
-            dataSearchStringService.CategoryIDs.TubesPlug,
+            DataSearchStrings.CategoryIDs.BarrelsPlug,
+            DataSearchStrings.CategoryIDs.BladesPlug,
+            DataSearchStrings.CategoryIDs.BowstringsPlug,
+            DataSearchStrings.CategoryIDs.HaftsPlug,
+            DataSearchStrings.CategoryIDs.ScopesPlug,
+            DataSearchStrings.CategoryIDs.TubesPlug,
 
-            dataSearchStringService.CategoryIDs.ArrowsPlug,
-            dataSearchStringService.CategoryIDs.BatteriesPlug,
-            dataSearchStringService.CategoryIDs.GuardsPlug,
-            dataSearchStringService.CategoryIDs.MagazinesPlug,
-            dataSearchStringService.CategoryIDs.MagazinesGLPlug,
+            DataSearchStrings.CategoryIDs.ArrowsPlug,
+            DataSearchStrings.CategoryIDs.BatteriesPlug,
+            DataSearchStrings.CategoryIDs.GuardsPlug,
+            DataSearchStrings.CategoryIDs.MagazinesPlug,
+            DataSearchStrings.CategoryIDs.MagazinesGLPlug,
 
-            dataSearchStringService.CategoryIDs.FramesPlug,
-            dataSearchStringService.CategoryIDs.OriginsPlug,
-            dataSearchStringService.CategoryIDs.TrackerPlug,
-            dataSearchStringService.CategoryIDs.ExoticMasterworkPlug,
-            dataSearchStringService.CategoryIDs.CatalystsPlug,
-            dataSearchStringService.CategoryIDs.StocksPlug,
+            DataSearchStrings.CategoryIDs.FramesPlug,
+            DataSearchStrings.CategoryIDs.OriginsPlug,
+            DataSearchStrings.CategoryIDs.TrackerPlug,
+            DataSearchStrings.CategoryIDs.ExoticMasterworkPlug,
+            DataSearchStrings.CategoryIDs.CatalystsPlug,
+            DataSearchStrings.CategoryIDs.StocksPlug,
 
-            dataSearchStringService.CategoryIDs.WeaponModDamage,
-            dataSearchStringService.CategoryIDs.WeaponModGuns,
+            DataSearchStrings.CategoryIDs.WeaponModDamage,
+            DataSearchStrings.CategoryIDs.WeaponModGuns,
         ];
         const itemHashesToRemove: number[] = [];
         for (const key in this.manifest.DestinyInventoryItemDefinition) {
             const item = this.manifest.DestinyInventoryItemDefinition[key];
             
-            const isWeapon = !!item.traitIds && item.traitIds.includes(dataSearchStringService.TraitIDs.Weapon)
+            const isWeapon = !!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.Weapon)
                 && !!item.screenshot // Some weapons don't have screenshots - probably for the crafting menu.
                 && !!item.quality
                 && !!item.quality.infusionCategoryHash; // Others don't have an infusion category, probably also crafting related.
             const isModOrPerk = item.plug && allowedPlugCategoryIds.includes(item.plug.plugCategoryIdentifier);
-            const isMasterwork = item.plug && item.plug.plugCategoryIdentifier.includes(dataSearchStringService.CategoryIDs.WeaponMasterworkPlugComponent);
+            const isMasterwork = item.plug && item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
 
             if (!isWeapon && !isModOrPerk && !isMasterwork) {
                 itemHashesToRemove.push(item.hash);
@@ -101,7 +104,7 @@ export class DestinyManifestProcessor {
 
             // Seem to be duplicates for some weapons that don't have a screenshot - this
             // is probably the item used for the crafting menu, so ignore it.
-            if (item.traitIds.includes(dataSearchStringService.TraitIDs.Weapon) && !!item.screenshot) {
+            if (item.traitIds.includes(DataSearchStrings.TraitIDs.Weapon) && !!item.screenshot) {
                 weapons.push(item);
             }
         }
@@ -113,41 +116,75 @@ export class DestinyManifestProcessor {
     }
 
     private getWeaponPerkInfo = (weaponItem: DestinyInventoryItemDefinition): IWeapon => {
-        const weaponSocketCategories = weaponItem.sockets?.socketCategories || [];
         const weaponSockets = weaponItem.sockets?.socketEntries || [];
 
-        // Get each socket category
-        const intrinsicSocketCategory = weaponSocketCategories.find(c => this.isIntrinsicPerkSocketCategory(c.socketCategoryHash));
-        const weaponPerkSocketCategory = weaponSocketCategories.find(c => this.isWeaponPerkSocketCategory(c.socketCategoryHash));
-        const weaponModSocketCategory = weaponSocketCategories.find(c => {
-            const socketCategory = this.getSocketCategoryDefinition(c.socketCategoryHash);
-            return socketCategory && socketCategory.displayProperties.name === dataSearchStringService.CategoryNames.WeaponModsSocket;
+        const resolvedSocketItems = weaponSockets.map((s, index) => {
+            const socketType = this.getSocketTypeDefinition(s.socketTypeHash);
+            const randomizedPlugSet = s.randomizedPlugSetHash ? this.getPlugSetDefinition(s.randomizedPlugSetHash) : undefined;
+            const reusablePlugSet = s.reusablePlugSetHash ? this.getPlugSetDefinition(s.reusablePlugSetHash) : undefined;
+
+            const randomizedPlugItems = randomizedPlugSet ? randomizedPlugSet.reusablePlugItems : [];
+            const reusablePlugItems = reusablePlugSet ? reusablePlugSet.reusablePlugItems : [];
+            const singleInitialItem = s.singleInitialItemHash;
+
+            const resolved: IResolvedPlugSet = {
+                index: index,
+                socketType: socketType,
+                singleInitialItemHash: singleInitialItem,
+                randomizedItems: this.resolvePlugItems(randomizedPlugItems),
+                reusableItems: this.resolvePlugItems(reusablePlugItems),
+            };
+            return resolved;
         });
 
         // Get lists of sockets - perks first
-        const intrinsicPerkSocket = intrinsicSocketCategory && intrinsicSocketCategory.socketIndexes.length > 0
-            ? weaponSockets[intrinsicSocketCategory.socketIndexes[0]]
-            : undefined;
-        const weaponPerkSockets = weaponPerkSocketCategory ? weaponPerkSocketCategory.socketIndexes.map(i => weaponSockets[i]) : [];
-        const perkSocketsNoTracker = weaponPerkSockets.filter(s => {
-            const type = this.getSocketTypeDefinition(s.socketTypeHash);
-            return type && !type.plugWhitelist.some(this.isTrackerPlugCategory);
+        const intrinsicPerkSocket = resolvedSocketItems.find(r => {
+            return r.reusableItems.some(i => !!i.item.plug && i.item.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.IntrinsicPlug);
+        });
+        const validPerkPlugCategories = [
+            DataSearchStrings.CategoryIDs.BarrelsPlug,
+            DataSearchStrings.CategoryIDs.BladesPlug,
+            DataSearchStrings.CategoryIDs.BowstringsPlug,
+            DataSearchStrings.CategoryIDs.HaftsPlug,
+            DataSearchStrings.CategoryIDs.ScopesPlug,
+            DataSearchStrings.CategoryIDs.TubesPlug,
+
+            DataSearchStrings.CategoryIDs.ArrowsPlug,
+            DataSearchStrings.CategoryIDs.BatteriesPlug,
+            DataSearchStrings.CategoryIDs.GuardsPlug,
+            DataSearchStrings.CategoryIDs.MagazinesPlug,
+            DataSearchStrings.CategoryIDs.MagazinesGLPlug,
+
+            DataSearchStrings.CategoryIDs.FramesPlug,
+            DataSearchStrings.CategoryIDs.OriginsPlug,
+            DataSearchStrings.CategoryIDs.ExoticMasterworkPlug,
+            DataSearchStrings.CategoryIDs.CatalystsPlug,
+            DataSearchStrings.CategoryIDs.StocksPlug,
+        ];
+        const weaponPerkSockets = resolvedSocketItems.filter(r => {
+            return r.randomizedItems
+                .concat(r.reusableItems)
+                .some(i => !!i.item.plug && validPerkPlugCategories.includes(i.item.plug.plugCategoryIdentifier));
         });
 
         // Then, MW + Mods
-        const weaponModSockets = weaponModSocketCategory ? weaponModSocketCategory.socketIndexes.map(i => weaponSockets[i]) : [];
-        const masterworkSocket = weaponModSockets.find(s => {
-            const type = this.getSocketTypeDefinition(s.socketTypeHash);
-            return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes(dataSearchStringService.CategoryIDs.WeaponMasterworkPlug));
+        const masterworkSocket = resolvedSocketItems.find(r => {
+            return r.reusableItems.some(i => {
+                return !!i.item.plug
+                    && i.item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
+            });
         });
-        const modSocket = weaponModSockets.find(s => {
-            const type = this.getSocketTypeDefinition(s.socketTypeHash);
-            return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes(dataSearchStringService.CategoryIDs.WeaponMod));
+        const modSocket = resolvedSocketItems.find(r => {
+            return r.reusableItems.some(i => {
+                return !!i.item.plug
+                    && (i.item.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.WeaponModDamage
+                        || i.item.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.WeaponModGuns);
+            });
         });
 
         const intrinsic = this.getIntrinsicFromSockets(intrinsicPerkSocket);
-        const perkOptions = this.getPerkOptionsFromSockets(perkSocketsNoTracker);
-        const curated = this.getCuratedFromPerkSockets(perkSocketsNoTracker, perkOptions);
+        const perkOptions = this.getPerkOptionsFromSockets(weaponPerkSockets);
+        const curated = this.getCuratedFromPerkSockets(weaponPerkSockets, perkOptions);
         const masterworks = this.getMasterworkOptionsFromSockets(masterworkSocket);
         const mods = this.getModOptionsFromSockets(modSocket);
 
@@ -161,44 +198,50 @@ export class DestinyManifestProcessor {
         };
     }
 
-    private getIntrinsicFromSockets = (intrinsicSocket: DestinyItemSocketEntryDefinition | undefined) => {
-        if (!intrinsicSocket) return undefined;
-        const intrinsicPlugSet = intrinsicSocket && intrinsicSocket.reusablePlugSetHash
-            ? this.getPlugSetDefinition(intrinsicSocket.reusablePlugSetHash)
-            : undefined;
+    private resolvePlugItems = (plugItems: DestinyItemSocketEntryPlugItemRandomizedDefinition[]) => {
+        const resolved = plugItems.map(i => {
+            return {
+                craftingRequirements: i.craftingRequirements,
+                currentlyCanRoll: i.currentlyCanRoll,
+                item: this.getItemDefinition(i.plugItemHash),
+            }
+        }).filter(i => !!i.item);
+        return resolved;
+    }
 
-        const intrinsicPerk = intrinsicPlugSet && intrinsicPlugSet.reusablePlugItems.length > 0
-            ? this.getItemDefinition(intrinsicPlugSet.reusablePlugItems[0].plugItemHash)
+    private getIntrinsicFromSockets = (intrinsicSocket: IResolvedPlugSet | undefined) => {
+        if (!intrinsicSocket) return undefined;
+        const intrinsicPerk = intrinsicSocket && intrinsicSocket.reusableItems.length > 0
+            ? intrinsicSocket.reusableItems[0].item
             : undefined;
         return intrinsicPerk;
     }
 
-    private getPerkOptionsFromSockets = (perkSockets: DestinyItemSocketEntryDefinition[]) => {
+    private getPerkOptionsFromSockets = (perkSockets: IResolvedPlugSet[]) => {
         // Either one or the other should be defined of randomizedPlugSetHash and reusablePlugSetHash
-        const perkPlugSets = perkSockets.map(ps => this.getPlugSetDefinition(ps.randomizedPlugSetHash || ps.reusablePlugSetHash!));
-        const perkSlotOptions = perkPlugSets.map(this.getPerkOptionsFromPlugSet);
+        const plugItems = perkSockets.map(plugSet => plugSet.randomizedItems.concat(plugSet.reusableItems));
+        const perkSlotOptions = plugItems.map(this.getPerkOptionsFromPlugSet);
         return perkSlotOptions;
     }
 
-    private getPerkOptionsFromPlugSet = (plugSet: DestinyPlugSetDefinition | undefined) => {
+    private getPerkOptionsFromPlugSet = (plugItems: IResolvedPlugItem[]) => {
         const currentlyCanRollMap: { [plugItemHash: number]: boolean } = {};
         const requiredCraftedLevelMap: { [plugItemHash: number]: number | undefined } = {};
         const seenPlugItems: { [plugItemHash: number]: boolean } = {};
         const perksInSlot: DestinyInventoryItemDefinition[] = [];
 
         // Remove duplicates and group by name to capture normal + enhanced perks together
-        for (const plugItem of plugSet?.reusablePlugItems || []) {
-            if (seenPlugItems[plugItem.plugItemHash]) continue;
+        for (const plugItem of plugItems || []) {
+            const item = plugItem.item;
+            if (!item || seenPlugItems[item.hash]) continue;
             // TODO: Apparently everything works without this so figure that out
             // seenPlugItems[plugItem.plugItemHash] = true;
-            currentlyCanRollMap[plugItem.plugItemHash] = plugItem.currentlyCanRoll;
+            currentlyCanRollMap[item.hash] = plugItem.currentlyCanRoll;
             if (plugItem.craftingRequirements) {
-                requiredCraftedLevelMap[plugItem.plugItemHash] = plugItem.craftingRequirements.requiredLevel;
+                requiredCraftedLevelMap[item.hash] = plugItem.craftingRequirements.requiredLevel;
             }
 
-            const definition = this.getItemDefinition(plugItem.plugItemHash);
-            if (!definition) continue;
-            perksInSlot.push(definition);
+            perksInSlot.push(item);
         }
 
         const normalPerks = perksInSlot.filter(p => {
@@ -240,7 +283,7 @@ export class DestinyManifestProcessor {
         return slotOptions;
     }
 
-    private getCuratedFromPerkSockets = (perkSockets: DestinyItemSocketEntryDefinition[], randomRollPerkOptions: IPerkSlotOptions[]) => {
+    private getCuratedFromPerkSockets = (perkSockets: IResolvedPlugSet[], randomRollPerkOptions: IPerkSlotOptions[]) => {
         return perkSockets
             .map((s, index) => {
                 const perkSlotOptions = randomRollPerkOptions[index] || [];
@@ -251,10 +294,9 @@ export class DestinyManifestProcessor {
                     if (perkOption) return perkOption;
                     const perkItem = this.getItemDefinition(s.singleInitialItemHash);
                     return { perk: perkItem, enhancedPerk: undefined, currentlyCanRoll: true, useEnhanced: false, } as IPerkOption;
-                } else if (s.randomizedPlugSetHash) {
+                } else {
                     // Origin perk doesn't have an initial item for some reason, have to use the randomized plug set.
-                    const plugSet = this.getPlugSetDefinition(s.randomizedPlugSetHash);
-                    const itemHash = !!plugSet && plugSet.reusablePlugItems.length > 0 ? plugSet.reusablePlugItems[0].plugItemHash : undefined;
+                    const itemHash = !!s && s.randomizedItems.length > 0 ? s.randomizedItems[0].item.hash : undefined;
                     return perkSlotOptions.options.find(o => o.perk.hash === itemHash);
                 }
             })
@@ -263,25 +305,22 @@ export class DestinyManifestProcessor {
             .map<IPerkSlotOptions>(o => { return { options: o ? [o] : [] }; });
     }
 
-    private getMasterworkOptionsFromSockets = (masterworkSocket: DestinyItemSocketEntryDefinition | undefined) => {
+    private getMasterworkOptionsFromSockets = (masterworkSocket: IResolvedPlugSet | undefined) => {
         if (!masterworkSocket) return [];
-        return masterworkSocket.reusablePlugItems
-            .map(pi => this.getItemDefinition(pi.plugItemHash))
-            .filter(mw => !!mw)
+        return masterworkSocket.reusableItems
+            .map(i => i.item)
+            .filter(i => !!i)
             .map(i => i!);
     }
 
-    private getModOptionsFromSockets = (modSocket: DestinyItemSocketEntryDefinition | undefined) => {
-        if (!modSocket || !modSocket.reusablePlugSetHash) return [];
-
+    private getModOptionsFromSockets = (modSocket: IResolvedPlugSet | undefined) => {
+        if (!modSocket) return [];
         // TODO: it seems like the adept mods are placed in the modSocket.reusablePlugItems property
-        const plugSet = this.getPlugSetDefinition(modSocket.reusablePlugSetHash);
-        if (!plugSet) return [];
-        return plugSet!.reusablePlugItems
-            .map(pi => this.getItemDefinition(pi.plugItemHash))
+        return modSocket!.reusableItems
+            .map(i => i.item)
             // The only mod that has this plug category ID is the empty mod slot which is useless here.
-            .filter(pi => pi && pi.plug && pi.plug.plugCategoryIdentifier !== dataSearchStringService.CategoryIDs.WeaponMod)
-            .map(pi => pi!)
+            .filter(i => i && i.plug && i.plug.plugCategoryIdentifier !== DataSearchStrings.CategoryIDs.WeaponMod)
+            .map(i => i!)
     }
 
     private getItemDefinition = (hash: number) => {
@@ -300,24 +339,9 @@ export class DestinyManifestProcessor {
         return this.manifest.DestinySocketTypeDefinition[hash];
     }
 
-    private getSocketCategoryDefinition = (hash: number) => {
-        return this.manifest.DestinySocketCategoryDefinition[hash];
-    }
-
-    private isIntrinsicPerkSocketCategory = (perkItemHash: number) => {
-        return this.weaponIntrinsicCategory && this.weaponIntrinsicCategory.hash === perkItemHash;
-    }
-
-    private isWeaponPerkSocketCategory = (perkItemHash: number) => {
-        return this.weaponPerkCategory && this.weaponPerkCategory.hash === perkItemHash;
-    }
-
-    private isTrackerPlugCategory = (plug: DestinyPlugWhitelistEntryDefinition) => {
-        return plug.categoryIdentifier === dataSearchStringService.CategoryIDs.TrackerPlug;
-    }
-
     public get damageTypes() { return hashMapToArray(this.manifest.DestinyDamageTypeDefinition); }
     public get damageTypeLookup() { return this.manifest.DestinyDamageTypeDefinition; }
+    public get itemCategories() { return hashMapToArray(this.manifest.DestinyItemCategoryDefinition); }
     public get itemCategoriesLookup() { return this.manifest.DestinyItemCategoryDefinition; }
     public get itemTierTypes() { return hashMapToArray(this.manifest.DestinyItemTierTypeDefinition); }
     public get itemTierTypesLookup() { return this.manifest.DestinyItemTierTypeDefinition; }

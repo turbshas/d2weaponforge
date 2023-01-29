@@ -34,36 +34,25 @@ class CategoryIds {
     public get WeaponModDamage() { return "v400.weapon.mod_damage"; }
 }
 
-class CategoryNames {
-    constructor(private readonly language: DestinyManifestLanguage) {}
-
-    public get ModItem() { return TranslationMap[this.language].categoryNames.modItem; }
-    public get WeaponIntrinsicPerk() { return TranslationMap[this.language].categoryNames.weaponIntrinsicPerk; }
-    public get WeaponItem() { return TranslationMap[this.language].categoryNames.weaponItem; }
-    public get WeaponModsSocket() { return TranslationMap[this.language].categoryNames.weaponModsSocket; }
-    public get WeaponOriginPerk() { return TranslationMap[this.language].categoryNames.weaponOriginPerk; }
-    public get WeaponPerkSocket() { return TranslationMap[this.language].categoryNames.weaponPerkSocket; }
-}
-
 class Stats {
     constructor(private readonly language: DestinyManifestLanguage) {}
 
-    public get AccuracyStatName() { return TranslationMap[this.language].stats.accuracyStatName; }
-    public get AimAssistanceStatName() { return TranslationMap[this.language].stats.aimAssistanceStatName; }
-    public get AirborneEffectivenessStatName() { return TranslationMap[this.language].stats.airborneEffectivenessStatName; }
-    public get BlastRadiusStatName() { return TranslationMap[this.language].stats.blastRadiusStatName; }
-    public get ChargeTimeStatName() { return TranslationMap[this.language].stats.chargeTimeStatName; }
-    public get DrawTimeStatName() { return TranslationMap[this.language].stats.drawTimeStatName; }
-    public get MagSizeStatName() { return TranslationMap[this.language].stats.magSizeStatName; }
-    public get ImpactStatName() { return TranslationMap[this.language].stats.impactStatName; }
-    public get HandlingStatName() { return TranslationMap[this.language].stats.handlingStatName; }
-    public get RangeStatName() { return TranslationMap[this.language].stats.rangeStatName; }
-    public get RecoilDirectionStatName() { return TranslationMap[this.language].stats.recoilDirectionStatName; }
-    public get ReloadSpeedStatName() { return TranslationMap[this.language].stats.reloadSpeedStatName; }
-    public get RpmStatName() { return TranslationMap[this.language].stats.rpmStatName; }
-    public get StabilityStatName() { return TranslationMap[this.language].stats.stabilityStatName; }
-    public get VelocityStatName() { return TranslationMap[this.language].stats.velocityStatName; }
-    public get ZoomStatName() { return TranslationMap[this.language].stats.zoomStatName; }
+    public get Accuracy() { return TranslationMap[this.language].stats.accuracyStatName; }
+    public get AimAssistance() { return TranslationMap[this.language].stats.aimAssistanceStatName; }
+    public get AirborneEffectiveness() { return TranslationMap[this.language].stats.airborneEffectivenessStatName; }
+    public get BlastRadius() { return TranslationMap[this.language].stats.blastRadiusStatName; }
+    public get ChargeTime() { return TranslationMap[this.language].stats.chargeTimeStatName; }
+    public get DrawTime() { return TranslationMap[this.language].stats.drawTimeStatName; }
+    public get MagSize() { return TranslationMap[this.language].stats.magSizeStatName; }
+    public get Impact() { return TranslationMap[this.language].stats.impactStatName; }
+    public get Handling() { return TranslationMap[this.language].stats.handlingStatName; }
+    public get Range() { return TranslationMap[this.language].stats.rangeStatName; }
+    public get RecoilDirection() { return TranslationMap[this.language].stats.recoilDirectionStatName; }
+    public get ReloadSpeed() { return TranslationMap[this.language].stats.reloadSpeedStatName; }
+    public get Rpm() { return TranslationMap[this.language].stats.rpmStatName; }
+    public get Stability() { return TranslationMap[this.language].stats.stabilityStatName; }
+    public get Velocity() { return TranslationMap[this.language].stats.velocityStatName; }
+    public get Zoom() { return TranslationMap[this.language].stats.zoomStatName; }
 }
 
 class Misc {
@@ -120,28 +109,24 @@ class WeaponCategoryRegex {
     public get TraceRifle() { return ".*_beam_rifle"; }
 }
 
-class DataSearchStringService {
-    private readonly language = ref<DestinyManifestLanguage>("en");
+export class DataSearchStrings {
+    private static readonly language = ref<DestinyManifestLanguage>("en");
 
-    private readonly _categoryIds = new CategoryIds();
-    private readonly _categoryNames = new CategoryNames(this.language.value);
-    private readonly _stats = new Stats(this.language.value);
-    private readonly _misc = new Misc(this.language.value);
-    private readonly _traitIds = new TraitIds();
-    private readonly _weaponArchetypes = new WeaponArchetypes(this.language.value);
-    private readonly _weaponCategoryRegex = new WeaponCategoryRegex();
+    private static readonly _categoryIds = new CategoryIds();
+    private static readonly _stats = new Stats(this.language.value);
+    private static readonly _misc = new Misc(this.language.value);
+    private static readonly _traitIds = new TraitIds();
+    private static readonly _weaponArchetypes = new WeaponArchetypes(this.language.value);
+    private static readonly _weaponCategoryRegex = new WeaponCategoryRegex();
 
-    public setLanguage = (language: DestinyManifestLanguage) => {
+    public static setLanguage = (language: DestinyManifestLanguage) => {
         this.language.value = language;
     }
 
-    public get CategoryIDs() { return this._categoryIds; }
-    public get CategoryNames() { return this._categoryNames; }
-    public get Stats() { return this._stats; }
-    public get Misc() { return this._misc; }
-    public get TraitIDs() { return this._traitIds; }
-    public get WeaponArchetypes() { return this._weaponArchetypes; }
-    public get WeaponCategoryRegex() { return this._weaponCategoryRegex; }
+    public static get CategoryIDs() { return this._categoryIds; }
+    public static get Stats() { return this._stats; }
+    public static get Misc() { return this._misc; }
+    public static get TraitIDs() { return this._traitIds; }
+    public static get WeaponArchetypes() { return this._weaponArchetypes; }
+    public static get WeaponCategoryRegex() { return this._weaponCategoryRegex; }
 }
-
-export const dataSearchStringService = new DataSearchStringService();

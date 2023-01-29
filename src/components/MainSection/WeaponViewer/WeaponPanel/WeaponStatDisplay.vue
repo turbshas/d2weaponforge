@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { DataSearchString, StatDisplayType } from '@/data/types';
+import { DataSearchStrings } from '@/data/dataSearchStringService';
+import { StatDisplayType } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyItemInvestmentStatDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
 
@@ -51,7 +52,7 @@ const filledWidthPercent = computed(() => props.modifier > 0 ? baseDisplayValue.
 const statDisplayType = computed(() => {
     if (!name.value || !statDisplayDefinition.value) return StatDisplayType.Bar;
     if (!statDisplayDefinition.value.displayAsNumeric) return StatDisplayType.Bar;
-    return name.value === DataSearchString.RecoilDirectionStatName ? StatDisplayType.Angle : StatDisplayType.Number;
+    return name.value === DataSearchStrings.Stats.RecoilDirection ? StatDisplayType.Angle : StatDisplayType.Number;
 });
 const isBarDisplayType = computed(() => statDisplayType.value === StatDisplayType.Bar);
 const isAngleDisplayType = computed(() => statDisplayType.value === StatDisplayType.Angle);

@@ -2,10 +2,11 @@
 import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref, watch } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
-import { DataSearchString, type IWeapon } from '@/data/types';
+import type { IWeapon } from '@/data/types';
 import BuilderSection from '../../Common/BuilderSection.vue';
 import OptionButton from '@/components/Common/OptionButton.vue';
 import ElementLabel from '@/components/Common/ElementLabel.vue';
+import { DataSearchStrings } from '@/data/dataSearchStringService';
 
 const props = defineProps<{
     weapon: IWeapon | undefined,
@@ -34,7 +35,7 @@ const filteredMasterworkOptions = computed(() => {
     if (!props.weapon) return [];
 
     const categoryRegexList = weaponCategories.value.map(c => c.itemTypeRegex);
-    const isSword = categoryRegexList.includes(DataSearchString.SwordTypeRegex);
+    const isSword = categoryRegexList.includes(DataSearchStrings.WeaponCategoryRegex.Sword);
 
     return props.weapon.masterworks
         // This filter seems to cover most of the edge cases, except for Impact.
@@ -44,7 +45,7 @@ const filteredMasterworkOptions = computed(() => {
         })
         .filter(mw => {
             const mwPlugCategoryId = mw.plug ? mw.plug.plugCategoryIdentifier : "";
-            const isPlugCategoryImpactMw = mwPlugCategoryId === DataSearchString.WeaponMasterworkImpactPlugCategoryId;
+            const isPlugCategoryImpactMw = mwPlugCategoryId === DataSearchStrings.CategoryIDs.WeaponMasterworkImpact;
             // Impact only applies to swords.
             if (isPlugCategoryImpactMw) return isSword;
             // Swords can only have impact.

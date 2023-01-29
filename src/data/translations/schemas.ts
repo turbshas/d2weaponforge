@@ -17,15 +17,6 @@ export interface IArchetypes {
     waveFrame: string;
 }
 
-export interface ICategoryNames {
-    modItem: string;
-    weaponIntrinsicPerk: string;
-    weaponItem: string;
-    weaponModsSocket: string;
-    weaponOriginPerk: string;
-    weaponPerkSocket: string;
-}
-
 export interface IStats {
     accuracyStatName: string;
     aimAssistanceStatName: string;
@@ -54,7 +45,6 @@ export interface IMisc {
 
 export interface IDataSearchStrings {
     archetypes: IArchetypes;
-    categoryNames: ICategoryNames;
     stats: IStats;
     misc: IMisc;
 }

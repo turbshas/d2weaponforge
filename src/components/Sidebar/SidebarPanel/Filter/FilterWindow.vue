@@ -6,9 +6,10 @@ import CollapsibleSection from "./CollapsibleSection.vue";
 import WeaponIcons from "@/assets/WeaponIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
-import { DataSearchString, WeaponArchetypeRpm, type FilterCategory, type FilterPredicate, type IAppliedFilters, type IArchetypeFilter, type IFilterButton, type IWeapon, type IWeaponFilterButton } from "@/data/types";
+import { WeaponArchetypeRpm, type FilterCategory, type FilterPredicate, type IAppliedFilters, type IArchetypeFilter, type IFilterButton, type IWeapon, type IWeaponFilterButton } from "@/data/types";
 import OptionButton from "@/components/Common/OptionButton.vue";
 import ElementLabel from "@/components/Common/ElementLabel.vue";
+import { DataSearchStrings } from "@/data/dataSearchStringService";
 
 interface ICategoryInfo {
     name: FilterCategory;
@@ -19,120 +20,120 @@ interface ICategoryInfo {
 // This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
 // weapon type, since hash could theoretically change.
 const weaponCategoryIconMap: { [itemRegex: string]: string } = {
-    [DataSearchString.AutoRifleTypeRegex]: WeaponIcons.AutoRifle,
-    [DataSearchString.HandCannonTypeRegex]: WeaponIcons.HandCannon,
-    [DataSearchString.PulseRifleTypeRegex]: WeaponIcons.PulseRifle,
-    [DataSearchString.ScoutRifleTypeRegex]: WeaponIcons.ScoutRifle,
-    [DataSearchString.FusionRifleTypeRegex]: WeaponIcons.FusionRifle,
-    [DataSearchString.SniperRifleTypeRegex]: WeaponIcons.SniperRifle,
-    [DataSearchString.ShotgunTypeRegex]: WeaponIcons.Shotgun,
-    [DataSearchString.MachineGunTypeRegex]: WeaponIcons.MachineGun,
-    [DataSearchString.RocketLauncherTypeRegex]: WeaponIcons.RocketLauncher,
-    [DataSearchString.SidearmTypeRegex]: WeaponIcons.Sidearm,
-    [DataSearchString.SwordTypeRegex]: WeaponIcons.Sword,
-    [DataSearchString.GrenadeLauncherTypeRegex]: WeaponIcons.GrenadeLauncher,
-    [DataSearchString.LinearFusionTypeRegex]: WeaponIcons.LinearFusionRifle,
-    [DataSearchString.TraceRifleTypeRegex]: WeaponIcons.TraceRifle,
-    [DataSearchString.BowTypeRegex]: WeaponIcons.Bow,
-    [DataSearchString.GlaiveTypeRegex]: WeaponIcons.Glaive,
-    [DataSearchString.SubmachinegunTypeRegex]: WeaponIcons.SubmachineGun,
+    [DataSearchStrings.WeaponCategoryRegex.AutoRifle]: WeaponIcons.AutoRifle,
+    [DataSearchStrings.WeaponCategoryRegex.HandCannon]: WeaponIcons.HandCannon,
+    [DataSearchStrings.WeaponCategoryRegex.PulseRifle]: WeaponIcons.PulseRifle,
+    [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: WeaponIcons.ScoutRifle,
+    [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: WeaponIcons.FusionRifle,
+    [DataSearchStrings.WeaponCategoryRegex.SniperRifle]: WeaponIcons.SniperRifle,
+    [DataSearchStrings.WeaponCategoryRegex.Shotgun]: WeaponIcons.Shotgun,
+    [DataSearchStrings.WeaponCategoryRegex.MachineGun]: WeaponIcons.MachineGun,
+    [DataSearchStrings.WeaponCategoryRegex.RocketLauncher]: WeaponIcons.RocketLauncher,
+    [DataSearchStrings.WeaponCategoryRegex.Sidearm]: WeaponIcons.Sidearm,
+    [DataSearchStrings.WeaponCategoryRegex.Sword]: WeaponIcons.Sword,
+    [DataSearchStrings.WeaponCategoryRegex.GrenadeLauncher]: WeaponIcons.GrenadeLauncher,
+    [DataSearchStrings.WeaponCategoryRegex.LinearFusion]: WeaponIcons.LinearFusionRifle,
+    [DataSearchStrings.WeaponCategoryRegex.TraceRifle]: WeaponIcons.TraceRifle,
+    [DataSearchStrings.WeaponCategoryRegex.Bow]: WeaponIcons.Bow,
+    [DataSearchStrings.WeaponCategoryRegex.Glaive]: WeaponIcons.Glaive,
+    [DataSearchStrings.WeaponCategoryRegex.Submachinegun]: WeaponIcons.SubmachineGun,
 };
 
 const weaponCategoryArchetypeMap: { [itemRegex: string]: IArchetypeFilter[] } = {
-    [DataSearchString.AutoRifleTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.AutoRapidFire),
-        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.AutoAdaptive),
-        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.AutoPrecision),
-        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.AutoLightweight),
-        createArchetypeFilterFromRpm(DataSearchString.HighImpact, WeaponArchetypeRpm.AutoHighImpact),
+    [DataSearchStrings.WeaponCategoryRegex.AutoRifle]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.RapidFire, WeaponArchetypeRpm.AutoRapidFire),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Adaptive, WeaponArchetypeRpm.AutoAdaptive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.AutoPrecision),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Lightweight, WeaponArchetypeRpm.AutoLightweight),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.HighImpact, WeaponArchetypeRpm.AutoHighImpact),
     ],
-    [DataSearchString.HandCannonTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.Aggressive, WeaponArchetypeRpm.HandCannonAdaptive),
-        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.HandCannonAggressive),
-        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.HandCannonPrecision),
+    [DataSearchStrings.WeaponCategoryRegex.HandCannon]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Aggressive, WeaponArchetypeRpm.HandCannonAdaptive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Adaptive, WeaponArchetypeRpm.HandCannonAggressive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.HandCannonPrecision),
     ],
-    [DataSearchString.PulseRifleTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.PulseRapidFire),
-        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.PulseLightweight),
-        createArchetypeFilterFromRpm(DataSearchString.AggressiveBurst, WeaponArchetypeRpm.PulseAggBurst),
-        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.PulseAdaptive),
-        createArchetypeFilterFromRpm(DataSearchString.HighImpact, WeaponArchetypeRpm.PulseHighImpact),
+    [DataSearchStrings.WeaponCategoryRegex.PulseRifle]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.RapidFire, WeaponArchetypeRpm.PulseRapidFire),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Lightweight, WeaponArchetypeRpm.PulseLightweight),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.AggressiveBurst, WeaponArchetypeRpm.PulseAggBurst),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Adaptive, WeaponArchetypeRpm.PulseAdaptive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.HighImpact, WeaponArchetypeRpm.PulseHighImpact),
     ],
-    [DataSearchString.ScoutRifleTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.VeistRapidFire, WeaponArchetypeRpm.ScoutVeistRapidFire),
-        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.ScoutRapidFire),
-        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.ScoutLightweight),
-        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.ScoutPrecision),
-        createArchetypeFilterFromRpm(DataSearchString.HighImpact, WeaponArchetypeRpm.ScoutHighImpact),
+    [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.VeistRapidFire, WeaponArchetypeRpm.ScoutVeistRapidFire),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.RapidFire, WeaponArchetypeRpm.ScoutRapidFire),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Lightweight, WeaponArchetypeRpm.ScoutLightweight),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.ScoutPrecision),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.HighImpact, WeaponArchetypeRpm.ScoutHighImpact),
     ],
-    [DataSearchString.SidearmTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.AdaptiveBurst, WeaponArchetypeRpm.SidearmAdaptiveBurst),
-        createArchetypeFilterFromRpm(DataSearchString.OmolonAdaptive, WeaponArchetypeRpm.SidearmOmolonAdaptive),
-        createArchetypeFilterFromRpm(DataSearchString.SurosRapidFire, WeaponArchetypeRpm.SidearmSurosRapidFire),
-        createArchetypeFilterFromRpm(DataSearchString.AggressiveBurst, WeaponArchetypeRpm.SidearmAggressiveBurst),
-        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.SidearmLightweight),
-        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.SidearmAdaptive),
-        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.SidearmPrecision),
+    [DataSearchStrings.WeaponCategoryRegex.Sidearm]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.AdaptiveBurst, WeaponArchetypeRpm.SidearmAdaptiveBurst),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.OmolonAdaptive, WeaponArchetypeRpm.SidearmOmolonAdaptive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.SurosRapidFire, WeaponArchetypeRpm.SidearmSurosRapidFire),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.AggressiveBurst, WeaponArchetypeRpm.SidearmAggressiveBurst),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Lightweight, WeaponArchetypeRpm.SidearmLightweight),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Adaptive, WeaponArchetypeRpm.SidearmAdaptive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.SidearmPrecision),
     ],
-    [DataSearchString.SubmachinegunTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.SmgAdaptive),
-        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.SmgLightweight),
-        createArchetypeFilterFromRpm(DataSearchString.Aggressive, WeaponArchetypeRpm.SmgAggressive),
-        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.SmgPrecision),
+    [DataSearchStrings.WeaponCategoryRegex.Submachinegun]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Adaptive, WeaponArchetypeRpm.SmgAdaptive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Lightweight, WeaponArchetypeRpm.SmgLightweight),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Aggressive, WeaponArchetypeRpm.SmgAggressive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.SmgPrecision),
     ],
-    [DataSearchString.BowTypeRegex]: [
-        createArchetypeFilterFromChargeTime(DataSearchString.Lightweight, WeaponArchetypeRpm.BowLightweight),
-        createArchetypeFilterFromChargeTime(DataSearchString.Precision, WeaponArchetypeRpm.BowPrecision),
+    [DataSearchStrings.WeaponCategoryRegex.Bow]: [
+        createArchetypeFilterFromChargeTime(DataSearchStrings.WeaponArchetypes.Lightweight, WeaponArchetypeRpm.BowLightweight),
+        createArchetypeFilterFromChargeTime(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.BowPrecision),
     ],
-    [DataSearchString.ShotgunTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.ShotgunRapidFire),
-        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.ShotgunLightweight),
-        createArchetypeFilterFromRpm(DataSearchString.PinpointSlug, WeaponArchetypeRpm.ShotgunPinpointSlug),
-        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.ShotgunPrecision),
-        createArchetypeFilterFromRpm(DataSearchString.Aggressive, WeaponArchetypeRpm.ShotgunAggressive),
+    [DataSearchStrings.WeaponCategoryRegex.Shotgun]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.RapidFire, WeaponArchetypeRpm.ShotgunRapidFire),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Lightweight, WeaponArchetypeRpm.ShotgunLightweight),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.PinpointSlug, WeaponArchetypeRpm.ShotgunPinpointSlug),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.ShotgunPrecision),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Aggressive, WeaponArchetypeRpm.ShotgunAggressive),
     ],
-    [DataSearchString.SniperRifleTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.SniperRapidFire),
-        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.SniperAdaptive),
-        createArchetypeFilterFromRpm(DataSearchString.Aggressive, WeaponArchetypeRpm.SniperAggressive),
+    [DataSearchStrings.WeaponCategoryRegex.SniperRifle]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.RapidFire, WeaponArchetypeRpm.SniperRapidFire),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Adaptive, WeaponArchetypeRpm.SniperAdaptive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Aggressive, WeaponArchetypeRpm.SniperAggressive),
     ],
-    [DataSearchString.FusionRifleTypeRegex]: [
-        createArchetypeFilterFromChargeTime(DataSearchString.RapidFire, WeaponArchetypeRpm.FusionRapidFire),
-        createArchetypeFilterFromChargeTime(DataSearchString.Adaptive, WeaponArchetypeRpm.FusionAdaptive),
-        createArchetypeFilterFromChargeTime(DataSearchString.Precision, WeaponArchetypeRpm.FusionPrecision),
-        createArchetypeFilterFromChargeTime(DataSearchString.HighImpact, WeaponArchetypeRpm.FusionHighImpact),
+    [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: [
+        createArchetypeFilterFromChargeTime(DataSearchStrings.WeaponArchetypes.RapidFire, WeaponArchetypeRpm.FusionRapidFire),
+        createArchetypeFilterFromChargeTime(DataSearchStrings.WeaponArchetypes.Adaptive, WeaponArchetypeRpm.FusionAdaptive),
+        createArchetypeFilterFromChargeTime(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.FusionPrecision),
+        createArchetypeFilterFromChargeTime(DataSearchStrings.WeaponArchetypes.HighImpact, WeaponArchetypeRpm.FusionHighImpact),
     ],
-    [DataSearchString.TraceRifleTypeRegex]: [],
-    [DataSearchString.GrenadeLauncherTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.GrenadeRapidFire),
-        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.GrenadeAdaptive),
-        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.GrenadeLightweight),
-        createArchetypeFilterFromRpm(DataSearchString.Lightweight, WeaponArchetypeRpm.GrenadeLightweight),
-        createArchetypeFilterFromRpm(DataSearchString.WaveFrame, WeaponArchetypeRpm.GrenadeWave),
+    [DataSearchStrings.WeaponCategoryRegex.TraceRifle]: [],
+    [DataSearchStrings.WeaponCategoryRegex.GrenadeLauncher]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.RapidFire, WeaponArchetypeRpm.GrenadeRapidFire),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Adaptive, WeaponArchetypeRpm.GrenadeAdaptive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.GrenadeLightweight),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Lightweight, WeaponArchetypeRpm.GrenadeLightweight),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.WaveFrame, WeaponArchetypeRpm.GrenadeWave),
     ],
-    [DataSearchString.RocketLauncherTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.Aggressive, WeaponArchetypeRpm.RocketAggressive),
-        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.RocketAdaptive),
-        createArchetypeFilterFromRpm(DataSearchString.HakkePrecision, WeaponArchetypeRpm.RocketHakkePrecision),
-        createArchetypeFilterFromRpm(DataSearchString.Precision, WeaponArchetypeRpm.RocketPrecision),
-        createArchetypeFilterFromRpm(DataSearchString.HighImpact, WeaponArchetypeRpm.RocketHighImpact),
+    [DataSearchStrings.WeaponCategoryRegex.RocketLauncher]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Aggressive, WeaponArchetypeRpm.RocketAggressive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Adaptive, WeaponArchetypeRpm.RocketAdaptive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.HakkePrecision, WeaponArchetypeRpm.RocketHakkePrecision),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.RocketPrecision),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.HighImpact, WeaponArchetypeRpm.RocketHighImpact),
     ],
-    [DataSearchString.LinearFusionTypeRegex]: [
-        createArchetypeFilterFromChargeTime(DataSearchString.Precision, WeaponArchetypeRpm.LinearPrecision),
-        createArchetypeFilterFromChargeTime(DataSearchString.Aggressive, WeaponArchetypeRpm.LinearAggressive),
+    [DataSearchStrings.WeaponCategoryRegex.LinearFusion]: [
+        createArchetypeFilterFromChargeTime(DataSearchStrings.WeaponArchetypes.Precision, WeaponArchetypeRpm.LinearPrecision),
+        createArchetypeFilterFromChargeTime(DataSearchStrings.WeaponArchetypes.Aggressive, WeaponArchetypeRpm.LinearAggressive),
     ],
-    [DataSearchString.MachineGunTypeRegex]: [
-        createArchetypeFilterFromRpm(DataSearchString.RapidFire, WeaponArchetypeRpm.MachineGunRapidFire),
-        createArchetypeFilterFromRpm(DataSearchString.Adaptive, WeaponArchetypeRpm.MachineGunAdaptive),
-        createArchetypeFilterFromRpm(DataSearchString.HighImpact, WeaponArchetypeRpm.MachineGunHighImpact),
+    [DataSearchStrings.WeaponCategoryRegex.MachineGun]: [
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.RapidFire, WeaponArchetypeRpm.MachineGunRapidFire),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.Adaptive, WeaponArchetypeRpm.MachineGunAdaptive),
+        createArchetypeFilterFromRpm(DataSearchStrings.WeaponArchetypes.HighImpact, WeaponArchetypeRpm.MachineGunHighImpact),
     ],
-    [DataSearchString.SwordTypeRegex]: [
-        createArchetypeFilter(DataSearchString.Adaptive),
-        createArchetypeFilter(DataSearchString.Aggressive),
-        createArchetypeFilter(DataSearchString.Caster),
-        createArchetypeFilter(DataSearchString.Vortex),
+    [DataSearchStrings.WeaponCategoryRegex.Sword]: [
+        createArchetypeFilter(DataSearchStrings.WeaponArchetypes.Adaptive),
+        createArchetypeFilter(DataSearchStrings.WeaponArchetypes.Aggressive),
+        createArchetypeFilter(DataSearchStrings.WeaponArchetypes.Caster),
+        createArchetypeFilter(DataSearchStrings.WeaponArchetypes.Vortex),
     ],
-    [DataSearchString.GlaiveTypeRegex]: [
+    [DataSearchStrings.WeaponCategoryRegex.Glaive]: [
     ],
 };
 

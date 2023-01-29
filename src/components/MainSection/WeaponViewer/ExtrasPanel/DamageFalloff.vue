@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { DataSearchStrings } from '@/data/dataSearchStringService';
 import { destinyDataService } from '@/data/destinyDataService';
 import { selectionService } from '@/data/selectionService';
-import { DataSearchString, type IPerkOption } from '@/data/types';
+import type { IPerkOption } from '@/data/types';
 import { hashMapToArray } from '@/data/util';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
@@ -15,27 +16,27 @@ interface IWeaponRangeValues {
 }
 
 // TODO: find a better way to identify specific items in the manifest, perhaps index? unsure if that is consistent across languages
-const RangeStatName = DataSearchString.RangeStatName;
-const ZoomStatName = DataSearchString.ZoomStatName;
-const RangefinderPerkName = DataSearchString.RangefinderPerkName;
+const RangeStatName = DataSearchStrings.Stats.Range;
+const ZoomStatName = DataSearchStrings.Stats.Zoom;
+const RangefinderPerkName = DataSearchStrings.Misc.RangefinderPerkName;
 
 // Numbers from: https://docs.google.com/spreadsheets/d/1B2zWeT99SksMzmptNeIt66Mv8YZu38R7t-KR50BJ0p0/view#gid=817864056
 // TODO: numbers for exotics are different, like vex that acts as an auto rifle
 const weaponCategoryRangeValuesMap: { [itemRegex: string]: IWeaponRangeValues } = {
     // TODO: hand cannons are different for 120s, include that somehow
     // TODO: some weapons have a "zoom scalar" that is added to the base zoom?
-    [DataSearchString.AutoRifleTypeRegex]: { baseFalloffStart: 10.8, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
-    [DataSearchString.HandCannonTypeRegex]: { baseFalloffStart: 16, hipFireRangePerStat: 0.096, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.AutoRifle]: { baseFalloffStart: 10.8, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.HandCannon]: { baseFalloffStart: 16, hipFireRangePerStat: 0.096, zoomAdjustment: 0.25, },
     // TODO: pulse rifles are all over the place in zoom/"modified zoom multiplier"
-    [DataSearchString.PulseRifleTypeRegex]: { baseFalloffStart: 15, hipFireRangePerStat: 0.0685, zoomAdjustment: 0.25, },
-    [DataSearchString.ScoutRifleTypeRegex]: { baseFalloffStart: 29.2, hipFireRangePerStat: 0.169, zoomAdjustment: 1.25, },
-    [DataSearchString.SidearmTypeRegex]: { baseFalloffStart: 11.6, hipFireRangePerStat: 0.034, zoomAdjustment: 0.25, },
-    [DataSearchString.SubmachinegunTypeRegex]: { baseFalloffStart: 8.19, hipFireRangePerStat: 0.09576, zoomAdjustment: 1.25, },
+    [DataSearchStrings.WeaponCategoryRegex.PulseRifle]: { baseFalloffStart: 15, hipFireRangePerStat: 0.0685, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: { baseFalloffStart: 29.2, hipFireRangePerStat: 0.169, zoomAdjustment: 1.25, },
+    [DataSearchStrings.WeaponCategoryRegex.Sidearm]: { baseFalloffStart: 11.6, hipFireRangePerStat: 0.034, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.Submachinegun]: { baseFalloffStart: 8.19, hipFireRangePerStat: 0.09576, zoomAdjustment: 1.25, },
 
-    [DataSearchString.FusionRifleTypeRegex]: { baseFalloffStart: 8.2, hipFireRangePerStat: 0.036, zoomAdjustment: 2, },
-    [DataSearchString.TraceRifleTypeRegex]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: { baseFalloffStart: 8.2, hipFireRangePerStat: 0.036, zoomAdjustment: 2, },
+    [DataSearchStrings.WeaponCategoryRegex.TraceRifle]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
 
-    [DataSearchString.MachineGunTypeRegex]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.MachineGun]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
 
     /*
     // TODO: what to do with these? ignore them?
