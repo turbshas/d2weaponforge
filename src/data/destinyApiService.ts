@@ -81,8 +81,6 @@ class DestinyApiService {
             weaponPerkCategory: manifestProcessor.weaponPerkCategory!,
         };
 
-        console.log("weapons", gameData.weapons);
-
         cacheService.setCachedManifest({ version: CurrentCachedManifestVersion, manifestInfo: manifestInfo.Response, manifestData: gameData, })
             .catch(err => console.error("Failed to cache manifest.", err));
         return gameData;

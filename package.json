@@ -9,7 +9,7 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "bungie-api-ts": "4.19.0",
+    "bungie-api-ts": "4.21.0",
     "vue": "3.2.45"
   },
   "devDependencies": {

@@ -77,7 +77,7 @@ const allStats = computed(() => {
     const masterworkStats = getStatsForItem(props.masterwork).filter(s => selectionService.showCraftedBonus || !s.isConditionallyActive);
     const modStats = getStatsForItem(props.mod);
     console.log("damage falloff props", props);
-    console.log("all stats", weaponStats, perkStats, masterworkStats, modStats);
+    console.log("all stats", weaponStats, weaponStats.map(s => destinyDataService.getStatDefinition(s.statTypeHash)), perkStats, masterworkStats, modStats);
     return [...weaponStats, ...perkStats, ...masterworkStats, ...modStats];
 });
 
@@ -129,7 +129,6 @@ const text = computed(() => {
 });
 
 function getStatsForItem(item: DestinyInventoryItemDefinition | undefined) {
-    console.log("gettings stats for item", item);
     if (!item) return [];
     if (item.stats) {
         return hashMapToArray(item.stats.stats)

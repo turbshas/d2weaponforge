@@ -23,9 +23,11 @@ const weaponCategories = computed(() => {
         .filter(c => props.weapon!.weapon.itemCategoryHashes!.includes(c.hash));
 });
 
-const weaponStats = computed(() => {
-    if (!props.weapon || !props.weapon.weapon.stats) return [];
-    return props.weapon.weapon.stats.stats;
+const weaponStatGroup = computed(() => {
+    if (!props.weapon || !props.weapon.weapon.stats) return undefined;
+    const statGroupHash = props.weapon.weapon.stats.statGroupHash;
+    if (!statGroupHash) return undefined;
+    return destinyDataService.getStatGroupDefinition(statGroupHash);
 });
 
 const filteredMasterworkOptions = computed(() => {
@@ -33,19 +35,20 @@ const filteredMasterworkOptions = computed(() => {
 
     const categoryRegexList = weaponCategories.value.map(c => c.itemTypeRegex);
     const isSword = categoryRegexList.includes(DataSearchString.SwordTypeRegex);
-    const isBow = categoryRegexList.includes(DataSearchString.BowTypeRegex);
 
     return props.weapon.masterworks
-        .filter(mwItem => mwItem && mwItem.investmentStats.every(stat => !!weaponStats.value[stat.statTypeHash] || stat.isConditionallyActive))
-        .filter(mwItem => {
-            const name = getStatNameForMasterwork(mwItem);
-            if (categoryRegexList.length === 0) return true;
+        // This filter seems to cover most of the edge cases, except for Impact.
+        .filter(mw => {
+            const mainMwStat = mw.investmentStats.find(s => !s.isConditionallyActive);
+            return mainMwStat && weaponStatGroup.value && weaponStatGroup.value.scaledStats.some(s => s.statHash === mainMwStat.statTypeHash);
+        })
+        .filter(mw => {
+            const mwPlugCategoryId = mw.plug ? mw.plug.plugCategoryIdentifier : "";
+            const isPlugCategoryImpactMw = mwPlugCategoryId === DataSearchString.WeaponMasterworkImpactPlugCategoryId;
             // Impact only applies to swords.
-            if (name === DataSearchString.ImpactStatName) return isSword;
+            if (isPlugCategoryImpactMw) return isSword;
             // Swords can only have impact.
-            if (isSword) return name === DataSearchString.ImpactStatName;
-            // Bows have both draw time and charge time, and should only display draw time.
-            if (name === DataSearchString.ChargeTimeStatName) return !isBow;
+            if (isSword) return isPlugCategoryImpactMw;
             return true;
         });
 });
@@ -66,6 +69,8 @@ const masterworkOptionsByStatName = computed(() => {
 function getStatNameForMasterwork(masterwork: DestinyInventoryItemDefinition) {
     const increasedStat = masterwork.investmentStats.find(stat => stat.value > 0);
     if (!increasedStat) return undefined;
+    const overrideDisplay = weaponStatGroup.value?.overrides[increasedStat.statTypeHash]?.displayProperties;
+    if (overrideDisplay) return overrideDisplay.name;
     const statDefinition = destinyDataService.getStatDefinition(increasedStat.statTypeHash);
     if (!statDefinition) return undefined;
     return statDefinition.displayProperties.name
@@ -75,9 +80,13 @@ const masterworkStatNames = computed(() => Object.keys(masterworkOptionsByStatNa
 
 const selectedMasterworkStatName = ref(initSelectedStatName());
 const masterworkLevel = ref(initSelectedMasterworkLevel());
-watch(() => props.masterwork, () => {
-    console.log("masterwork is", props.masterwork);
-    selectedMasterworkStatName.value = initSelectedStatName();
+watch(() => props.masterwork, (newValue) => {
+    if (newValue) {
+        // Only reset the selected stat name if a new one is selected (has a level > 0).
+        // This way, if the user changes the MW name or sets the level back to 0 from a higher value,
+        // it doesn't reset to the first stat name in the list.
+        selectedMasterworkStatName.value = initSelectedStatName();
+    }
     masterworkLevel.value = initSelectedMasterworkLevel();
 });
 
