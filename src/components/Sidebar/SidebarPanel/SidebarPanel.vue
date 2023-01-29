@@ -38,7 +38,6 @@ const areFiltersChosen = computed(() => {
 
 const filteredWeapons = computed(() => {
     // If no filter or search, return truncated list
-    console.log("filtering weapons", areFiltersChosen.value, !!props.searchString, filters.value);
     if (!areFiltersChosen.value && !props.searchString) {
         return weapons.value.filter(w => !isWeaponSunset(w)).slice(0, 22);
     }
@@ -53,8 +52,17 @@ const filteredWeapons = computed(() => {
 });
 
 function isWeaponSunset(weapon: IWeapon) {
-    // TODO: make this actually correct
-    return !!weapon.weapon.iconWatermarkShelved;
+    // Priority here: weapon.quality.displayVersionWatermarkIcons -> weapon.iconWatermarkShelved -> weapon.iconWatermark
+    return !!(weapon.weapon
+        && (
+            (
+                weapon.weapon.quality
+                && weapon.weapon.quality.displayVersionWatermarkIcons.length > 0
+                && weapon.weapon.quality.displayVersionWatermarkIcons[0]
+                && weapon.weapon.quality.displayVersionWatermarkIcons[0]
+            )
+            || (weapon.weapon.iconWatermarkShelved)
+        ));
 }
 
 function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: IWeapon) {

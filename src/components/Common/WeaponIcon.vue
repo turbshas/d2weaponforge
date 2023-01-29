@@ -20,8 +20,8 @@ const watermarkPath = computed(() => {
                 && props.weapon.quality.displayVersionWatermarkIcons[0]
                 && props.weapon.quality.displayVersionWatermarkIcons[0]
             )
-            || (props.weapon.iconWatermarkShelved && props.weapon.iconWatermarkShelved)
-            || (props.weapon.iconWatermark && props.weapon.iconWatermark)
+            || props.weapon.iconWatermarkShelved
+            || props.weapon.iconWatermark
         );
 });
 const watermark = computed(() => watermarkPath.value && destinyDataService.getImageUrl(watermarkPath.value));
