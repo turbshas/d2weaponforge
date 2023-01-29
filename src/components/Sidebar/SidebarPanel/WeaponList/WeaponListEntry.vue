@@ -16,7 +16,6 @@ const weaponName = computed(() => props.weapon.weapon.displayProperties.name);
 
 function onEntryClicked(e: Event) {
     emit("entryClicked", props.weapon);
-    console.log(props.weapon)
     e.preventDefault();
 }
 </script>

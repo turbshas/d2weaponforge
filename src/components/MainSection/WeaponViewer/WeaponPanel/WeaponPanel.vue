@@ -1,30 +1,11 @@
 <script setup lang="ts">
 import WeaponIcon from '@/components/Common/WeaponIcon.vue';
 import { destinyDataService } from '@/data/destinyDataService';
-import { DataSearchString, type IPerkOption, type IWeapon } from '@/data/types';
-import { hashMapToArray } from '@/data/util';
+import type { IPerkOption, IWeapon } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import SelectedPerks from './SelectedPerks.vue';
 import WeaponStatBlock from './WeaponStatBlock.vue';
-
-const shownStats: { [statName: string]: boolean } = {
-    [DataSearchString.AccuracyStatName]: true,
-    [DataSearchString.AimAssistanceStatName]: true,
-    [DataSearchString.AirborneEffectivenessStatName]: true,
-    [DataSearchString.ChargeTimeStatName]: true,
-    [DataSearchString.DrawTimeStatName]: true,
-    [DataSearchString.ImpactStatName]: true,
-    [DataSearchString.HandlingStatName]: true,
-    [DataSearchString.MagSizeStatName]: true,
-    [DataSearchString.RangeStatName]: true,
-    [DataSearchString.RecoilDirectionStatName]: true,
-    [DataSearchString.ReloadSpeedStatName]: true,
-    [DataSearchString.RpmStatName]: true,
-    [DataSearchString.StabilityStatName]: true,
-    [DataSearchString.VelocityStatName]: true,
-    [DataSearchString.ZoomStatName]: true,
-}
 
 const props = defineProps<{
     weapon: IWeapon | undefined,
@@ -34,7 +15,6 @@ const props = defineProps<{
 }>();
 
 const screenshot = computed(() => {
-    console.log("selected weapon", props.weapon);
     return props.weapon ? destinyDataService.getImageUrl(props.weapon.weapon.screenshot) : undefined;
 });
 
@@ -59,11 +39,6 @@ const elementIcon = computed(() => {
 });
 const elementLabel = computed(() => `Element Type: ${elementName.value}`);
 
-const stats = computed(() => {
-    if (!props.weapon || !props.weapon.weapon.stats) return [];
-    return hashMapToArray(props.weapon.weapon.stats.stats);
-});
-
 const investmentStats = computed(() => {
     if (!props.weapon || !props.weapon.weapon.investmentStats) return [];
     return props.weapon.weapon.investmentStats;
@@ -76,21 +51,12 @@ const statGroup = computed(() => {
     return destinyDataService.getStatGroupDefinition(statGroupHash);
 })
 
-// TODO make this not as gross, should probably do some data processing in destinyDataService so fewer lookups are required by vue components
-const filteredStats = computed(() => {
-    return stats.value.filter(s => {
-        const statDef = destinyDataService.getStatDefinition(s.statHash);
-        return statDef && shownStats[statDef.displayProperties.name];
-    });
-});
-
 const firstColumnPerk = computed(() => props.selectedPerks.length > 0 ? props.selectedPerks[0]?.perk : undefined);
 const secondColumnPerk = computed(() => props.selectedPerks.length > 1 ? props.selectedPerks[1]?.perk : undefined);
 
 const thirdColumnPerkOption = computed(() => props.selectedPerks.length > 2 ? props.selectedPerks[2] : undefined);
 const isThirdEnhanced = computed(() => !!thirdColumnPerkOption.value && thirdColumnPerkOption.value.useEnhanced);
 const thirdColumnPerk = computed(() => {
-    console.log("selected perks", props.weapon, props.selectedPerks, props.masterwork, props.mod);
     if (!thirdColumnPerkOption.value) return undefined;
     return isThirdEnhanced.value ? thirdColumnPerkOption.value.enhancedPerk : thirdColumnPerkOption.value.perk;
 });
@@ -129,7 +95,6 @@ function onPerkClicked(column: number) {
         <WeaponStatBlock
             class="stats"
             :stat-group="statGroup"
-            :stats="filteredStats"
             :investment-stats="investmentStats"
             :selected-perks="currentSelectedPerks"
             :masterwork="masterwork"

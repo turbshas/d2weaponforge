@@ -60,6 +60,7 @@ export enum DataSearchString {
     WeaponOriginPerkItemCategoryName = "Weapon Mods: Origin Traits",
     WeaponPerkSocketCategoryName = "WEAPON PERKS",
     WeaponMasterworkPlugWhitelistCategoryId = "v400.plugs.weapons.masterworks",
+    WeaponMasterworkImpactPlugCategoryId = "v400.plugs.weapons.masterworks.stat.damage",
     WeaponModsSocketCategoryName = "WEAPON MODS",
     WeaponModPlugWhitelistCategoryId = "v400.weapon.mod_empty",
 

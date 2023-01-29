@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { DataSearchString, StatDisplayType } from '@/data/types';
 import { computed } from '@vue/reactivity';
-import type { DestinyInventoryItemStatDefinition, DestinyItemInvestmentStatDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
+import type { DestinyItemInvestmentStatDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     definition: DestinyStatDefinition | undefined,
     statGroup: DestinyStatGroupDefinition | undefined,
     investmentValue: DestinyItemInvestmentStatDefinition,
-    value: DestinyInventoryItemStatDefinition,
     modifier: number,
 }>();
 
@@ -22,46 +21,32 @@ const name = computed(() => {
 
 const recoilDirectionPieLabel = "Recoil Direction Angle Graphic";
 
-const adjustedModifier = computed(() => {
-    if (!props.definition) return props.modifier;
-    if (props.definition.displayProperties.name === DataSearchString.ChargeTimeStatName) return -Math.round(props.modifier * 3.3);
-    if (props.definition.displayProperties.name === DataSearchString.DrawTimeStatName) return -props.modifier * 4;
-    return props.modifier;
-});
-
 const statDisplayDefinition = computed(() => {
     if (!statHash.value || !props.statGroup) return undefined;
     return props.statGroup.scaledStats.find(s => s.statHash === statHash.value);
 });
 
-const total = computed(() => {
-    console.log("stat info:", props.definition, props.value, adjustedModifier.value);
-    const value = props.investmentValue.value + adjustedModifier.value;
+const showStat = computed(() => !!statDisplayDefinition.value);
+
+const statTotal = computed(() => {
+    const value = props.investmentValue.value + props.modifier;
     // These values don't exist in the range 0-100 so don't need to be clamped.
     if (statDisplayType.value === StatDisplayType.Number) return value;
+    // The min is always 0.
     const max = statDisplayDefinition.value ? statDisplayDefinition.value.maximumValue : 100;
-    return value < 0 ? 0 : (value > max ? max : value);
+    if (value < 0) return 0;
+    if (value > max) return max;
+    return value;
 });
-const interpolatedTotal = computed(() => {
-    if (!statDisplayDefinition.value) return total.value;
-    const displayInterpolation = statDisplayDefinition.value.displayInterpolation;
-    if (displayInterpolation.length < 2) return total.value;
-    // Some stats work on exact values, look for those first.
-    const existing = displayInterpolation.find(d => d.value === total.value);
-    console.log("interpolatedTotal info", statDisplayDefinition.value, total.value, props.value, props.investmentValue);
-    if (existing) return existing.weight;
 
-    // Others are a range.
-    const start = displayInterpolation[0];
-    const end = displayInterpolation[displayInterpolation.length - 1];
-    const rangeSize = end.weight - start.weight;
-    const offset = Math.ceil(rangeSize * (total.value / 100));
-    const value = offset + start.weight;
-    return Math.min(value, end.weight);
-});
-const modifierSign = computed(() => props.modifier > 0 ? "+" : "");
-const modifierMagnitude = computed(() => Math.abs(props.modifier));
-const filledWidthPercent = computed(() => props.modifier > 0 ? props.value.value : interpolatedTotal.value);
+const baseDisplayValue = computed(() => convertToDisplayValue(props.investmentValue.value));
+const displayedTotal = computed(() => convertToDisplayValue(statTotal.value));
+
+const displayModifier = computed(() => displayedTotal.value - baseDisplayValue.value);
+const displayModifierMagnitude = computed(() => Math.abs(displayModifier.value));
+const modifierSign = computed(() => displayModifier.value > 0 ? "+" : "");
+const modifierText = computed(() => `${modifierSign.value}${displayModifier.value}`);
+const filledWidthPercent = computed(() => props.modifier > 0 ? baseDisplayValue.value : displayedTotal.value);
 
 const statDisplayType = computed(() => {
     if (!name.value || !statDisplayDefinition.value) return StatDisplayType.Bar;
@@ -70,6 +55,33 @@ const statDisplayType = computed(() => {
 });
 const isBarDisplayType = computed(() => statDisplayType.value === StatDisplayType.Bar);
 const isAngleDisplayType = computed(() => statDisplayType.value === StatDisplayType.Angle);
+
+function convertToDisplayValue(statValue: number) {
+    if (!statDisplayDefinition.value) return statValue;
+    const displayInterpolation = statDisplayDefinition.value.displayInterpolation;
+
+    // Check if values has an exact match.
+    const existing = displayInterpolation.find(d => d.value === statValue);
+    if (existing) return existing.weight;
+
+    // Else, we need to interpolate.
+    // The ranges are *mostly* linear. Sometimes archetypes each get their own subdivision in the range, and each subdivision is linear.
+    const start = displayInterpolation.slice().reverse().find(d => d.value < statValue);
+    const end = displayInterpolation.find(d => d.value > statValue);
+    if (!start || !end) return statValue;
+
+    const stepSize = end.value - start.value;
+    const rangeSize = end.weight - start.weight;
+    const valueWithinStep = statValue - start.value;
+    const offset = Math.ceil(rangeSize * (valueWithinStep / stepSize));
+    const value = offset + start.weight;
+    // For some stats, a higher value is a lower weight (like charge time).
+    const upperBound = Math.max(start.weight, end.weight);
+    const lowerBound = Math.min(start.weight, end.weight);
+    if (value < lowerBound) return lowerBound;
+    if (value > upperBound) return upperBound;
+    return value;
+}
 
 function recoilDirectionFunction(recoilDirection: number) {
     // Decay function is a straight line with slope -1, y-intercept 100
@@ -116,25 +128,25 @@ function getSvgPathData(recoilDirection: number) {
 </script>
 
 <template>
-    <div class="stat">
+    <div class="stat" v-if="showStat">
         <span class="name">{{ name }}</span>
         <div class="display">
             <div class="bar" v-if="isBarDisplayType">
                 <div class="value" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">
-                    <span>{{ interpolatedTotal }}</span>
-                    <span class="modifier">({{ modifierSign + modifier }})</span>
+                    <span>{{ displayedTotal }}</span>
+                    <span class="modifier">({{ modifierText }})</span>
                 </div>
                 <div class="filled" :style="{ 'width': filledWidthPercent + '%' }"></div>
                 <div
                     class="change"
                     :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }"
-                    :style="{ 'width': modifierMagnitude + '%', }"
+                    :style="{ 'width': displayModifierMagnitude + '%', }"
                     v-if="modifier !== 0"
                 ></div>
             </div>
 
             <div class="number" v-else>
-                <span class="text" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">{{ interpolatedTotal }}</span>
+                <span class="text" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">{{ displayedTotal }}</span>
                 <div class="arrow" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }"></div>
 
                 <svg
@@ -147,11 +159,11 @@ function getSvgPathData(recoilDirection: number) {
                     <circle class="circle" r="1" cx="1" cy="1"></circle>
                     <path
                         class="path"
-                        v-if="interpolatedTotal <= 96"
-                        :d="getSvgPathData(interpolatedTotal)"
+                        v-if="displayedTotal <= 96"
+                        :d="getSvgPathData(displayedTotal)"
                     ></path>
                     <line
-                        v-if="interpolatedTotal > 96"
+                        v-if="displayedTotal > 96"
                         x1="1" y1="2"
                         x2="1" y2="0"
                         stroke="white"

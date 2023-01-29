@@ -3,7 +3,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { selectionService } from '@/data/selectionService';
 import { DataSearchString } from '@/data/types';
 import { computed } from '@vue/reactivity';
-import type { DestinyInventoryItemDefinition, DestinyInventoryItemStatDefinition, DestinyItemInvestmentStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
+import type { DestinyInventoryItemDefinition, DestinyItemInvestmentStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
 
 const statOrdering = [
@@ -31,23 +31,12 @@ const statOrdering = [
 
 const props = defineProps<{
     statGroup: DestinyStatGroupDefinition | undefined,
-    stats: DestinyInventoryItemStatDefinition[],
     investmentStats: DestinyItemInvestmentStatDefinition[],
     selectedPerks: (DestinyInventoryItemDefinition | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
-const statMap = computed(() => {
-    const map: { [name: string]: DestinyInventoryItemStatDefinition } = {};
-    for (const stat of props.stats) {
-        const definition = getStatDefinition(stat.statHash);
-        if (definition) {
-            map[definition.displayProperties.name] = stat;
-        }
-    }
-    return map;
-});
 const investmentStatMap = computed(() => {
     const map: { [name: string]: DestinyItemInvestmentStatDefinition } = {};
     for (const stat of props.investmentStats) {
@@ -59,15 +48,6 @@ const investmentStatMap = computed(() => {
     return map;
 });
 
-const orderedStats = computed(() => {
-    const ordered: DestinyInventoryItemStatDefinition[] = [];
-    for(const statName of statOrdering) {
-        if (statMap.value[statName]) {
-            ordered.push(statMap.value[statName]);
-        }
-    }
-    return ordered;
-});
 const orderedInvestmentStats = computed(() => {
     const ordered: DestinyItemInvestmentStatDefinition[] = [];
     for(const statName of statOrdering) {
@@ -82,24 +62,24 @@ function getStatDefinition(statHash: number) {
     return destinyDataService.getStatDefinition(statHash);
 }
 
-function getModifierForStat(stat: DestinyInventoryItemStatDefinition) {
+function getModifierForStat(statHash: number) {
     const bonusFromPerks = props.selectedPerks
         .filter(p => !!p)
         .map(p =>
             p!.investmentStats
-                .filter(s => s.statTypeHash === stat.statHash)
+                .filter(s => s.statTypeHash === statHash)
                 .map(s => s.value)
                 .reduce((total, current) => total += current, 0))
         .reduce((total, current) => total += current, 0); 
     const bonusFromMasterwork = props.masterwork
         ? props.masterwork.investmentStats
-            .filter(s => s.statTypeHash === stat.statHash)
+            .filter(s => s.statTypeHash === statHash)
             .map(s => selectionService.showCraftedBonus || !s.isConditionallyActive ? s.value : 0)
             .reduce((total, current) => total += current, 0)
         : 0;
     const bonusFromMod = props.mod
         ? props.mod.investmentStats
-            .filter(s => s.statTypeHash === stat.statHash)
+            .filter(s => s.statTypeHash === statHash)
             .map(s => s.value)
             .reduce((total, current) => total += current, 0)
         : 0;
@@ -110,13 +90,12 @@ function getModifierForStat(stat: DestinyInventoryItemStatDefinition) {
 <template>
     <div class="list">
         <WeaponStatDisplay
-            v-for="(stat, index) in orderedStats"
-            :key="stat.statHash"
+            v-for="investmentStat in orderedInvestmentStats"
+            :key="investmentStat.statTypeHash"
             :stat-group="props.statGroup"
-            :definition="getStatDefinition(stat.statHash)"
-            :investment-value="orderedInvestmentStats[index]"
-            :value="stat"
-            :modifier="getModifierForStat(stat)"
+            :definition="getStatDefinition(investmentStat.statTypeHash)"
+            :investment-value="investmentStat"
+            :modifier="getModifierForStat(investmentStat.statTypeHash)"
         ></WeaponStatDisplay>
     </div>
 </template>
