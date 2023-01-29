@@ -5,6 +5,8 @@ import { cacheService } from "./cacheService";
 import { DestinyManifestProcessor } from "./destinyManifestProcessor";
 import type { Destiny2GameData, IWeapon } from "./types";
 
+const CurrentCachedManifestVersion = 1;
+
 class DestinyApiService {
     public retrieveManifest = async (language: DestinyManifestLanguage) => {
         // Get manifest metadata
@@ -14,8 +16,8 @@ class DestinyApiService {
 
         console.log("manifest info", manifestInfo);
 
-        // /*
-        if (cachedManifest) {
+        /*
+        if (cachedManifest && cachedManifest.version === CurrentCachedManifestVersion) {
             const cachedJsonComponentUrls = cachedManifest.manifestInfo.jsonWorldComponentContentPaths[language];
             const retrievedJsonComponentUrls = manifestInfo.Response.jsonWorldComponentContentPaths[language];
             // Apparently the URLs are better for checking the manifest version as they contain a
@@ -38,6 +40,7 @@ class DestinyApiService {
                 "DestinyInventoryItemDefinition",
                 "DestinyPlugSetDefinition",
                 "DestinyStatDefinition",
+                "DestinyStatGroupDefinition",
                 "DestinySocketCategoryDefinition",
                 "DestinySocketTypeDefinition",
                 "DestinyPowerCapDefinition",
@@ -67,6 +70,7 @@ class DestinyApiService {
             weaponsLookup: weaponsLookup,
 
             statsLookup: manifestProcessor.statsLookup,
+            statGroupsLookup: manifestProcessor.statGroupsLookup,
             itemLookup: manifestProcessor.itemLookup,
             plugSetLookup: manifestProcessor.plugSetLookup,
             socketCategoryLookup: manifestProcessor.socketCategoryLookup,
@@ -79,7 +83,7 @@ class DestinyApiService {
 
         console.log("weapons", gameData.weapons);
 
-        cacheService.setCachedManifest({ manifestInfo: manifestInfo.Response, manifestData: gameData, })
+        cacheService.setCachedManifest({ version: CurrentCachedManifestVersion, manifestInfo: manifestInfo.Response, manifestData: gameData, })
             .catch(err => console.error("Failed to cache manifest.", err));
         return gameData;
     }

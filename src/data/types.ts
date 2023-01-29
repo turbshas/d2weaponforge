@@ -8,7 +8,8 @@ import type {
     DestinySeasonDefinition,
     DestinySocketCategoryDefinition,
     DestinySocketTypeDefinition,
-    DestinyStatDefinition
+    DestinyStatDefinition,
+    DestinyStatGroupDefinition
 } from "bungie-api-ts/destiny2";
 
 export type UsedDestinyManifestSlice = DestinyManifestSlice<(
@@ -19,6 +20,7 @@ export type UsedDestinyManifestSlice = DestinyManifestSlice<(
     | "DestinyInventoryItemDefinition"
     | "DestinyPlugSetDefinition"
     | "DestinyStatDefinition"
+    | "DestinyStatGroupDefinition"
     | "DestinySocketCategoryDefinition"
     | "DestinySocketTypeDefinition"
     | "DestinyPowerCapDefinition"
@@ -191,15 +193,6 @@ export enum StatDisplayType {
     Number = "Number",
 }
 
-export interface IWeapon {
-    weapon: DestinyInventoryItemDefinition;
-    intrinsic: DestinyInventoryItemDefinition | undefined;
-    perks: IPerkSlotOptions[];
-    curated: IPerkSlotOptions[];
-    masterworks: DestinyInventoryItemDefinition[];
-    mods: DestinyInventoryItemDefinition[];
-}
-
 export type FilterCategory = "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";
 
 export type FilterPredicate = (item: IWeapon) => boolean;
@@ -254,6 +247,7 @@ export interface Destiny2GameData {
     weaponsLookup: { [weaponHash: number]: IWeapon };
 
     statsLookup: { [hash: number]: DestinyStatDefinition };
+    statGroupsLookup: { [hash: number]: DestinyStatGroupDefinition };
     itemLookup: { [hash: number]: DestinyInventoryItemDefinition };
     plugSetLookup: { [hash: number]: DestinyPlugSetDefinition };
     socketCategoryLookup: { [hash: number]: DestinySocketCategoryDefinition };
@@ -262,6 +256,50 @@ export interface Destiny2GameData {
     originPerkCategory: DestinyItemCategoryDefinition;
     weaponIntrinsicCategory: DestinySocketCategoryDefinition;
     weaponPerkCategory: DestinySocketCategoryDefinition;
+}
+
+export interface IWeapon {
+    weapon: DestinyInventoryItemDefinition;
+    intrinsic: DestinyInventoryItemDefinition | undefined;
+    perks: IPerkSlotOptions[];
+    curated: IPerkSlotOptions[];
+    masterworks: DestinyInventoryItemDefinition[];
+    mods: DestinyInventoryItemDefinition[];
+}
+
+export interface IWeaponInfo {
+    hash: number;
+    name: string;
+    icon: string;
+    watermark: string;
+    screenshot: string;
+    typeDisplayName: string;
+    elementName: string;
+    elementIcon: string;
+    categories: DestinyItemCategoryDefinition[];
+    damageTypes: DestinyDamageTypeDefinition[];
+    season: DestinySeasonDefinition;
+    tier: ItemTierIndex;
+
+    accuracy: number;
+    aimAssist: number;
+    airbourneEffectiveness: number;
+    blastRadius: number;
+    chargeTime: number;
+    drawTime: number;
+    /** The actual magazine size, i.e. number of shots. */
+    magSize: number;
+    /** The underlying magazine stat value, from 0-100. Comes from the "investmentStat" property rather than the "stats" block. */
+    magStat: number;
+    impact: number;
+    handling: number;
+    range: number;
+    recoilDirection: number;
+    reloadSpeed: number;
+    rpm: number;
+    stability: number;
+    velocity: number;
+    zoom: number;
 }
 
 export interface IPerkOption {

@@ -69,6 +69,10 @@ class DestinyDataService {
         return this.gameData?.statsLookup[statHash];
     }
 
+    public getStatGroupDefinition = (statGroupHash: number) => {
+        return this.gameData?.statGroupsLookup[statGroupHash];
+    }
+
     public getItemDefinition = (itemHash: number) => {
         return this.gameData?.itemLookup[itemHash];
     }
