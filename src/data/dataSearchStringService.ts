@@ -3,11 +3,35 @@ import { ref } from "vue";
 import TranslationMap from "./translations/translationMap";
 
 class CategoryIds {
+    // Weapon perk plug category IDs
+    public get IntrinsicPlug() { return "intrinsics"; }
+
+    public get BarrelsPlug() { return "barrels"; }
+    public get BladesPlug() { return "blades"; }
+    public get BowstringsPlug() { return "bowstrings"; }
+    public get HaftsPlug() { return "hafts"; }
+    public get ScopesPlug() { return "scopes"; }
+    public get TubesPlug() { return "tubes"; }
+
+    public get ArrowsPlug() { return "arrows"; }
+    public get BatteriesPlug() { return "batteries"; }
+    public get GuardsPlug() { return "guards"; }
+    public get MagazinesPlug() { return "magazines"; }
+    public get MagazinesGLPlug() { return "magazines_gl"; }
+
     public get FramesPlug() { return "frames"; }
+    public get OriginsPlug() { return "origins"; }
     public get TrackerPlug() { return "v400.plugs.weapons.masterworks.trackers"; }
+    public get ExoticMasterworkPlug() { return "v400.empty.exotic.masterwork"; }
+    public get CatalystsPlug() { return "catalysts"; }
+    public get StocksPlug() { return "stocks"; }
+
     public get WeaponMasterworkPlug() { return "v400.plugs.weapons.masterworks"; }
+    public get WeaponMasterworkPlugComponent() { return "plugs.weapons.masterworks.stat"; }
     public get WeaponMasterworkImpact() { return "v400.plugs.weapons.masterworks.stat.damage"; }
     public get WeaponMod() { return "v400.weapon.mod_empty"; }
+    public get WeaponModGuns() { return "v400.weapon.mod_guns"; }
+    public get WeaponModDamage() { return "v400.weapon.mod_damage"; }
 }
 
 class CategoryNames {

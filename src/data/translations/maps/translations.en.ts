@@ -20,12 +20,12 @@ const translations: IDataSearchStrings = {
         waveFrame: "Wave-Frame",
     },
     categoryNames: {
-        modItem: "",
-        weaponIntrinsicPerk: "",
-        weaponItem: "",
-        weaponModsSocket: "",
-        weaponOriginPerk: "",
-        weaponPerkSocket: "",
+        modItem: "Mods",
+        weaponIntrinsicPerk: "INTRINSIC TRAITS",
+        weaponItem: "Weapon",
+        weaponModsSocket: "WEAPON MODS",
+        weaponOriginPerk: "Weapon Mods: Origin Traits",
+        weaponPerkSocket: "WEAPON PERKS",
     },
     stats: {
         accuracyStatName: "Accuracy",

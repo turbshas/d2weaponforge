@@ -1,5 +1,6 @@
-import type { DestinyInventoryItemDefinition, DestinyItemSocketCategoryDefinition, DestinyItemSocketEntryDefinition, DestinyPlugSetDefinition, DestinyPlugWhitelistEntryDefinition } from "bungie-api-ts/destiny2";
-import { DataSearchString, ItemTierIndex, type IPerkOption, type IPerkSlotOptions, type IWeapon, type UsedDestinyManifestSlice } from "./types";
+import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryDefinition, DestinyPlugSetDefinition, DestinyPlugWhitelistEntryDefinition } from "bungie-api-ts/destiny2";
+import { dataSearchStringService } from "./dataSearchStringService";
+import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions, type IWeapon, type UsedDestinyManifestSlice } from "./types";
 import { findItemInTable, hashMapToArray } from "./util";
 
 export class DestinyManifestProcessor {
@@ -8,24 +9,14 @@ export class DestinyManifestProcessor {
     public readonly weaponIntrinsicCategory;
     public readonly weaponPerkCategory;
 
-    // Used for processing only.
-    private readonly weaponCategoryHashes;
-    private readonly modCategoryHashes;
-
     constructor(
         private readonly manifest: UsedDestinyManifestSlice
     ) {
         this.itemCategories = hashMapToArray(manifest.DestinyItemCategoryDefinition);
-        this.originPerkCategory = this.itemCategories.find(category => category.displayProperties.name === DataSearchString.WeaponOriginPerkItemCategoryName);
+        this.originPerkCategory = this.itemCategories.find(category => category.displayProperties.name === dataSearchStringService.CategoryNames.WeaponOriginPerk);
 
-        this.weaponIntrinsicCategory = findItemInTable(this.socketCategoryLookup, category => category.displayProperties.name === DataSearchString.WeaponIntrinsicPerkCategoryName);
-        this.weaponPerkCategory = findItemInTable(this.socketCategoryLookup, category => category.displayProperties.name === DataSearchString.WeaponPerkSocketCategoryName);
-
-        const weaponCategories = this.itemCategories.filter(category => category.displayProperties.name === DataSearchString.WeaponItemCategoryName);
-        // Includes anything that modifies an item - perks, mods, masterworks, etc.
-        const modCategories = this.itemCategories.filter(category => category.displayProperties.name === DataSearchString.ModItemCategoryName);
-        this.weaponCategoryHashes = weaponCategories.map(c => c.hash);
-        this.modCategoryHashes = modCategories.map(c => c.hash);
+        this.weaponIntrinsicCategory = findItemInTable(this.socketCategoryLookup, category => category.displayProperties.name === dataSearchStringService.CategoryNames.WeaponIntrinsicPerk);
+        this.weaponPerkCategory = findItemInTable(this.socketCategoryLookup, category => category.displayProperties.name === dataSearchStringService.CategoryNames.WeaponPerkSocket);
 
         this.stripRedactedAndUnneeded();
     }
@@ -34,16 +25,44 @@ export class DestinyManifestProcessor {
         // Remove everything we don't need - this makes loading from cache much faster (and actually usable).
         // Only doing this for DestinyInventoryItemDefinition as it is by far the largest table.
         // The others are fairly small and don't need this.
-        const neededItemCategoryHashes = this.weaponCategoryHashes.concat(this.modCategoryHashes);
+        const allowedPlugCategoryIds = [
+            dataSearchStringService.CategoryIDs.IntrinsicPlug,
+
+            dataSearchStringService.CategoryIDs.BarrelsPlug,
+            dataSearchStringService.CategoryIDs.BladesPlug,
+            dataSearchStringService.CategoryIDs.BowstringsPlug,
+            dataSearchStringService.CategoryIDs.HaftsPlug,
+            dataSearchStringService.CategoryIDs.ScopesPlug,
+            dataSearchStringService.CategoryIDs.TubesPlug,
+
+            dataSearchStringService.CategoryIDs.ArrowsPlug,
+            dataSearchStringService.CategoryIDs.BatteriesPlug,
+            dataSearchStringService.CategoryIDs.GuardsPlug,
+            dataSearchStringService.CategoryIDs.MagazinesPlug,
+            dataSearchStringService.CategoryIDs.MagazinesGLPlug,
+
+            dataSearchStringService.CategoryIDs.FramesPlug,
+            dataSearchStringService.CategoryIDs.OriginsPlug,
+            dataSearchStringService.CategoryIDs.TrackerPlug,
+            dataSearchStringService.CategoryIDs.ExoticMasterworkPlug,
+            dataSearchStringService.CategoryIDs.CatalystsPlug,
+            dataSearchStringService.CategoryIDs.StocksPlug,
+
+            dataSearchStringService.CategoryIDs.WeaponModDamage,
+            dataSearchStringService.CategoryIDs.WeaponModGuns,
+        ];
         const itemHashesToRemove: number[] = [];
         for (const key in this.manifest.DestinyInventoryItemDefinition) {
             const item = this.manifest.DestinyInventoryItemDefinition[key];
-            if (
-                (!item.itemCategoryHashes || !item.itemCategoryHashes.some(h => neededItemCategoryHashes.includes(h)))
-                &&
-                // Some perks don't have any item categories.
-                (!item.plug || item.plug.plugCategoryIdentifier !== DataSearchString.FramesPlugCategoryId)
-                ) {
+            
+            const isWeapon = !!item.traitIds && item.traitIds.includes(dataSearchStringService.TraitIDs.Weapon)
+                && !!item.screenshot // Some weapons don't have screenshots - probably for the crafting menu.
+                && !!item.quality
+                && !!item.quality.infusionCategoryHash; // Others don't have an infusion category, probably also crafting related.
+            const isModOrPerk = item.plug && allowedPlugCategoryIds.includes(item.plug.plugCategoryIdentifier);
+            const isMasterwork = item.plug && item.plug.plugCategoryIdentifier.includes(dataSearchStringService.CategoryIDs.WeaponMasterworkPlugComponent);
+
+            if (!isWeapon && !isModOrPerk && !isMasterwork) {
                 itemHashesToRemove.push(item.hash);
             }
         }
@@ -78,11 +97,11 @@ export class DestinyManifestProcessor {
         for (const key in this.manifest.DestinyInventoryItemDefinition) {
             const item = this.manifest.DestinyInventoryItemDefinition[key];
             // No categories, ignore. No display name means it's probably not an item we care about.
-            if (!item.itemCategoryHashes || !item.displayProperties.name) continue;
+            if (!item.traitIds || !item.displayProperties.name) continue;
 
             // Seem to be duplicates for some weapons that don't have a screenshot - this
             // is probably the item used for the crafting menu, so ignore it.
-            if (item.itemCategoryHashes.some(h => this.weaponCategoryHashes.includes(h)) && !!item.screenshot) {
+            if (item.traitIds.includes(dataSearchStringService.TraitIDs.Weapon) && !!item.screenshot) {
                 weapons.push(item);
             }
         }
@@ -102,7 +121,7 @@ export class DestinyManifestProcessor {
         const weaponPerkSocketCategory = weaponSocketCategories.find(c => this.isWeaponPerkSocketCategory(c.socketCategoryHash));
         const weaponModSocketCategory = weaponSocketCategories.find(c => {
             const socketCategory = this.getSocketCategoryDefinition(c.socketCategoryHash);
-            return socketCategory && socketCategory.displayProperties.name === DataSearchString.WeaponModsSocketCategoryName;
+            return socketCategory && socketCategory.displayProperties.name === dataSearchStringService.CategoryNames.WeaponModsSocket;
         });
 
         // Get lists of sockets - perks first
@@ -119,11 +138,11 @@ export class DestinyManifestProcessor {
         const weaponModSockets = weaponModSocketCategory ? weaponModSocketCategory.socketIndexes.map(i => weaponSockets[i]) : [];
         const masterworkSocket = weaponModSockets.find(s => {
             const type = this.getSocketTypeDefinition(s.socketTypeHash);
-            return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes(DataSearchString.WeaponMasterworkPlugWhitelistCategoryId));
+            return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes(dataSearchStringService.CategoryIDs.WeaponMasterworkPlug));
         });
         const modSocket = weaponModSockets.find(s => {
             const type = this.getSocketTypeDefinition(s.socketTypeHash);
-            return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes(DataSearchString.WeaponModPlugWhitelistCategoryId));
+            return type && type.plugWhitelist.some(p => p.categoryIdentifier.includes(dataSearchStringService.CategoryIDs.WeaponMod));
         });
 
         const intrinsic = this.getIntrinsicFromSockets(intrinsicPerkSocket);
@@ -261,7 +280,7 @@ export class DestinyManifestProcessor {
         return plugSet!.reusablePlugItems
             .map(pi => this.getItemDefinition(pi.plugItemHash))
             // The only mod that has this plug category ID is the empty mod slot which is useless here.
-            .filter(pi => pi && pi.plug && pi.plug.plugCategoryIdentifier !== DataSearchString.WeaponModPlugWhitelistCategoryId)
+            .filter(pi => pi && pi.plug && pi.plug.plugCategoryIdentifier !== dataSearchStringService.CategoryIDs.WeaponMod)
             .map(pi => pi!)
     }
 
@@ -294,7 +313,7 @@ export class DestinyManifestProcessor {
     }
 
     private isTrackerPlugCategory = (plug: DestinyPlugWhitelistEntryDefinition) => {
-        return plug.categoryIdentifier === DataSearchString.TrackerCategoryId;
+        return plug.categoryIdentifier === dataSearchStringService.CategoryIDs.TrackerPlug;
     }
 
     public get damageTypes() { return hashMapToArray(this.manifest.DestinyDamageTypeDefinition); }
