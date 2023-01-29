@@ -52,17 +52,7 @@ const filteredWeapons = computed(() => {
 });
 
 function isWeaponSunset(weapon: IWeapon) {
-    // Priority here: weapon.quality.displayVersionWatermarkIcons -> weapon.iconWatermarkShelved -> weapon.iconWatermark
-    return !!(weapon.weapon
-        && (
-            (
-                weapon.weapon.quality
-                && weapon.weapon.quality.displayVersionWatermarkIcons.length > 0
-                && weapon.weapon.quality.displayVersionWatermarkIcons[0]
-                && weapon.weapon.quality.displayVersionWatermarkIcons[0]
-            )
-            || (weapon.weapon.iconWatermarkShelved)
-        ));
+    return !!weapon.weapon.iconWatermarkShelved;
 }
 
 function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: IWeapon) {

@@ -1,9 +1,10 @@
-import type { DestinyManifest } from "bungie-api-ts/destiny2";
+import type { DestinyManifest, DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import type { Destiny2GameData } from "./types";
 
 interface ICachedManifest {
     /** Version specific to this app, and the data it expects from the cache. Not the Bungie manifest version. */
     version: number;
+    language: DestinyManifestLanguage;
     manifestInfo: DestinyManifest;
     manifestData: Destiny2GameData;
 }

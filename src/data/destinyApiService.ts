@@ -2,6 +2,7 @@ import { Destiny2 } from "bungie-api-ts";
 import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import { cacheService } from "./cacheService";
+import { dataSearchStringService } from "./dataSearchStringService";
 import { DestinyManifestProcessor } from "./destinyManifestProcessor";
 import type { Destiny2GameData, IWeapon } from "./types";
 
@@ -9,6 +10,8 @@ const CurrentCachedManifestVersion = 1;
 
 class DestinyApiService {
     public retrieveManifest = async (language: DestinyManifestLanguage) => {
+        dataSearchStringService.setLanguage(language);
+
         // Get manifest metadata
         const manifestInfoPromise = Destiny2.getDestinyManifest(this.makeRequest);
         const cachedManifestPromise = cacheService.getCachedManifest();
@@ -17,7 +20,9 @@ class DestinyApiService {
         console.log("manifest info", manifestInfo);
 
         /*
-        if (cachedManifest && cachedManifest.version === CurrentCachedManifestVersion) {
+        if (cachedManifest
+            && cachedManifest.version === CurrentCachedManifestVersion
+            && cachedManifest.language === language) {
             const cachedJsonComponentUrls = cachedManifest.manifestInfo.jsonWorldComponentContentPaths[language];
             const retrievedJsonComponentUrls = manifestInfo.Response.jsonWorldComponentContentPaths[language];
             // Apparently the URLs are better for checking the manifest version as they contain a
@@ -81,8 +86,12 @@ class DestinyApiService {
             weaponPerkCategory: manifestProcessor.weaponPerkCategory!,
         };
 
-        cacheService.setCachedManifest({ version: CurrentCachedManifestVersion, manifestInfo: manifestInfo.Response, manifestData: gameData, })
-            .catch(err => console.error("Failed to cache manifest.", err));
+        cacheService.setCachedManifest({
+            version: CurrentCachedManifestVersion,
+            language: language,
+            manifestInfo: manifestInfo.Response,
+            manifestData: gameData,
+        }).catch(err => console.error("Failed to cache manifest.", err));
         return gameData;
     }
 
