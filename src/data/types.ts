@@ -181,6 +181,7 @@ export interface Destiny2GameData {
 
 export interface IWeapon {
     weapon: DestinyInventoryItemDefinition;
+    isAdept: boolean;
     intrinsic: DestinyInventoryItemDefinition | undefined;
     perks: IPerkSlotOptions[];
     curated: IPerkSlotOptions[];

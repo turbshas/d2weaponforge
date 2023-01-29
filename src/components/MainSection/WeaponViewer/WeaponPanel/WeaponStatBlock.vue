@@ -35,6 +35,7 @@ const props = defineProps<{
     selectedPerks: (DestinyInventoryItemDefinition | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
+    isAdept: boolean,
 }>();
 
 const investmentStatMap = computed(() => {
@@ -74,7 +75,7 @@ function getModifierForStat(statHash: number) {
     const bonusFromMasterwork = props.masterwork
         ? props.masterwork.investmentStats
             .filter(s => s.statTypeHash === statHash)
-            .map(s => selectionService.showCraftedBonus || !s.isConditionallyActive ? s.value : 0)
+            .map(s => selectionService.showCraftedBonus || props.isAdept || !s.isConditionallyActive ? s.value : 0)
             .reduce((total, current) => total += current, 0)
         : 0;
     const bonusFromMod = props.mod

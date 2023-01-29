@@ -66,6 +66,7 @@ class Misc {
 
 class TraitIds {
     public get Weapon() { return "item_type.weapon"; }
+    public get Sword() { return "weapon_type.sword"; }
 }
 
 class WeaponArchetypes {

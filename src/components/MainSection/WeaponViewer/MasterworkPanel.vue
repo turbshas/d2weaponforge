@@ -6,7 +6,6 @@ import type { IWeapon } from '@/data/types';
 import BuilderSection from '../../Common/BuilderSection.vue';
 import OptionButton from '@/components/Common/OptionButton.vue';
 import ElementLabel from '@/components/Common/ElementLabel.vue';
-import { DataSearchStrings } from '@/data/dataSearchStringService';
 
 const props = defineProps<{
     weapon: IWeapon | undefined,
@@ -17,13 +16,6 @@ const emits = defineEmits<{
     (e: "masterworkChanged", masterwork: DestinyInventoryItemDefinition | undefined): void
 }>();
 
-const weaponCategories = computed(() => {
-    if (!props.weapon || !props.weapon.weapon.itemCategoryHashes) return [];
-    return destinyDataService.itemCategories
-        .filter(c => !!c.itemTypeRegex)
-        .filter(c => props.weapon!.weapon.itemCategoryHashes!.includes(c.hash));
-});
-
 const weaponStatGroup = computed(() => {
     if (!props.weapon || !props.weapon.weapon.stats) return undefined;
     const statGroupHash = props.weapon.weapon.stats.statGroupHash;
@@ -31,32 +23,11 @@ const weaponStatGroup = computed(() => {
     return destinyDataService.getStatGroupDefinition(statGroupHash);
 });
 
-const filteredMasterworkOptions = computed(() => {
-    if (!props.weapon) return [];
-
-    const categoryRegexList = weaponCategories.value.map(c => c.itemTypeRegex);
-    const isSword = categoryRegexList.includes(DataSearchStrings.WeaponCategoryRegex.Sword);
-
-    return props.weapon.masterworks
-        // This filter seems to cover most of the edge cases, except for Impact.
-        .filter(mw => {
-            const mainMwStat = mw.investmentStats.find(s => !s.isConditionallyActive);
-            return mainMwStat && weaponStatGroup.value && weaponStatGroup.value.scaledStats.some(s => s.statHash === mainMwStat.statTypeHash);
-        })
-        .filter(mw => {
-            const mwPlugCategoryId = mw.plug ? mw.plug.plugCategoryIdentifier : "";
-            const isPlugCategoryImpactMw = mwPlugCategoryId === DataSearchStrings.CategoryIDs.WeaponMasterworkImpact;
-            // Impact only applies to swords.
-            if (isPlugCategoryImpactMw) return isSword;
-            // Swords can only have impact.
-            if (isSword) return isPlugCategoryImpactMw;
-            return true;
-        });
-});
-
 const masterworkOptionsByStatName = computed(() => {
     const masterworks: { [statName: string]: DestinyInventoryItemDefinition[] } = {};
-    for (const plugItem of filteredMasterworkOptions.value) {
+    if (!props.weapon) return masterworks;
+
+    for (const plugItem of props.weapon.masterworks) {
         const name = getStatNameForMasterwork(plugItem);
         if (!name) continue;
         if (!masterworks[name]) {
@@ -74,7 +45,7 @@ function getStatNameForMasterwork(masterwork: DestinyInventoryItemDefinition) {
     if (overrideDisplay) return overrideDisplay.name;
     const statDefinition = destinyDataService.getStatDefinition(increasedStat.statTypeHash);
     if (!statDefinition) return undefined;
-    return statDefinition.displayProperties.name
+    return statDefinition.displayProperties.name;
 }
 
 const masterworkStatNames = computed(() => Object.keys(masterworkOptionsByStatName.value));

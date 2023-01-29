@@ -2,7 +2,7 @@
 import { DataSearchStrings } from '@/data/dataSearchStringService';
 import { destinyDataService } from '@/data/destinyDataService';
 import { selectionService } from '@/data/selectionService';
-import type { IPerkOption } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/types';
 import { hashMapToArray } from '@/data/util';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
@@ -48,18 +48,19 @@ const weaponCategoryRangeValuesMap: { [itemRegex: string]: IWeaponRangeValues } 
 };
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition | undefined,
+    weapon: IWeapon | undefined,
     selectedPerks: (IPerkOption | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const weaponCategory = computed(() => {
-    if (!props.weapon || !props.weapon.itemCategoryHashes) return undefined;
-    console.log("weapon stats", hashMapToArray(props.weapon.stats!.stats).map(s => destinyDataService.getStatDefinition(s.statHash)));
+    if (!props.weapon || !props.weapon.weapon.itemCategoryHashes) return undefined;
+    console.log("weapon stats", hashMapToArray(props.weapon.weapon.stats!.stats).map(s => destinyDataService.getStatDefinition(s.statHash)));
+    const categoryHashes = props.weapon.weapon.itemCategoryHashes;
     return destinyDataService.itemCategories
         .filter(c => !!c.itemTypeRegex && !!weaponCategoryRangeValuesMap[c.itemTypeRegex])
-        .find(c => props.weapon!.itemCategoryHashes!.includes(c.hash));
+        .find(c => categoryHashes.includes(c.hash));
 });
 
 const weaponCategoryRegex = computed(() => {
@@ -73,9 +74,12 @@ const rangeValues = computed(() => {
 const hasRangeValues = computed(() => !!rangeValues.value);
 
 const allStats = computed(() => {
-    const weaponStats = getStatsForItem(props.weapon);
+    const weaponStats = getStatsForItem(props.weapon?.weapon);
     const perkStats = props.selectedPerks.map(p => getStatsForItem(p?.perk)).reduce((total, current) => total.concat(current), []);
-    const masterworkStats = getStatsForItem(props.masterwork).filter(s => selectionService.showCraftedBonus || !s.isConditionallyActive);
+    const masterworkStats = getStatsForItem(props.masterwork)
+        .filter(s => selectionService.showCraftedBonus
+            || (props.weapon && props.weapon.isAdept)
+            || !s.isConditionallyActive);
     const modStats = getStatsForItem(props.mod);
     console.log("damage falloff props", props);
     console.log("all stats", weaponStats, weaponStats.map(s => destinyDataService.getStatDefinition(s.statTypeHash)), perkStats, masterworkStats, modStats);

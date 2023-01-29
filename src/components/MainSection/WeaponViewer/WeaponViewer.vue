@@ -44,7 +44,7 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
             ></WeaponPanel>
             <div class="extras-mws-mods">
                 <ExtrasPanel
-                    :weapon="props.weapon?.weapon"
+                    :weapon="props.weapon"
                     :selected-perks="props.selectedPerks"
                     :masterwork="props.masterwork"
                     :mod="props.mod"
