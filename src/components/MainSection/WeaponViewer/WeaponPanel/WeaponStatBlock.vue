@@ -3,7 +3,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { selectionService } from '@/data/selectionService';
 import { DataSearchString } from '@/data/types';
 import { computed } from '@vue/reactivity';
-import type { DestinyInventoryItemDefinition, DestinyInventoryItemStatDefinition } from 'bungie-api-ts/destiny2';
+import type { DestinyInventoryItemDefinition, DestinyInventoryItemStatDefinition, DestinyItemInvestmentStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
 
 const statOrdering = [
@@ -30,7 +30,9 @@ const statOrdering = [
 ];
 
 const props = defineProps<{
+    statGroup: DestinyStatGroupDefinition | undefined,
     stats: DestinyInventoryItemStatDefinition[],
+    investmentStats: DestinyItemInvestmentStatDefinition[],
     selectedPerks: (DestinyInventoryItemDefinition | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
@@ -39,7 +41,17 @@ const props = defineProps<{
 const statMap = computed(() => {
     const map: { [name: string]: DestinyInventoryItemStatDefinition } = {};
     for (const stat of props.stats) {
-        const definition = getStatDefinition(stat);
+        const definition = getStatDefinition(stat.statHash);
+        if (definition) {
+            map[definition.displayProperties.name] = stat;
+        }
+    }
+    return map;
+});
+const investmentStatMap = computed(() => {
+    const map: { [name: string]: DestinyItemInvestmentStatDefinition } = {};
+    for (const stat of props.investmentStats) {
+        const definition = getStatDefinition(stat.statTypeHash);
         if (definition) {
             map[definition.displayProperties.name] = stat;
         }
@@ -56,9 +68,18 @@ const orderedStats = computed(() => {
     }
     return ordered;
 });
+const orderedInvestmentStats = computed(() => {
+    const ordered: DestinyItemInvestmentStatDefinition[] = [];
+    for(const statName of statOrdering) {
+        if (investmentStatMap.value[statName]) {
+            ordered.push(investmentStatMap.value[statName]);
+        }
+    }
+    return ordered;
+});
 
-function getStatDefinition(stat: DestinyInventoryItemStatDefinition) {
-    return destinyDataService.getStatDefinition(stat.statHash);
+function getStatDefinition(statHash: number) {
+    return destinyDataService.getStatDefinition(statHash);
 }
 
 function getModifierForStat(stat: DestinyInventoryItemStatDefinition) {
@@ -89,9 +110,11 @@ function getModifierForStat(stat: DestinyInventoryItemStatDefinition) {
 <template>
     <div class="list">
         <WeaponStatDisplay
-            v-for="stat in orderedStats"
+            v-for="(stat, index) in orderedStats"
             :key="stat.statHash"
-            :definition="getStatDefinition(stat)"
+            :stat-group="props.statGroup"
+            :definition="getStatDefinition(stat.statHash)"
+            :investment-value="orderedInvestmentStats[index]"
             :value="stat"
             :modifier="getModifierForStat(stat)"
         ></WeaponStatDisplay>

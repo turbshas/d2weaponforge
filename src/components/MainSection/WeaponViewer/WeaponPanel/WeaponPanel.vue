@@ -64,6 +64,18 @@ const stats = computed(() => {
     return hashMapToArray(props.weapon.weapon.stats.stats);
 });
 
+const investmentStats = computed(() => {
+    if (!props.weapon || !props.weapon.weapon.investmentStats) return [];
+    return props.weapon.weapon.investmentStats;
+});
+
+const statGroup = computed(() => {
+    if (!props.weapon || !props.weapon.weapon.stats) return undefined;
+    const statGroupHash = props.weapon.weapon.stats.statGroupHash;
+    if (!statGroupHash) return undefined;
+    return destinyDataService.getStatGroupDefinition(statGroupHash);
+})
+
 // TODO make this not as gross, should probably do some data processing in destinyDataService so fewer lookups are required by vue components
 const filteredStats = computed(() => {
     return stats.value.filter(s => {
@@ -116,7 +128,9 @@ function onPerkClicked(column: number) {
         </div>
         <WeaponStatBlock
             class="stats"
+            :stat-group="statGroup"
             :stats="filteredStats"
+            :investment-stats="investmentStats"
             :selected-perks="currentSelectedPerks"
             :masterwork="masterwork"
             :mod="mod"

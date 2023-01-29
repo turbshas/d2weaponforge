@@ -36,3 +36,6 @@
 - tab bar text isn't centered properly
 - move constants to a central location if possible, even just another file
 - move data search strings to service to support changing the language
+- reload modifiers seem to all apply as a percentage of the base mag, i.e. tac mag + backup mag on succession is 0.1 * 3 + 0.3 * 3, rather than multiplying together
+- process weapons into wrapper classes, including stats and display info
+- use statGroup.scaledStat.displayAsNumeric instead of map in WeaponStatDisplay.vue

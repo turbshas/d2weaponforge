@@ -310,6 +310,7 @@ export class DestinyManifestProcessor {
     public get seasonsLookup() { return this.manifest.DestinySeasonDefinition; }
 
     public get statsLookup() { return this.manifest.DestinyStatDefinition; }
+    public get statGroupsLookup() { return this.manifest.DestinyStatGroupDefinition; }
     public get itemLookup() { return this.manifest.DestinyInventoryItemDefinition; }
     public get plugSetLookup() { return this.manifest.DestinyPlugSetDefinition; }
     public get socketCategoryLookup() { return this.manifest.DestinySocketCategoryDefinition; }

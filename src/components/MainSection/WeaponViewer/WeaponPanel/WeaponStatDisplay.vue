@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import { DataSearchString, StatDisplayType } from '@/data/types';
 import { computed } from '@vue/reactivity';
-import type { DestinyInventoryItemStatDefinition, DestinyStatDefinition } from 'bungie-api-ts/destiny2';
-
-const statDisplayTypeMap: { [statName: string]: StatDisplayType } = {
-    [DataSearchString.RecoilDirectionStatName]: StatDisplayType.Angle,
-    [DataSearchString.RpmStatName]: StatDisplayType.Number,
-    [DataSearchString.DrawTimeStatName]: StatDisplayType.Number,
-    [DataSearchString.ChargeTimeStatName]: StatDisplayType.Number,
-    [DataSearchString.MagSizeStatName]: StatDisplayType.Number,
-};
+import type { DestinyInventoryItemStatDefinition, DestinyItemInvestmentStatDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     definition: DestinyStatDefinition | undefined,
+    statGroup: DestinyStatGroupDefinition | undefined,
+    investmentValue: DestinyItemInvestmentStatDefinition,
     value: DestinyInventoryItemStatDefinition,
     modifier: number,
 }>();
 
+const statHash = computed(() => props.definition && props.definition.hash);
+
 const name = computed(() => {
-    return props.definition && props.definition.displayProperties.name;
+    if (!statHash.value) return "";
+    const override = props.statGroup && props.statGroup.overrides[statHash.value];
+    const displayProps = override || props.definition;
+    return displayProps ? displayProps.displayProperties.name : "";
 });
+
 const recoilDirectionPieLabel = "Recoil Direction Angle Graphic";
 
 const adjustedModifier = computed(() => {
@@ -29,20 +29,44 @@ const adjustedModifier = computed(() => {
     return props.modifier;
 });
 
+const statDisplayDefinition = computed(() => {
+    if (!statHash.value || !props.statGroup) return undefined;
+    return props.statGroup.scaledStats.find(s => s.statHash === statHash.value);
+});
+
 const total = computed(() => {
     console.log("stat info:", props.definition, props.value, adjustedModifier.value);
-    const value = props.value.value + adjustedModifier.value;
+    const value = props.investmentValue.value + adjustedModifier.value;
     // These values don't exist in the range 0-100 so don't need to be clamped.
     if (statDisplayType.value === StatDisplayType.Number) return value;
-    return value < 0 ? 0 : (value > 100 ? 100 : value);
+    const max = statDisplayDefinition.value ? statDisplayDefinition.value.maximumValue : 100;
+    return value < 0 ? 0 : (value > max ? max : value);
+});
+const interpolatedTotal = computed(() => {
+    if (!statDisplayDefinition.value) return total.value;
+    const displayInterpolation = statDisplayDefinition.value.displayInterpolation;
+    if (displayInterpolation.length < 2) return total.value;
+    // Some stats work on exact values, look for those first.
+    const existing = displayInterpolation.find(d => d.value === total.value);
+    console.log("interpolatedTotal info", statDisplayDefinition.value, total.value, props.value, props.investmentValue);
+    if (existing) return existing.weight;
+
+    // Others are a range.
+    const start = displayInterpolation[0];
+    const end = displayInterpolation[displayInterpolation.length - 1];
+    const rangeSize = end.weight - start.weight;
+    const offset = Math.ceil(rangeSize * (total.value / 100));
+    const value = offset + start.weight;
+    return Math.min(value, end.weight);
 });
 const modifierSign = computed(() => props.modifier > 0 ? "+" : "");
 const modifierMagnitude = computed(() => Math.abs(props.modifier));
-const filledWidthPercent = computed(() => props.modifier > 0 ? props.value.value : total.value);
+const filledWidthPercent = computed(() => props.modifier > 0 ? props.value.value : interpolatedTotal.value);
 
 const statDisplayType = computed(() => {
-    if (!name.value) return StatDisplayType.Bar;
-    return statDisplayTypeMap[name.value] ? statDisplayTypeMap[name.value] : StatDisplayType.Bar;
+    if (!name.value || !statDisplayDefinition.value) return StatDisplayType.Bar;
+    if (!statDisplayDefinition.value.displayAsNumeric) return StatDisplayType.Bar;
+    return name.value === DataSearchString.RecoilDirectionStatName ? StatDisplayType.Angle : StatDisplayType.Number;
 });
 const isBarDisplayType = computed(() => statDisplayType.value === StatDisplayType.Bar);
 const isAngleDisplayType = computed(() => statDisplayType.value === StatDisplayType.Angle);
@@ -97,7 +121,7 @@ function getSvgPathData(recoilDirection: number) {
         <div class="display">
             <div class="bar" v-if="isBarDisplayType">
                 <div class="value" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">
-                    <span>{{ total }}</span>
+                    <span>{{ interpolatedTotal }}</span>
                     <span class="modifier">({{ modifierSign + modifier }})</span>
                 </div>
                 <div class="filled" :style="{ 'width': filledWidthPercent + '%' }"></div>
@@ -110,7 +134,7 @@ function getSvgPathData(recoilDirection: number) {
             </div>
 
             <div class="number" v-else>
-                <span class="text" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">{{ total }}</span>
+                <span class="text" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">{{ interpolatedTotal }}</span>
                 <div class="arrow" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }"></div>
 
                 <svg
@@ -123,11 +147,11 @@ function getSvgPathData(recoilDirection: number) {
                     <circle class="circle" r="1" cx="1" cy="1"></circle>
                     <path
                         class="path"
-                        v-if="total <= 96"
-                        :d="getSvgPathData(total)"
+                        v-if="interpolatedTotal <= 96"
+                        :d="getSvgPathData(interpolatedTotal)"
                     ></path>
                     <line
-                        v-if="total > 96"
+                        v-if="interpolatedTotal > 96"
                         x1="1" y1="2"
                         x2="1" y2="0"
                         stroke="white"

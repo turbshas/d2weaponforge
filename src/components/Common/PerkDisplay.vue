@@ -52,8 +52,7 @@ const tooltipBonuses = computed(() => {
         };
     });
 });
-// TODO: this require outside data, complete when that is compiled.
-const tooltipEnhanced = computed(() => false);
+const tooltipEnhanced = computed(() => !!props.enhanced);
 // TODO: this require outside data, complete when that is compiled.
 const tooltipEnhancedBonus = computed(() => "");
 
