@@ -24,7 +24,7 @@
 - tab bar text isn't centered properly
 
 - move constants to a central location if possible, even just another file
-- broke sword stats, gotta fix that
+- tooltip for magazine still says mag stat instead of actual mag increase
 
 - weapon viewer
   - extras (comparisons integrations, damage falloff, reload speed)

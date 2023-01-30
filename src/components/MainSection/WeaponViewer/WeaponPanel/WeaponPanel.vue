@@ -99,7 +99,7 @@ function onPerkClicked(column: number) {
             :selected-perks="currentSelectedPerks"
             :masterwork="masterwork"
             :mod="mod"
-            :is-adept="!!props.weapon?.isAdept"
+            :is-adept="!!(props.weapon?.isAdept)"
         ></WeaponStatBlock>
         <SelectedPerks
             class="perks"
@@ -113,6 +113,7 @@ function onPerkClicked(column: number) {
             :origin-perk="fifthColumnPerk"
             :masterwork="masterwork"
             :mod="mod"
+            :is-adept="!!(props.weapon?.isAdept)"
             @perk-clicked="onPerkClicked"
         ></SelectedPerks>
     </div>

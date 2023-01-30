@@ -26,6 +26,7 @@ const props = defineProps<{
     originPerk: DestinyInventoryItemDefinition | undefined,
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
+    isAdept: boolean,
 }>();
 
 const emits = defineEmits<{
@@ -66,6 +67,7 @@ function onPerkClicked(column: number) {
             :key="perk.perk?.hash"
             class="perk"
             :perk="perk.perk"
+            :is-adept="props.isAdept"
             :crafting-info="perk.craftingInfo"
             :enhanced="perk.enhanced"
             :full-size="perk.fullSize"
