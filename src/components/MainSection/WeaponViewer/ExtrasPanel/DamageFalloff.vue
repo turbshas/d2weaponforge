@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { DataSearchStrings } from '@/data/dataSearchStringService';
 import { destinyDataService } from '@/data/destinyDataService';
 import { selectionService } from '@/data/selectionService';
-import { DataSearchString, type IPerkOption } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/types';
 import { hashMapToArray } from '@/data/util';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
@@ -15,27 +16,27 @@ interface IWeaponRangeValues {
 }
 
 // TODO: find a better way to identify specific items in the manifest, perhaps index? unsure if that is consistent across languages
-const RangeStatName = DataSearchString.RangeStatName;
-const ZoomStatName = DataSearchString.ZoomStatName;
-const RangefinderPerkName = DataSearchString.RangefinderPerkName;
+const RangeStatName = DataSearchStrings.Stats.Range;
+const ZoomStatName = DataSearchStrings.Stats.Zoom;
+const RangefinderPerkName = DataSearchStrings.Misc.RangefinderPerkName;
 
 // Numbers from: https://docs.google.com/spreadsheets/d/1B2zWeT99SksMzmptNeIt66Mv8YZu38R7t-KR50BJ0p0/view#gid=817864056
 // TODO: numbers for exotics are different, like vex that acts as an auto rifle
 const weaponCategoryRangeValuesMap: { [itemRegex: string]: IWeaponRangeValues } = {
     // TODO: hand cannons are different for 120s, include that somehow
     // TODO: some weapons have a "zoom scalar" that is added to the base zoom?
-    [DataSearchString.AutoRifleTypeRegex]: { baseFalloffStart: 10.8, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
-    [DataSearchString.HandCannonTypeRegex]: { baseFalloffStart: 16, hipFireRangePerStat: 0.096, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.AutoRifle]: { baseFalloffStart: 10.8, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.HandCannon]: { baseFalloffStart: 16, hipFireRangePerStat: 0.096, zoomAdjustment: 0.25, },
     // TODO: pulse rifles are all over the place in zoom/"modified zoom multiplier"
-    [DataSearchString.PulseRifleTypeRegex]: { baseFalloffStart: 15, hipFireRangePerStat: 0.0685, zoomAdjustment: 0.25, },
-    [DataSearchString.ScoutRifleTypeRegex]: { baseFalloffStart: 29.2, hipFireRangePerStat: 0.169, zoomAdjustment: 1.25, },
-    [DataSearchString.SidearmTypeRegex]: { baseFalloffStart: 11.6, hipFireRangePerStat: 0.034, zoomAdjustment: 0.25, },
-    [DataSearchString.SubmachinegunTypeRegex]: { baseFalloffStart: 8.19, hipFireRangePerStat: 0.09576, zoomAdjustment: 1.25, },
+    [DataSearchStrings.WeaponCategoryRegex.PulseRifle]: { baseFalloffStart: 15, hipFireRangePerStat: 0.0685, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: { baseFalloffStart: 29.2, hipFireRangePerStat: 0.169, zoomAdjustment: 1.25, },
+    [DataSearchStrings.WeaponCategoryRegex.Sidearm]: { baseFalloffStart: 11.6, hipFireRangePerStat: 0.034, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.SubmachineGun]: { baseFalloffStart: 8.19, hipFireRangePerStat: 0.09576, zoomAdjustment: 1.25, },
 
-    [DataSearchString.FusionRifleTypeRegex]: { baseFalloffStart: 8.2, hipFireRangePerStat: 0.036, zoomAdjustment: 2, },
-    [DataSearchString.TraceRifleTypeRegex]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: { baseFalloffStart: 8.2, hipFireRangePerStat: 0.036, zoomAdjustment: 2, },
+    [DataSearchStrings.WeaponCategoryRegex.TraceRifle]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
 
-    [DataSearchString.MachineGunTypeRegex]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
+    [DataSearchStrings.WeaponCategoryRegex.MachineGun]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
 
     /*
     // TODO: what to do with these? ignore them?
@@ -47,18 +48,19 @@ const weaponCategoryRangeValuesMap: { [itemRegex: string]: IWeaponRangeValues } 
 };
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition | undefined,
+    weapon: IWeapon | undefined,
     selectedPerks: (IPerkOption | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
 }>();
 
 const weaponCategory = computed(() => {
-    if (!props.weapon || !props.weapon.itemCategoryHashes) return undefined;
-    console.log("weapon stats", hashMapToArray(props.weapon.stats!.stats).map(s => destinyDataService.getStatDefinition(s.statHash)));
+    if (!props.weapon || !props.weapon.weapon.itemCategoryHashes) return undefined;
+    console.log("weapon stats", hashMapToArray(props.weapon.weapon.stats!.stats).map(s => destinyDataService.getStatDefinition(s.statHash)));
+    const categoryHashes = props.weapon.weapon.itemCategoryHashes;
     return destinyDataService.itemCategories
         .filter(c => !!c.itemTypeRegex && !!weaponCategoryRangeValuesMap[c.itemTypeRegex])
-        .find(c => props.weapon!.itemCategoryHashes!.includes(c.hash));
+        .find(c => categoryHashes.includes(c.hash));
 });
 
 const weaponCategoryRegex = computed(() => {
@@ -72,9 +74,12 @@ const rangeValues = computed(() => {
 const hasRangeValues = computed(() => !!rangeValues.value);
 
 const allStats = computed(() => {
-    const weaponStats = getStatsForItem(props.weapon);
+    const weaponStats = getStatsForItem(props.weapon?.weapon);
     const perkStats = props.selectedPerks.map(p => getStatsForItem(p?.perk)).reduce((total, current) => total.concat(current), []);
-    const masterworkStats = getStatsForItem(props.masterwork).filter(s => selectionService.showCraftedBonus || !s.isConditionallyActive);
+    const masterworkStats = getStatsForItem(props.masterwork)
+        .filter(s => selectionService.showCraftedBonus
+            || (props.weapon && props.weapon.isAdept)
+            || !s.isConditionallyActive);
     const modStats = getStatsForItem(props.mod);
     console.log("damage falloff props", props);
     console.log("all stats", weaponStats, weaponStats.map(s => destinyDataService.getStatDefinition(s.statTypeHash)), perkStats, masterworkStats, modStats);

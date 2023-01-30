@@ -1,8 +1,7 @@
 import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { reactive } from "vue";
 import { destinyApiService } from "./destinyApiService";
-import { DataSearchString, type Destiny2GameData } from "./types";
-import { findItemInTable } from "./util";
+import type { Destiny2GameData } from "./types";
 
 type GameDataReactiveWrapper = { gameData: Destiny2GameData | null, };
 
@@ -20,6 +19,10 @@ class DestinyDataService {
         return this.gameData ? this.gameData.weapons : [];
     }
 
+    public get weaponTypes() {
+        return this.gameData ? this.gameData.weaponTypes : [];
+    }
+
     public get damageTypes() {
         return this.gameData ? this.gameData.damageTypes : [];
     }
@@ -34,11 +37,6 @@ class DestinyDataService {
 
     public get itemTiers() {
         return this.gameData ? this.gameData.itemTierTypes : [];
-    }
-
-    // TODO: this can probably be removed
-    public get rpmStatDefinition() {
-        return this.gameData ? findItemInTable(this.gameData.statsLookup, i => i.displayProperties.name === DataSearchString.RpmStatName) : undefined;
     }
 
     public initialize = async () => {

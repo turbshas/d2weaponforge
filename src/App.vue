@@ -33,6 +33,7 @@ function onWeaponSelected(weapon: IWeapon | undefined) {
     selectedPerksMap.value = {};
     selectedMasterwork.value = undefined;
     selectedMod.value = undefined;
+    console.log("weapon selected", weapon);
 }
 
 function onPerkSelected(column: number, perk: IPerkOption | undefined) {

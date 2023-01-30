@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import OptionButton from '@/components/Common/OptionButton.vue';
-import type { IPerkOption } from '@/data/types';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import type { IPerkOption, IWeapon } from '@/data/types';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 import DimIcon from '@/assets/dim_icon.svg';
 import { ref } from 'vue';
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition | undefined,
+    weapon: IWeapon | undefined,
     selectedPerks: (IPerkOption | undefined)[],
 }>();
 
@@ -16,7 +15,7 @@ const buttonOn = ref(false);
 function copyWishlistItem() {
     buttonOn.value = true;
 
-    const weaponString = props.weapon ? props.weapon.hash.toString() : "";
+    const weaponString = props.weapon ? props.weapon.weapon.hash.toString() : "";
     const perksString = props.selectedPerks.filter(p => !!p).map(p => p!.perk.hash).join(",");
     const itemString = `dimwishlist:item=${weaponString}&perks=${perksString}`;
     navigator.clipboard.writeText(itemString);

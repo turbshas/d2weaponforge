@@ -24,8 +24,7 @@
 - tab bar text isn't centered properly
 
 - move constants to a central location if possible, even just another file
-- move data search strings to service to support changing the language
-- support for translations
+- broke sword stats, gotta fix that
 
 - weapon viewer
   - extras (comparisons integrations, damage falloff, reload speed)

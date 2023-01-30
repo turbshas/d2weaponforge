@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import OptionButton from '@/components/Common/OptionButton.vue';
 import { selectionService } from '@/data/selectionService';
-import type { IPerkOption } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import BuilderSection from '../../../Common/BuilderSection.vue';
@@ -12,7 +12,7 @@ import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 import ReloadSpeed from './ReloadSpeed.vue';
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition | undefined,
+    weapon: IWeapon | undefined,
     selectedPerks: (IPerkOption | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
@@ -38,7 +38,7 @@ function onShowCraftedBonusClicked() {
             <OptionButton :text="hideRetiredText" :active="selectionService.hideRetiredPerks" @click="onHideRetiredClicked"></OptionButton>
         </ExtrasListItem>
         <!-- TODO: add tooltip here that explains what this means - +3 stat bonus for lvl 10 crafted with enhanced intrinsic -->
-        <ExtrasListItem label="Show Crafted Bonus">
+        <ExtrasListItem label="Show Crafted Bonus" v-if="!props.weapon?.isAdept">
             <OptionButton :text="showCraftedBonusText" :active="selectionService.showCraftedBonus" @click="onShowCraftedBonusClicked"></OptionButton>
         </ExtrasListItem>
         <AddToComparisons></AddToComparisons>

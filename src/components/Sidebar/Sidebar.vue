@@ -23,6 +23,10 @@ function onWeaponSelected(weapon: IWeapon) {
     emit("weaponSelected", weapon);
 }
 
+function onFiltersApplied() {
+    viewingFilter.value = false;
+}
+
 function onFilterToggled() {
     viewingFilter.value = !viewingFilter.value;
 }
@@ -39,7 +43,12 @@ function onSearchChanged(newSearchString: string) {
             <Searchbar class="search" @search-changed="onSearchChanged"></Searchbar>
         </div>
         <TabBar @tab-selected="onTabSelected"></TabBar>
-        <SidebarPanel :viewing-filter="viewingFilter" :search-string="searchString" @weapon-selected="onWeaponSelected"></SidebarPanel>
+        <SidebarPanel
+            :viewing-filter="viewingFilter"
+            :search-string="searchString"
+            @weapon-selected="onWeaponSelected"
+            @filters-applied="onFiltersApplied"
+        ></SidebarPanel>
     </div>
 </template>
 

@@ -26,82 +26,6 @@ export type UsedDestinyManifestSlice = DestinyManifestSlice<(
     | "DestinyPowerCapDefinition"
 )[]>;
 
-export enum DataSearchString {
-    // Adept names
-    Adept = "Adept",
-    Harrowed = "Harrowed",
-    Timelost = "Timelost",
-
-    FramesPlugCategoryId = "frames",
-    RangefinderPerkName = "Rangefinder",
-    TrackerCategoryId = "v400.plugs.weapons.masterworks.trackers",
-
-    // Stat names
-    AccuracyStatName = "Accuracy",
-    AimAssistanceStatName = "Aim Assistance",
-    AirborneEffectivenessStatName = "Airborne Effectiveness",
-    BlastRadiusStatName = "Blast Radius",
-    ChargeTimeStatName = "Charge Time",
-    DrawTimeStatName = "Draw Time",
-    MagSizeStatName = "Magazine",
-    ImpactStatName = "Impact",
-    HandlingStatName = "Handling",
-    RangeStatName = "Range",
-    RecoilDirectionStatName = "Recoil Direction",
-    ReloadSpeedStatName = "Reload Speed",
-    RpmStatName = "Rounds Per Minute",
-    StabilityStatName = "Stability",
-    VelocityStatName = "Velocity",
-    ZoomStatName = "Zoom",
-
-    ModItemCategoryName = "Mods",
-    WeaponItemCategoryName = "Weapon",
-    WeaponIntrinsicPerkCategoryName = "INTRINSIC TRAITS",
-    WeaponOriginPerkItemCategoryName = "Weapon Mods: Origin Traits",
-    WeaponPerkSocketCategoryName = "WEAPON PERKS",
-    WeaponMasterworkPlugWhitelistCategoryId = "v400.plugs.weapons.masterworks",
-    WeaponMasterworkImpactPlugCategoryId = "v400.plugs.weapons.masterworks.stat.damage",
-    WeaponModsSocketCategoryName = "WEAPON MODS",
-    WeaponModPlugWhitelistCategoryId = "v400.weapon.mod_empty",
-
-    // Weapon categories
-    AutoRifleTypeRegex = ".*_auto_rifle",
-    BowTypeRegex = "type_weapon_bow",
-    HandCannonTypeRegex = ".*_hand_cannon",
-    FusionRifleTypeRegex = "type_weapon_fusion_rifle",
-    GlaiveTypeRegex = ".*_glaive",
-    GrenadeLauncherTypeRegex = ".*_grenade_launcher",
-    LinearFusionTypeRegex = ".*_fusion_rifle_line",
-    MachineGunTypeRegex = ".*_machinegun",
-    PulseRifleTypeRegex = ".*_pulse_rifle",
-    RocketLauncherTypeRegex = ".*_rocket_launcher",
-    ScoutRifleTypeRegex = ".*_scout_rifle",
-    SidearmTypeRegex = ".*_sidearm",
-    ShotgunTypeRegex = ".*_shotgun",
-    SniperRifleTypeRegex = ".*_sniper_rifle",
-    SubmachinegunTypeRegex = ".*_submachinegun",
-    SwordTypeRegex = "type_weapon_sword",
-    TraceRifleTypeRegex = ".*_beam_rifle",
-
-    // Weapon Archetypes
-    Adaptive = "Adaptive",
-    AdaptiveBurst = "Adaptive (Burst)",
-    Aggressive = "Aggressive",
-    AggressiveBurst = "Agg. Burst", // Or Aggressive Burst?
-    Caster = "Caster",
-    HakkePrecision = "Hakke Precision",
-    HighImpact = "High-Impact",
-    Lightweight = "Lightweight",
-    OmolonAdaptive = "Omolon Adaptive",
-    PinpointSlug = "Pinpoint Slug",
-    Precision = "Precision",
-    RapidFire = "Rapid-Fire",
-    SurosRapidFire = "Suros Rapid-Fire",
-    VeistRapidFire = "Veist Rapid-Fire",
-    Vortex = "Vortex",
-    WaveFrame = "Wave-Frame",
-}
-
 export enum WeaponArchetypeRpm {
     AutoAdaptive = 600,
     AutoHighImpact = 360,
@@ -247,20 +171,20 @@ export interface Destiny2GameData {
     weapons: IWeapon[];
     weaponsLookup: { [weaponHash: number]: IWeapon };
 
+    weaponTypes: IWeaponTypeInfo[];
+
     statsLookup: { [hash: number]: DestinyStatDefinition };
     statGroupsLookup: { [hash: number]: DestinyStatGroupDefinition };
     itemLookup: { [hash: number]: DestinyInventoryItemDefinition };
     plugSetLookup: { [hash: number]: DestinyPlugSetDefinition };
     socketCategoryLookup: { [hash: number]: DestinySocketCategoryDefinition };
     socketTypeLookup: { [hash: number]: DestinySocketTypeDefinition };
-
-    originPerkCategory: DestinyItemCategoryDefinition;
-    weaponIntrinsicCategory: DestinySocketCategoryDefinition;
-    weaponPerkCategory: DestinySocketCategoryDefinition;
 }
 
 export interface IWeapon {
     weapon: DestinyInventoryItemDefinition;
+    isAdept: boolean;
+    isSunset: boolean;
     intrinsic: DestinyInventoryItemDefinition | undefined;
     perks: IPerkSlotOptions[];
     curated: IPerkSlotOptions[];
@@ -318,4 +242,33 @@ export interface ICraftingInfo {
 
 export interface IPerkSlotOptions {
     options: IPerkOption[];
+}
+
+export interface IWeaponTypeInfo {
+    /** User-friendly name of the weapon type. */
+    weaponTypeName: string;
+    /** The trait ID of this weapon type (@see {@link DestinyInventoryItemDefinition.traitIds}). */
+    traitId: string;
+    /** The regex from @see {@link DestinyItemCategoryDefinition.itemTypeRegex} that matches this weapon type. */
+    weaponCategoryRegex: string;
+    /** The hash of the weapon type's category, from @see {@link DestinyItemCategoryDefinition.hash}. */
+    weaponCategoryHash: number;
+    /** Whether to show the RPM value in the filter. */
+    showRpm: boolean;
+    /** Whether to use the RPM to compare between archetypes. If not, just the name of the intrinsic perk is used. */
+    compareUsingRpm: boolean;
+    /** The units that the RPM value is in, e.g. RPM or ms. */
+    rpmUnits: string;
+    archetypes: IArchetypeInfo[];
+}
+
+export interface IArchetypeInfo {
+    /** Trait ID of the weapon archetype. */
+    weaponType: string;
+    /** Name of the archetype's intrinsic perk. */
+    name: string;
+    /** The RPM of the archetype, or equivalent. */
+    rpm: number;
+    /** The hash of the stat used to get the RPM. */
+    statHash: number;
 }

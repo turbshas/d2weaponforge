@@ -1,32 +1,38 @@
 <script setup lang="ts">
+import { DataSearchStrings } from '@/data/dataSearchStringService';
 import { destinyDataService } from '@/data/destinyDataService';
 import { selectionService } from '@/data/selectionService';
-import { DataSearchString } from '@/data/types';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition, DestinyItemInvestmentStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
 
 const statOrdering = [
-    DataSearchString.ImpactStatName,
-    DataSearchString.BlastRadiusStatName,
+    DataSearchStrings.Stats.Impact,
+    DataSearchStrings.Stats.BlastRadius,
 
-    DataSearchString.RangeStatName,
-    DataSearchString.AccuracyStatName,
-    DataSearchString.VelocityStatName,
+    DataSearchStrings.Stats.Range,
+    DataSearchStrings.Stats.Accuracy,
+    DataSearchStrings.Stats.Velocity,
 
-    DataSearchString.StabilityStatName,
-    DataSearchString.HandlingStatName,
-    DataSearchString.ReloadSpeedStatName,
-    DataSearchString.AimAssistanceStatName,
-    DataSearchString.AirborneEffectivenessStatName,
-    DataSearchString.ZoomStatName,
-    DataSearchString.RecoilDirectionStatName,
+    DataSearchStrings.Stats.Stability,
+    DataSearchStrings.Stats.Handling,
+    DataSearchStrings.Stats.ReloadSpeed,
+    DataSearchStrings.Stats.AimAssistance,
+    DataSearchStrings.Stats.AirborneEffectiveness,
+    DataSearchStrings.Stats.Zoom,
+    DataSearchStrings.Stats.RecoilDirection,
 
-    DataSearchString.RpmStatName,
-    DataSearchString.DrawTimeStatName,
-    DataSearchString.ChargeTimeStatName,
+    DataSearchStrings.Stats.SwingSpeed,
+    DataSearchStrings.Stats.ChargeRate,
+    DataSearchStrings.Stats.GuardEfficiency,
+    DataSearchStrings.Stats.GuardResistance,
 
-    DataSearchString.MagSizeStatName,
+    DataSearchStrings.Stats.Rpm,
+    DataSearchStrings.Stats.DrawTime,
+    DataSearchStrings.Stats.ChargeTime,
+
+    DataSearchStrings.Stats.MagSize,
+    DataSearchStrings.Stats.AmmoCapacity,
 ];
 
 const props = defineProps<{
@@ -35,6 +41,7 @@ const props = defineProps<{
     selectedPerks: (DestinyInventoryItemDefinition | undefined)[],
     masterwork: DestinyInventoryItemDefinition | undefined,
     mod: DestinyInventoryItemDefinition | undefined,
+    isAdept: boolean,
 }>();
 
 const investmentStatMap = computed(() => {
@@ -74,7 +81,7 @@ function getModifierForStat(statHash: number) {
     const bonusFromMasterwork = props.masterwork
         ? props.masterwork.investmentStats
             .filter(s => s.statTypeHash === statHash)
-            .map(s => selectionService.showCraftedBonus || !s.isConditionallyActive ? s.value : 0)
+            .map(s => selectionService.showCraftedBonus || props.isAdept || !s.isConditionallyActive ? s.value : 0)
             .reduce((total, current) => total += current, 0)
         : 0;
     const bonusFromMod = props.mod

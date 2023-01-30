@@ -99,6 +99,7 @@ function onPerkClicked(column: number) {
             :selected-perks="currentSelectedPerks"
             :masterwork="masterwork"
             :mod="mod"
+            :is-adept="!!props.weapon?.isAdept"
         ></WeaponStatBlock>
         <SelectedPerks
             class="perks"
