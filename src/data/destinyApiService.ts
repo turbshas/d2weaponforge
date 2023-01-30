@@ -19,7 +19,7 @@ class DestinyApiService {
 
         console.log("manifest info", manifestInfo);
 
-        /*
+        // /*
         if (cachedManifest
             && cachedManifest.version === CurrentCachedManifestVersion
             && cachedManifest.language === language) {
