@@ -22,11 +22,17 @@ const statOrdering = [
     DataSearchStrings.Stats.Zoom,
     DataSearchStrings.Stats.RecoilDirection,
 
+    DataSearchStrings.Stats.SwingSpeed,
+    DataSearchStrings.Stats.ChargeRate,
+    DataSearchStrings.Stats.GuardEfficiency,
+    DataSearchStrings.Stats.GuardResistance,
+
     DataSearchStrings.Stats.Rpm,
     DataSearchStrings.Stats.DrawTime,
     DataSearchStrings.Stats.ChargeTime,
 
     DataSearchStrings.Stats.MagSize,
+    DataSearchStrings.Stats.AmmoCapacity,
 ];
 
 const props = defineProps<{

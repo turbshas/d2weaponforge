@@ -1,20 +1,25 @@
 export interface IStats {
-    accuracyStatName: string;
-    aimAssistanceStatName: string;
-    airborneEffectivenessStatName: string;
-    blastRadiusStatName: string;
-    chargeTimeStatName: string;
-    drawTimeStatName: string;
-    magSizeStatName: string;
-    impactStatName: string;
-    handlingStatName: string;
-    rangeStatName: string;
-    recoilDirectionStatName: string;
-    reloadSpeedStatName: string;
-    rpmStatName: string;
-    stabilityStatName: string;
-    velocityStatName: string;
-    zoomStatName: string;
+    accuracy: string;
+    aimAssistance: string;
+    airborneEffectiveness: string;
+    ammoCapacity: string;
+    blastRadius: string;
+    chargeRate: string;
+    chargeTime: string;
+    drawTime: string;
+    guardEfficiency: string;
+    guardResistance: string;
+    handling: string;
+    impact: string;
+    magSize: string;
+    range: string;
+    recoilDirection: string;
+    reloadSpeed: string;
+    rpm: string;
+    stability: string;
+    swingSpeed: string;
+    velocity: string;
+    zoom: string;
 }
 
 export interface IMisc {

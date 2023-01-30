@@ -29,30 +29,36 @@ class CategoryIds {
     public get WeaponMasterworkPlug() { return "v400.plugs.weapons.masterworks"; }
     public get WeaponMasterworkPlugComponent() { return "plugs.weapons.masterworks.stat"; }
     public get WeaponMasterworkImpact() { return "v400.plugs.weapons.masterworks.stat.damage"; }
-    public get WeaponMod() { return "v400.weapon.mod_empty"; }
+    public get WeaponModEmpty() { return "v400.weapon.mod_empty"; }
     public get WeaponModGuns() { return "v400.weapon.mod_guns"; }
     public get WeaponModDamage() { return "v400.weapon.mod_damage"; }
+    public get WeaponModMagazine() { return "v400.weapon.mod_magazine"; }
 }
 
 class Stats {
     constructor(private readonly language: DestinyManifestLanguage) {}
 
-    public get Accuracy() { return TranslationMap[this.language].stats.accuracyStatName; }
-    public get AimAssistance() { return TranslationMap[this.language].stats.aimAssistanceStatName; }
-    public get AirborneEffectiveness() { return TranslationMap[this.language].stats.airborneEffectivenessStatName; }
-    public get BlastRadius() { return TranslationMap[this.language].stats.blastRadiusStatName; }
-    public get ChargeTime() { return TranslationMap[this.language].stats.chargeTimeStatName; }
-    public get DrawTime() { return TranslationMap[this.language].stats.drawTimeStatName; }
-    public get MagSize() { return TranslationMap[this.language].stats.magSizeStatName; }
-    public get Impact() { return TranslationMap[this.language].stats.impactStatName; }
-    public get Handling() { return TranslationMap[this.language].stats.handlingStatName; }
-    public get Range() { return TranslationMap[this.language].stats.rangeStatName; }
-    public get RecoilDirection() { return TranslationMap[this.language].stats.recoilDirectionStatName; }
-    public get ReloadSpeed() { return TranslationMap[this.language].stats.reloadSpeedStatName; }
-    public get Rpm() { return TranslationMap[this.language].stats.rpmStatName; }
-    public get Stability() { return TranslationMap[this.language].stats.stabilityStatName; }
-    public get Velocity() { return TranslationMap[this.language].stats.velocityStatName; }
-    public get Zoom() { return TranslationMap[this.language].stats.zoomStatName; }
+    public get Accuracy() { return TranslationMap[this.language].stats.accuracy; }
+    public get AimAssistance() { return TranslationMap[this.language].stats.aimAssistance; }
+    public get AirborneEffectiveness() { return TranslationMap[this.language].stats.airborneEffectiveness; }
+    public get AmmoCapacity() { return TranslationMap[this.language].stats.ammoCapacity; }
+    public get BlastRadius() { return TranslationMap[this.language].stats.blastRadius; }
+    public get ChargeRate() { return TranslationMap[this.language].stats.chargeRate; }
+    public get ChargeTime() { return TranslationMap[this.language].stats.chargeTime; }
+    public get DrawTime() { return TranslationMap[this.language].stats.drawTime; }
+    public get GuardEfficiency() { return TranslationMap[this.language].stats.guardEfficiency; }
+    public get GuardResistance() { return TranslationMap[this.language].stats.guardResistance; }
+    public get Handling() { return TranslationMap[this.language].stats.handling; }
+    public get Impact() { return TranslationMap[this.language].stats.impact; }
+    public get MagSize() { return TranslationMap[this.language].stats.magSize; }
+    public get Range() { return TranslationMap[this.language].stats.range; }
+    public get RecoilDirection() { return TranslationMap[this.language].stats.recoilDirection; }
+    public get ReloadSpeed() { return TranslationMap[this.language].stats.reloadSpeed; }
+    public get Rpm() { return TranslationMap[this.language].stats.rpm; }
+    public get Stability() { return TranslationMap[this.language].stats.stability; }
+    public get SwingSpeed() { return TranslationMap[this.language].stats.swingSpeed; }
+    public get Velocity() { return TranslationMap[this.language].stats.velocity; }
+    public get Zoom() { return TranslationMap[this.language].stats.zoom; }
 }
 
 class Misc {

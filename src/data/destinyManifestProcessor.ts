@@ -46,6 +46,7 @@ const allowedPlugCategoryIds = [...validPerkPlugCategories,
 
     DataSearchStrings.CategoryIDs.WeaponModDamage,
     DataSearchStrings.CategoryIDs.WeaponModGuns,
+    DataSearchStrings.CategoryIDs.WeaponModMagazine,
 ];
 
 const weaponTypeMainStatMap: { [traitId: string]: string } = {
@@ -388,15 +389,18 @@ export class DestinyManifestProcessor {
         return modSocket!.reusableItems
             .map(i => i.item)
             // The only mod that has this plug category ID is the empty mod slot which is useless here.
-            .filter(i => i && i.plug && i.plug.plugCategoryIdentifier !== DataSearchStrings.CategoryIDs.WeaponMod);
+            .filter(i => i && i.plug && i.plug.plugCategoryIdentifier !== DataSearchStrings.CategoryIDs.WeaponModEmpty);
     }
 
     private getAdeptModOptionsFromSockets = (modSocket: IResolvedPlugSet | undefined) => {
         if (!modSocket) return [];
         return modSocket.socketReusableItems
-            .filter(i => i.plug
+            .filter(i =>
+                i.displayProperties.name.includes(DataSearchStrings.Misc.Adept)
+                && i.plug
                 && (i.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.WeaponModDamage
-                    || i.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.WeaponModGuns))
+                    || i.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.WeaponModGuns
+                    || i.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.WeaponModMagazine))
     }
 
     private processArchetypes = (weapons: IWeapon[]) => {
