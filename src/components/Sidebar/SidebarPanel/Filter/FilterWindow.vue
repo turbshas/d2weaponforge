@@ -38,33 +38,6 @@ const weaponCategoryIconMap: { [itemRegex: string]: string } = {
     [DataSearchStrings.WeaponCategoryRegex.SubmachineGun]: WeaponIcons.SubmachineGun,
 };
 
-const weaponCategoryArchetypeMap = computed(() => {
-    const archetypeFilters: { [weaponType: string]: IArchetypeFilter[] } = {};
-    
-    for (const weaponType of destinyDataService.weaponTypes) {
-        archetypeFilters[weaponType.traitId] = [];
-
-        for (const archetype of weaponType.archetypes) {
-            const rpmTextPrefix = weaponType.showRpm ? `${archetype.rpm} ${weaponType.rpmUnits} // ` : "";
-
-            archetypeFilters[weaponType.traitId].push({
-                text: `${rpmTextPrefix}${archetype.name}`,
-                filter: (item: IWeapon) => {
-                    if (!item.intrinsic) return false;
-                    const name = item.intrinsic.displayProperties.name;
-                    return name === archetype.name
-                        && (
-                            !weaponType.compareUsingRpm
-                            || (!!item.weapon.stats && archetype.rpm === item.weapon.stats.stats[archetype.statHash].value)
-                            );
-                },
-            });
-        }
-    }
-
-    return archetypeFilters;
-});
-
 // TODO: these filters
 const origins: IFilterButton[] = [
     { text: "World (Current)", iconUrl: "", filter: () => false, },
@@ -104,19 +77,24 @@ const seasonIconMap: { [seasonNumber: number]: string } = {
     10: OriginIcons.SeasonWorthy,
 };
 
+const props = defineProps<{
+    activeFilters: Record<FilterCategory, { [filterText: string]: boolean }>,
+}>();
+
 const emits = defineEmits<{
     (e: "filtersApplied", applied: IAppliedFilters): void,
+    (e: "filterToggled", categoryName: FilterCategory, filterText: string, active: boolean): void,
 }>();
 
 const perkFilter = ref("");
 const includeSunsetWeapons = ref(false);
-const activeFilters = ref<Record<FilterCategory, { [filterText: string]: boolean }>>({
-    "Archetype": {},
-    "Collections": {},
-    "Damage Type": {},
-    "Rarity": {},
-    "Weapon": {},
-});
+// const activeFilters = ref<Record<FilterCategory, { [filterText: string]: boolean }>>({
+//     "Archetype": {},
+//     "Collections": {},
+//     "Damage Type": {},
+//     "Rarity": {},
+//     "Weapon": {},
+// });
 
 const damageTypeFilters = computed(() => {
     return destinyDataService.damageTypes
@@ -133,6 +111,33 @@ const damageTypeFilters = computed(() => {
         });
 });
 
+const weaponCategoryArchetypeMap = computed(() => {
+    const archetypeFilters: { [weaponType: string]: IArchetypeFilter[] } = {};
+    
+    for (const weaponType of destinyDataService.weaponTypes) {
+        archetypeFilters[weaponType.traitId] = [];
+
+        for (const archetype of weaponType.archetypes) {
+            const rpmTextPrefix = weaponType.showRpm ? `${archetype.rpm} ${weaponType.rpmUnits} // ` : "";
+
+            archetypeFilters[weaponType.traitId].push({
+                text: `${rpmTextPrefix}${archetype.name}`,
+                filter: (item: IWeapon) => {
+                    if (!item.intrinsic) return false;
+                    const name = item.intrinsic.displayProperties.name;
+                    return name === archetype.name
+                        && (
+                            !weaponType.compareUsingRpm
+                            || (!!item.weapon.stats && archetype.rpm === item.weapon.stats.stats[archetype.statHash].value)
+                            );
+                },
+            });
+        }
+    }
+
+    return archetypeFilters;
+});
+
 const weaponCategoryFilters = computed(() => {
     return destinyDataService.weaponTypes
         .filter(t => t.traitId && weaponCategoryIconMap[t.weaponCategoryRegex])
@@ -145,7 +150,7 @@ const weaponCategoryFilters = computed(() => {
                     const weapon = item.weapon;
                     if (!weapon.itemCategoryHashes) return false;
                     if (!weapon.itemCategoryHashes.includes(t.weaponCategoryHash)) return false;
-                    const activeArchetypeFilters = filter.archetypes.filter(a => activeFilters.value["Archetype"][a.text]);
+                    const activeArchetypeFilters = filter.archetypes.filter(a => props.activeFilters["Archetype"][a.text]);
                     // If no archetypes chosen, allow all.
                     if (activeArchetypeFilters.length === 0) return true;
                     // If no intrinsic, can't check archetype so return false.
@@ -219,7 +224,7 @@ const filterCategories = computed(() => {
 });
 
 const activeWeaponFilters = computed(() => {
-    const activeFilterMap = activeFilters.value[weaponFilterCategory.value.name];
+    const activeFilterMap = props.activeFilters[weaponFilterCategory.value.name];
     return weaponCategoryFilters.value.filter(f => activeFilterMap[f.text]);
 });
 
@@ -240,16 +245,20 @@ function onPerkFilterChanged() {
     // TODO: stuff
 }
 
+function onFilterToggled(categoryName: FilterCategory, filterText: string, active: boolean) {
+    emits("filterToggled", categoryName, filterText, active);
+}
+
 function onFilterButtonToggled(category: ICategoryInfo, filter: IFilterButton, active: boolean) {
-    activeFilters.value[category.name][filter.text] = active;
+    onFilterToggled(category.name, filter.text, active);
 }
 
 function isArchetypeActive(archetypeFilter: IArchetypeFilter) {
-    return activeFilters.value["Archetype"][archetypeFilter.text];
+    return props.activeFilters["Archetype"][archetypeFilter.text];
 }
 
 function onArchetypeFilterToggled(archetypeFilter: IArchetypeFilter, active: boolean) {
-    activeFilters.value["Archetype"][archetypeFilter.text] = active;
+    onFilterToggled("Archetype", archetypeFilter.text, active);
 }
 
 function includeSunsetToggled() {
@@ -271,7 +280,7 @@ function onApplyFilters() {
 
 function findActiveFilterPredicates(category: ICategoryInfo) {
     const categoryName = category.name;
-    const activeFilterMap = activeFilters.value[categoryName];
+    const activeFilterMap = props.activeFilters[categoryName];
     return category.filters
         .filter(f => activeFilterMap[f.text])
         .map(f => f.filter);
@@ -307,7 +316,7 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
                     v-for="archetype of filter.archetypes"
                     :key="archetype.text"
                     :text="archetype.text"
-                    :active="isArchetypeActive(archetype)"
+                    :active="!!isArchetypeActive(archetype)"
                     :icon-url="filter.iconUrl"
                     large
                     wide

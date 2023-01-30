@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/destinyDataService";
-import type { FilterPredicate, IAppliedFilters, IWeapon } from "@/data/types";
+import type { FilterCategory, FilterPredicate, IAppliedFilters, IWeapon } from "@/data/types";
 import { computed, ref } from "vue";
 import FilterWindow from "./Filter/FilterWindow.vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
@@ -12,7 +12,16 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: "weaponSelected", weapon: IWeapon): void,
+    (e: "filtersApplied"): void,
 }>();
+
+const activeFilters = ref<Record<FilterCategory, { [filterText: string]: boolean }>>({
+    "Archetype": {},
+    "Collections": {},
+    "Damage Type": {},
+    "Rarity": {},
+    "Weapon": {},
+});
 
 const filters = ref<IAppliedFilters>({
     includeSunsetWeapons: false,
@@ -61,6 +70,11 @@ function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: IWeapo
 
 function onFiltersApplied(newFilters: IAppliedFilters) {
     filters.value = newFilters;
+    emit("filtersApplied");
+}
+
+function onFilterToggled(categoryName: FilterCategory, filterText: string, active: boolean) {
+    activeFilters.value[categoryName][filterText] = active;
 }
 
 function onWeaponSelected(weapon: IWeapon) {
@@ -70,7 +84,12 @@ function onWeaponSelected(weapon: IWeapon) {
 
 <template>
     <div class="panel">
-        <FilterWindow v-if="viewingFilter" @filters-applied="onFiltersApplied"></FilterWindow>
+        <FilterWindow
+            v-if="viewingFilter"
+            :active-filters="activeFilters"
+            @filters-applied="onFiltersApplied"
+            @filter-toggled="onFilterToggled"
+        ></FilterWindow>
         <WeaponList v-else :weapons="filteredWeapons" @entry-clicked="onWeaponSelected"></WeaponList>
     </div>
 </template>
