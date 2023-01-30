@@ -31,7 +31,7 @@ const weaponCategoryRangeValuesMap: { [itemRegex: string]: IWeaponRangeValues } 
     [DataSearchStrings.WeaponCategoryRegex.PulseRifle]: { baseFalloffStart: 15, hipFireRangePerStat: 0.0685, zoomAdjustment: 0.25, },
     [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: { baseFalloffStart: 29.2, hipFireRangePerStat: 0.169, zoomAdjustment: 1.25, },
     [DataSearchStrings.WeaponCategoryRegex.Sidearm]: { baseFalloffStart: 11.6, hipFireRangePerStat: 0.034, zoomAdjustment: 0.25, },
-    [DataSearchStrings.WeaponCategoryRegex.Submachinegun]: { baseFalloffStart: 8.19, hipFireRangePerStat: 0.09576, zoomAdjustment: 1.25, },
+    [DataSearchStrings.WeaponCategoryRegex.SubmachineGun]: { baseFalloffStart: 8.19, hipFireRangePerStat: 0.09576, zoomAdjustment: 1.25, },
 
     [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: { baseFalloffStart: 8.2, hipFireRangePerStat: 0.036, zoomAdjustment: 2, },
     [DataSearchStrings.WeaponCategoryRegex.TraceRifle]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },

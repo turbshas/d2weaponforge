@@ -6,7 +6,7 @@ import { DataSearchStrings } from "./dataSearchStringService";
 import { DestinyManifestProcessor } from "./destinyManifestProcessor";
 import type { Destiny2GameData, IWeapon } from "./types";
 
-const CurrentCachedManifestVersion = 1;
+const CurrentCachedManifestVersion = 2;
 
 class DestinyApiService {
     public retrieveManifest = async (language: DestinyManifestLanguage) => {
@@ -71,8 +71,10 @@ class DestinyApiService {
             itemTierTypesLookup: manifestProcessor.itemTierTypesLookup,
             seasons: manifestProcessor.seasons,
             seasonsLookup: manifestProcessor.seasonsLookup,
+
             weapons: weapons,
             weaponsLookup: weaponsLookup,
+            weaponTypes: manifestProcessor.weaponTypes,
 
             statsLookup: manifestProcessor.statsLookup,
             statGroupsLookup: manifestProcessor.statGroupsLookup,

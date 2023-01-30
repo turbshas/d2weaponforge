@@ -2,7 +2,6 @@ import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { reactive } from "vue";
 import { destinyApiService } from "./destinyApiService";
 import type { Destiny2GameData } from "./types";
-import { findItemInTable } from "./util";
 
 type GameDataReactiveWrapper = { gameData: Destiny2GameData | null, };
 
@@ -18,6 +17,10 @@ class DestinyDataService {
 
     public get weapons() {
         return this.gameData ? this.gameData.weapons : [];
+    }
+
+    public get weaponTypes() {
+        return this.gameData ? this.gameData.weaponTypes : [];
     }
 
     public get damageTypes() {

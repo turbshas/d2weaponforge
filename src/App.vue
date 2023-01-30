@@ -33,9 +33,7 @@ function onWeaponSelected(weapon: IWeapon | undefined) {
     selectedPerksMap.value = {};
     selectedMasterwork.value = undefined;
     selectedMod.value = undefined;
-    if (weapon && weapon.weapon.sockets) {
-        console.log("weapon selected", weapon, weapon.weapon.sockets.socketEntries.map(se => se.reusablePlugItems.map(pi => destinyDataService.getItemDefinition(pi.plugItemHash))));
-    }
+    console.log("weapon selected", weapon);
 }
 
 function onPerkSelected(column: number, perk: IPerkOption | undefined) {

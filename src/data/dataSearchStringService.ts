@@ -59,13 +59,30 @@ class Misc {
     constructor(private readonly language: DestinyManifestLanguage) {}
 
     public get Adept() { return TranslationMap[this.language].misc.adept; }
+    public get DrangName() { return "Drang"; }
     public get Harrowed() { return TranslationMap[this.language].misc.harrowed; }
+    public get MidaMiniToolName() { return "Mini-Tool"; }
     public get RangefinderPerkName() { return TranslationMap[this.language].misc.rangefinderPerk; }
     public get Timelost() { return TranslationMap[this.language].misc.timelost; }
 }
 
 class TraitIds {
     public get Weapon() { return "item_type.weapon"; }
+    public get AutoRifle() { return "weapon_type.auto_rifle"; }
+    public get Bow() { return "weapon_type.bow"; }
+    public get FusionRifle() { return "weapon_type.fusion_rifle"; }
+    public get Glaive() { return "weapon_type.glaive"; }
+    public get GrenadeLauncher() { return "weapon_type.grenade_launcher"; }
+    public get HandCannon() { return "weapon_type.hand_cannon"; }
+    public get LinearFusion() { return "weapon_type.linear_fusion_rifle"; }
+    public get MachineGun() { return "weapon_type.machinegun"; }
+    public get PulseRifle() { return "weapon_type.pulse_rifle"; }
+    public get RocketLauncher() { return "weapon_type.rocket_launcher"; }
+    public get ScoutRifle() { return "weapon_type.scout_rifle"; }
+    public get Shotgun() { return "weapon_type.shotgun"; }
+    public get Sidearm() { return "weapon_type.sidearm"; }
+    public get SniperRifle() { return "weapon_type.sniper_rifle"; }
+    public get SubmachineGun() { return "weapon_type.submachinegun"; }
     public get Sword() { return "weapon_type.sword"; }
 }
 
@@ -105,7 +122,7 @@ class WeaponCategoryRegex {
     public get Sidearm() { return ".*_sidearm"; }
     public get Shotgun() { return ".*_shotgun"; }
     public get SniperRifle() { return ".*_sniper_rifle"; }
-    public get Submachinegun() { return ".*_submachinegun"; }
+    public get SubmachineGun() { return ".*_submachinegun"; }
     public get Sword() { return "type_weapon_sword"; }
     public get TraceRifle() { return ".*_beam_rifle"; }
 }

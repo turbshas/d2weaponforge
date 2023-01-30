@@ -1,6 +1,6 @@
-import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyItemTierTypeDefinition, DestinyPlugItemCraftingRequirements, DestinyPlugSetDefinition, DestinySocketTypeDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
+import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyItemTierTypeDefinition, DestinyPlugItemCraftingRequirements, DestinyPlugSetDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
 import { DataSearchStrings } from "./dataSearchStringService";
-import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions, type IWeapon, type UsedDestinyManifestSlice } from "./types";
+import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions, type IWeapon, type IWeaponTypeInfo, type UsedDestinyManifestSlice } from "./types";
 import { hashMapToArray } from "./util";
 
 interface IResolvedPlugItem {
@@ -20,43 +20,84 @@ interface IResolvedPlugSet {
     reusableItems: IResolvedPlugItem[];
 }
 
+const validPerkPlugCategories = [
+    DataSearchStrings.CategoryIDs.BarrelsPlug,
+    DataSearchStrings.CategoryIDs.BladesPlug,
+    DataSearchStrings.CategoryIDs.BowstringsPlug,
+    DataSearchStrings.CategoryIDs.HaftsPlug,
+    DataSearchStrings.CategoryIDs.ScopesPlug,
+    DataSearchStrings.CategoryIDs.TubesPlug,
+
+    DataSearchStrings.CategoryIDs.ArrowsPlug,
+    DataSearchStrings.CategoryIDs.BatteriesPlug,
+    DataSearchStrings.CategoryIDs.GuardsPlug,
+    DataSearchStrings.CategoryIDs.MagazinesPlug,
+    DataSearchStrings.CategoryIDs.MagazinesGLPlug,
+
+    DataSearchStrings.CategoryIDs.FramesPlug,
+    DataSearchStrings.CategoryIDs.OriginsPlug,
+    DataSearchStrings.CategoryIDs.ExoticMasterworkPlug,
+    DataSearchStrings.CategoryIDs.CatalystsPlug,
+    DataSearchStrings.CategoryIDs.StocksPlug,
+];
+
+const allowedPlugCategoryIds = [...validPerkPlugCategories,
+    DataSearchStrings.CategoryIDs.IntrinsicPlug,
+
+    DataSearchStrings.CategoryIDs.WeaponModDamage,
+    DataSearchStrings.CategoryIDs.WeaponModGuns,
+];
+
+const weaponTypeMainStatMap: { [traitId: string]: string } = {
+    [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.Stats.DrawTime,
+    [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.Stats.ChargeTime,
+    [DataSearchStrings.TraitIDs.LinearFusion]: DataSearchStrings.Stats.ChargeTime,
+    [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.Stats.Impact,
+};
+
+const weaponTypeRpmUnitsMap: { [traitId: string]: string } = {
+    [DataSearchStrings.TraitIDs.Bow]: "ms",
+    [DataSearchStrings.TraitIDs.FusionRifle]: "ms",
+    [DataSearchStrings.TraitIDs.LinearFusion]: "ms",
+};
+
+const weaponTypeTraitToRegex: { [traitId: string]: string } = {
+    [DataSearchStrings.TraitIDs.AutoRifle]: DataSearchStrings.WeaponCategoryRegex.AutoRifle,
+    [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.WeaponCategoryRegex.Bow,
+    [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.WeaponCategoryRegex.FusionRifle,
+    [DataSearchStrings.TraitIDs.Glaive]: DataSearchStrings.WeaponCategoryRegex.Glaive,
+    [DataSearchStrings.TraitIDs.GrenadeLauncher]: DataSearchStrings.WeaponCategoryRegex.GrenadeLauncher,
+    [DataSearchStrings.TraitIDs.HandCannon]: DataSearchStrings.WeaponCategoryRegex.HandCannon,
+    [DataSearchStrings.TraitIDs.LinearFusion]: DataSearchStrings.WeaponCategoryRegex.LinearFusion,
+    [DataSearchStrings.TraitIDs.MachineGun]: DataSearchStrings.WeaponCategoryRegex.MachineGun,
+    [DataSearchStrings.TraitIDs.PulseRifle]: DataSearchStrings.WeaponCategoryRegex.PulseRifle,
+    [DataSearchStrings.TraitIDs.RocketLauncher]: DataSearchStrings.WeaponCategoryRegex.RocketLauncher,
+    [DataSearchStrings.TraitIDs.ScoutRifle]: DataSearchStrings.WeaponCategoryRegex.ScoutRifle,
+    [DataSearchStrings.TraitIDs.Shotgun]: DataSearchStrings.WeaponCategoryRegex.Shotgun,
+    [DataSearchStrings.TraitIDs.Sidearm]: DataSearchStrings.WeaponCategoryRegex.Sidearm,
+    [DataSearchStrings.TraitIDs.SniperRifle]: DataSearchStrings.WeaponCategoryRegex.SniperRifle,
+    [DataSearchStrings.TraitIDs.SubmachineGun]: DataSearchStrings.WeaponCategoryRegex.SubmachineGun,
+    [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.WeaponCategoryRegex.Sword,
+    // [DataSearchStrings.TraitIDs.TraceRifle]: DataSearchStrings.WeaponCategoryRegex.TraceRifle,
+};
+
 export class DestinyManifestProcessor {
-    constructor(
-        private readonly manifest: UsedDestinyManifestSlice
-    ) {
+    private readonly _weapons: IWeapon[];
+    private readonly _weaponTypes: IWeaponTypeInfo[];
+    private readonly _itemCategories: DestinyItemCategoryDefinition[];
+
+    constructor(private readonly manifest: UsedDestinyManifestSlice) {
         this.stripRedactedAndUnneeded();
+
+        this._itemCategories = hashMapToArray(this.manifest.DestinyItemCategoryDefinition);
+        this._weapons = this.processWeapons();
+        this._weaponTypes = this.processArchetypes(this._weapons);
     }
 
     private stripRedactedAndUnneeded = () => {
         // Remove everything we don't need - this makes loading from cache much faster (and actually usable).
         // Only doing this for DestinyInventoryItemDefinition as it is by far the largest table.
         // The others are fairly small and don't need this.
-        const allowedPlugCategoryIds = [
-            DataSearchStrings.CategoryIDs.IntrinsicPlug,
-
-            DataSearchStrings.CategoryIDs.BarrelsPlug,
-            DataSearchStrings.CategoryIDs.BladesPlug,
-            DataSearchStrings.CategoryIDs.BowstringsPlug,
-            DataSearchStrings.CategoryIDs.HaftsPlug,
-            DataSearchStrings.CategoryIDs.ScopesPlug,
-            DataSearchStrings.CategoryIDs.TubesPlug,
-
-            DataSearchStrings.CategoryIDs.ArrowsPlug,
-            DataSearchStrings.CategoryIDs.BatteriesPlug,
-            DataSearchStrings.CategoryIDs.GuardsPlug,
-            DataSearchStrings.CategoryIDs.MagazinesPlug,
-            DataSearchStrings.CategoryIDs.MagazinesGLPlug,
-
-            DataSearchStrings.CategoryIDs.FramesPlug,
-            DataSearchStrings.CategoryIDs.OriginsPlug,
-            DataSearchStrings.CategoryIDs.TrackerPlug,
-            DataSearchStrings.CategoryIDs.ExoticMasterworkPlug,
-            DataSearchStrings.CategoryIDs.CatalystsPlug,
-            DataSearchStrings.CategoryIDs.StocksPlug,
-
-            DataSearchStrings.CategoryIDs.WeaponModDamage,
-            DataSearchStrings.CategoryIDs.WeaponModGuns,
-        ];
         const itemHashesToRemove: number[] = [];
         for (const key in this.manifest.DestinyInventoryItemDefinition) {
             const item = this.manifest.DestinyInventoryItemDefinition[key];
@@ -97,7 +138,7 @@ export class DestinyManifestProcessor {
         }
     }
 
-    public get weapons() {
+    private processWeapons = () => {
         const weapons: DestinyInventoryItemDefinition[] = [];
 
         for (const key in this.manifest.DestinyInventoryItemDefinition) {
@@ -148,26 +189,6 @@ export class DestinyManifestProcessor {
         const intrinsicPerkSocket = resolvedSocketItems.find(r => {
             return r.reusableItems.some(i => !!i.item.plug && i.item.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.IntrinsicPlug);
         });
-        const validPerkPlugCategories = [
-            DataSearchStrings.CategoryIDs.BarrelsPlug,
-            DataSearchStrings.CategoryIDs.BladesPlug,
-            DataSearchStrings.CategoryIDs.BowstringsPlug,
-            DataSearchStrings.CategoryIDs.HaftsPlug,
-            DataSearchStrings.CategoryIDs.ScopesPlug,
-            DataSearchStrings.CategoryIDs.TubesPlug,
-
-            DataSearchStrings.CategoryIDs.ArrowsPlug,
-            DataSearchStrings.CategoryIDs.BatteriesPlug,
-            DataSearchStrings.CategoryIDs.GuardsPlug,
-            DataSearchStrings.CategoryIDs.MagazinesPlug,
-            DataSearchStrings.CategoryIDs.MagazinesGLPlug,
-
-            DataSearchStrings.CategoryIDs.FramesPlug,
-            DataSearchStrings.CategoryIDs.OriginsPlug,
-            DataSearchStrings.CategoryIDs.ExoticMasterworkPlug,
-            DataSearchStrings.CategoryIDs.CatalystsPlug,
-            DataSearchStrings.CategoryIDs.StocksPlug,
-        ];
         const weaponPerkSockets = resolvedSocketItems.filter(r => {
             return r.randomizedItems
                 .concat(r.reusableItems)
@@ -197,7 +218,7 @@ export class DestinyManifestProcessor {
         
         const isAdept = this.isWeaponAdept(weaponItem);
         let mods: DestinyInventoryItemDefinition[];
-        if (isAdept) {
+        if (!isAdept) {
             const adeptMods = this.getAdeptModOptionsFromSockets(modSocket);
 
             const adeptModsLookup: { [hash: number]: boolean } = {};
@@ -212,6 +233,7 @@ export class DestinyManifestProcessor {
         return {
             weapon: weaponItem,
             isAdept: isAdept,
+            isSunset: !!weaponItem.iconWatermarkShelved,
             intrinsic: intrinsic,
             perks: perkOptions,
             curated: curated,
@@ -377,6 +399,80 @@ export class DestinyManifestProcessor {
                     || i.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.WeaponModGuns))
     }
 
+    private processArchetypes = (weapons: IWeapon[]) => {
+        // TODO: NOTES:
+        //  - get trace rifle archetypes from adaptive frame autos (1000 rpm) somehow
+
+        const activeWeapons = weapons.filter(w => !w.isSunset);
+
+        const seenArchetypes: {
+            [weaponCategoryRegex: string]: {
+                [intrinsicName: string]: {
+                    [rpm: number]: boolean,
+                },
+            },
+        } = {};
+        const weaponTypeInfoMap: { [weaponType: string]: IWeaponTypeInfo } = {};
+
+        for (const weapon of activeWeapons) {
+            if (!weapon.intrinsic || !weapon.weapon.inventory || !weapon.weapon.stats || !weapon.weapon.stats.stats) continue;
+            const tierType = this.getItemTierDefinition(weapon.weapon.inventory.tierTypeHash);
+            if (!tierType || tierType.index !== ItemTierIndex.Legendary) continue;
+            
+            // Exclude Drang/Mini-Tool unique intrinsics.
+            const weaponNameLower = weapon.weapon.displayProperties.name.toLocaleLowerCase();
+            if (weaponNameLower.includes(DataSearchStrings.Misc.DrangName.toLocaleLowerCase())
+                || weaponNameLower.includes(DataSearchStrings.Misc.MidaMiniToolName.toLocaleLowerCase())) continue;
+
+            const weaponType = weapon.weapon.traitIds[weapon.weapon.traitIds.length - 1];
+            const archetypeName = weapon.intrinsic.displayProperties.name;
+
+            const searchStatName = weaponTypeMainStatMap[weaponType] || DataSearchStrings.Stats.Rpm;
+            const rpmStat = weapon.weapon.investmentStats.find(s => {
+                const statType = this.getStatTypeDefinition(s.statTypeHash);
+                return statType && statType.displayProperties.name === searchStatName;
+            });
+            if (!rpmStat) continue;
+            const stat = weapon.weapon.stats.stats[rpmStat.statTypeHash];
+
+            const isTraceRifleType = weaponType === DataSearchStrings.TraitIDs.AutoRifle && stat.value >= 1000;
+            const categoryRegex = isTraceRifleType ? DataSearchStrings.WeaponCategoryRegex.TraceRifle : weaponTypeTraitToRegex[weaponType];
+            const category = this._itemCategories.find(c => c.itemTypeRegex === categoryRegex);
+            if (!category) continue;
+
+            if (!seenArchetypes[categoryRegex]) {
+                seenArchetypes[categoryRegex] = {};
+                weaponTypeInfoMap[categoryRegex] = {
+                    weaponTypeName: category.displayProperties.name,
+                    traitId: weaponType,
+                    weaponCategoryRegex: categoryRegex,
+                    weaponCategoryHash: category.hash,
+                    // Hide RPM for bows and swords - bows are inconsistent and swords don't have one that makes sense.
+                    showRpm: weaponType !== DataSearchStrings.TraitIDs.Bow && weaponType !== DataSearchStrings.TraitIDs.Sword,
+                    // Sidearms have duplicate adaptive frames but differing RPM, so make sure to actually compare with RPM.
+                    compareUsingRpm: weaponType === DataSearchStrings.TraitIDs.Sidearm,
+                    rpmUnits: weaponTypeRpmUnitsMap[weaponType] || "RPM",
+                    archetypes: [],
+                };
+            }
+            if (!seenArchetypes[categoryRegex][archetypeName]) {
+                seenArchetypes[categoryRegex][archetypeName] = {};
+            }
+
+            if (seenArchetypes[categoryRegex][archetypeName][stat.value]) continue;
+            seenArchetypes[categoryRegex][archetypeName][stat.value] = true;
+
+            weaponTypeInfoMap[categoryRegex].archetypes.push({
+                weaponType: weaponType,
+                name: archetypeName,
+                rpm: stat.value,
+                statHash: rpmStat.statTypeHash,
+            });
+        }
+        console.log("found archetypes:", weaponTypeInfoMap);
+        return hashMapToArray(weaponTypeInfoMap);
+    }
+
     private getItemDefinition = (hash: number): DestinyInventoryItemDefinition | undefined => {
         return this.manifest.DestinyInventoryItemDefinition[hash];
     }
@@ -393,13 +489,20 @@ export class DestinyManifestProcessor {
         return this.manifest.DestinySocketTypeDefinition[hash];
     }
 
+    private getStatTypeDefinition = (hash: number): DestinyStatDefinition | undefined => {
+        return this.manifest.DestinyStatDefinition[hash];
+    }
+
     private getStatGroupDefinition = (hash: number): DestinyStatGroupDefinition | undefined => {
         return this.manifest.DestinyStatGroupDefinition[hash];
     }
 
+    public get weapons() { return this._weapons; }
+    public get weaponTypes() { return this._weaponTypes; }
+
     public get damageTypes() { return hashMapToArray(this.manifest.DestinyDamageTypeDefinition); }
     public get damageTypeLookup() { return this.manifest.DestinyDamageTypeDefinition; }
-    public get itemCategories() { return hashMapToArray(this.manifest.DestinyItemCategoryDefinition); }
+    public get itemCategories() { return this._itemCategories; }
     public get itemCategoriesLookup() { return this.manifest.DestinyItemCategoryDefinition; }
     public get itemTierTypes() { return hashMapToArray(this.manifest.DestinyItemTierTypeDefinition); }
     public get itemTierTypesLookup() { return this.manifest.DestinyItemTierTypeDefinition; }
