@@ -1,22 +1,3 @@
-export interface IArchetypes {
-    adaptive: string;
-    adaptiveBurst: string;
-    aggressive: string;
-    aggressiveBurst: string;
-    caster: string;
-    hakkePrecision: string;
-    highImpact: string;
-    lightweight: string;
-    omolonAdaptive: string;
-    pinpointSlug: string;
-    precision: string;
-    rapidFire: string;
-    surosRapidFire: string;
-    veistRapidFire: string;
-    vortex: string;
-    waveFrame: string;
-}
-
 export interface IStats {
     accuracyStatName: string;
     aimAssistanceStatName: string;
@@ -44,7 +25,6 @@ export interface IMisc {
 }
 
 export interface IDataSearchStrings {
-    archetypes: IArchetypes;
     stats: IStats;
     misc: IMisc;
 }

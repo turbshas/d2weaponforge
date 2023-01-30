@@ -1,24 +1,6 @@
 import type { IDataSearchStrings } from "../schemas";
 
 const translations: IDataSearchStrings = {
-    archetypes: {
-        adaptive: "",
-        adaptiveBurst: "",
-        aggressive: "",
-        aggressiveBurst: "",
-        caster: "",
-        hakkePrecision: "",
-        highImpact: "",
-        lightweight: "",
-        omolonAdaptive: "",
-        pinpointSlug: "",
-        precision: "",
-        rapidFire: "",
-        surosRapidFire: "",
-        veistRapidFire: "",
-        vortex: "",
-        waveFrame: "",
-    },
     stats: {
         accuracyStatName: "",
         aimAssistanceStatName: "",

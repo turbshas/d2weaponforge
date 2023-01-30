@@ -24,7 +24,6 @@
 - tab bar text isn't centered properly
 
 - move constants to a central location if possible, even just another file
-- clean up processing that could be moved to destinyManifestProcessor
 - broke sword stats, gotta fix that
 
 - weapon viewer

@@ -86,27 +86,6 @@ class TraitIds {
     public get Sword() { return "weapon_type.sword"; }
 }
 
-class WeaponArchetypes {
-    constructor(private readonly language: DestinyManifestLanguage) {}
-
-    public get Adaptive() { return TranslationMap[this.language].archetypes.adaptive; }
-    public get AdaptiveBurst() { return TranslationMap[this.language].archetypes.adaptiveBurst; }
-    public get Aggressive() { return TranslationMap[this.language].archetypes.aggressive; }
-    public get AggressiveBurst() { return TranslationMap[this.language].archetypes.aggressiveBurst; }
-    public get Caster() { return TranslationMap[this.language].archetypes.caster; }
-    public get HakkePrecision() { return TranslationMap[this.language].archetypes.hakkePrecision; }
-    public get HighImpact() { return TranslationMap[this.language].archetypes.highImpact; }
-    public get Lightweight() { return TranslationMap[this.language].archetypes.lightweight; }
-    public get OmolonAdaptive() { return TranslationMap[this.language].archetypes.omolonAdaptive; }
-    public get PinpointSlug() { return TranslationMap[this.language].archetypes.pinpointSlug; }
-    public get Precision() { return TranslationMap[this.language].archetypes.precision; }
-    public get RapidFire() { return TranslationMap[this.language].archetypes.rapidFire; }
-    public get SurosRapidFire() { return TranslationMap[this.language].archetypes.surosRapidFire; }
-    public get VeistRapidFire() { return TranslationMap[this.language].archetypes.veistRapidFire; }
-    public get Vortex() { return TranslationMap[this.language].archetypes.vortex; }
-    public get WaveFrame() { return TranslationMap[this.language].archetypes.waveFrame; }
-}
-
 class WeaponCategoryRegex {
     public get AutoRifle() { return ".*_auto_rifle"; }
     public get Bow() { return "type_weapon_bow"; }
@@ -134,7 +113,6 @@ export class DataSearchStrings {
     private static readonly _stats = new Stats(this.language.value);
     private static readonly _misc = new Misc(this.language.value);
     private static readonly _traitIds = new TraitIds();
-    private static readonly _weaponArchetypes = new WeaponArchetypes(this.language.value);
     private static readonly _weaponCategoryRegex = new WeaponCategoryRegex();
 
     public static setLanguage = (language: DestinyManifestLanguage) => {
@@ -145,6 +123,5 @@ export class DataSearchStrings {
     public static get Stats() { return this._stats; }
     public static get Misc() { return this._misc; }
     public static get TraitIDs() { return this._traitIds; }
-    public static get WeaponArchetypes() { return this._weaponArchetypes; }
     public static get WeaponCategoryRegex() { return this._weaponCategoryRegex; }
 }
