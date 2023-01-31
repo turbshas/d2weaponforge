@@ -31,10 +31,9 @@ const showStat = computed(() => !!statDisplayDefinition.value);
 
 const statTotal = computed(() => {
     const value = props.investmentValue.value + props.modifier;
-    // These values don't exist in the range 0-100 so don't need to be clamped.
-    if (statDisplayType.value === StatDisplayType.Number) return value;
     // The min is always 0.
     const max = statDisplayDefinition.value ? statDisplayDefinition.value.maximumValue : 100;
+    console.log("stat value is", value, max, statDisplayDefinition.value);
     if (value < 0) return 0;
     if (value > max) return max;
     return value;
@@ -133,22 +132,22 @@ function getSvgPathData(recoilDirection: number) {
         <span class="name">{{ name }}</span>
         <div class="display">
             <div class="bar" v-if="isBarDisplayType">
-                <div class="value" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">
+                <div class="value" :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }">
                     <span>{{ displayedTotal }}</span>
                     <span class="modifier">({{ modifierText }})</span>
                 </div>
                 <div class="filled" :style="{ 'width': filledWidthPercent + '%' }"></div>
                 <div
                     class="change"
-                    :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }"
+                    :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }"
                     :style="{ 'width': displayModifierMagnitude + '%', }"
-                    v-if="modifier !== 0"
+                    v-if="displayModifier !== 0"
                 ></div>
             </div>
 
             <div class="number" v-else>
-                <span class="text" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }">{{ displayedTotal }}</span>
-                <div class="arrow" :class="{ 'positive': props.modifier > 0, 'negative': props.modifier < 0, }"></div>
+                <span class="text" :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }">{{ displayedTotal }}</span>
+                <div class="arrow" :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }"></div>
 
                 <svg
                     class="pie"
@@ -176,7 +175,7 @@ function getSvgPathData(recoilDirection: number) {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .stat {
     display: flex;
     flex-direction: row;
@@ -209,44 +208,49 @@ function getSvgPathData(recoilDirection: number) {
     flex-direction: row;
     width: 100%;
     background-color: hsla(0, 0%, 98%, 0.2);
-}
-.bar .value {
-    position: absolute;
-    top: 0;
-    left: 4px;
-    z-index: 10;
-    height: 100%;
-    line-height: 100%;
-    font-size: 12px;
-    font-weight: 500;
-    color: #05070a;
 
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
-.bar .value.positive {
-    color: #33613a;
-}
-.bar .value.negative {
-    color: #732522;
-}
-.bar .value.positive, .bar .value.negative {
-    font-weight: 600;
-}
-.bar .modifier {
-    margin-left: 4px;
-    font-weight: 500;
-}
-.bar .filled {
-    background-color: #fafafa;
-}
-.bar .change.positive {
-    background-color: #5aa366;
-}
-.bar .change.negative {
-    background-color: #973835;
+    .value {
+        position: absolute;
+        top: 0;
+        left: 4px;
+        z-index: 10;
+        height: 100%;
+        line-height: 100%;
+        font-size: 12px;
+        font-weight: 500;
+        color: #05070a;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        &.positive, &.negative {
+            font-weight: 600;
+        }
+        &.positive {
+            color: #33613a;
+        }
+        &.negative {
+            color: #732522;
+        }
+    }
+
+    .modifier {
+        margin-left: 4px;
+        font-weight: 500;
+    }
+    .filled {
+        background-color: #fafafa;
+    }
+    .change {
+        &.positive {
+            background-color: #5aa366;
+        }
+        &.negative {
+            background-color: #973835;
+        }
+    }
 }
 
 /* Recoil direction styles */
@@ -254,28 +258,29 @@ function getSvgPathData(recoilDirection: number) {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-}
-.number .text {
-    font-size: 16px;
-    color: #fafafa;
-    text-shadow: 0 3px 5px #0a0a0a;
-    align-self: center;
-}
-.number .positive {
-    color: #68cc79;
-}
-.number .negative {
-    color: #e25954;
-}
-.number .pie {
-    width: 24px;
-    height: 12px;
-    margin-left: 10px;
-    align-self: center;
-    fill: #fafafa;
-}
-.number .circle {
-    fill: rgba(24, 30, 37, 1);
+
+    .text {
+        font-size: 16px;
+        color: #fafafa;
+        text-shadow: 0 3px 5px #0a0a0a;
+        align-self: center;
+    }
+    .positive {
+        color: #68cc79;
+    }
+    .negative {
+        color: #e25954;
+    }
+    .pie {
+        width: 24px;
+        height: 12px;
+        margin-left: 10px;
+        align-self: center;
+        fill: #fafafa;
+    }
+    .circle {
+        fill: rgba(24, 30, 37, 1);
+    }
 }
 
 .arrow {
@@ -288,14 +293,16 @@ function getSvgPathData(recoilDirection: number) {
     border-color: transparent;
     border-style: solid;
     display: none;
-}
-.arrow.positive, .arrow.negative {
-    display: block;
-}
-.arrow.positive {
-    border-bottom-color: #68cc79;
-}
-.arrow.negative {
-    border-bottom-color: #e25954;
+
+    &.positive, &.negative {
+        display: block;
+    }
+    &.positive {
+        border-bottom-color: #68cc79;
+    }
+    &.negative {
+        border-bottom-color: #e25954;
+        transform: scaleY(-1);
+    }
 }
 </style>
