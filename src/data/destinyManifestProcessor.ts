@@ -404,9 +404,6 @@ export class DestinyManifestProcessor {
     }
 
     private processArchetypes = (weapons: IWeapon[]) => {
-        // TODO: NOTES:
-        //  - get trace rifle archetypes from adaptive frame autos (1000 rpm) somehow
-
         const activeWeapons = weapons.filter(w => !w.isSunset);
 
         const seenArchetypes: {
@@ -439,6 +436,7 @@ export class DestinyManifestProcessor {
             if (!rpmStat) continue;
             const stat = weapon.weapon.stats.stats[rpmStat.statTypeHash];
 
+            // This is gross, but meh it seems to work.
             const isTraceRifleType = weaponType === DataSearchStrings.TraitIDs.AutoRifle && stat.value >= 1000;
             const categoryRegex = isTraceRifleType ? DataSearchStrings.WeaponCategoryRegex.TraceRifle : weaponTypeTraitToRegex[weaponType];
             const category = this._itemCategories.find(c => c.itemTypeRegex === categoryRegex);

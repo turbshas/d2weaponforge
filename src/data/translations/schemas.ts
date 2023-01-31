@@ -8,6 +8,7 @@ export interface IStats {
     chargeTime: string;
     drawTime: string;
     guardEfficiency: string;
+    guardEndurance: string;
     guardResistance: string;
     handling: string;
     impact: string;
@@ -16,6 +17,7 @@ export interface IStats {
     recoilDirection: string;
     reloadSpeed: string;
     rpm: string;
+    shieldDuration: string;
     stability: string;
     swingSpeed: string;
     velocity: string;

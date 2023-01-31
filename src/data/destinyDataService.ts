@@ -7,7 +7,6 @@ type GameDataReactiveWrapper = { gameData: Destiny2GameData | null, };
 
 class DestinyDataService {
     private initialized: boolean = false;
-    public manifestLoaded: Promise<void> | null = null;
 
     private gameDataReactiveWrapper: GameDataReactiveWrapper = reactive<GameDataReactiveWrapper>({ gameData: null, });
 
@@ -42,11 +41,7 @@ class DestinyDataService {
     public initialize = async () => {
         if (this.initialized) return;
 
-        this.manifestLoaded = new Promise<void>(async (resolve) => {
-            await this.refreshGameData();
-            resolve();
-        });
-        await this.manifestLoaded;
+        await this.refreshGameData();
 
         this.initialized = true;
     }
