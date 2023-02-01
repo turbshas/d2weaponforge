@@ -1,5 +1,6 @@
 import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { ref } from "vue";
+import { cacheService } from "./cacheService";
 import { destinyApiService } from "./destinyApiService";
 import { selectionService } from "./selectionService";
 import type { Destiny2GameData } from "./types";
@@ -133,8 +134,9 @@ class DestinyDataService {
     public refreshGameData = async () => {
         // TODO: need to show the user that the data is refreshing somehow...
         // Get manifest slices we care about
+        const language = await cacheService.getLanguage();
         const start = Date.now();
-        const gameData = await destinyApiService.retrieveManifest(selectionService.language.language);
+        const gameData = await destinyApiService.retrieveManifest(language ? language.language : "en");
         const end = Date.now();
         console.log("loading manifest took", end - start);
         console.log(gameData);

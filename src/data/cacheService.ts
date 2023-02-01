@@ -1,5 +1,5 @@
 import type { DestinyManifest, DestinyManifestLanguage } from "bungie-api-ts/destiny2";
-import type { Destiny2GameData } from "./types";
+import type { Destiny2GameData, ILanguageInfo } from "./types";
 
 interface ICachedManifest {
     /** Version specific to this app, and the data it expects from the cache. Not the Bungie manifest version. */
@@ -12,25 +12,41 @@ interface ICachedManifest {
 const ManifestDatabaseName = "d2gunsmith_2_manifest_database";
 const ManifestObjectStoreName = "manifestObjectStore";
 const ManifestCacheKey = "d2gunsmith_2_destiny_manifest";
+const LanguageCacheKey = "d2gunsmith_2_language";
 
 class CacheService {
+    private readonly dbPromise: Promise<IDBDatabase>;
+
+    constructor() {
+        this.dbPromise = this.openIndexedDb();
+    }
+
     // TODO: support caching settings e.g. language, show crafted bonus, etc.
     // TODO: use DB or local storage for settings?
     // TODO: open DB in constructor?
     // TODO: when to close DB?
-    public getCachedManifest = async () => {
-        const db = await this.openIndexedDb();
-        const readTransaction = db.transaction(ManifestObjectStoreName, "readonly");
-        const manifestObjectStore = readTransaction.objectStore(ManifestObjectStoreName);
-        const manifest = await this.getManifestFromObjectStore(manifestObjectStore);
-        return manifest;
+    public getCachedManifest = () => this.getValue<ICachedManifest>(ManifestCacheKey);
+    public setCachedManifest = async (cachedManifest: ICachedManifest) => this.setValue(ManifestCacheKey, cachedManifest);
+
+    public getLanguage = async () => this.getValue<ILanguageInfo>(LanguageCacheKey);
+    public setLanguage = async (language: ILanguageInfo) => this.setValue(LanguageCacheKey, language);
+
+    private getValue = async <T>(key: IDBValidKey | IDBKeyRange): Promise<T | undefined> => {
+        const objectStore = await this.getObjectStore("readonly");
+        const value = await this.getValueFromObjectStore<T>(objectStore, key);
+        return value;
     }
 
-    public setCachedManifest = async (cachedManifest: ICachedManifest) => {
-        const db = await this.openIndexedDb();
-        const writeTransaction = db.transaction(ManifestObjectStoreName, "readwrite");
-        const manifestObjectStore = writeTransaction.objectStore(ManifestObjectStoreName);
-        await this.setManifestInObjectStore(manifestObjectStore, cachedManifest);
+    private setValue = async <T>(key: IDBValidKey, value: T) => {
+        const objectStore = await this.getObjectStore("readwrite");
+        await this.setValueInObjectStore(objectStore, key, value);
+    }
+
+    private getObjectStore = async (transactionMode: IDBTransactionMode) => {
+        const db = await this.dbPromise;
+        const readTransaction = db.transaction(ManifestObjectStoreName, transactionMode);
+        const objectStore = readTransaction.objectStore(ManifestObjectStoreName);
+        return objectStore;
     }
 
     private openIndexedDb = () => {
@@ -50,17 +66,17 @@ class CacheService {
         });
     }
 
-    private getManifestFromObjectStore = (objectStore: IDBObjectStore) => {
-        return new Promise<ICachedManifest | undefined>((resolve, reject) => {
-            const getRequest = objectStore.get(ManifestCacheKey);
+    private getValueFromObjectStore = <T>(objectStore: IDBObjectStore, key: IDBValidKey | IDBKeyRange): Promise<T | undefined> => {
+        return new Promise<T | undefined>((resolve, reject) => {
+            const getRequest = objectStore.get(key);
             getRequest.onsuccess = () => { resolve(getRequest.result); };
             getRequest.onerror = () => { reject(getRequest.error); };
         });
     }
 
-    private setManifestInObjectStore = (objectStore: IDBObjectStore, cachedManifest: ICachedManifest) => {
+    private setValueInObjectStore = <T>(objectStore: IDBObjectStore, key: IDBValidKey, value: T) => {
         return new Promise<void>((resolve, reject) => {
-            const setRequest = objectStore.put(cachedManifest, ManifestCacheKey);
+            const setRequest = objectStore.put(value, key);
             setRequest.onsuccess = () => { resolve(); };
             setRequest.onerror = () => { reject(setRequest.error); };
         });

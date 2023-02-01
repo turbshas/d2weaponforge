@@ -1,9 +1,21 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { ref } from "vue";
+import { cacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
 import type { ILanguageInfo, IPerkOption } from "./types";
 
 class SelectionService {
+    constructor() {
+        this.initializePreferences();
+    }
+
+    private initializePreferences = async () => {
+        const language = await cacheService.getLanguage();
+        if (language) {
+            this.languageWrapper.value = language;
+        }
+    }
+
     private selectedWeaponWrapper = ref<DestinyInventoryItemDefinition | undefined>(undefined);
     private selectedPerksWrapper = ref<(IPerkOption | undefined)[]>([]);
     private selectedMasterworkWrapper = ref<DestinyInventoryItemDefinition | undefined>(undefined);
@@ -27,7 +39,10 @@ class SelectionService {
     private showCraftedBonusWrapper = ref(false);
 
     public get language() { return this.languageWrapper.value; }
-    public set language(value: ILanguageInfo) { this.languageWrapper.value = value; }
+    public set language(value: ILanguageInfo) {
+        this.languageWrapper.value = value;
+        cacheService.setLanguage(value);
+    }
 
     public get hideRetiredPerks() { return this.hideRetiredPerksWrapper.value; }
     public set hideRetiredPerks(value: boolean) { this.hideRetiredPerksWrapper.value = value; }

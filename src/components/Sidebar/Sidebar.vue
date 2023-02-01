@@ -17,7 +17,7 @@ const emit = defineEmits<{
 
 const panelSelection = ref(SidebarPanelSelection.Weapons);
 const searchString = ref("");
-const selectedLanguage = ref(selectionService.language);
+const selectedLanguage = computed(() => selectionService.language);
 
 const viewingFilter = computed(() => panelSelection.value === SidebarPanelSelection.Filters);
 const viewingLanguages = computed(() => panelSelection.value === SidebarPanelSelection.Languages);
@@ -31,7 +31,6 @@ function onWeaponSelected(weapon: IWeapon) {
 }
 
 function onLanguageSelected(language: ILanguageInfo) {
-    selectedLanguage.value = language;
     panelSelection.value = SidebarPanelSelection.Weapons;
     emit("languageSelected", language);
 }
