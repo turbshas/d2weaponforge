@@ -42,6 +42,7 @@ function onPerkClicked(column: number, perk: IPerkOption) {
                 v-for="(perk, index) in slot.options"
                 :key="index"
                 :perk="perk.enhancedPerk || perk.perk"
+                :is-adept="false"
                 :crafting-info="perk.craftingInfo"
                 :selected="isPerkSelected(column, perk)"
                 :retired="!perk.currentlyCanRoll"

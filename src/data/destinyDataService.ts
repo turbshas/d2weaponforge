@@ -1,18 +1,17 @@
 import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
-import { reactive } from "vue";
+import { ref } from "vue";
+import { cacheService } from "./cacheService";
 import { destinyApiService } from "./destinyApiService";
+import { selectionService } from "./selectionService";
 import type { Destiny2GameData } from "./types";
-
-type GameDataReactiveWrapper = { gameData: Destiny2GameData | null, };
 
 class DestinyDataService {
     private initialized: boolean = false;
-    public manifestLoaded: Promise<void> | null = null;
 
-    private gameDataReactiveWrapper: GameDataReactiveWrapper = reactive<GameDataReactiveWrapper>({ gameData: null, });
+    private gameDataWrapper = ref<Destiny2GameData | null>(null);
 
     public get gameData() {
-        return this.gameDataReactiveWrapper.gameData;
+        return this.gameDataWrapper.value;
     }
 
     public get weapons() {
@@ -42,11 +41,7 @@ class DestinyDataService {
     public initialize = async () => {
         if (this.initialized) return;
 
-        this.manifestLoaded = new Promise<void>(async (resolve) => {
-            await this.refreshGameData();
-            resolve();
-        });
-        await this.manifestLoaded;
+        await this.refreshGameData();
 
         this.initialized = true;
     }
@@ -136,16 +131,17 @@ class DestinyDataService {
     //         - crafting frame
     //         - memento
     //         - red box pattern extract button
-    private refreshGameData = async () => {
-
+    public refreshGameData = async () => {
+        // TODO: need to show the user that the data is refreshing somehow...
         // Get manifest slices we care about
+        const language = await cacheService.getLanguage();
         const start = Date.now();
-        const gameData = await destinyApiService.retrieveManifest("en");
+        const gameData = await destinyApiService.retrieveManifest(language ? language.language : "en");
         const end = Date.now();
         console.log("loading manifest took", end - start);
         console.log(gameData);
 
-        this.gameDataReactiveWrapper.gameData = gameData;
+        this.gameDataWrapper.value = gameData;
     }
 }
 

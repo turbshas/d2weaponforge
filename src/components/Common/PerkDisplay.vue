@@ -5,9 +5,11 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import Tooltip from './Tooltip.vue';
 import ElementLabel from './ElementLabel.vue';
 import type { ICraftingInfo } from '@/data/types';
+import { selectionService } from '@/data/selectionService';
 
 const props = defineProps<{
     perk: DestinyInventoryItemDefinition | undefined,
+    isAdept: boolean,
     craftingInfo: ICraftingInfo | undefined,
     selected: boolean,
     retired: boolean,
@@ -43,14 +45,16 @@ const tooltipDescription = computed(() => props.perk ? props.perk.displayPropert
 const tooltipEffects = computed(() => "");
 const tooltipBonuses = computed(() => {
     if (!props.perk) return [];
-    return props.perk.investmentStats.map(s => {
-        const statDef = destinyDataService.getStatDefinition(s.statTypeHash);
-        const name = statDef ? statDef.displayProperties.name : "";
-        return {
-            statName: name,
-            value: s.value,
-        };
-    });
+    return props.perk.investmentStats
+        .filter(s => selectionService.showCraftedBonus || props.isAdept || !s.isConditionallyActive)
+        .map(s => {
+            const statDef = destinyDataService.getStatDefinition(s.statTypeHash);
+            const name = statDef ? statDef.displayProperties.name : "";
+            return {
+                statName: name,
+                value: s.value,
+            };
+        });
 });
 const tooltipEnhanced = computed(() => !!props.enhanced);
 // TODO: this require outside data, complete when that is compiled.

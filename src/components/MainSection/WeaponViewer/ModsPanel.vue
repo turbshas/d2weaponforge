@@ -34,6 +34,7 @@ function onModClicked(mod: DestinyInventoryItemDefinition) {
                 v-for="mod of modOptions"
                 :key="mod.hash"
                 :perk="mod"
+                :is-adept="false"
                 :crafting-info="undefined"
                 :selected="false"
                 :retired="false"

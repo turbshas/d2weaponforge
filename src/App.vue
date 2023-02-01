@@ -4,10 +4,11 @@ import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
 import { computed } from "@vue/reactivity";
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import UrlManager from "./components/UrlManager.vue";
 import { destinyDataService } from "./data/destinyDataService";
-import { PageSelection, type IPerkOption, type IWeapon } from "./data/types";
+import { selectionService } from "./data/selectionService";
+import { PageSelection, type ILanguageInfo, type IPerkOption, type IWeapon } from "./data/types";
 
 const selectedPage = ref(PageSelection.Home);
 const selectedWeapon = ref<IWeapon | undefined>(undefined);
@@ -34,6 +35,21 @@ function onWeaponSelected(weapon: IWeapon | undefined) {
     selectedMasterwork.value = undefined;
     selectedMod.value = undefined;
     console.log("weapon selected", weapon);
+    if (weapon && weapon.weapon.stats) {
+        console.log("weapon stats", weapon.weapon.investmentStats.map(i => {
+            const stat = destinyDataService.getStatDefinition(i.statTypeHash);
+            return {
+                name: stat?.displayProperties.name,
+                value: weapon.weapon.stats!.stats[i.statTypeHash].value,
+                hash: i.statTypeHash,
+            };
+        }));
+    }
+}
+
+function onLanguageSelected(language: ILanguageInfo) {
+    selectionService.language = language;
+    destinyDataService.refreshGameData();
 }
 
 function onPerkSelected(column: number, perk: IPerkOption | undefined) {
@@ -86,7 +102,12 @@ function onUrlParsed(
             :mod="selectedMod"
             @url-parsed="onUrlParsed"
         ></UrlManager>
-        <Sidebar class="sidebar" @tab-selected="onTabSelected" @weapon-selected="onWeaponSelected"></Sidebar>
+        <Sidebar
+            class="sidebar"
+            @tab-selected="onTabSelected"
+            @weapon-selected="onWeaponSelected"
+            @language-selected="onLanguageSelected"
+        ></Sidebar>
         <MainPage
             class="main"
             :page="selectedPage"

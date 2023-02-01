@@ -3,6 +3,7 @@ import type {
     DestinyInventoryItemDefinition,
     DestinyItemCategoryDefinition,
     DestinyItemTierTypeDefinition,
+    DestinyManifestLanguage,
     DestinyManifestSlice,
     DestinyPlugSetDefinition,
     DestinySeasonDefinition,
@@ -112,10 +113,22 @@ export enum PageSelection {
     Weapon = "Weapon",
 }
 
+export enum SidebarPanelSelection {
+    Weapons = "Weapons",
+    Filters = "Filters",
+    Languages = "Languages",
+}
+
 export enum StatDisplayType {
     Bar = "Bar",
     Angle = "Angle",
     Number = "Number",
+}
+
+export interface ILanguageInfo {
+    language: DestinyManifestLanguage;
+    flagIcon: string;
+    text: string;
 }
 
 export type FilterCategory = "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";

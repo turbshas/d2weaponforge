@@ -1,6 +1,25 @@
+import FlagIcons from "@/assets/FlagIcons";
 import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 import TranslationMap from "./translations/translationMap";
+import type { ILanguageInfo } from "./types";
+
+const languageInfos: ILanguageInfo[] = [
+    { language: "de", flagIcon: FlagIcons.DE, text: "Altsächsisch", },
+    { language: "en", flagIcon: FlagIcons.EN, text: "English", },
+    { language: "es", flagIcon: FlagIcons.ES, text: "Español", },
+    { language: "es-mx", flagIcon: FlagIcons.ES_MX, text: "Español de México", },
+    { language: "fr", flagIcon: FlagIcons.FR, text: "Français", },
+    { language: "it", flagIcon: FlagIcons.IT, text: "Italiano", },
+    { language: "ja", flagIcon: FlagIcons.JA, text: "日本語", },
+    { language: "ko", flagIcon: FlagIcons.KO, text: "한국어", },
+    { language: "pl", flagIcon: FlagIcons.PL, text: "Polski", },
+    { language: "pt-br", flagIcon: FlagIcons.PT_BR, text: "Português do Brasil", },
+    { language: "ru", flagIcon: FlagIcons.RU, text: "Русский", },
+    { language: "zh-chs", flagIcon: FlagIcons.ZH_CHS, text: "汉语", },
+    { language: "zh-cht", flagIcon: FlagIcons.ZH_CHT, text: "漢語", },
+];
+const englishLanguageIndex = languageInfos.findIndex(l => l.language === "en");
 
 class CategoryIds {
     // Weapon perk plug category IDs
@@ -36,40 +55,42 @@ class CategoryIds {
 }
 
 class Stats {
-    constructor(private readonly language: DestinyManifestLanguage) {}
+    constructor(private readonly languageRef: Ref<DestinyManifestLanguage>) {}
 
-    public get Accuracy() { return TranslationMap[this.language].stats.accuracy; }
-    public get AimAssistance() { return TranslationMap[this.language].stats.aimAssistance; }
-    public get AirborneEffectiveness() { return TranslationMap[this.language].stats.airborneEffectiveness; }
-    public get AmmoCapacity() { return TranslationMap[this.language].stats.ammoCapacity; }
-    public get BlastRadius() { return TranslationMap[this.language].stats.blastRadius; }
-    public get ChargeRate() { return TranslationMap[this.language].stats.chargeRate; }
-    public get ChargeTime() { return TranslationMap[this.language].stats.chargeTime; }
-    public get DrawTime() { return TranslationMap[this.language].stats.drawTime; }
-    public get GuardEfficiency() { return TranslationMap[this.language].stats.guardEfficiency; }
-    public get GuardResistance() { return TranslationMap[this.language].stats.guardResistance; }
-    public get Handling() { return TranslationMap[this.language].stats.handling; }
-    public get Impact() { return TranslationMap[this.language].stats.impact; }
-    public get MagSize() { return TranslationMap[this.language].stats.magSize; }
-    public get Range() { return TranslationMap[this.language].stats.range; }
-    public get RecoilDirection() { return TranslationMap[this.language].stats.recoilDirection; }
-    public get ReloadSpeed() { return TranslationMap[this.language].stats.reloadSpeed; }
-    public get Rpm() { return TranslationMap[this.language].stats.rpm; }
-    public get Stability() { return TranslationMap[this.language].stats.stability; }
-    public get SwingSpeed() { return TranslationMap[this.language].stats.swingSpeed; }
-    public get Velocity() { return TranslationMap[this.language].stats.velocity; }
-    public get Zoom() { return TranslationMap[this.language].stats.zoom; }
+    public get Accuracy() { return TranslationMap[this.languageRef.value].stats.accuracy; }
+    public get AimAssistance() { return TranslationMap[this.languageRef.value].stats.aimAssistance; }
+    public get AirborneEffectiveness() { return TranslationMap[this.languageRef.value].stats.airborneEffectiveness; }
+    public get AmmoCapacity() { return TranslationMap[this.languageRef.value].stats.ammoCapacity; }
+    public get BlastRadius() { return TranslationMap[this.languageRef.value].stats.blastRadius; }
+    public get ChargeRate() { return TranslationMap[this.languageRef.value].stats.chargeRate; }
+    public get ChargeTime() { return TranslationMap[this.languageRef.value].stats.chargeTime; }
+    public get DrawTime() { return TranslationMap[this.languageRef.value].stats.drawTime; }
+    public get GuardEfficiency() { return TranslationMap[this.languageRef.value].stats.guardEfficiency; }
+    public get GuardEndurance() { return TranslationMap[this.languageRef.value].stats.guardEndurance; }
+    public get GuardResistance() { return TranslationMap[this.languageRef.value].stats.guardResistance; }
+    public get Handling() { return TranslationMap[this.languageRef.value].stats.handling; }
+    public get Impact() { return TranslationMap[this.languageRef.value].stats.impact; }
+    public get MagSize() { return TranslationMap[this.languageRef.value].stats.magSize; }
+    public get Range() { return TranslationMap[this.languageRef.value].stats.range; }
+    public get RecoilDirection() { return TranslationMap[this.languageRef.value].stats.recoilDirection; }
+    public get ReloadSpeed() { return TranslationMap[this.languageRef.value].stats.reloadSpeed; }
+    public get Rpm() { return TranslationMap[this.languageRef.value].stats.rpm; }
+    public get ShieldDuration() { return TranslationMap[this.languageRef.value].stats.shieldDuration; }
+    public get Stability() { return TranslationMap[this.languageRef.value].stats.stability; }
+    public get SwingSpeed() { return TranslationMap[this.languageRef.value].stats.swingSpeed; }
+    public get Velocity() { return TranslationMap[this.languageRef.value].stats.velocity; }
+    public get Zoom() { return TranslationMap[this.languageRef.value].stats.zoom; }
 }
 
 class Misc {
-    constructor(private readonly language: DestinyManifestLanguage) {}
+    constructor(private readonly languageRef: Ref<DestinyManifestLanguage>) {}
 
-    public get Adept() { return TranslationMap[this.language].misc.adept; }
+    public get Adept() { return TranslationMap[this.languageRef.value].misc.adept; }
     public get DrangName() { return "Drang"; }
-    public get Harrowed() { return TranslationMap[this.language].misc.harrowed; }
+    public get Harrowed() { return TranslationMap[this.languageRef.value].misc.harrowed; }
     public get MidaMiniToolName() { return "Mini-Tool"; }
-    public get RangefinderPerkName() { return TranslationMap[this.language].misc.rangefinderPerk; }
-    public get Timelost() { return TranslationMap[this.language].misc.timelost; }
+    public get RangefinderPerkName() { return TranslationMap[this.languageRef.value].misc.rangefinderPerk; }
+    public get Timelost() { return TranslationMap[this.languageRef.value].misc.timelost; }
 }
 
 class TraitIds {
@@ -116,10 +137,13 @@ export class DataSearchStrings {
     private static readonly language = ref<DestinyManifestLanguage>("en");
 
     private static readonly _categoryIds = new CategoryIds();
-    private static readonly _stats = new Stats(this.language.value);
-    private static readonly _misc = new Misc(this.language.value);
+    private static readonly _stats = new Stats(this.language);
+    private static readonly _misc = new Misc(this.language);
     private static readonly _traitIds = new TraitIds();
     private static readonly _weaponCategoryRegex = new WeaponCategoryRegex();
+
+    public static get DefaultLanguage() { return languageInfos[englishLanguageIndex]; }
+    public static get Languages() { return languageInfos; }
 
     public static setLanguage = (language: DestinyManifestLanguage) => {
         this.language.value = language;

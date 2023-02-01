@@ -14,6 +14,7 @@ const statOrdering = [
     DataSearchStrings.Stats.Accuracy,
     DataSearchStrings.Stats.Velocity,
 
+    DataSearchStrings.Stats.ShieldDuration,
     DataSearchStrings.Stats.Stability,
     DataSearchStrings.Stats.Handling,
     DataSearchStrings.Stats.ReloadSpeed,
@@ -26,6 +27,7 @@ const statOrdering = [
     DataSearchStrings.Stats.ChargeRate,
     DataSearchStrings.Stats.GuardEfficiency,
     DataSearchStrings.Stats.GuardResistance,
+    DataSearchStrings.Stats.GuardEndurance,
 
     DataSearchStrings.Stats.Rpm,
     DataSearchStrings.Stats.DrawTime,

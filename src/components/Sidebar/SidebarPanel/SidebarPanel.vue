@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/destinyDataService";
-import type { FilterCategory, FilterPredicate, IAppliedFilters, IWeapon } from "@/data/types";
+import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon } from "@/data/types";
 import { computed, ref } from "vue";
 import FilterWindow from "./Filter/FilterWindow.vue";
+import LanguageSelector from "./LanguageSelector.vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
 
 const props = defineProps<{
-    viewingFilter: boolean,
+    sidebarPanelSelection: SidebarPanelSelection,
     searchString: string,
 }>();
 
 const emit = defineEmits<{
     (e: "weaponSelected", weapon: IWeapon): void,
     (e: "filtersApplied"): void,
+    (e: "languageSelected", language: ILanguageInfo): void,
 }>();
 
 const activeFilters = ref<Record<FilterCategory, { [filterText: string]: boolean }>>({
@@ -48,7 +50,8 @@ const areFiltersChosen = computed(() => {
 const filteredWeapons = computed(() => {
     // If no filter or search, return truncated list
     if (!areFiltersChosen.value && !props.searchString) {
-        return weapons.value.filter(w => !isWeaponSunset(w)).slice(0, 22);
+        // return weapons.value.filter(w => !isWeaponSunset(w)).slice(0, 22);
+        return weapons.value.filter(w => !isWeaponSunset(w)).slice(0, 44);
     }
 
     return weapons.value
@@ -59,6 +62,9 @@ const filteredWeapons = computed(() => {
         .filter(w => checkFilterCategoryOnWeapon(filters.value.weaponFilters, w))
         .filter(s => s.weapon.displayProperties.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
 });
+
+const showFilterWindow = computed(() => props.sidebarPanelSelection === SidebarPanelSelection.Filters);
+const showLanguageWindow = computed(() => props.sidebarPanelSelection === SidebarPanelSelection.Languages);
 
 function isWeaponSunset(weapon: IWeapon) {
     return !!weapon.weapon.iconWatermarkShelved;
@@ -77,6 +83,10 @@ function onFilterToggled(categoryName: FilterCategory, filterText: string, activ
     activeFilters.value[categoryName][filterText] = active;
 }
 
+function onLanguageSelected(language: ILanguageInfo) {
+    emit("languageSelected", language);
+}
+
 function onWeaponSelected(weapon: IWeapon) {
     emit("weaponSelected", weapon);
 }
@@ -85,11 +95,15 @@ function onWeaponSelected(weapon: IWeapon) {
 <template>
     <div class="panel">
         <FilterWindow
-            v-if="viewingFilter"
+            v-if="showFilterWindow"
             :active-filters="activeFilters"
             @filters-applied="onFiltersApplied"
             @filter-toggled="onFilterToggled"
         ></FilterWindow>
+        <LanguageSelector
+            v-else-if="showLanguageWindow"
+            @language-selected="onLanguageSelected"
+        ></LanguageSelector>
         <WeaponList v-else :weapons="filteredWeapons" @entry-clicked="onWeaponSelected"></WeaponList>
     </div>
 </template>
