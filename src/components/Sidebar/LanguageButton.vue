@@ -45,5 +45,6 @@ const languageButtonImageLabel = computed(() => `Language Image: ${props.selecte
 /* Flags are 4:3 */
 .flag {
     height: 21px;
+    box-shadow: 0 0 1px 1px hsla(0, 0%, 100%, 0.25);
 }
 </style>

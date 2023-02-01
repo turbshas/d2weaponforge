@@ -57,7 +57,7 @@ function onLanguageSelected(languageInfo: ILanguageInfo) {
 /* Flags are 4:3 */
 .flag {
     height: 32px;
-    box-shadow: 0 0 1px 0 hsla(0, 0%, 100%, 0.25);
+    box-shadow: 0 0 1px 1px hsla(0, 0%, 100%, 0.25);
 }
 
 .text {

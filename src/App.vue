@@ -35,6 +35,16 @@ function onWeaponSelected(weapon: IWeapon | undefined) {
     selectedMasterwork.value = undefined;
     selectedMod.value = undefined;
     console.log("weapon selected", weapon);
+    if (weapon && weapon.weapon.stats) {
+        console.log("weapon stats", weapon.weapon.investmentStats.map(i => {
+            const stat = destinyDataService.getStatDefinition(i.statTypeHash);
+            return {
+                name: stat?.displayProperties.name,
+                value: weapon.weapon.stats!.stats[i.statTypeHash].value,
+                hash: i.statTypeHash,
+            };
+        }));
+    }
 }
 
 function onLanguageSelected(language: ILanguageInfo) {

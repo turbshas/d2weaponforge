@@ -50,7 +50,8 @@ const areFiltersChosen = computed(() => {
 const filteredWeapons = computed(() => {
     // If no filter or search, return truncated list
     if (!areFiltersChosen.value && !props.searchString) {
-        return weapons.value.filter(w => !isWeaponSunset(w)).slice(0, 22);
+        // return weapons.value.filter(w => !isWeaponSunset(w)).slice(0, 22);
+        return weapons.value.filter(w => !isWeaponSunset(w)).slice(0, 44);
     }
 
     return weapons.value
