@@ -22,6 +22,7 @@
   - convert to using rem instead of px
 - tab bar text isn't centered properly
 - elemental cap selector
+- show that page is refreshing when game data is being reloaded
 
 - move constants to a central location if possible, even just another file
 - tooltip for magazine still says mag stat instead of actual mag increase

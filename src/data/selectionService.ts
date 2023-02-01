@@ -1,6 +1,7 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { ref } from "vue";
-import type { IPerkOption } from "./types";
+import { DataSearchStrings } from "./dataSearchStringService";
+import type { ILanguageInfo, IPerkOption } from "./types";
 
 class SelectionService {
     private selectedWeaponWrapper = ref<DestinyInventoryItemDefinition | undefined>(undefined);
@@ -21,8 +22,12 @@ class SelectionService {
     public set selectedMod(value: DestinyInventoryItemDefinition | undefined) { this.selectedModWrapper.value = value; }
 
     // Preferences - storing them here for lack of a better place
+    private languageWrapper = ref<ILanguageInfo>(DataSearchStrings.DefaultLanguage);
     private hideRetiredPerksWrapper = ref(false);
     private showCraftedBonusWrapper = ref(false);
+
+    public get language() { return this.languageWrapper.value; }
+    public set language(value: ILanguageInfo) { this.languageWrapper.value = value; }
 
     public get hideRetiredPerks() { return this.hideRetiredPerksWrapper.value; }
     public set hideRetiredPerks(value: boolean) { this.hideRetiredPerksWrapper.value = value; }

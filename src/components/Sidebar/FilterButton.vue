@@ -28,14 +28,8 @@ const filterButtonImageLabel = "Filter Icon";
     cursor: pointer;
 
     padding: 16px;
-    border-top: none;
-    border-left: none;
-    border-bottom: none;
+    border: none;
 
-    border-right-width: 1px;
-    border-right-style: solid;
-    border-right-color: hsla(0, 0%, 98%, 0.25);
-    border-radius: 0;
     background: transparent;
 
     transition: background-color 0.4s cubic-bezier(0.19, 1, 0.22, 1);

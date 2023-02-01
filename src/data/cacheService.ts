@@ -14,6 +14,10 @@ const ManifestObjectStoreName = "manifestObjectStore";
 const ManifestCacheKey = "d2gunsmith_2_destiny_manifest";
 
 class CacheService {
+    // TODO: support caching settings e.g. language, show crafted bonus, etc.
+    // TODO: use DB or local storage for settings?
+    // TODO: open DB in constructor?
+    // TODO: when to close DB?
     public getCachedManifest = async () => {
         const db = await this.openIndexedDb();
         const readTransaction = db.transaction(ManifestObjectStoreName, "readonly");

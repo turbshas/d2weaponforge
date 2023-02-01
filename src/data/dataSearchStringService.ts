@@ -1,6 +1,25 @@
+import FlagIcons from "@/assets/FlagIcons";
 import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import { ref, type Ref } from "vue";
 import TranslationMap from "./translations/translationMap";
+import type { ILanguageInfo } from "./types";
+
+const languageInfos: ILanguageInfo[] = [
+    { language: "de", flagIcon: FlagIcons.DE, text: "Altsächsisch", },
+    { language: "en", flagIcon: FlagIcons.EN, text: "English", },
+    { language: "es", flagIcon: FlagIcons.ES, text: "Español", },
+    { language: "es-mx", flagIcon: FlagIcons.ES_MX, text: "Español de México", },
+    { language: "fr", flagIcon: FlagIcons.FR, text: "Français", },
+    { language: "it", flagIcon: FlagIcons.IT, text: "Italiano", },
+    { language: "ja", flagIcon: FlagIcons.JA, text: "日本語", },
+    { language: "ko", flagIcon: FlagIcons.KO, text: "한국어", },
+    { language: "pl", flagIcon: FlagIcons.PL, text: "Polski", },
+    { language: "pt-br", flagIcon: FlagIcons.PT_BR, text: "Português do Brasil", },
+    { language: "ru", flagIcon: FlagIcons.RU, text: "Русский", },
+    { language: "zh-chs", flagIcon: FlagIcons.ZH_CHS, text: "汉语", },
+    { language: "zh-cht", flagIcon: FlagIcons.ZH_CHT, text: "漢語", },
+];
+const englishLanguageIndex = languageInfos.findIndex(l => l.language === "en");
 
 class CategoryIds {
     // Weapon perk plug category IDs
@@ -122,6 +141,9 @@ export class DataSearchStrings {
     private static readonly _misc = new Misc(this.language);
     private static readonly _traitIds = new TraitIds();
     private static readonly _weaponCategoryRegex = new WeaponCategoryRegex();
+
+    public static get DefaultLanguage() { return languageInfos[englishLanguageIndex]; }
+    public static get Languages() { return languageInfos; }
 
     public static setLanguage = (language: DestinyManifestLanguage) => {
         this.language.value = language;
