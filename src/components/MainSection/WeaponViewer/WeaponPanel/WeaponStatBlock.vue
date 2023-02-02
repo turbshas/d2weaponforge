@@ -6,36 +6,36 @@ import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition, DestinyItemInvestmentStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
 
-const statOrdering = [
-    DataSearchStrings.Stats.Impact,
-    DataSearchStrings.Stats.BlastRadius,
+const statOrdering = computed(() => [
+    DataSearchStrings.Stats.Impact.value,
+    DataSearchStrings.Stats.BlastRadius.value,
 
-    DataSearchStrings.Stats.Range,
-    DataSearchStrings.Stats.Accuracy,
-    DataSearchStrings.Stats.Velocity,
+    DataSearchStrings.Stats.Range.value,
+    DataSearchStrings.Stats.Accuracy.value,
+    DataSearchStrings.Stats.Velocity.value,
 
-    DataSearchStrings.Stats.ShieldDuration,
-    DataSearchStrings.Stats.Stability,
-    DataSearchStrings.Stats.Handling,
-    DataSearchStrings.Stats.ReloadSpeed,
-    DataSearchStrings.Stats.AimAssistance,
-    DataSearchStrings.Stats.AirborneEffectiveness,
-    DataSearchStrings.Stats.Zoom,
-    DataSearchStrings.Stats.RecoilDirection,
+    DataSearchStrings.Stats.ShieldDuration.value,
+    DataSearchStrings.Stats.Stability.value,
+    DataSearchStrings.Stats.Handling.value,
+    DataSearchStrings.Stats.ReloadSpeed.value,
+    DataSearchStrings.Stats.AimAssistance.value,
+    DataSearchStrings.Stats.AirborneEffectiveness.value,
+    DataSearchStrings.Stats.Zoom.value,
+    DataSearchStrings.Stats.RecoilDirection.value,
 
-    DataSearchStrings.Stats.SwingSpeed,
-    DataSearchStrings.Stats.ChargeRate,
-    DataSearchStrings.Stats.GuardEfficiency,
-    DataSearchStrings.Stats.GuardResistance,
-    DataSearchStrings.Stats.GuardEndurance,
+    DataSearchStrings.Stats.SwingSpeed.value,
+    DataSearchStrings.Stats.ChargeRate.value,
+    DataSearchStrings.Stats.GuardEfficiency.value,
+    DataSearchStrings.Stats.GuardResistance.value,
+    DataSearchStrings.Stats.GuardEndurance.value,
 
-    DataSearchStrings.Stats.Rpm,
-    DataSearchStrings.Stats.DrawTime,
-    DataSearchStrings.Stats.ChargeTime,
+    DataSearchStrings.Stats.Rpm.value,
+    DataSearchStrings.Stats.DrawTime.value,
+    DataSearchStrings.Stats.ChargeTime.value,
 
-    DataSearchStrings.Stats.MagSize,
-    DataSearchStrings.Stats.AmmoCapacity,
-];
+    DataSearchStrings.Stats.MagSize.value,
+    DataSearchStrings.Stats.AmmoCapacity.value,
+]);
 
 const props = defineProps<{
     statGroup: DestinyStatGroupDefinition | undefined,
@@ -47,25 +47,45 @@ const props = defineProps<{
 }>();
 
 const investmentStatMap = computed(() => {
-    const map: { [name: string]: DestinyItemInvestmentStatDefinition } = {};
+    const map: { [statHash: number]: DestinyItemInvestmentStatDefinition | undefined } = {};
     for (const stat of props.investmentStats) {
-        const definition = getStatDefinition(stat.statTypeHash);
-        if (definition) {
-            map[definition.displayProperties.name] = stat;
-        }
+        map[stat.statTypeHash] = stat;
     }
     return map;
 });
 
+const scaledStats = computed(() => props.statGroup ? props.statGroup.scaledStats : []);
+
 const orderedInvestmentStats = computed(() => {
-    const ordered: DestinyItemInvestmentStatDefinition[] = [];
-    for(const statName of statOrdering) {
-        if (investmentStatMap.value[statName]) {
-            ordered.push(investmentStatMap.value[statName]);
-        }
+    const workingStatList: (DestinyItemInvestmentStatDefinition | undefined)[] = statOrdering.value.map(_ => undefined);
+
+    for (const stat of scaledStats.value) {
+        const statDef = getStatDefinition(stat.statHash);
+        if (!statDef) continue;
+        const index = statOrdering.value.findIndex(name => name === statDef.displayProperties.name);
+        if (index < 0) continue;
+        // Some weapons (e.g. swords) have stats that appear in their scaledStats list but not their investmentStats.
+        workingStatList[index] = investmentStatMap.value[stat.statHash] || defaultInvestmentStatDefinition(stat.statHash);
     }
-    return ordered;
+
+    return workingStatList.filter(s => !!s).map(s => s!);
 });
+
+function defaultInvestmentStatDefinition(statHash: number): DestinyItemInvestmentStatDefinition {
+    return {
+        isConditionallyActive: false,
+        value: 0,
+        statTypeHash: statHash,
+    };
+}
+
+function getStatDisplayOverride(statHash: number) {
+    return props.statGroup && props.statGroup.overrides && props.statGroup.overrides[statHash];
+}
+
+function getStatDisplayDefinition(statHash: number) {
+    return scaledStats.value.find(s => s.statHash === statHash);
+}
 
 function getStatDefinition(statHash: number) {
     return destinyDataService.getStatDefinition(statHash);
@@ -101,6 +121,8 @@ function getModifierForStat(statHash: number) {
         <WeaponStatDisplay
             v-for="investmentStat in orderedInvestmentStats"
             :key="investmentStat.statTypeHash"
+            :override="getStatDisplayOverride(investmentStat.statTypeHash)"
+            :stat-display="getStatDisplayDefinition(investmentStat.statTypeHash)"
             :stat-group="props.statGroup"
             :definition="getStatDefinition(investmentStat.statTypeHash)"
             :investment-value="investmentStat"

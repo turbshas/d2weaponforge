@@ -1,4 +1,5 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyItemTierTypeDefinition, DestinyPlugItemCraftingRequirements, DestinyPlugSetDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
+import { AllowedPlugCategoryIds, ValidPerkPlugCategories, WeaponTraitIdMainStatMap, WeaponTypeRpmUnitsMap, WeaponTypeTraitToRegex } from "./constants";
 import { DataSearchStrings } from "./dataSearchStringService";
 import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions, type IWeapon, type IWeaponTypeInfo, type UsedDestinyManifestSlice } from "./types";
 import { hashMapToArray } from "./util";
@@ -19,68 +20,6 @@ interface IResolvedPlugSet {
     /** reusablePlugSetHash -> Plug Set -> reusablePlugItems */
     reusableItems: IResolvedPlugItem[];
 }
-
-const validPerkPlugCategories = [
-    DataSearchStrings.CategoryIDs.BarrelsPlug,
-    DataSearchStrings.CategoryIDs.BladesPlug,
-    DataSearchStrings.CategoryIDs.BowstringsPlug,
-    DataSearchStrings.CategoryIDs.HaftsPlug,
-    DataSearchStrings.CategoryIDs.ScopesPlug,
-    DataSearchStrings.CategoryIDs.TubesPlug,
-
-    DataSearchStrings.CategoryIDs.ArrowsPlug,
-    DataSearchStrings.CategoryIDs.BatteriesPlug,
-    DataSearchStrings.CategoryIDs.GuardsPlug,
-    DataSearchStrings.CategoryIDs.MagazinesPlug,
-    DataSearchStrings.CategoryIDs.MagazinesGLPlug,
-
-    DataSearchStrings.CategoryIDs.FramesPlug,
-    DataSearchStrings.CategoryIDs.OriginsPlug,
-    DataSearchStrings.CategoryIDs.ExoticMasterworkPlug,
-    DataSearchStrings.CategoryIDs.CatalystsPlug,
-    DataSearchStrings.CategoryIDs.StocksPlug,
-];
-
-const allowedPlugCategoryIds = [...validPerkPlugCategories,
-    DataSearchStrings.CategoryIDs.IntrinsicPlug,
-
-    DataSearchStrings.CategoryIDs.WeaponModDamage,
-    DataSearchStrings.CategoryIDs.WeaponModGuns,
-    DataSearchStrings.CategoryIDs.WeaponModMagazine,
-];
-
-const weaponTypeMainStatMap: { [traitId: string]: string } = {
-    [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.Stats.DrawTime,
-    [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.Stats.ChargeTime,
-    [DataSearchStrings.TraitIDs.LinearFusion]: DataSearchStrings.Stats.ChargeTime,
-    [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.Stats.Impact,
-};
-
-const weaponTypeRpmUnitsMap: { [traitId: string]: string } = {
-    [DataSearchStrings.TraitIDs.Bow]: "ms",
-    [DataSearchStrings.TraitIDs.FusionRifle]: "ms",
-    [DataSearchStrings.TraitIDs.LinearFusion]: "ms",
-};
-
-const weaponTypeTraitToRegex: { [traitId: string]: string } = {
-    [DataSearchStrings.TraitIDs.AutoRifle]: DataSearchStrings.WeaponCategoryRegex.AutoRifle,
-    [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.WeaponCategoryRegex.Bow,
-    [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.WeaponCategoryRegex.FusionRifle,
-    [DataSearchStrings.TraitIDs.Glaive]: DataSearchStrings.WeaponCategoryRegex.Glaive,
-    [DataSearchStrings.TraitIDs.GrenadeLauncher]: DataSearchStrings.WeaponCategoryRegex.GrenadeLauncher,
-    [DataSearchStrings.TraitIDs.HandCannon]: DataSearchStrings.WeaponCategoryRegex.HandCannon,
-    [DataSearchStrings.TraitIDs.LinearFusion]: DataSearchStrings.WeaponCategoryRegex.LinearFusion,
-    [DataSearchStrings.TraitIDs.MachineGun]: DataSearchStrings.WeaponCategoryRegex.MachineGun,
-    [DataSearchStrings.TraitIDs.PulseRifle]: DataSearchStrings.WeaponCategoryRegex.PulseRifle,
-    [DataSearchStrings.TraitIDs.RocketLauncher]: DataSearchStrings.WeaponCategoryRegex.RocketLauncher,
-    [DataSearchStrings.TraitIDs.ScoutRifle]: DataSearchStrings.WeaponCategoryRegex.ScoutRifle,
-    [DataSearchStrings.TraitIDs.Shotgun]: DataSearchStrings.WeaponCategoryRegex.Shotgun,
-    [DataSearchStrings.TraitIDs.Sidearm]: DataSearchStrings.WeaponCategoryRegex.Sidearm,
-    [DataSearchStrings.TraitIDs.SniperRifle]: DataSearchStrings.WeaponCategoryRegex.SniperRifle,
-    [DataSearchStrings.TraitIDs.SubmachineGun]: DataSearchStrings.WeaponCategoryRegex.SubmachineGun,
-    [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.WeaponCategoryRegex.Sword,
-    // [DataSearchStrings.TraitIDs.TraceRifle]: DataSearchStrings.WeaponCategoryRegex.TraceRifle,
-};
 
 export class DestinyManifestProcessor {
     private readonly _weapons: IWeapon[];
@@ -107,7 +46,7 @@ export class DestinyManifestProcessor {
                 && !!item.screenshot // Some weapons don't have screenshots - probably for the crafting menu.
                 && !!item.quality
                 && !!item.quality.infusionCategoryHash; // Others don't have an infusion category, probably also crafting related.
-            const isModOrPerk = item.plug && allowedPlugCategoryIds.includes(item.plug.plugCategoryIdentifier);
+            const isModOrPerk = item.plug && AllowedPlugCategoryIds.value.includes(item.plug.plugCategoryIdentifier);
             const isMasterwork = item.plug && item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
 
             if (!isWeapon && !isModOrPerk && !isMasterwork) {
@@ -193,7 +132,7 @@ export class DestinyManifestProcessor {
         const weaponPerkSockets = resolvedSocketItems.filter(r => {
             return r.randomizedItems
                 .concat(r.reusableItems)
-                .some(i => !!i.item.plug && validPerkPlugCategories.includes(i.item.plug.plugCategoryIdentifier));
+                .some(i => !!i.item.plug && ValidPerkPlugCategories.value.includes(i.item.plug.plugCategoryIdentifier));
         });
 
         // Then, MW + Mods
@@ -259,9 +198,9 @@ export class DestinyManifestProcessor {
 
     private isWeaponAdept = (weapon: DestinyInventoryItemDefinition) => {
         const name = weapon.displayProperties.name;
-        return name.includes(DataSearchStrings.Misc.Adept)
-            || name.includes(DataSearchStrings.Misc.Harrowed)
-            || name.includes(DataSearchStrings.Misc.Timelost);
+        return name.includes(DataSearchStrings.Misc.Adept.value)
+            || name.includes(DataSearchStrings.Misc.Harrowed.value)
+            || name.includes(DataSearchStrings.Misc.Timelost.value);
     }
 
     private getIntrinsicFromSockets = (intrinsicSocket: IResolvedPlugSet | undefined) => {
@@ -396,7 +335,7 @@ export class DestinyManifestProcessor {
         if (!modSocket) return [];
         return modSocket.socketReusableItems
             .filter(i =>
-                i.displayProperties.name.includes(DataSearchStrings.Misc.Adept)
+                i.displayProperties.name.includes(DataSearchStrings.Misc.Adept.value)
                 && i.plug
                 && (i.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.WeaponModDamage
                     || i.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.WeaponModGuns
@@ -422,13 +361,14 @@ export class DestinyManifestProcessor {
             
             // Exclude Drang/Mini-Tool unique intrinsics.
             const weaponNameLower = weapon.weapon.displayProperties.name.toLocaleLowerCase();
-            if (weaponNameLower.includes(DataSearchStrings.Misc.DrangName.toLocaleLowerCase())
-                || weaponNameLower.includes(DataSearchStrings.Misc.MidaMiniToolName.toLocaleLowerCase())) continue;
+            if (weaponNameLower.includes(DataSearchStrings.Misc.DrangName.value.toLocaleLowerCase())
+                || weaponNameLower.includes(DataSearchStrings.Misc.MidaMiniToolName.value.toLocaleLowerCase())) continue;
 
+            // The important trait seems to consistently be the last one in the list so I'm leaving this
             const weaponType = weapon.weapon.traitIds[weapon.weapon.traitIds.length - 1];
             const archetypeName = weapon.intrinsic.displayProperties.name;
 
-            const searchStatName = weaponTypeMainStatMap[weaponType] || DataSearchStrings.Stats.Rpm;
+            const searchStatName = WeaponTraitIdMainStatMap.value[weaponType] || DataSearchStrings.Stats.Rpm;
             const rpmStat = weapon.weapon.investmentStats.find(s => {
                 const statType = this.getStatTypeDefinition(s.statTypeHash);
                 return statType && statType.displayProperties.name === searchStatName;
@@ -438,12 +378,13 @@ export class DestinyManifestProcessor {
 
             // This is gross, but meh it seems to work.
             const isTraceRifleType = weaponType === DataSearchStrings.TraitIDs.AutoRifle && stat.value >= 1000;
-            const categoryRegex = isTraceRifleType ? DataSearchStrings.WeaponCategoryRegex.TraceRifle : weaponTypeTraitToRegex[weaponType];
+            const categoryRegex = isTraceRifleType ? DataSearchStrings.WeaponCategoryRegex.TraceRifle : WeaponTypeTraitToRegex.value[weaponType];
             const category = this._itemCategories.find(c => c.itemTypeRegex === categoryRegex);
             if (!category) continue;
 
             if (!seenArchetypes[categoryRegex]) {
                 seenArchetypes[categoryRegex] = {};
+
                 weaponTypeInfoMap[categoryRegex] = {
                     weaponTypeName: category.displayProperties.name,
                     traitId: weaponType,
@@ -453,7 +394,7 @@ export class DestinyManifestProcessor {
                     showRpm: weaponType !== DataSearchStrings.TraitIDs.Bow && weaponType !== DataSearchStrings.TraitIDs.Sword,
                     // Sidearms have duplicate adaptive frames but differing RPM, so make sure to actually compare with RPM.
                     compareUsingRpm: weaponType === DataSearchStrings.TraitIDs.Sidearm,
-                    rpmUnits: weaponTypeRpmUnitsMap[weaponType] || "RPM",
+                    rpmUnits: WeaponTypeRpmUnitsMap.value[weaponType] || "RPM",
                     archetypes: [],
                 };
             }
@@ -471,10 +412,11 @@ export class DestinyManifestProcessor {
                 statHash: rpmStat.statTypeHash,
             });
         }
-        console.log("found archetypes:", weaponTypeInfoMap);
+        console.log("found archetypes:", weaponTypeInfoMap, seenArchetypes);
         return hashMapToArray(weaponTypeInfoMap);
     }
 
+    // Wrappers for typing reasons (explicitly requiring return values are checked for undefined)
     private getItemDefinition = (hash: number): DestinyInventoryItemDefinition | undefined => {
         return this.manifest.DestinyInventoryItemDefinition[hash];
     }
@@ -499,6 +441,7 @@ export class DestinyManifestProcessor {
         return this.manifest.DestinyStatGroupDefinition[hash];
     }
 
+    // Output values
     public get weapons() { return this._weapons; }
     public get weaponTypes() { return this._weaponTypes; }
 

@@ -2,80 +2,17 @@
 import { destinyDataService } from "@/data/destinyDataService";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
-import WeaponIcons from "@/assets/WeaponIcons";
-import OriginIcons from "@/assets/OriginIcons";
 import TierIcons from "@/assets/TierIcons";
 import type { FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton } from "@/data/types";
 import OptionButton from "@/components/Common/OptionButton.vue";
 import ElementLabel from "@/components/Common/ElementLabel.vue";
-import { DataSearchStrings } from "@/data/dataSearchStringService";
+import { OriginFilters, SeasonIconMap, WeaponCategoryIconMap } from "@/data/constants";
 
 interface ICategoryInfo {
     name: FilterCategory;
     filters: IFilterButton[];
     wide: boolean;
 }
-
-// This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
-// weapon type, since hash could theoretically change.
-const weaponCategoryIconMap: { [itemRegex: string]: string } = {
-    [DataSearchStrings.WeaponCategoryRegex.AutoRifle]: WeaponIcons.AutoRifle,
-    [DataSearchStrings.WeaponCategoryRegex.HandCannon]: WeaponIcons.HandCannon,
-    [DataSearchStrings.WeaponCategoryRegex.PulseRifle]: WeaponIcons.PulseRifle,
-    [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: WeaponIcons.ScoutRifle,
-    [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: WeaponIcons.FusionRifle,
-    [DataSearchStrings.WeaponCategoryRegex.SniperRifle]: WeaponIcons.SniperRifle,
-    [DataSearchStrings.WeaponCategoryRegex.Shotgun]: WeaponIcons.Shotgun,
-    [DataSearchStrings.WeaponCategoryRegex.MachineGun]: WeaponIcons.MachineGun,
-    [DataSearchStrings.WeaponCategoryRegex.RocketLauncher]: WeaponIcons.RocketLauncher,
-    [DataSearchStrings.WeaponCategoryRegex.Sidearm]: WeaponIcons.Sidearm,
-    [DataSearchStrings.WeaponCategoryRegex.Sword]: WeaponIcons.Sword,
-    [DataSearchStrings.WeaponCategoryRegex.GrenadeLauncher]: WeaponIcons.GrenadeLauncher,
-    [DataSearchStrings.WeaponCategoryRegex.LinearFusion]: WeaponIcons.LinearFusionRifle,
-    [DataSearchStrings.WeaponCategoryRegex.TraceRifle]: WeaponIcons.TraceRifle,
-    [DataSearchStrings.WeaponCategoryRegex.Bow]: WeaponIcons.Bow,
-    [DataSearchStrings.WeaponCategoryRegex.Glaive]: WeaponIcons.Glaive,
-    [DataSearchStrings.WeaponCategoryRegex.SubmachineGun]: WeaponIcons.SubmachineGun,
-};
-
-// TODO: these filters
-const origins: IFilterButton[] = [
-    { text: "World (Current)", iconUrl: "", filter: () => false, },
-    { text: "Word (Old)", iconUrl: "", filter: () => false, },
-    { text: "Vanguard Ops", iconUrl: OriginIcons.FactionVanguard, filter: () => false, },
-    { text: "Crucible", iconUrl: OriginIcons.FactionCrucible, filter: () => false, },
-    { text: "Gambit", iconUrl: OriginIcons.FactionGambit, filter: () => false, },
-    { text: "Iron Banner", iconUrl: OriginIcons.FactionIronBanner, filter: () => false, },
-    { text: "Trials of Osiris", iconUrl: OriginIcons.FactionOsiris, filter: () => false, },
-    { text: "Nightfall", iconUrl: OriginIcons.Nightfall, filter: () => false, },
-    { text: "King's Fall", iconUrl: "", filter: () => false, },
-    { text: "Duality", iconUrl: OriginIcons.Duality, filter: () => false, },
-    { text: "Opulent", iconUrl: "", filter: () => false, }, // TODO: this would be opulent weapons that were reissued ONLY (unless Include Sunset is checked?)
-    { text: "Vow of the Disciple", iconUrl: OriginIcons.VowOfTheDisciple, filter: () => false, },
-    { text: "Throne World", iconUrl: "", filter: () => false, },
-    { text: "30th Anniversary", iconUrl: "", filter: () => false, },
-    { text: "Vault of Glass", iconUrl: OriginIcons.VaultOfGlass, filter: () => false, },
-    { text: "Europa", iconUrl: OriginIcons.Europa, filter: () => false, },
-    { text: "Deep Stone Crypt", iconUrl: "", filter: () => false, },
-    { text: "Prophecy", iconUrl: OriginIcons.FactionTheNine, filter: () => false, }, // TODO: this would be Trials of the Nine weapons that drop in Prophecy ONLY (unless Include Sunset is checked?)
-    { text: "Altars of Sorrow", iconUrl: "", filter: () => false, },
-    { text: "Pit of Heresy", iconUrl: "", filter: () => false, },
-    { text: "Dreambane", iconUrl: "", filter: () => false, },
-    { text: "Garden of Salvation", iconUrl: "", filter: () => false, },
-    { text: "The Dreaming City", iconUrl: "", filter: () => false, },
-    { text: "Last Wish", iconUrl: "", filter: () => false, },
-];
-
-const seasonIconMap: { [seasonNumber: number]: string } = {
-    1: "",
-    2: "",
-    3: "",
-    4: "",
-    5: "",
-    6: "",
-    7: "",
-    10: OriginIcons.SeasonWorthy,
-};
 
 const props = defineProps<{
     activeFilters: Record<FilterCategory, { [filterText: string]: boolean }>,
@@ -88,13 +25,6 @@ const emits = defineEmits<{
 
 const perkFilter = ref("");
 const includeSunsetWeapons = ref(false);
-// const activeFilters = ref<Record<FilterCategory, { [filterText: string]: boolean }>>({
-//     "Archetype": {},
-//     "Collections": {},
-//     "Damage Type": {},
-//     "Rarity": {},
-//     "Weapon": {},
-// });
 
 const damageTypeFilters = computed(() => {
     return destinyDataService.damageTypes
@@ -140,11 +70,11 @@ const weaponCategoryArchetypeMap = computed(() => {
 
 const weaponCategoryFilters = computed(() => {
     return destinyDataService.weaponTypes
-        .filter(t => t.traitId && weaponCategoryIconMap[t.weaponCategoryRegex])
+        .filter(t => t.traitId && WeaponCategoryIconMap.value[t.weaponCategoryRegex])
         .map(t => {
             const filter: IWeaponFilterButton = {
                 text: t.weaponTypeName,
-                iconUrl: weaponCategoryIconMap[t.weaponCategoryRegex],
+                iconUrl: WeaponCategoryIconMap.value[t.weaponCategoryRegex],
                 archetypes: weaponCategoryArchetypeMap.value[t.traitId],
                 filter: (item: IWeapon) => {
                     const weapon = item.weapon;
@@ -164,13 +94,13 @@ const weaponCategoryFilters = computed(() => {
 
 const collectionCategoryFilters = computed(() => {
     // Just seasons right now, TODO: add other collections
-    const collections = origins;
+    const collections = OriginFilters.value;
     const seasonCollections = destinyDataService.seasons
         .filter(s => includeSunsetWeapons.value || !destinyDataService.isSeasonSunset(s))
         .map(s => {
             const iconUrl = s.displayProperties.hasIcon
                 ? destinyDataService.getImageUrl(s.displayProperties.icon)
-                : seasonIconMap[s.seasonNumber];
+                : SeasonIconMap.value[s.seasonNumber];
             const filter: IFilterButton = {
                 text: s.displayProperties.name || "The Red War",
                 iconUrl: iconUrl,

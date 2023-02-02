@@ -285,3 +285,10 @@ export interface IArchetypeInfo {
     /** The hash of the stat used to get the RPM. */
     statHash: number;
 }
+
+export interface IWeaponRangeValues {
+    baseFalloffStart: number;
+    hipFireRangePerStat: number;
+    zoomAdjustment: number;
+}
+
