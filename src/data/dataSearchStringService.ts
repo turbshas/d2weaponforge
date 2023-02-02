@@ -1,25 +1,7 @@
-import FlagIcons from "@/assets/FlagIcons";
 import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
-import { ref, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
+import { EnglishLanguageIndex, LanguageInfos } from "./constants";
 import TranslationMap from "./translations/translationMap";
-import type { ILanguageInfo } from "./types";
-
-const languageInfos: ILanguageInfo[] = [
-    { language: "de", flagIcon: FlagIcons.DE, text: "Altsächsisch", },
-    { language: "en", flagIcon: FlagIcons.EN, text: "English", },
-    { language: "es", flagIcon: FlagIcons.ES, text: "Español", },
-    { language: "es-mx", flagIcon: FlagIcons.ES_MX, text: "Español de México", },
-    { language: "fr", flagIcon: FlagIcons.FR, text: "Français", },
-    { language: "it", flagIcon: FlagIcons.IT, text: "Italiano", },
-    { language: "ja", flagIcon: FlagIcons.JA, text: "日本語", },
-    { language: "ko", flagIcon: FlagIcons.KO, text: "한국어", },
-    { language: "pl", flagIcon: FlagIcons.PL, text: "Polski", },
-    { language: "pt-br", flagIcon: FlagIcons.PT_BR, text: "Português do Brasil", },
-    { language: "ru", flagIcon: FlagIcons.RU, text: "Русский", },
-    { language: "zh-chs", flagIcon: FlagIcons.ZH_CHS, text: "汉语", },
-    { language: "zh-cht", flagIcon: FlagIcons.ZH_CHT, text: "漢語", },
-];
-const englishLanguageIndex = languageInfos.findIndex(l => l.language === "en");
 
 class CategoryIds {
     // Weapon perk plug category IDs
@@ -57,40 +39,40 @@ class CategoryIds {
 class Stats {
     constructor(private readonly languageRef: Ref<DestinyManifestLanguage>) {}
 
-    public get Accuracy() { return TranslationMap[this.languageRef.value].stats.accuracy; }
-    public get AimAssistance() { return TranslationMap[this.languageRef.value].stats.aimAssistance; }
-    public get AirborneEffectiveness() { return TranslationMap[this.languageRef.value].stats.airborneEffectiveness; }
-    public get AmmoCapacity() { return TranslationMap[this.languageRef.value].stats.ammoCapacity; }
-    public get BlastRadius() { return TranslationMap[this.languageRef.value].stats.blastRadius; }
-    public get ChargeRate() { return TranslationMap[this.languageRef.value].stats.chargeRate; }
-    public get ChargeTime() { return TranslationMap[this.languageRef.value].stats.chargeTime; }
-    public get DrawTime() { return TranslationMap[this.languageRef.value].stats.drawTime; }
-    public get GuardEfficiency() { return TranslationMap[this.languageRef.value].stats.guardEfficiency; }
-    public get GuardEndurance() { return TranslationMap[this.languageRef.value].stats.guardEndurance; }
-    public get GuardResistance() { return TranslationMap[this.languageRef.value].stats.guardResistance; }
-    public get Handling() { return TranslationMap[this.languageRef.value].stats.handling; }
-    public get Impact() { return TranslationMap[this.languageRef.value].stats.impact; }
-    public get MagSize() { return TranslationMap[this.languageRef.value].stats.magSize; }
-    public get Range() { return TranslationMap[this.languageRef.value].stats.range; }
-    public get RecoilDirection() { return TranslationMap[this.languageRef.value].stats.recoilDirection; }
-    public get ReloadSpeed() { return TranslationMap[this.languageRef.value].stats.reloadSpeed; }
-    public get Rpm() { return TranslationMap[this.languageRef.value].stats.rpm; }
-    public get ShieldDuration() { return TranslationMap[this.languageRef.value].stats.shieldDuration; }
-    public get Stability() { return TranslationMap[this.languageRef.value].stats.stability; }
-    public get SwingSpeed() { return TranslationMap[this.languageRef.value].stats.swingSpeed; }
-    public get Velocity() { return TranslationMap[this.languageRef.value].stats.velocity; }
-    public get Zoom() { return TranslationMap[this.languageRef.value].stats.zoom; }
+    public Accuracy = computed(() => TranslationMap[this.languageRef.value].stats.accuracy);
+    public AimAssistance = computed(() => TranslationMap[this.languageRef.value].stats.aimAssistance);
+    public AirborneEffectiveness = computed(() => TranslationMap[this.languageRef.value].stats.airborneEffectiveness);
+    public AmmoCapacity = computed(() => TranslationMap[this.languageRef.value].stats.ammoCapacity);
+    public BlastRadius = computed(() => TranslationMap[this.languageRef.value].stats.blastRadius);
+    public ChargeRate = computed(() => TranslationMap[this.languageRef.value].stats.chargeRate);
+    public ChargeTime = computed(() => TranslationMap[this.languageRef.value].stats.chargeTime);
+    public DrawTime = computed(() => TranslationMap[this.languageRef.value].stats.drawTime);
+    public GuardEfficiency = computed(() => TranslationMap[this.languageRef.value].stats.guardEfficiency);
+    public GuardEndurance = computed(() => TranslationMap[this.languageRef.value].stats.guardEndurance);
+    public GuardResistance = computed(() => TranslationMap[this.languageRef.value].stats.guardResistance);
+    public Handling = computed(() => TranslationMap[this.languageRef.value].stats.handling);
+    public Impact = computed(() => TranslationMap[this.languageRef.value].stats.impact);
+    public MagSize = computed(() => TranslationMap[this.languageRef.value].stats.magSize);
+    public Range = computed(() => TranslationMap[this.languageRef.value].stats.range);
+    public RecoilDirection = computed(() => TranslationMap[this.languageRef.value].stats.recoilDirection);
+    public ReloadSpeed = computed(() => TranslationMap[this.languageRef.value].stats.reloadSpeed);
+    public Rpm = computed(() => TranslationMap[this.languageRef.value].stats.rpm);
+    public ShieldDuration = computed(() => TranslationMap[this.languageRef.value].stats.shieldDuration);
+    public Stability = computed(() => TranslationMap[this.languageRef.value].stats.stability);
+    public SwingSpeed = computed(() => TranslationMap[this.languageRef.value].stats.swingSpeed);
+    public Velocity = computed(() => TranslationMap[this.languageRef.value].stats.velocity);
+    public Zoom = computed(() => TranslationMap[this.languageRef.value].stats.zoom);
 }
 
 class Misc {
     constructor(private readonly languageRef: Ref<DestinyManifestLanguage>) {}
 
-    public get Adept() { return TranslationMap[this.languageRef.value].misc.adept; }
-    public get DrangName() { return "Drang"; }
-    public get Harrowed() { return TranslationMap[this.languageRef.value].misc.harrowed; }
-    public get MidaMiniToolName() { return "Mini-Tool"; }
-    public get RangefinderPerkName() { return TranslationMap[this.languageRef.value].misc.rangefinderPerk; }
-    public get Timelost() { return TranslationMap[this.languageRef.value].misc.timelost; }
+    public Adept = computed(() => TranslationMap[this.languageRef.value].misc.adept);
+    public DrangName = computed(() => "Drang");
+    public Harrowed = computed(() => TranslationMap[this.languageRef.value].misc.harrowed);
+    public MidaMiniToolName = computed(() => "Mini-Tool");
+    public RangefinderPerkName = computed(() => TranslationMap[this.languageRef.value].misc.rangefinderPerk);
+    public Timelost = computed(() => TranslationMap[this.languageRef.value].misc.timelost);
 }
 
 class TraitIds {
@@ -142,8 +124,8 @@ export class DataSearchStrings {
     private static readonly _traitIds = new TraitIds();
     private static readonly _weaponCategoryRegex = new WeaponCategoryRegex();
 
-    public static get DefaultLanguage() { return languageInfos[englishLanguageIndex]; }
-    public static get Languages() { return languageInfos; }
+    public static get DefaultLanguage() { return LanguageInfos.value[EnglishLanguageIndex.value]; }
+    public static get Languages() { return LanguageInfos.value; }
 
     public static setLanguage = (language: DestinyManifestLanguage) => {
         this.language.value = language;

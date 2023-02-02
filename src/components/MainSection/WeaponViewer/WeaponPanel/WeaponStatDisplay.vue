@@ -28,7 +28,6 @@ const statTotal = computed(() => {
     const value = props.investmentValue.value + props.modifier;
     // The min is always 0.
     const max = props.statDisplay ? props.statDisplay.maximumValue : 100;
-    console.log("stat value is", value, max, props.statDisplay);
     if (value < 0) return 0;
     if (value > max) return max;
     return value;
@@ -46,7 +45,7 @@ const filledWidthPercent = computed(() => props.modifier > 0 ? baseDisplayValue.
 const statDisplayType = computed(() => {
     if (!name.value || !props.statDisplay) return StatDisplayType.Bar;
     if (!props.statDisplay.displayAsNumeric) return StatDisplayType.Bar;
-    return name.value === DataSearchStrings.Stats.RecoilDirection ? StatDisplayType.Angle : StatDisplayType.Number;
+    return name.value === DataSearchStrings.Stats.RecoilDirection.value ? StatDisplayType.Angle : StatDisplayType.Number;
 });
 const isBarDisplayType = computed(() => statDisplayType.value === StatDisplayType.Bar);
 const isAngleDisplayType = computed(() => statDisplayType.value === StatDisplayType.Angle);

@@ -7,34 +7,34 @@ import type { DestinyInventoryItemDefinition, DestinyItemInvestmentStatDefinitio
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
 
 const statOrdering = computed(() => [
-    DataSearchStrings.Stats.Impact,
-    DataSearchStrings.Stats.BlastRadius,
+    DataSearchStrings.Stats.Impact.value,
+    DataSearchStrings.Stats.BlastRadius.value,
 
-    DataSearchStrings.Stats.Range,
-    DataSearchStrings.Stats.Accuracy,
-    DataSearchStrings.Stats.Velocity,
+    DataSearchStrings.Stats.Range.value,
+    DataSearchStrings.Stats.Accuracy.value,
+    DataSearchStrings.Stats.Velocity.value,
 
-    DataSearchStrings.Stats.ShieldDuration,
-    DataSearchStrings.Stats.Stability,
-    DataSearchStrings.Stats.Handling,
-    DataSearchStrings.Stats.ReloadSpeed,
-    DataSearchStrings.Stats.AimAssistance,
-    DataSearchStrings.Stats.AirborneEffectiveness,
-    DataSearchStrings.Stats.Zoom,
-    DataSearchStrings.Stats.RecoilDirection,
+    DataSearchStrings.Stats.ShieldDuration.value,
+    DataSearchStrings.Stats.Stability.value,
+    DataSearchStrings.Stats.Handling.value,
+    DataSearchStrings.Stats.ReloadSpeed.value,
+    DataSearchStrings.Stats.AimAssistance.value,
+    DataSearchStrings.Stats.AirborneEffectiveness.value,
+    DataSearchStrings.Stats.Zoom.value,
+    DataSearchStrings.Stats.RecoilDirection.value,
 
-    DataSearchStrings.Stats.SwingSpeed,
-    DataSearchStrings.Stats.ChargeRate,
-    DataSearchStrings.Stats.GuardEfficiency,
-    DataSearchStrings.Stats.GuardResistance,
-    DataSearchStrings.Stats.GuardEndurance,
+    DataSearchStrings.Stats.SwingSpeed.value,
+    DataSearchStrings.Stats.ChargeRate.value,
+    DataSearchStrings.Stats.GuardEfficiency.value,
+    DataSearchStrings.Stats.GuardResistance.value,
+    DataSearchStrings.Stats.GuardEndurance.value,
 
-    DataSearchStrings.Stats.Rpm,
-    DataSearchStrings.Stats.DrawTime,
-    DataSearchStrings.Stats.ChargeTime,
+    DataSearchStrings.Stats.Rpm.value,
+    DataSearchStrings.Stats.DrawTime.value,
+    DataSearchStrings.Stats.ChargeTime.value,
 
-    DataSearchStrings.Stats.MagSize,
-    DataSearchStrings.Stats.AmmoCapacity,
+    DataSearchStrings.Stats.MagSize.value,
+    DataSearchStrings.Stats.AmmoCapacity.value,
 ]);
 
 const props = defineProps<{
