@@ -1,4 +1,5 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyItemTierTypeDefinition, DestinyPlugItemCraftingRequirements, DestinyPlugSetDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
+import { computed } from "vue";
 import { DataSearchStrings } from "./dataSearchStringService";
 import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions, type IWeapon, type IWeaponTypeInfo, type UsedDestinyManifestSlice } from "./types";
 import { hashMapToArray } from "./util";
@@ -49,12 +50,14 @@ const allowedPlugCategoryIds = [...validPerkPlugCategories,
     DataSearchStrings.CategoryIDs.WeaponModMagazine,
 ];
 
-const weaponTypeMainStatMap: { [traitId: string]: string } = {
-    [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.Stats.DrawTime,
-    [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.Stats.ChargeTime,
-    [DataSearchStrings.TraitIDs.LinearFusion]: DataSearchStrings.Stats.ChargeTime,
-    [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.Stats.Impact,
-};
+const weaponTypeMainStatMap = computed<{ [traitId: string]: string }>(() => {
+    return {
+        [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.Stats.DrawTime,
+        [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.Stats.ChargeTime,
+        [DataSearchStrings.TraitIDs.LinearFusion]: DataSearchStrings.Stats.ChargeTime,
+        [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.Stats.Impact,
+    };
+});
 
 const weaponTypeRpmUnitsMap: { [traitId: string]: string } = {
     [DataSearchStrings.TraitIDs.Bow]: "ms",
@@ -428,7 +431,7 @@ export class DestinyManifestProcessor {
             const weaponType = weapon.weapon.traitIds[weapon.weapon.traitIds.length - 1];
             const archetypeName = weapon.intrinsic.displayProperties.name;
 
-            const searchStatName = weaponTypeMainStatMap[weaponType] || DataSearchStrings.Stats.Rpm;
+            const searchStatName = weaponTypeMainStatMap.value[weaponType] || DataSearchStrings.Stats.Rpm;
             const rpmStat = weapon.weapon.investmentStats.find(s => {
                 const statType = this.getStatTypeDefinition(s.statTypeHash);
                 return statType && statType.displayProperties.name === searchStatName;
@@ -471,7 +474,7 @@ export class DestinyManifestProcessor {
                 statHash: rpmStat.statTypeHash,
             });
         }
-        console.log("found archetypes:", weaponTypeInfoMap);
+        console.log("found archetypes:", weaponTypeInfoMap, seenArchetypes);
         return hashMapToArray(weaponTypeInfoMap);
     }
 

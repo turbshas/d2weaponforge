@@ -16,9 +16,9 @@ interface IWeaponRangeValues {
 }
 
 // TODO: find a better way to identify specific items in the manifest, perhaps index? unsure if that is consistent across languages
-const RangeStatName = DataSearchStrings.Stats.Range;
-const ZoomStatName = DataSearchStrings.Stats.Zoom;
-const RangefinderPerkName = DataSearchStrings.Misc.RangefinderPerkName;
+const RangeStatName = computed(() => DataSearchStrings.Stats.Range);
+const ZoomStatName = computed(() => DataSearchStrings.Stats.Zoom);
+const RangefinderPerkName = computed(() => DataSearchStrings.Misc.RangefinderPerkName);
 
 // Numbers from: https://docs.google.com/spreadsheets/d/1B2zWeT99SksMzmptNeIt66Mv8YZu38R7t-KR50BJ0p0/view#gid=817864056
 // TODO: numbers for exotics are different, like vex that acts as an auto rifle
@@ -90,7 +90,7 @@ const range = computed(() => {
     return allStats.value
         .filter(s => {
             const statDef = destinyDataService.getStatDefinition(s.statTypeHash);
-            return !!statDef && statDef.displayProperties.name === RangeStatName;
+            return !!statDef && statDef.displayProperties.name === RangeStatName.value;
         })
         .reduce((total, current) => total + current.value, 0);
 });
@@ -99,13 +99,13 @@ const zoom = computed(() => {
     return allStats.value
         .filter(s => {
             const statDef = destinyDataService.getStatDefinition(s.statTypeHash);
-            return !!statDef && statDef.displayProperties.name === ZoomStatName;
+            return !!statDef && statDef.displayProperties.name === ZoomStatName.value;
         })
         .reduce((total, current) => total + current.value, 0);
 });
 
 const rangefinderMultiplier = computed(() => {
-    const rangefinderPerk = props.selectedPerks.find(p => p?.perk.displayProperties.name === RangefinderPerkName);
+    const rangefinderPerk = props.selectedPerks.find(p => p?.perk.displayProperties.name === RangefinderPerkName.value);
     return rangefinderPerk ? 1.1 : 1;
 });
 

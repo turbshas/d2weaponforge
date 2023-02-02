@@ -49,6 +49,7 @@ class DestinyApiService {
                 "DestinySocketCategoryDefinition",
                 "DestinySocketTypeDefinition",
                 "DestinyPowerCapDefinition",
+                "DestinySandboxPerkDefinition",
             ],
         });
 

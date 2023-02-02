@@ -2,11 +2,12 @@
 import { DataSearchStrings } from '@/data/dataSearchStringService';
 import { StatDisplayType } from '@/data/types';
 import { computed } from '@vue/reactivity';
-import type { DestinyItemInvestmentStatDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
+import type { DestinyItemInvestmentStatDefinition, DestinyStatDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition, DestinyStatOverrideDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     definition: DestinyStatDefinition | undefined,
-    statGroup: DestinyStatGroupDefinition | undefined,
+    override: DestinyStatOverrideDefinition | undefined,
+    statDisplay: DestinyStatDisplayDefinition | undefined,
     investmentValue: DestinyItemInvestmentStatDefinition,
     modifier: number,
 }>();
@@ -15,25 +16,19 @@ const statHash = computed(() => props.definition && props.definition.hash);
 
 const name = computed(() => {
     if (!statHash.value) return "";
-    const override = props.statGroup && props.statGroup.overrides[statHash.value];
-    const displayProps = override || props.definition;
+    const displayProps = props.override || props.definition;
     return displayProps ? displayProps.displayProperties.name : "";
 });
 
 const recoilDirectionPieLabel = "Recoil Direction Angle Graphic";
 
-const statDisplayDefinition = computed(() => {
-    if (!statHash.value || !props.statGroup) return undefined;
-    return props.statGroup.scaledStats.find(s => s.statHash === statHash.value);
-});
-
-const showStat = computed(() => !!statDisplayDefinition.value);
+const showStat = computed(() => !!props.statDisplay);
 
 const statTotal = computed(() => {
     const value = props.investmentValue.value + props.modifier;
     // The min is always 0.
-    const max = statDisplayDefinition.value ? statDisplayDefinition.value.maximumValue : 100;
-    console.log("stat value is", value, max, statDisplayDefinition.value);
+    const max = props.statDisplay ? props.statDisplay.maximumValue : 100;
+    console.log("stat value is", value, max, props.statDisplay);
     if (value < 0) return 0;
     if (value > max) return max;
     return value;
@@ -49,16 +44,16 @@ const modifierText = computed(() => `${modifierSign.value}${displayModifier.valu
 const filledWidthPercent = computed(() => props.modifier > 0 ? baseDisplayValue.value : displayedTotal.value);
 
 const statDisplayType = computed(() => {
-    if (!name.value || !statDisplayDefinition.value) return StatDisplayType.Bar;
-    if (!statDisplayDefinition.value.displayAsNumeric) return StatDisplayType.Bar;
+    if (!name.value || !props.statDisplay) return StatDisplayType.Bar;
+    if (!props.statDisplay.displayAsNumeric) return StatDisplayType.Bar;
     return name.value === DataSearchStrings.Stats.RecoilDirection ? StatDisplayType.Angle : StatDisplayType.Number;
 });
 const isBarDisplayType = computed(() => statDisplayType.value === StatDisplayType.Bar);
 const isAngleDisplayType = computed(() => statDisplayType.value === StatDisplayType.Angle);
 
 function convertToDisplayValue(statValue: number) {
-    if (!statDisplayDefinition.value) return statValue;
-    const displayInterpolation = statDisplayDefinition.value.displayInterpolation;
+    if (!props.statDisplay) return statValue;
+    const displayInterpolation = props.statDisplay.displayInterpolation;
 
     // Check if values has an exact match.
     const existing = displayInterpolation.find(d => d.value === statValue);

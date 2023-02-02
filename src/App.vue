@@ -36,14 +36,17 @@ function onWeaponSelected(weapon: IWeapon | undefined) {
     selectedMod.value = undefined;
     console.log("weapon selected", weapon);
     if (weapon && weapon.weapon.stats) {
-        console.log("weapon stats", weapon.weapon.investmentStats.map(i => {
-            const stat = destinyDataService.getStatDefinition(i.statTypeHash);
+        const map: { [hash: number]: number } = {};
+        weapon.weapon.investmentStats.forEach(v => { map[v.statTypeHash] = v.value; })
+        const statGroup = destinyDataService.getStatGroupDefinition(weapon.weapon.stats.statGroupHash!);
+        console.log("weapon stats", statGroup?.scaledStats?.map(s => {
+            const stat = destinyDataService.getStatDefinition(s.statHash);
             return {
-                name: stat?.displayProperties.name,
-                value: weapon.weapon.stats!.stats[i.statTypeHash].value,
-                hash: i.statTypeHash,
+                name: stat?.displayProperties?.name,
+                hash: stat?.hash,
+                value: stat ? weapon.weapon.stats?.stats[stat.hash]?.value : -1,
             };
-        }));
+        }) || [], statGroup?.overrides);
     }
 }
 
@@ -54,6 +57,7 @@ function onLanguageSelected(language: ILanguageInfo) {
 
 function onPerkSelected(column: number, perk: IPerkOption | undefined) {
     selectedPerksMap.value[column] = perk;
+    console.log("perk selected", perk);
     if (perk) {
         perk.useEnhanced = false;
     }
