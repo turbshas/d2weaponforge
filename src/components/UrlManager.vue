@@ -6,6 +6,10 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { watch } from 'vue';
 
 const rootBasePath = import.meta.env.BASE_URL;
+const useHash = import.meta.env.USE_HASH;
+
+const hashSuffixText = "/#!";
+const weaponSuffixText = "/w/";
 
 const props = defineProps<{
     page: PageSelection,
@@ -35,26 +39,30 @@ const perk5Hash = computed(() => getPerkHashAtIndex(4));
 const masterworkHash = computed(() => props.masterwork ? props.masterwork.hash : 0);
 const modHash = computed(() => props.mod ? props.mod.hash : 0);
 
+const hashSuffix = computed(() => useHash ? hashSuffixText : "");
+const basePath = computed(() => `${rootBasePath}${hashSuffix.value}`)
 const path = computed(() => {
     if (props.page === PageSelection.Home) {
-        return `${rootBasePath}`;
+        return `${basePath.value}`;
     } else if (props.page === PageSelection.Glossary) {
-        return `${rootBasePath}/glossary`;
+        return `${basePath.value}/glossary`;
     } else if (props.page === PageSelection.Compare) {
-        return `${rootBasePath}/compare`;
+        return `${basePath.value}/compare`;
     } else if (props.page === PageSelection.Weapon) {
         // If no weapon is selected, don't set the path
         if (!weaponHash.value) return undefined;
-        const basePath = `${rootBasePath}/w/${weaponHash.value}`;
+        const weaponBasePath = `${basePath.value}${weaponSuffixText}${weaponHash.value}`;
         const perkQuery = `s=${perk1Hash.value},${perk2Hash.value},${perk3Hash.value},${perk4Hash.value},${masterworkHash.value},${modHash.value},${perk5Hash.value}`;
-        return `${basePath}?${perkQuery}`;
+        return `${weaponBasePath}?${perkQuery}`;
     }
 });
 
 watch(() => destinyDataService.gameData, onGameDataChanged);
+watch(() => path.value, onPathChanged);
 
 function onGameDataChanged() {
-    const url = new URL(window.location.href);
+    const normalizedUrlString = window.location.href.replace(hashSuffixText, "");
+    const url = new URL(normalizedUrlString);
     if (!url.pathname) {
         emits("urlParsed", PageSelection.Home, undefined, [], undefined, undefined);
         return;
@@ -68,13 +76,13 @@ function onGameDataChanged() {
         emits("urlParsed", PageSelection.Compare, undefined, [], undefined, undefined);
         return;
     }
-    const weaponHashSearch = "/w/";
-    const weaponHashDelimiterIndex = lowerCasePath.indexOf(weaponHashSearch);
+
+    const weaponHashDelimiterIndex = lowerCasePath.indexOf(weaponSuffixText);
     if (weaponHashDelimiterIndex < 0) {
         // No weapon hash
         return;
     }
-    const weaponHashStringIndex = weaponHashDelimiterIndex + weaponHashSearch.length;
+    const weaponHashStringIndex = weaponHashDelimiterIndex + weaponSuffixText.length;
     const weaponHashString = lowerCasePath.substring(weaponHashStringIndex);
     const urlWeaponHash = Number.parseInt(weaponHashString);
 
@@ -127,8 +135,6 @@ function onGameDataChanged() {
     });
     emits("urlParsed", PageSelection.Weapon, weapon, perkOptions, masterwork, mod);
 }
-
-watch(() => path.value, onPathChanged);
 
 function onPathChanged() {
     window.history.pushState(path.value, "", path.value);
