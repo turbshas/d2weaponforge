@@ -1,5 +1,5 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyItemTierTypeDefinition, DestinyPlugItemCraftingRequirements, DestinyPlugSetDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
-import { AllowedPlugCategoryIds, ValidPerkPlugCategories, WeaponTraitIdMainStatMap, WeaponTypeRpmUnitsMap, WeaponTypeTraitToRegex } from "./constants";
+import { AllowedPlugCategoryIds, DefaultWeaponMainStat, ValidPerkPlugCategories, WeaponTraitIdMainStatMap, WeaponTypeRpmUnitsMap, WeaponTypeTraitToRegex } from "./constants";
 import { DataSearchStrings } from "./dataSearchStringService";
 import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions, type IWeapon, type IWeaponTypeInfo, type UsedDestinyManifestSlice } from "./types";
 import { hashMapToArray } from "./util";
@@ -368,7 +368,7 @@ export class DestinyManifestProcessor {
             const weaponType = weapon.weapon.traitIds[weapon.weapon.traitIds.length - 1];
             const archetypeName = weapon.intrinsic.displayProperties.name;
 
-            const searchStatName = WeaponTraitIdMainStatMap.value[weaponType] || DataSearchStrings.Stats.Rpm;
+            const searchStatName = WeaponTraitIdMainStatMap.value[weaponType] || DefaultWeaponMainStat.value;
             const rpmStat = weapon.weapon.investmentStats.find(s => {
                 const statType = this.getStatTypeDefinition(s.statTypeHash);
                 return statType && statType.displayProperties.name === searchStatName;
