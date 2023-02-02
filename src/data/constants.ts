@@ -30,6 +30,8 @@ export const WeaponTraitIdMainStatMap = computed<{ [traitId: string]: string }>(
         [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.Stats.Impact.value,
     };
 });
+// All other weapons types use RPM.
+export const DefaultWeaponMainStat = computed(() => DataSearchStrings.Stats.Rpm.value);
 
 export const ValidPerkPlugCategories = computed(() => [
     DataSearchStrings.CategoryIDs.BarrelsPlug,
