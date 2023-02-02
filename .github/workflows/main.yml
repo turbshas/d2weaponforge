@@ -37,7 +37,7 @@ jobs:
     - name: Build
       env:
         BASE_PATH: ${{ needs.configure_pages.outputs.base_path }}
-        USE_HASH: true
+        VITE_USE_HASH: true
       run: npm run build
 
     - name: Upload artifact

@@ -6,7 +6,7 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { watch } from 'vue';
 
 const rootBasePath = import.meta.env.BASE_URL;
-const useHash = import.meta.env.USE_HASH;
+const useHash = import.meta.env.VITE_USE_HASH;
 
 const hashSuffixText = "/#!";
 const weaponSuffixText = "/w/";
