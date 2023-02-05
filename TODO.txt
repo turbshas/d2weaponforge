@@ -10,8 +10,6 @@
   - icon + name/type on left side
   - stats in middle
   - what should stat arrows display? green only if highest value in list of weapons being compared?
-- required level for enhanced perks
-- sunset weapons filter
 - collections filters
 - hide/set to false "show crafted bonus" when weapon cannot be crafted
 - button to hide components on top of weapon panel so screenshot can be viewed
@@ -25,6 +23,7 @@
 - show that page is refreshing when game data is being reloaded
 
 - tooltip for magazine still says mag stat instead of actual mag increase
+- make use of inventory size stat
 - look into precision damage stat, maybe can include that?
 - look into weapon ready/stow stat?
 - look into ADS stat?

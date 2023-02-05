@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DataSearchStrings } from '@/data/dataSearchStringService';
-import { StatDisplayType } from '@/data/types';
+import { StatDisplayType } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import type { DestinyItemInvestmentStatDefinition, DestinyStatDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition, DestinyStatOverrideDefinition } from 'bungie-api-ts/destiny2';
 

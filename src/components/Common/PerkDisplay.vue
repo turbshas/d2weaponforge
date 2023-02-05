@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import Tooltip from './Tooltip.vue';
 import ElementLabel from './ElementLabel.vue';
-import type { ICraftingInfo } from '@/data/types';
+import type { ICraftingInfo } from '@/data/interfaces';
 import { selectionService } from '@/data/selectionService';
 
 const props = defineProps<{

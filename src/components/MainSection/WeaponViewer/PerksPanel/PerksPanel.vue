@@ -4,7 +4,7 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import PerkList from './PerkList.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 import BuilderSection from '../../../Common/BuilderSection.vue';
-import type { IPerkOption, IWeapon } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/interfaces';
 
 const props = defineProps<{
     weapon: IWeapon | undefined,

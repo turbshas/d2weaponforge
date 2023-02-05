@@ -2,7 +2,7 @@ import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { ref } from "vue";
 import { cacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import type { ILanguageInfo, IPerkOption } from "./types";
+import type { ILanguageInfo, IPerkOption } from "./interfaces";
 
 class SelectionService {
     constructor() {

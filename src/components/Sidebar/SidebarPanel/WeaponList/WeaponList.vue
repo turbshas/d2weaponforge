@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IWeapon } from '@/data/types';
+import type { IWeapon } from '@/data/interfaces';
 import WeaponListEntry from './WeaponListEntry.vue';
 
 const props = defineProps<{

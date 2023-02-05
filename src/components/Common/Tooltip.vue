@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ICraftingInfo } from '@/data/types';
+import type { ICraftingInfo } from '@/data/interfaces';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{

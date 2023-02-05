@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
-import { PageSelection, type IPerkOption, type IWeapon } from '@/data/types';
+import { PageSelection, type IPerkOption, type IWeapon } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { watch } from 'vue';

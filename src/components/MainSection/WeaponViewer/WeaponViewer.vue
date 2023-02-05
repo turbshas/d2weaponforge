@@ -5,7 +5,7 @@ import ExtrasPanel from './ExtrasPanel/ExtrasPanel.vue';
 import MasterworkPanel from './MasterworkPanel.vue';
 import ModsPanel from './ModsPanel.vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
-import type { IPerkOption, IWeapon } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/interfaces';
 
 const props = defineProps<{
     weapon: IWeapon | undefined

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IWeapon } from '@/data/types';
+import type { IWeapon } from '@/data/interfaces';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
 import PerkDisplay from '../../Common/PerkDisplay.vue';

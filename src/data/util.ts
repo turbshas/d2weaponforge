@@ -1,5 +1,6 @@
 export function hashMapToArray<T>(hashMap: { [hash: number]: T }) {
     const ret: T[] = [];
+    if (!hashMap) return ret;
     for (const key in hashMap) {
         if (hashMap.hasOwnProperty(key)) {
             ret.push(hashMap[key]);

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import WeaponIcon from '@/components/Common/WeaponIcon.vue';
 import { destinyDataService } from '@/data/destinyDataService';
-import type { IPerkOption, IWeapon } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import SelectedPerks from './SelectedPerks.vue';

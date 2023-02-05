@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import OptionButton from '@/components/Common/OptionButton.vue';
-import type { IPerkOption, IWeapon } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/interfaces';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 import DimIcon from '@/assets/dim_icon.svg';
 import { ref } from 'vue';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PageSelection, type IPerkOption, type IWeapon } from '@/data/types';
+import { PageSelection, type IPerkOption, type IWeapon } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import HomePage from './HomePage.vue';
 import Glossary from './Glossary.vue';

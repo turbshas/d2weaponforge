@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/destinyDataService";
-import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon } from "@/data/types";
+import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon } from "@/data/interfaces";
 import { computed, ref } from "vue";
 import FilterWindow from "./Filter/FilterWindow.vue";
 import LanguageSelector from "./LanguageSelector.vue";

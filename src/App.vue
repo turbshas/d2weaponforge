@@ -8,7 +8,7 @@ import { onMounted, ref, watch } from "vue";
 import UrlManager from "./components/UrlManager.vue";
 import { destinyDataService } from "./data/destinyDataService";
 import { selectionService } from "./data/selectionService";
-import { PageSelection, type ILanguageInfo, type IPerkOption, type IWeapon } from "./data/types";
+import { PageSelection, type ILanguageInfo, type IPerkOption, type IWeapon } from "./data/interfaces";
 
 const selectedPage = ref(PageSelection.Home);
 const selectedWeapon = ref<IWeapon | undefined>(undefined);

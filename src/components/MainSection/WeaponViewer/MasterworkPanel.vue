@@ -2,7 +2,7 @@
 import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref, watch } from 'vue';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
-import type { IWeapon } from '@/data/types';
+import type { IWeapon } from '@/data/interfaces';
 import BuilderSection from '../../Common/BuilderSection.vue';
 import OptionButton from '@/components/Common/OptionButton.vue';
 import ElementLabel from '@/components/Common/ElementLabel.vue';

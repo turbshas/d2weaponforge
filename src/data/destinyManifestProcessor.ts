@@ -1,7 +1,7 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyItemTierTypeDefinition, DestinyPlugItemCraftingRequirements, DestinyPlugSetDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
 import { AllowedPlugCategoryIds, DefaultWeaponMainStat, ValidPerkPlugCategories, WeaponTraitIdMainStatMap, WeaponTypeRpmUnitsMap, WeaponTypeTraitToRegex } from "./constants";
 import { DataSearchStrings } from "./dataSearchStringService";
-import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions, type IWeapon, type IWeaponTypeInfo, type UsedDestinyManifestSlice } from "./types";
+import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions, type IWeapon, type IWeaponTypeInfo, type UsedDestinyManifestSlice } from "./interfaces";
 import { hashMapToArray } from "./util";
 
 interface IResolvedPlugItem {

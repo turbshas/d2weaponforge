@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PageSelection } from '@/data/types';
+import { PageSelection } from '@/data/interfaces';
 
 const rootBasePath = import.meta.env.BASE_URL;
 

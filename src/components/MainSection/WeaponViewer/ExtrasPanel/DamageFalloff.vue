@@ -3,7 +3,7 @@ import { WeaponCategoryRangeValuesMap } from '@/data/constants';
 import { DataSearchStrings } from '@/data/dataSearchStringService';
 import { destinyDataService } from '@/data/destinyDataService';
 import { selectionService } from '@/data/selectionService';
-import type { IPerkOption, IWeapon } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/interfaces';
 import { hashMapToArray } from '@/data/util';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';

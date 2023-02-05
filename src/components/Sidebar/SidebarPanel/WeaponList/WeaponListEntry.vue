@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import WeaponIcon from "@/components/Common/WeaponIcon.vue";
 import { computed } from 'vue';
-import type { IWeapon } from '@/data/types';
+import type { IWeapon } from '@/data/interfaces';
 
 const props = defineProps<{
     weapon: IWeapon,

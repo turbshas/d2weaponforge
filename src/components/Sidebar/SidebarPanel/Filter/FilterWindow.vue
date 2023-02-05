@@ -3,7 +3,7 @@ import { destinyDataService } from "@/data/destinyDataService";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
 import TierIcons from "@/assets/TierIcons";
-import type { FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton } from "@/data/types";
+import type { FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton } from "@/data/interfaces";
 import OptionButton from "@/components/Common/OptionButton.vue";
 import ElementLabel from "@/components/Common/ElementLabel.vue";
 import { OriginFilters, SeasonIconMap, WeaponCategoryIconMap } from "@/data/constants";

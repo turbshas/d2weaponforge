@@ -2,6 +2,7 @@
 import { DataSearchStrings } from '@/data/dataSearchStringService';
 import { destinyDataService } from '@/data/destinyDataService';
 import { selectionService } from '@/data/selectionService';
+import { hashMapToArray } from '@/data/util';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition, DestinyItemInvestmentStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
@@ -35,6 +36,7 @@ const statOrdering = computed(() => [
 
     DataSearchStrings.Stats.MagSize.value,
     DataSearchStrings.Stats.AmmoCapacity.value,
+    DataSearchStrings.Stats.InventorySize,
 ]);
 
 const props = defineProps<{
@@ -59,6 +61,10 @@ const scaledStats = computed(() => props.statGroup ? props.statGroup.scaledStats
 const orderedInvestmentStats = computed(() => {
     const workingStatList: (DestinyItemInvestmentStatDefinition | undefined)[] = statOrdering.value.map(_ => undefined);
 
+    const stats = hashMapToArray(destinyDataService.stats);
+    const x = statOrdering.value.map(y => stats.find(s => s.displayProperties.name == y))
+        .map(y => y ? `${y.displayProperties.name}: ${y.index}` : "");
+        console.log("stat order", x, props.statGroup);
     for (const stat of scaledStats.value) {
         const statDef = getStatDefinition(stat.statHash);
         if (!statDef) continue;

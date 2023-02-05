@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IPerkOption, IPerkSlotOptions } from '@/data/types';
+import type { IPerkOption, IPerkSlotOptions } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 

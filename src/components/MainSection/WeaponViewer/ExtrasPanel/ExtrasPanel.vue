@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import OptionButton from '@/components/Common/OptionButton.vue';
 import { selectionService } from '@/data/selectionService';
-import type { IPerkOption, IWeapon } from '@/data/types';
+import type { IPerkOption, IWeapon } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import BuilderSection from '../../../Common/BuilderSection.vue';

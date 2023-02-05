@@ -3,7 +3,7 @@ import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
-import type { ICraftingInfo } from '@/data/types';
+import type { ICraftingInfo } from '@/data/interfaces';
 
 // Remove this if I refactor this component
 interface ISelectedPerkDisplay {

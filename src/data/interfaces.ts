@@ -257,6 +257,11 @@ export interface IPerkSlotOptions {
     options: IPerkOption[];
 }
 
+export interface IPerkBonus {
+    statName: string;
+    value: number;
+}
+
 export interface IWeaponTypeInfo {
     /** User-friendly name of the weapon type. */
     weaponTypeName: string;

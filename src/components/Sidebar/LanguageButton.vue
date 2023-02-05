@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ILanguageInfo } from '@/data/types';
+import type { ILanguageInfo } from '@/data/interfaces';
 import { computed } from 'vue';
 
 const props = defineProps<{
