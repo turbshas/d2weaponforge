@@ -4,6 +4,9 @@ import type { UsedDestinyManifestSlice } from "../interfaces";
 export class ManifestAccessor {
     constructor(private readonly manifest: UsedDestinyManifestSlice) { }
 
+    public get slice() { return this.manifest; }
+
+    // Wrappers for typing reasons (explicitly requiring return values are checked for undefined)
     public getItemDefinition = (hash: number): DestinyInventoryItemDefinition | undefined => {
         return this.manifest.DestinyInventoryItemDefinition[hash];
     }

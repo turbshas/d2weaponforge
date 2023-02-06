@@ -5,6 +5,7 @@ import { cacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
 import { DestinyManifestProcessor } from "./destinyManifestProcessor";
 import type { Destiny2GameData, IWeapon } from "./interfaces";
+import type { Weapon } from "./types/weapon";
 
 const CurrentCachedManifestVersion = 2;
 
@@ -58,9 +59,9 @@ class DestinyApiService {
         const manifestProcessor = new DestinyManifestProcessor(manifestSlice);
 
         const weapons = manifestProcessor.weapons;
-        const weaponsLookup: { [weaponItemHash: number]: IWeapon } = {};
+        const weaponsLookup: { [weaponItemHash: number]: Weapon } = {};
         for (const weapon of weapons) {
-            weaponsLookup[weapon.weapon.hash] = weapon;
+            weaponsLookup[weapon.hash] = weapon;
         }
 
         const gameData: Destiny2GameData = {

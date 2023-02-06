@@ -1,4 +1,5 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition } from "bungie-api-ts/destiny2";
+import { WeaponTypeTraitToRegex } from "../constants";
 import { DataSearchStrings } from "../dataSearchStringService";
 import { ItemTierIndex } from "../interfaces";
 import { Archetype } from "./archetype";
@@ -11,6 +12,7 @@ import { StatBlock } from "./statBlock";
 
 export class Weapon {
     public readonly index: number;
+    public readonly hash: number;
     public readonly name: string;
     public readonly description: string;
     public readonly screenshotUrl: string;
@@ -21,8 +23,6 @@ export class Weapon {
     public readonly tierTypeIndex: number;
 
     public readonly traitId: string;
-    public readonly weaponCategoryHash: number;
-    public readonly weaponCategoryName: string;
     public readonly weaponCategoryRegex: string;
 
     public readonly statBlock: StatBlock;
@@ -35,8 +35,9 @@ export class Weapon {
     // TODO: is this possible?
     private readonly season: any = null;
 
-    constructor(manifest: ManifestAccessor, weaponItem: DestinyInventoryItemDefinition, weaponCategory: DestinyItemCategoryDefinition) {
+    constructor(manifest: ManifestAccessor, weaponItem: DestinyInventoryItemDefinition) {
         this.index = weaponItem.index;
+        this.hash = weaponItem.hash;
         this.name = weaponItem.displayProperties.name;
         this.description = weaponItem.displayProperties.description;
         this.screenshotUrl = weaponItem.screenshot;
@@ -47,9 +48,7 @@ export class Weapon {
         this.tierTypeIndex = this.getWeaponTierTypeIndex(weaponItem, manifest);
 
         this.traitId = this.getWeaponTraitId(weaponItem);
-        this.weaponCategoryHash = weaponCategory.hash;
-        this.weaponCategoryName = weaponCategory.displayProperties.name;
-        this.weaponCategoryRegex = weaponCategory.itemTypeRegex;
+        this.weaponCategoryRegex = WeaponTypeTraitToRegex.value[this.traitId];
 
         const statGroup = weaponItem.stats && weaponItem.stats.statGroupHash
             ? manifest.getStatGroupDefinition(weaponItem.stats.statGroupHash)
@@ -63,6 +62,13 @@ export class Weapon {
         this.curated = resolvedWeaponSockets.curated;
         this.masterworks = resolvedWeaponSockets.masterworks.map(mw => new Masterwork(mw, statGroup, manifest));
         this.mods = resolvedWeaponSockets.mods.map(mod => new Mod(mod, manifest));
+
+        // This is gross, but meh it seems to work.
+        const isAutoTraitId = this.traitId === DataSearchStrings.TraitIDs.AutoRifle;
+        const hasTraceRifleRpm = this.archetype && this.archetype.rpmStatValue && this.archetype.rpmStatValue >= 1000;
+        if (isAutoTraitId && hasTraceRifleRpm) {
+            this.weaponCategoryRegex = DataSearchStrings.WeaponCategoryRegex.TraceRifle;
+        }
     }
 
     private getWatermarkUrl = (weapon: DestinyInventoryItemDefinition) => {

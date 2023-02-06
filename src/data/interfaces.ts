@@ -12,6 +12,8 @@ import type {
     DestinyStatDefinition,
     DestinyStatGroupDefinition
 } from "bungie-api-ts/destiny2";
+import type { PerkOption } from "./types/perkOption";
+import type { Weapon } from "./types/weapon";
 
 export type UsedDestinyManifestSlice = DestinyManifestSlice<(
     "DestinyDamageTypeDefinition"
@@ -181,8 +183,8 @@ export interface Destiny2GameData {
     seasons: DestinySeasonDefinition[];
     seasonsLookup: { [hash: number]: DestinySeasonDefinition };
 
-    weapons: IWeapon[];
-    weaponsLookup: { [weaponHash: number]: IWeapon };
+    weapons: Weapon[];
+    weaponsLookup: { [weaponHash: number]: Weapon };
 
     weaponTypes: IWeaponTypeInfo[];
 
@@ -193,6 +195,9 @@ export interface Destiny2GameData {
     socketCategoryLookup: { [hash: number]: DestinySocketCategoryDefinition };
     socketTypeLookup: { [hash: number]: DestinySocketTypeDefinition };
 }
+
+export type PerkColumnNumber = 1 | 2 | 3 | 4 | 5;
+export type SelectedPerkMap = { [column in keyof PerkColumnNumber as PerkColumnNumber]: PerkOption | undefined };
 
 export interface IWeapon {
     weapon: DestinyInventoryItemDefinition;
