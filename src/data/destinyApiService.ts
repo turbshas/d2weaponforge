@@ -4,10 +4,10 @@ import type { HttpClientConfig } from "bungie-api-ts/http";
 import { cacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
 import { DestinyManifestProcessor } from "./destinyManifestProcessor";
-import type { Destiny2GameData, IWeapon } from "./interfaces";
+import type { Destiny2GameData } from "./interfaces";
 import type { Weapon } from "./types/weapon";
 
-const CurrentCachedManifestVersion = 2;
+const CurrentCachedManifestVersion = 3;
 
 class DestinyApiService {
     public retrieveManifest = async (language: DestinyManifestLanguage) => {

@@ -1,8 +1,9 @@
-import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition } from "bungie-api-ts/destiny2";
+import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { WeaponTypeTraitToRegex } from "../constants";
 import { DataSearchStrings } from "../dataSearchStringService";
-import { ItemTierIndex } from "../interfaces";
+import { ItemTierIndex, type IDamageType, type IWeapon } from "../interfaces";
 import { Archetype } from "./archetype";
+import { DamageType } from "./DamageType";
 import type { ManifestAccessor } from "./manifestAccessor";
 import { Masterwork } from "./masterwork";
 import { Mod } from "./mod";
@@ -10,11 +11,12 @@ import type { PerkGrid } from "./perkGrid";
 import { ResolvedWeaponSockets } from "./resolvedWeaponSockets";
 import { StatBlock } from "./statBlock";
 
-export class Weapon {
+export class Weapon implements IWeapon {
     public readonly index: number;
     public readonly hash: number;
     public readonly name: string;
     public readonly description: string;
+    public readonly itemTypeDisplayName: string;
     public readonly screenshotUrl: string;
     public readonly iconUrl: string;
     public readonly iconWatermarkUrl: string;
@@ -25,6 +27,7 @@ export class Weapon {
     public readonly traitId: string;
     public readonly weaponCategoryRegex: string;
 
+    public readonly damageType: DamageType;
     public readonly statBlock: StatBlock;
     public readonly archetype: Archetype | undefined;
     public readonly perks: PerkGrid;
@@ -40,6 +43,7 @@ export class Weapon {
         this.hash = weaponItem.hash;
         this.name = weaponItem.displayProperties.name;
         this.description = weaponItem.displayProperties.description;
+        this.itemTypeDisplayName = weaponItem.itemTypeDisplayName;
         this.screenshotUrl = weaponItem.screenshot;
         this.iconUrl = weaponItem.displayProperties.icon;
         this.iconWatermarkUrl = this.getWatermarkUrl(weaponItem);
@@ -50,6 +54,7 @@ export class Weapon {
         this.traitId = this.getWeaponTraitId(weaponItem);
         this.weaponCategoryRegex = WeaponTypeTraitToRegex.value[this.traitId];
 
+        this.damageType = new DamageType(weaponItem, manifest);
         const statGroup = weaponItem.stats && weaponItem.stats.statGroupHash
             ? manifest.getStatGroupDefinition(weaponItem.stats.statGroupHash)
             : undefined;
@@ -71,7 +76,7 @@ export class Weapon {
         }
     }
 
-    private getWatermarkUrl = (weapon: DestinyInventoryItemDefinition) => {
+    private readonly getWatermarkUrl = (weapon: DestinyInventoryItemDefinition) => {
         // Priority here: weapon.quality.displayVersionWatermarkIcons -> weapon.iconWatermarkShelved -> weapon.iconWatermark
         return weapon
             && (
@@ -86,19 +91,19 @@ export class Weapon {
             );
     }
 
-    private isWeaponAdept = (weapon: DestinyInventoryItemDefinition) => {
+    private readonly isWeaponAdept = (weapon: DestinyInventoryItemDefinition) => {
         const name = weapon.displayProperties.name;
         return name.includes(DataSearchStrings.Misc.Adept.value)
             || name.includes(DataSearchStrings.Misc.Harrowed.value)
             || name.includes(DataSearchStrings.Misc.Timelost.value);
     }
 
-    private isWeaponSunset = (weapon: DestinyInventoryItemDefinition) => !!weapon.iconWatermarkShelved;
-    private getWeaponTierTypeIndex = (weapon: DestinyInventoryItemDefinition, manifest: ManifestAccessor) => {
+    private readonly isWeaponSunset = (weapon: DestinyInventoryItemDefinition) => !!weapon.iconWatermarkShelved;
+    private readonly getWeaponTierTypeIndex = (weapon: DestinyInventoryItemDefinition, manifest: ManifestAccessor) => {
         if (!weapon.inventory) return ItemTierIndex.Basic;
         const tierType = manifest.getItemTierDefinition(weapon.inventory.tierTypeHash);
         return tierType ? (tierType.index as ItemTierIndex) : ItemTierIndex.Basic;
     }
     // Archetype trait ID seems to always be last one in the list, hopefully that doesn't change.
-    private getWeaponTraitId = (weapon: DestinyInventoryItemDefinition) => weapon.traitIds[weapon.traitIds.length - 1];
+    private readonly getWeaponTraitId = (weapon: DestinyInventoryItemDefinition) => weapon.traitIds[weapon.traitIds.length - 1];
 }

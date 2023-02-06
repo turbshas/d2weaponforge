@@ -1,14 +1,8 @@
-import type { DestinyDisplayPropertiesDefinition, DestinyItemInvestmentStatDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
+import type { DestinyDisplayPropertiesDefinition, DestinyItemInvestmentStatDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
+import type { IStatBlock, IStatInfo } from "../interfaces";
 import type { ManifestAccessor } from "./manifestAccessor";
 
-interface IStatInfo {
-    statHash: number;
-    statName: string;
-    investmentValue: number;
-    statDisplay: DestinyStatDisplayDefinition | undefined;
-}
-
-export class StatBlock {
+export class StatBlock implements IStatBlock {
     public readonly statInfos: IStatInfo[];
 
     constructor(

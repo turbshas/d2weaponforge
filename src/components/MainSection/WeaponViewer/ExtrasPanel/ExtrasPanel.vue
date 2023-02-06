@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import OptionButton from '@/components/Common/OptionButton.vue';
 import { selectionService } from '@/data/selectionService';
-import type { IPerkOption, IWeapon } from '@/data/interfaces';
+import type { IMasterwork, IMod, IPerkOption, IWeapon } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import BuilderSection from '../../../Common/BuilderSection.vue';
 import AddToComparisons from './AddToComparisons.vue';
 import DamageFalloff from './DamageFalloff.vue';
@@ -14,8 +13,8 @@ import ReloadSpeed from './ReloadSpeed.vue';
 const props = defineProps<{
     weapon: IWeapon | undefined,
     selectedPerks: (IPerkOption | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    masterwork: IMasterwork | undefined,
+    mod: IMod | undefined,
 }>();
 
 const hideRetiredText = computed(() => selectionService.hideRetiredPerks ? "Active" : "Inactive");

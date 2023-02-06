@@ -166,8 +166,14 @@ export class ResolvedWeaponSockets {
         return new PerkColumn(perkOptions);
     }
 
-    private getCuratedFromResolvedSockets = (perkSockets: IResolvedPlugSet[], randomRollPerkOptions: PerkGrid) => {
-        const curatedPerkColumns = perkSockets
+    private getCuratedFromResolvedSockets = (resolvedSocketItems: IResolvedPlugSet[], randomRollPerkOptions: PerkGrid) => {
+        const weaponPerkSockets = resolvedSocketItems.filter(r => {
+            return r.randomizedItems
+                .concat(r.reusableItems)
+                .some(i => !!i.item.plug && ValidPerkPlugCategories.value.includes(i.item.plug.plugCategoryIdentifier));
+        });
+
+        const curatedPerkColumns = weaponPerkSockets
             .map((s, index) => {
                 const perkColumn = randomRollPerkOptions.perkColumns[index];
                 if (s.singleInitialItemHash) {

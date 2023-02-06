@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import type { IWeapon } from '@/data/interfaces';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import type { IMod, IWeapon } from '@/data/interfaces';
 import { computed } from 'vue';
 import PerkDisplay from '../../Common/PerkDisplay.vue';
 import BuilderSection from '../../Common/BuilderSection.vue';
 
 const props = defineProps<{
     weapon: IWeapon | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    mod: IMod | undefined,
 }>();
 
 const emits = defineEmits<{
-    (e: "modChanged", mod: DestinyInventoryItemDefinition | undefined): void
+    (e: "modChanged", mod: IMod | undefined): void
 }>();
 
 const modOptions = computed(() => {
@@ -19,7 +18,7 @@ const modOptions = computed(() => {
     return props.weapon.mods;
 });
 
-function onModClicked(mod: DestinyInventoryItemDefinition) {
+function onModClicked(mod: IMod) {
     // Selecting the current mod will de-select it
     const newMod = mod.hash === props.mod?.hash ? undefined : mod;
     emits("modChanged", newMod);

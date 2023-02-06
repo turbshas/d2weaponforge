@@ -1,9 +1,11 @@
 import type { DestinyInventoryItemDefinition, DestinyItemStatBlockDefinition } from "bungie-api-ts/destiny2";
 import { DefaultWeaponMainStat, DefaultWeaponTypeRpmUnits, WeaponTraitIdMainStatMap, WeaponTypeRpmUnitsMap } from "../constants";
+import type { IArchetype } from "../interfaces";
 import { hashMapToArray } from "../util";
+import { BasicPerk } from "./basicPerk";
 import type { ManifestAccessor } from "./manifestAccessor";
 
-export class Archetype {
+export class Archetype extends BasicPerk implements IArchetype {
     public readonly name: string;
     public readonly description: string;
     public readonly iconUrl: string;
@@ -18,6 +20,8 @@ export class Archetype {
         weaponStats: DestinyItemStatBlockDefinition | undefined,
         manifest: ManifestAccessor,
         ) {
+        super(intrinsic, intrinsic.displayProperties.name, manifest);
+
         this.name = intrinsic.displayProperties.name;
         this.description = intrinsic.displayProperties.description;
         this.iconUrl = intrinsic.displayProperties.icon;

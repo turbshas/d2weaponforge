@@ -1,72 +1,39 @@
 <script setup lang="ts">
 import WeaponIcon from '@/components/Common/WeaponIcon.vue';
 import { destinyDataService } from '@/data/destinyDataService';
-import type { IPerkOption, IWeapon } from '@/data/interfaces';
+import type { IMasterwork, IMod, IPerkOption, IWeapon } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import SelectedPerks from './SelectedPerks.vue';
 import WeaponStatBlock from './WeaponStatBlock.vue';
 
 const props = defineProps<{
     weapon: IWeapon | undefined,
     selectedPerks: (IPerkOption | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    masterwork: IMasterwork | undefined,
+    mod: IMod | undefined,
 }>();
 
 const screenshot = computed(() => {
-    return props.weapon ? destinyDataService.getImageUrl(props.weapon.weapon.screenshot) : undefined;
+    return props.weapon ? destinyDataService.getImageUrl(props.weapon.screenshotUrl) : undefined;
 });
 
-const name = computed(() => {
-    return props.weapon ? props.weapon.weapon.displayProperties.name : undefined;
-});
-
-const type = computed(() => {
-    return props.weapon ? props.weapon.weapon.itemTypeDisplayName : undefined;
-});
-
-const element = computed(() => {
-    if (!props.weapon) return undefined;
-    const damageTypeHash = props.weapon.weapon.defaultDamageTypeHash;
-    if (!damageTypeHash) return undefined;
-    return destinyDataService.getDamageType(damageTypeHash);
-});
-const elementName = computed(() => element.value ? element.value.displayProperties.name : "None");
-const elementIcon = computed(() => {
-    if (!element.value) return undefined;
-    return destinyDataService.getImageUrl(element.value.displayProperties.icon);
-});
+const name = computed(() => props.weapon ? props.weapon.name : undefined);
+const type = computed(() => props.weapon ? props.weapon.itemTypeDisplayName : undefined);
+const elementName = computed(() => props.weapon ? props.weapon.damageType.name : "None");
+const elementIcon = computed(() => props.weapon ? props.weapon.damageType.iconUrl : undefined);
 const elementLabel = computed(() => `Element Type: ${elementName.value}`);
-
-const investmentStats = computed(() => {
-    if (!props.weapon || !props.weapon.weapon.investmentStats) return [];
-    return props.weapon.weapon.investmentStats;
-});
-
-const statGroup = computed(() => {
-    if (!props.weapon || !props.weapon.weapon.stats) return undefined;
-    const statGroupHash = props.weapon.weapon.stats.statGroupHash;
-    if (!statGroupHash) return undefined;
-    return destinyDataService.getStatGroupDefinition(statGroupHash);
-})
+const statInfos = computed(() => props.weapon ? props.weapon.statBlock.statInfos : []);
 
 const firstColumnPerk = computed(() => props.selectedPerks.length > 0 ? props.selectedPerks[0]?.perk : undefined);
 const secondColumnPerk = computed(() => props.selectedPerks.length > 1 ? props.selectedPerks[1]?.perk : undefined);
 
 const thirdColumnPerkOption = computed(() => props.selectedPerks.length > 2 ? props.selectedPerks[2] : undefined);
 const isThirdEnhanced = computed(() => !!thirdColumnPerkOption.value && thirdColumnPerkOption.value.useEnhanced);
-const thirdColumnPerk = computed(() => {
-    if (!thirdColumnPerkOption.value) return undefined;
-    return isThirdEnhanced.value ? thirdColumnPerkOption.value.enhancedPerk : thirdColumnPerkOption.value.perk;
-});
+const thirdColumnPerk = computed(() => thirdColumnPerkOption.value ? thirdColumnPerkOption.value.perk : undefined);
 
 const fourthColumnPerkOption = computed(() => props.selectedPerks.length > 3 ? props.selectedPerks[3] : undefined);
 const isFourthEnhanced = computed(() => !!fourthColumnPerkOption.value && fourthColumnPerkOption.value.useEnhanced);
-const fourthColumnPerk = computed(() => {
-    if (!fourthColumnPerkOption.value) return undefined;
-    return isFourthEnhanced.value ? fourthColumnPerkOption.value.enhancedPerk : fourthColumnPerkOption.value.perk;
-});
+const fourthColumnPerk = computed(() => thirdColumnPerkOption.value ? thirdColumnPerkOption.value.perk : undefined);
 
 const fifthColumnPerk = computed(() => props.selectedPerks.length > 4 ? props.selectedPerks[4]?.perk : undefined);
 
@@ -85,7 +52,7 @@ function onPerkClicked(column: number) {
 <template>
     <div class="panel" :style="{ 'background-image': 'url(' + screenshot + ')' }">
         <div class="summary">
-            <WeaponIcon class="icon" :weapon="props.weapon?.weapon"></WeaponIcon>
+            <WeaponIcon class="icon" :weapon="props.weapon"></WeaponIcon>
             <div class="description">
                 <h1>{{ name }}</h1>
                 <h3>{{ type }}</h3>
@@ -94,8 +61,7 @@ function onPerkClicked(column: number) {
         </div>
         <WeaponStatBlock
             class="stats"
-            :stat-group="statGroup"
-            :investment-stats="investmentStats"
+            :stat-infos="statInfos"
             :selected-perks="currentSelectedPerks"
             :masterwork="masterwork"
             :mod="mod"
@@ -103,7 +69,7 @@ function onPerkClicked(column: number) {
         ></WeaponStatBlock>
         <SelectedPerks
             class="perks"
-            :intrinsic="weapon?.intrinsic"
+            :intrinsic="weapon?.archetype"
             :perk1="firstColumnPerk"
             :perk2="secondColumnPerk"
             :perk3="thirdColumnPerk"

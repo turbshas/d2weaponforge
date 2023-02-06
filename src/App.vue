@@ -4,7 +4,7 @@ import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
 import { computed } from "@vue/reactivity";
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import UrlManager from "./components/UrlManager.vue";
 import { destinyDataService } from "./data/destinyDataService";
 import { selectionService } from "./data/selectionService";

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { IPerkOption, IPerkSlotOptions } from '@/data/interfaces';
+import type { IPerkColumn, IPerkOption } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 
 const props = defineProps<{
-    perkOptionLists: IPerkSlotOptions[] | undefined,
+    perkOptionLists: IPerkColumn[] | undefined,
     selectedPerks: { [column: number]: IPerkOption | undefined },
     hideEnhanced?: boolean,
 }>();
@@ -33,20 +33,20 @@ function onPerkClicked(column: number, perk: IPerkOption) {
     <div class="grid">
         <div
             class="column"
-            v-for="(slot, column) in perkSlots"
+            v-for="(perks, column) in perkSlots"
             :key="column"
             :class="{ 'first': column === 0, }"
         >
             <PerkDisplay
                 class="perk"
-                v-for="(perk, index) in slot.options"
+                v-for="(perk, index) in perks.perks"
                 :key="index"
-                :perk="perk.enhancedPerk || perk.perk"
+                :perk="perk.perk"
                 :is-adept="false"
                 :crafting-info="perk.craftingInfo"
                 :selected="isPerkSelected(column, perk)"
                 :retired="!perk.currentlyCanRoll"
-                :enhanced="!!perk.enhancedPerk && !props.hideEnhanced"
+                :enhanced="!!perk.useEnhanced && !props.hideEnhanced"
                 @perk-clicked="onPerkClicked(column, perk)"
             ></PerkDisplay>
         </div>

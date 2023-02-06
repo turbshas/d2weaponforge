@@ -19,7 +19,7 @@ function onEntryClicked(weapon: IWeapon) {
     <div class="list">
         <WeaponListEntry
             v-for="weapon of props.weapons"
-            :key="weapon.weapon.hash"
+            :key="weapon.hash"
             :weapon="weapon"
             @entry-clicked="onEntryClicked"
         ></WeaponListEntry>

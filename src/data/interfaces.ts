@@ -10,6 +10,7 @@ import type {
     DestinySocketCategoryDefinition,
     DestinySocketTypeDefinition,
     DestinyStatDefinition,
+    DestinyStatDisplayDefinition,
     DestinyStatGroupDefinition
 } from "bungie-api-ts/destiny2";
 import type { PerkOption } from "./types/perkOption";
@@ -200,15 +201,93 @@ export type PerkColumnNumber = 1 | 2 | 3 | 4 | 5;
 export type SelectedPerkMap = { [column in keyof PerkColumnNumber as PerkColumnNumber]: PerkOption | undefined };
 
 export interface IWeapon {
-    weapon: DestinyInventoryItemDefinition;
+    index: number;
+    hash: number;
+    name: string;
+    description: string;
+    itemTypeDisplayName: string;
+    screenshotUrl: string;
+    iconUrl: string;
+    iconWatermarkUrl: string;
     isAdept: boolean;
     isSunset: boolean;
-    intrinsic: DestinyInventoryItemDefinition | undefined;
-    perks: IPerkSlotOptions[];
-    curated: IPerkSlotOptions[];
-    masterworks: DestinyInventoryItemDefinition[];
-    mods: DestinyInventoryItemDefinition[];
+    tierTypeIndex: number;
+    traitId: string;
+    weaponCategoryRegex: string;
+    damageType: IDamageType;
+    statBlock: IStatBlock;
+    archetype: IArchetype | undefined;
+    perks: IPerkGrid;
+    curated: IPerkGrid;
+    masterworks: IMasterwork[];
+    mods: IMod[];
 }
+
+export interface IDamageType {
+    name: string;
+    iconUrl: string;
+}
+
+export interface IStatBlock {
+    statInfos: IStatInfo[];
+}
+
+export interface IStatInfo {
+    statHash: number;
+    statName: string;
+    investmentValue: number;
+    statDisplay: DestinyStatDisplayDefinition | undefined;
+}
+
+export interface IArchetype extends IPerk {
+    rpmStatHash: number | undefined;
+    rpmStatValue: number | undefined;
+    rpmUnits: string;
+}
+
+export interface IPerkGrid {
+    perkColumns: IPerkColumn[];
+    get firstColumn(): IPerkOption[];
+    get secondColumn(): IPerkOption[];
+    get thirdColumn(): IPerkOption[];
+    get fourthColumn(): IPerkOption[];
+}
+
+export interface IPerkColumn {
+    perks: IPerkOption[];
+}
+
+export interface IPerkOption {
+    craftingInfo: ICraftingInfo | undefined,
+    currentlyCanRoll: boolean,
+    useEnhanced: boolean,
+    get perk(): IPerk;
+}
+
+export interface ICraftingInfo {
+    requiredLevel: number | undefined;
+    requiredLevelEnhanced: number | undefined;
+}
+
+export interface IPerk {
+    hash: number;
+    name: string | undefined;
+    description: string;
+    itemTypeDisplayName: string;
+    iconUrl: string;
+    iconWatermarkUrl: string;
+    mainBonuses: IPerkBonus[];
+    adeptOrCraftedBonuses: IPerkBonus[];
+}
+
+export interface IPerkBonus {
+    statHash: number;
+    statName: string;
+    value: number;
+}
+
+export interface IMasterwork extends IPerk { }
+export interface IMod extends IPerk { }
 
 export interface IWeaponInfo {
     hash: number;
@@ -243,28 +322,6 @@ export interface IWeaponInfo {
     stability: number;
     velocity: number;
     zoom: number;
-}
-
-export interface IPerkOption {
-    perk: DestinyInventoryItemDefinition;
-    enhancedPerk?: DestinyInventoryItemDefinition;
-    craftingInfo: ICraftingInfo | undefined;
-    currentlyCanRoll: boolean;
-    useEnhanced: boolean;
-}
-
-export interface ICraftingInfo {
-    requiredLevel: number | undefined;
-    requiredLevelEnhanced: number | undefined;
-}
-
-export interface IPerkSlotOptions {
-    options: IPerkOption[];
-}
-
-export interface IPerkBonus {
-    statName: string;
-    value: number;
 }
 
 export interface IWeaponTypeInfo {

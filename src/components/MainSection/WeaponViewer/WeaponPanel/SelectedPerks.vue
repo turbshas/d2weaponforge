@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
-import type { ICraftingInfo } from '@/data/interfaces';
+import type { IArchetype, ICraftingInfo, IMasterwork, IMod, IPerk } from '@/data/interfaces';
 
 // Remove this if I refactor this component
 interface ISelectedPerkDisplay {
-    perk: DestinyInventoryItemDefinition | undefined;
+    perk: IPerk | undefined;
     craftingInfo: ICraftingInfo | undefined;
     enhanced: boolean;
     fullSize: boolean;
@@ -16,16 +15,16 @@ interface ISelectedPerkDisplay {
 }
 
 const props = defineProps<{
-    intrinsic: DestinyInventoryItemDefinition | undefined,
-    perk1: DestinyInventoryItemDefinition | undefined,
-    perk2: DestinyInventoryItemDefinition | undefined,
-    perk3: DestinyInventoryItemDefinition | undefined,
-    perk4: DestinyInventoryItemDefinition | undefined,
+    intrinsic: IArchetype | undefined,
+    perk1: IPerk | undefined,
+    perk2: IPerk | undefined,
+    perk3: IPerk | undefined,
+    perk4: IPerk | undefined,
     isPerk3Enhanced: boolean,
     isPerk4Enhanced: boolean,
-    originPerk: DestinyInventoryItemDefinition | undefined,
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    originPerk: IPerk | undefined,
+    masterwork: IMasterwork | undefined,
+    mod: IMod | undefined,
     isAdept: boolean,
 }>();
 

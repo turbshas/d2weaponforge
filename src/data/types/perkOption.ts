@@ -1,7 +1,7 @@
-import type { ICraftingInfo } from "../interfaces";
+import type { ICraftingInfo, IPerkOption } from "../interfaces";
 import type { Perk } from "./perk";
 
-export class PerkOption {
+export class PerkOption implements IPerkOption {
     constructor(
         private readonly _perk: Perk,
         private readonly _enhancedPerk: Perk | undefined,

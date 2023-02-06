@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { DataSearchStrings } from '@/data/dataSearchStringService';
 import { destinyDataService } from '@/data/destinyDataService';
+import type { IMasterwork, IMod, IPerk, IPerkBonus, IStatInfo } from '@/data/interfaces';
 import { selectionService } from '@/data/selectionService';
 import { hashMapToArray } from '@/data/util';
 import { computed } from '@vue/reactivity';
-import type { DestinyInventoryItemDefinition, DestinyItemInvestmentStatDefinition, DestinyStatGroupDefinition } from 'bungie-api-ts/destiny2';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
 
 const statOrdering = computed(() => [
@@ -40,84 +40,71 @@ const statOrdering = computed(() => [
 ]);
 
 const props = defineProps<{
-    statGroup: DestinyStatGroupDefinition | undefined,
-    investmentStats: DestinyItemInvestmentStatDefinition[],
-    selectedPerks: (DestinyInventoryItemDefinition | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    statInfos: IStatInfo[],
+    selectedPerks: (IPerk | undefined)[],
+    masterwork: IMasterwork | undefined,
+    mod: IMod | undefined,
     isAdept: boolean,
 }>();
 
-const investmentStatMap = computed(() => {
-    const map: { [statHash: number]: DestinyItemInvestmentStatDefinition | undefined } = {};
-    for (const stat of props.investmentStats) {
-        map[stat.statTypeHash] = stat;
+const statInfoMap = computed(() => {
+    const map: { [statHash: number]: IStatInfo | undefined } = {};
+    for (const stat of props.statInfos) {
+        map[stat.statHash] = stat;
     }
     return map;
 });
 
-const scaledStats = computed(() => props.statGroup ? props.statGroup.scaledStats : []);
-
-const orderedInvestmentStats = computed(() => {
-    const workingStatList: (DestinyItemInvestmentStatDefinition | undefined)[] = statOrdering.value.map(_ => undefined);
+const orderedStatInfos = computed(() => {
+    const workingStatList: (IStatInfo | undefined)[] = statOrdering.value.map(_ => undefined);
 
     const stats = hashMapToArray(destinyDataService.stats);
     const x = statOrdering.value.map(y => stats.find(s => s.displayProperties.name == y))
         .map(y => y ? `${y.displayProperties.name}: ${y.index}` : "");
-        console.log("stat order", x, props.statGroup);
-    for (const stat of scaledStats.value) {
-        const statDef = getStatDefinition(stat.statHash);
-        if (!statDef) continue;
-        const index = statOrdering.value.findIndex(name => name === statDef.displayProperties.name);
+    for (const statInfo of props.statInfos) {
+        const index = statOrdering.value.findIndex(name => name === statInfo.statName);
         if (index < 0) continue;
         // Some weapons (e.g. swords) have stats that appear in their scaledStats list but not their investmentStats.
-        workingStatList[index] = investmentStatMap.value[stat.statHash] || defaultInvestmentStatDefinition(stat.statHash);
+        workingStatList[index] = statInfoMap.value[statInfo.statHash] || defaultStatInfo(statInfo.statHash);
     }
 
     return workingStatList.filter(s => !!s).map(s => s!);
 });
 
-function defaultInvestmentStatDefinition(statHash: number): DestinyItemInvestmentStatDefinition {
+const perkBonuses = computed(() => props.selectedPerks.reduce((total, current) => total.concat(getBonusesForPerk(current)), [] as IPerkBonus[]));
+const masterworkBonuses = computed(() => getBonusesForPerk(props.masterwork));
+const modBonuses = computed(() => getBonusesForPerk(props.mod));
+
+function defaultStatInfo(statHash: number): IStatInfo {
     return {
-        isConditionallyActive: false,
-        value: 0,
-        statTypeHash: statHash,
+        statHash: statHash,
+        statName: "",
+        investmentValue: 0,
+        statDisplay: undefined,
     };
 }
 
-function getStatDisplayOverride(statHash: number) {
-    return props.statGroup && props.statGroup.overrides && props.statGroup.overrides[statHash];
-}
-
-function getStatDisplayDefinition(statHash: number) {
-    return scaledStats.value.find(s => s.statHash === statHash);
-}
-
-function getStatDefinition(statHash: number) {
-    return destinyDataService.getStatDefinition(statHash);
+function getBonusesForPerk(perk: IPerk | undefined) {
+    if (!perk) return [];
+    const bonuses = perk.mainBonuses;
+    return (selectionService.showCraftedBonus || props.isAdept)
+        ? bonuses.concat(perk.adeptOrCraftedBonuses)
+        : bonuses;
 }
 
 function getModifierForStat(statHash: number) {
-    const bonusFromPerks = props.selectedPerks
-        .filter(p => !!p)
-        .map(p =>
-            p!.investmentStats
-                .filter(s => s.statTypeHash === statHash)
-                .map(s => s.value)
-                .reduce((total, current) => total += current, 0))
-        .reduce((total, current) => total += current, 0); 
-    const bonusFromMasterwork = props.masterwork
-        ? props.masterwork.investmentStats
-            .filter(s => s.statTypeHash === statHash)
-            .map(s => selectionService.showCraftedBonus || props.isAdept || !s.isConditionallyActive ? s.value : 0)
-            .reduce((total, current) => total += current, 0)
-        : 0;
-    const bonusFromMod = props.mod
-        ? props.mod.investmentStats
-            .filter(s => s.statTypeHash === statHash)
-            .map(s => s.value)
-            .reduce((total, current) => total += current, 0)
-        : 0;
+    const bonusFromPerks = perkBonuses.value
+        .filter(s => s.statHash === statHash)
+        .map(s => s.value)
+        .reduce((total, current) => total += current, 0);
+    const bonusFromMasterwork = masterworkBonuses.value
+        .filter(s => s.statHash === statHash)
+        .map(s => s.value)
+        .reduce((total, current) => total += current, 0)
+    const bonusFromMod = modBonuses.value
+        .filter(s => s.statHash === statHash)
+        .map(s => s.value)
+        .reduce((total, current) => total += current, 0)
     return bonusFromPerks + bonusFromMasterwork + bonusFromMod;
 }
 </script>
@@ -125,14 +112,10 @@ function getModifierForStat(statHash: number) {
 <template>
     <div class="list">
         <WeaponStatDisplay
-            v-for="investmentStat in orderedInvestmentStats"
-            :key="investmentStat.statTypeHash"
-            :override="getStatDisplayOverride(investmentStat.statTypeHash)"
-            :stat-display="getStatDisplayDefinition(investmentStat.statTypeHash)"
-            :stat-group="props.statGroup"
-            :definition="getStatDefinition(investmentStat.statTypeHash)"
-            :investment-value="investmentStat"
-            :modifier="getModifierForStat(investmentStat.statTypeHash)"
+            v-for="statInfo in orderedStatInfos"
+            :key="statInfo.statHash"
+            :stat-info="statInfo"
+            :modifier="getModifierForStat(statInfo.statHash)"
         ></WeaponStatDisplay>
     </div>
 </template>

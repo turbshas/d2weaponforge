@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref } from 'vue';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import Tooltip from './Tooltip.vue';
 import ElementLabel from './ElementLabel.vue';
-import type { ICraftingInfo } from '@/data/interfaces';
+import type { ICraftingInfo, IPerk } from '@/data/interfaces';
 import { selectionService } from '@/data/selectionService';
 
 const props = defineProps<{
-    perk: DestinyInventoryItemDefinition | undefined,
+    perk: IPerk | undefined,
     isAdept: boolean,
     craftingInfo: ICraftingInfo | undefined,
     selected: boolean,
@@ -19,17 +18,17 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-    (e: "perkClicked", perk: DestinyInventoryItemDefinition): void
+    (e: "perkClicked", perk: IPerk): void
 }>();
 
-const perkName = computed(() => props.perk && props.perk.displayProperties && props.perk.displayProperties.name || "Empty");
+const perkName = computed(() => props.perk && props.perk.name || "Empty");
 const perkIcon = computed(() => {
     if (!props.perk) return undefined;
-    return destinyDataService.getImageUrl(props.perk.displayProperties.icon);
+    return destinyDataService.getImageUrl(props.perk.iconUrl);
 });
 const perkWatermark = computed(() => {
-    if (!props.perk || !props.perk.iconWatermark) return undefined;
-    return destinyDataService.getImageUrl(props.perk.iconWatermark);
+    if (!props.perk || !props.perk.iconWatermarkUrl) return undefined;
+    return destinyDataService.getImageUrl(props.perk.iconWatermarkUrl);
 });
 const perkId = computed(() => `perk_id_${perkName.value}`);
 const perkLabel = computed(() => `Perk: ${perkName.value}`);
@@ -38,23 +37,17 @@ const perkWatermarkLabel = computed(() => `Perk Watermark: ${perkName.value}`);
 
 const perkElement = ref<HTMLElement | null>(null);
 const tooltipTargetElement = computed(() => props.perk ? perkElement.value : null);
-const tooltipTitle = computed(() => props.perk ? props.perk.displayProperties.name : "");
+const tooltipTitle = computed(() => props.perk && props.perk.name ? props.perk.name : "");
 const tooltipSubtitle = computed(() => props.perk ? props.perk.itemTypeDisplayName : "");
-const tooltipDescription = computed(() => props.perk ? props.perk.displayProperties.description : "");
+const tooltipDescription = computed(() => props.perk ? props.perk.description : "");
 // TODO: this require outside data, complete when that is compiled.
 const tooltipEffects = computed(() => "");
 const tooltipBonuses = computed(() => {
     if (!props.perk) return [];
-    return props.perk.investmentStats
-        .filter(s => selectionService.showCraftedBonus || props.isAdept || !s.isConditionallyActive)
-        .map(s => {
-            const statDef = destinyDataService.getStatDefinition(s.statTypeHash);
-            const name = statDef ? statDef.displayProperties.name : "";
-            return {
-                statName: name,
-                value: s.value,
-            };
-        });
+    const bonuses = props.perk.mainBonuses;
+    return (selectionService.showCraftedBonus || props.isAdept)
+        ? bonuses.concat(props.perk.adeptOrCraftedBonuses)
+        : bonuses;
 });
 const tooltipEnhanced = computed(() => !!props.enhanced);
 // TODO: this require outside data, complete when that is compiled.
