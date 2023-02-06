@@ -1,8 +1,6 @@
-import type { IPerkOption } from "../interfaces";
+import type { PerkOption } from "./perkOption";
 
 export class PerkColumn {
-    constructor(private readonly perks: IPerkOption[]) {
+    constructor(public readonly perks: PerkOption[]) {
     }
-
-    public get perkOptions() { return this.perks; }
 }

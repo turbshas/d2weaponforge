@@ -1,108 +1,69 @@
-import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyPlugItemCraftingRequirements, DestinySocketTypeDefinition } from "bungie-api-ts/destiny2";
+import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition } from "bungie-api-ts/destiny2";
 import { DataSearchStrings } from "../dataSearchStringService";
 import { ItemTierIndex } from "../interfaces";
 import { Archetype } from "./archetype";
 import type { ManifestAccessor } from "./manifestAccessor";
 import { Masterwork } from "./masterwork";
 import { Mod } from "./mod";
-import { PerkGrid } from "./perkGrid";
+import type { PerkGrid } from "./perkGrid";
 import { ResolvedWeaponSockets } from "./resolvedWeaponSockets";
-import type { StatBlock } from "./statBlock";
-
-interface IResolvedPlugItem {
-    craftingRequirements: DestinyPlugItemCraftingRequirements;
-    currentlyCanRoll: boolean;
-    item: DestinyInventoryItemDefinition;
-}
-
-interface IResolvedPlugSet {
-    socketType: DestinySocketTypeDefinition | undefined;
-    singleInitialItemHash: number;
-    /** reusablePlugItems on the socket itself rather than from the Plug Set. */
-    socketReusableItems: DestinyInventoryItemDefinition[];
-    /** randomizedPlugSetHash -> Plug Set -> reusablePlugItems */
-    randomizedItems: IResolvedPlugItem[];
-    /** reusablePlugSetHash -> Plug Set -> reusablePlugItems */
-    reusableItems: IResolvedPlugItem[];
-}
+import { StatBlock } from "./statBlock";
 
 export class Weapon {
-    private readonly _index: number;
-    private readonly _name: string;
-    private readonly _description: string;
-    private readonly _screenshotUrl: string;
-    private readonly _iconUrl: string;
-    private readonly _iconWatermarkUrl: string;
-    private readonly _isAdept: boolean;
-    private readonly _isSunset: boolean;
-    private readonly _tierTypeIndex: number;
+    public readonly index: number;
+    public readonly name: string;
+    public readonly description: string;
+    public readonly screenshotUrl: string;
+    public readonly iconUrl: string;
+    public readonly iconWatermarkUrl: string;
+    public readonly isAdept: boolean;
+    public readonly isSunset: boolean;
+    public readonly tierTypeIndex: number;
 
-    private readonly _traitId: string;
-    private readonly _weaponCategoryHash: number;
-    private readonly _weaponCategoryName: string;
-    private readonly _weaponCategoryRegex: string;
+    public readonly traitId: string;
+    public readonly weaponCategoryHash: number;
+    public readonly weaponCategoryName: string;
+    public readonly weaponCategoryRegex: string;
 
-    private readonly _statBlock: StatBlock;
-    private readonly _archetype: Archetype | undefined;
-    private readonly _perks: PerkGrid;
-    private readonly _curated: PerkGrid;
-    private readonly _masterworks: Masterwork[];
-    private readonly _mods: Mod[];
+    public readonly statBlock: StatBlock;
+    public readonly archetype: Archetype | undefined;
+    public readonly perks: PerkGrid;
+    public readonly curated: PerkGrid;
+    public readonly masterworks: Masterwork[];
+    public readonly mods: Mod[];
 
     // TODO: is this possible?
     private readonly season: any = null;
 
     constructor(manifest: ManifestAccessor, weaponItem: DestinyInventoryItemDefinition, weaponCategory: DestinyItemCategoryDefinition) {
-        this._index = weaponItem.index;
-        this._name = weaponItem.displayProperties.name;
-        this._description = weaponItem.displayProperties.description;
-        this._screenshotUrl = weaponItem.screenshot;
-        this._iconUrl = weaponItem.displayProperties.icon;
-        this._iconWatermarkUrl = this.getWatermarkUrl(weaponItem);
-        this._isAdept = this.isWeaponAdept(weaponItem);
-        this._isSunset = this.isWeaponSunset(weaponItem);
-        this._tierTypeIndex = this.getWeaponTierTypeIndex(weaponItem, manifest);
+        this.index = weaponItem.index;
+        this.name = weaponItem.displayProperties.name;
+        this.description = weaponItem.displayProperties.description;
+        this.screenshotUrl = weaponItem.screenshot;
+        this.iconUrl = weaponItem.displayProperties.icon;
+        this.iconWatermarkUrl = this.getWatermarkUrl(weaponItem);
+        this.isAdept = this.isWeaponAdept(weaponItem);
+        this.isSunset = this.isWeaponSunset(weaponItem);
+        this.tierTypeIndex = this.getWeaponTierTypeIndex(weaponItem, manifest);
 
-        this._traitId = this.getWeaponTraitId(weaponItem);
-        this._weaponCategoryHash = weaponCategory.hash;
-        this._weaponCategoryName = weaponCategory.displayProperties.name;
-        this._weaponCategoryRegex = weaponCategory.itemTypeRegex;
+        this.traitId = this.getWeaponTraitId(weaponItem);
+        this.weaponCategoryHash = weaponCategory.hash;
+        this.weaponCategoryName = weaponCategory.displayProperties.name;
+        this.weaponCategoryRegex = weaponCategory.itemTypeRegex;
 
         const statGroup = weaponItem.stats && weaponItem.stats.statGroupHash
             ? manifest.getStatGroupDefinition(weaponItem.stats.statGroupHash)
             : undefined;
-        this._statBlock = ;
+        this.statBlock = new StatBlock(statGroup, weaponItem.investmentStats, manifest);
         const resolvedWeaponSockets = new ResolvedWeaponSockets(weaponItem, manifest);
-        this._archetype = resolvedWeaponSockets.intrinsic
-            ? new Archetype(resolvedWeaponSockets.intrinsic, this._traitId, weaponItem.stats, manifest)
+        this.archetype = resolvedWeaponSockets.intrinsic
+            ? new Archetype(resolvedWeaponSockets.intrinsic, this.traitId, weaponItem.stats, manifest)
             : undefined;
-        this._perks = new PerkGrid(resolvedWeaponSockets.perks);
-        this._curated = new PerkGrid(resolvedWeaponSockets.curated);
-        this._masterworks = resolvedWeaponSockets.masterworks.map(mw => new Masterwork(mw, statGroup, manifest));
-        this._mods = resolvedWeaponSockets.mods.map(mod => new Mod(mod, manifest));
+        this.perks = resolvedWeaponSockets.perks;
+        this.curated = resolvedWeaponSockets.curated;
+        this.masterworks = resolvedWeaponSockets.masterworks.map(mw => new Masterwork(mw, statGroup, manifest));
+        this.mods = resolvedWeaponSockets.mods.map(mod => new Mod(mod, manifest));
     }
-
-    public get index() { return this._index; }
-    public get name() { return this._name; }
-    public get description() { return this._description; }
-    public get screenshotUrl() { return this._screenshotUrl; }
-    public get iconUrl() { return this._iconUrl; }
-    public get iconWatermarkUrl() { return this._iconWatermarkUrl; }
-    public get isAdept() { return this._isAdept; }
-    public get isSunset() { return this._isSunset; }
-    public get tierTypeIndex() { return this._tierTypeIndex; }
-
-    public get traitId() { return this._traitId; }
-    public get weaponCategoryHash() { return this._weaponCategoryHash; }
-    public get weaponCategoryName() { return this._weaponCategoryName; }
-    public get weaponCategoryRegex() { return this._weaponCategoryRegex; }
-
-    public get archetype() { return this._archetype; }
-    public get statBlock() { return this._statBlock; }
-    public get perks() { return this._perks; }
-    public get curated() { return this._curated; }
-    public get masterworks() { return this._masterworks; }
-    public get mods() { return this._mods; }
 
     private getWatermarkUrl = (weapon: DestinyInventoryItemDefinition) => {
         // Priority here: weapon.quality.displayVersionWatermarkIcons -> weapon.iconWatermarkShelved -> weapon.iconWatermark

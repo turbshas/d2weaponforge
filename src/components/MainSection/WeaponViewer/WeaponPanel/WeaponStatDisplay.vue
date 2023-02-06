@@ -2,7 +2,7 @@
 import { DataSearchStrings } from '@/data/dataSearchStringService';
 import { StatDisplayType } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
-import type { DestinyItemInvestmentStatDefinition, DestinyStatDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition, DestinyStatOverrideDefinition } from 'bungie-api-ts/destiny2';
+import type { DestinyItemInvestmentStatDefinition, DestinyStatDefinition, DestinyStatDisplayDefinition, DestinyStatOverrideDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     definition: DestinyStatDefinition | undefined,

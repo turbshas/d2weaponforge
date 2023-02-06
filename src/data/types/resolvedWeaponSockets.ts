@@ -1,8 +1,12 @@
 import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyPlugItemCraftingRequirements, DestinySocketTypeDefinition, DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { ValidPerkPlugCategories } from "../constants";
 import { DataSearchStrings } from "../dataSearchStringService";
-import { ItemTierIndex, type IPerkOption, type IPerkSlotOptions } from "../interfaces";
+import { ItemTierIndex } from "../interfaces";
 import type { ManifestAccessor } from "./manifestAccessor";
+import { Perk } from "./perk";
+import { PerkColumn } from "./perkColumn";
+import { PerkGrid } from "./perkGrid";
+import { PerkOption } from "./perkOption";
 
 interface IResolvedPlugItem {
     craftingRequirements: DestinyPlugItemCraftingRequirements;
@@ -22,29 +26,22 @@ interface IResolvedPlugSet {
 }
 
 export class ResolvedWeaponSockets {
-    private readonly _intrinsic: DestinyInventoryItemDefinition | undefined;
-    private readonly _perks: IPerkSlotOptions[];
-    private readonly _curated: IPerkSlotOptions[];
-    private readonly _masterworks: DestinyInventoryItemDefinition[];
-    private readonly _mods: DestinyInventoryItemDefinition[];
-    private readonly _adeptMods: DestinyInventoryItemDefinition[];
+    public readonly intrinsic: DestinyInventoryItemDefinition | undefined;
+    public readonly perks: PerkGrid;
+    public readonly curated: PerkGrid;
+    public readonly masterworks: DestinyInventoryItemDefinition[];
+    public readonly mods: DestinyInventoryItemDefinition[];
+    public readonly adeptMods: DestinyInventoryItemDefinition[];
 
     constructor(weapon: DestinyInventoryItemDefinition, private readonly manifest: ManifestAccessor) {
         const resolvedSocketItems = this.resolveWeaponSocketItems(weapon);
-        this._intrinsic = this.getIntrinsicFromResolvedSockets(resolvedSocketItems);
-        this._perks = this.getPerkOptionsFromResolvedSockets(resolvedSocketItems);
-        this._curated = this.getCuratedFromResolvedSockets(resolvedSocketItems, this._perks);
-        this._masterworks = this.getMasterworksFromResolvedSockets(resolvedSocketItems, weapon);
-        this._mods = this.getModsFromResolvedSockets(resolvedSocketItems);
-        this._adeptMods = this.getAdeptModsFromResolvedSockets(resolvedSocketItems);
+        this.intrinsic = this.getIntrinsicFromResolvedSockets(resolvedSocketItems);
+        this.perks = this.getPerkOptionsFromResolvedSockets(resolvedSocketItems);
+        this.curated = this.getCuratedFromResolvedSockets(resolvedSocketItems, this.perks);
+        this.masterworks = this.getMasterworksFromResolvedSockets(resolvedSocketItems, weapon);
+        this.mods = this.getModsFromResolvedSockets(resolvedSocketItems);
+        this.adeptMods = this.getAdeptModsFromResolvedSockets(resolvedSocketItems);
     }
-
-    public get intrinsic() { return this._intrinsic; }
-    public get perks() { return this._perks; }
-    public get curated() { return this._curated; }
-    public get masterworks() { return this._masterworks; }
-    public get mods() { return this._mods; }
-    public get adeptMods() { return this._adeptMods; }
 
     private resolveWeaponSocketItems = (weapon: DestinyInventoryItemDefinition) => {
         const weaponSockets = weapon.sockets?.socketEntries || [];
@@ -109,8 +106,8 @@ export class ResolvedWeaponSockets {
 
         // Either one or the other should be defined of randomizedPlugSetHash and reusablePlugSetHash
         const plugItems = weaponPerkSockets.map(plugSet => plugSet.randomizedItems.concat(plugSet.reusableItems));
-        const perkSlotOptions = plugItems.map(this.getPerkOptionsFromPlugSet);
-        return perkSlotOptions;
+        const perkColumns = plugItems.map(this.getPerkOptionsFromPlugSet);
+        return new PerkGrid(perkColumns);
     }
 
     private getPerkOptionsFromPlugSet = (plugItems: IResolvedPlugItem[]) => {
@@ -144,54 +141,58 @@ export class ResolvedWeaponSockets {
             return itemTier && itemTier.index === ItemTierIndex.Uncommon;
         });
 
-        const perkOptions: IPerkOption[] = [];
+        const perkOptions: PerkOption[] = [];
         for (const perk of normalPerks) {
             const enhancedPerk = enhancedPerks.find(p => p.displayProperties.name.includes(perk.displayProperties.name));
 
             const craftedLevel = requiredCraftedLevelMap[perk.hash];
             const enhancedCraftedLevel = enhancedPerk ? requiredCraftedLevelMap[enhancedPerk.hash] : undefined;
-            const perkOption: IPerkOption = {
-                perk: perk,
-                enhancedPerk: enhancedPerk,
-                // Some perks have no base crafted level (can be crafted at level 0), but do have an enhanced crafted level
-                craftingInfo: craftedLevel || enhancedCraftedLevel ?
+            // Some perks have no base crafted level (can be crafted at level 0), but do have an enhanced crafted level
+            const craftingInfo = craftedLevel || enhancedCraftedLevel ?
                     {
                         requiredLevel: craftedLevel,
                         requiredLevelEnhanced: enhancedCraftedLevel
                     }
-                    : undefined,
-                currentlyCanRoll: currentlyCanRollMap[perk.hash],
-                useEnhanced: false,
-            };
+                    : undefined;
+            const perkOption = new PerkOption(
+                new Perk(perk, this.manifest),
+                enhancedPerk ? new Perk(enhancedPerk, this.manifest) : undefined,
+                craftingInfo,
+                currentlyCanRollMap[perk.hash],
+                false);
             perkOptions.push(perkOption);
         }
 
-        const slotOptions: IPerkSlotOptions = {
-            options: perkOptions,
-        };
-        return slotOptions;
+        return new PerkColumn(perkOptions);
     }
 
-    private getCuratedFromResolvedSockets = (perkSockets: IResolvedPlugSet[], randomRollPerkOptions: IPerkSlotOptions[]) => {
-        return perkSockets
+    private getCuratedFromResolvedSockets = (perkSockets: IResolvedPlugSet[], randomRollPerkOptions: PerkGrid) => {
+        const curatedPerkColumns = perkSockets
             .map((s, index) => {
-                const perkSlotOptions = randomRollPerkOptions[index] || [];
+                const perkColumn = randomRollPerkOptions.perkColumns[index];
                 if (s.singleInitialItemHash) {
-                    const perkOption = perkSlotOptions.options.find(o => o.perk.hash === s.singleInitialItemHash);
+                    const perkOption = perkColumn.perks.find(p => p.perk.hash === s.singleInitialItemHash);
                     // Sometimes, a curated perk is a perk that the weapon cannot normally roll. Construct a new
                     // perk option object in this case, as there's nothing to match up with anyway.
                     if (perkOption) return perkOption;
                     const perkItem = this.manifest.getItemDefinition(s.singleInitialItemHash);
-                    return { perk: perkItem, enhancedPerk: undefined, currentlyCanRoll: true, useEnhanced: false, } as IPerkOption;
+                    if (!perkItem) return undefined;
+                    return new PerkOption(
+                        new Perk(perkItem, this.manifest),
+                        undefined,
+                        undefined,
+                        true,
+                        false
+                    );
                 } else {
                     // Origin perk doesn't have an initial item for some reason, have to use the randomized plug set.
                     const itemHash = !!s && s.randomizedItems.length > 0 ? s.randomizedItems[0].item.hash : undefined;
-                    return perkSlotOptions.options.find(o => o.perk.hash === itemHash);
+                    return perkColumn.perks.find(p => p.perk.hash === itemHash);
                 }
             })
-            .map(i => i!)
             // Checking for undefined here to have better defined behavior, but it really should never be undefined.
-            .map<IPerkSlotOptions>(o => { return { options: o ? [o] : [] }; });
+            .map(perkOption => new PerkColumn(perkOption ? [perkOption] : []));
+        return new PerkGrid(curatedPerkColumns);
     }
 
     private getMasterworksFromResolvedSockets = (resolvedSocketItems: IResolvedPlugSet[], weaponItem: DestinyInventoryItemDefinition) => {

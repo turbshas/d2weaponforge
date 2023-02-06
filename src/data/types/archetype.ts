@@ -4,13 +4,13 @@ import { hashMapToArray } from "../util";
 import type { ManifestAccessor } from "./manifestAccessor";
 
 export class Archetype {
-    private readonly _name: string;
-    private readonly _description: string;
-    private readonly _iconUrl: string;
+    public readonly name: string;
+    public readonly description: string;
+    public readonly iconUrl: string;
 
-    private readonly _rpmStatHash: number | undefined;
-    private readonly _rpmStatValue: number | undefined;
-    private readonly _rpmUnits: string;
+    public readonly rpmStatHash: number | undefined;
+    public readonly rpmStatValue: number | undefined;
+    public readonly rpmUnits: string;
 
     constructor(
         intrinsic: DestinyInventoryItemDefinition,
@@ -18,24 +18,17 @@ export class Archetype {
         weaponStats: DestinyItemStatBlockDefinition | undefined,
         manifest: ManifestAccessor,
         ) {
-        this._name = intrinsic.displayProperties.name;
-        this._description = intrinsic.displayProperties.description;
-        this._iconUrl = intrinsic.displayProperties.icon;
+        this.name = intrinsic.displayProperties.name;
+        this.description = intrinsic.displayProperties.description;
+        this.iconUrl = intrinsic.displayProperties.icon;
 
         const rpmStat = this.getArchetypeRpmStat(weaponTypeTraitId, weaponStats, manifest);
-        this._rpmStatHash = rpmStat ? rpmStat.statHash : undefined;
-        this._rpmStatValue = rpmStat && weaponStats && weaponStats.stats && weaponStats.stats[rpmStat.statHash]
+        this.rpmStatHash = rpmStat ? rpmStat.statHash : undefined;
+        this.rpmStatValue = rpmStat && weaponStats && weaponStats.stats && weaponStats.stats[rpmStat.statHash]
             ? weaponStats.stats[rpmStat.statHash].value
             : undefined;
-        this._rpmUnits = WeaponTypeRpmUnitsMap.value[weaponTypeTraitId] || DefaultWeaponTypeRpmUnits.value;
+        this.rpmUnits = WeaponTypeRpmUnitsMap.value[weaponTypeTraitId] || DefaultWeaponTypeRpmUnits.value;
     }
-
-    public get name() { return this._name; }
-    public get description() { return this._description; }
-    public get iconUrl() { return this._iconUrl; }
-    public get rpmStatHash() { return this._rpmStatHash; }
-    public get rpmStatValue() { return this._rpmStatValue; }
-    public get rpmUnits() { return this._rpmUnits; }
 
     private getArchetypeRpmStat = (weaponTypeTraitId: string, weaponStats: DestinyItemStatBlockDefinition | undefined, manifest: ManifestAccessor) => {
         const searchStatName = WeaponTraitIdMainStatMap.value[weaponTypeTraitId] || DefaultWeaponMainStat.value;
