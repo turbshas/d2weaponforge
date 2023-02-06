@@ -35,7 +35,7 @@ const weaponStats = computed(() => weaponStatInfos.value.map(s => {
 }));
 
 const allStats = computed(() => {
-    const perkStats = props.selectedPerks.map(p => getStatsForItem(p?.perk)).reduce((total, current) => total.concat(current), []);
+    const perkStats = props.selectedPerks.map(p => getStatsForItem(p?.enhancedPerk || p?.perk)).reduce((total, current) => total.concat(current), []);
     const masterworkStats = getStatsForItem(props.masterwork);
     const modStats = getStatsForItem(props.mod);
     console.log("damage falloff props", props);
@@ -56,7 +56,7 @@ const zoom = computed(() => {
 });
 
 const rangefinderMultiplier = computed(() => {
-    const rangefinderPerk = props.selectedPerks.find(p => p?.perk.name === RangefinderPerkName.value);
+    const rangefinderPerk = props.selectedPerks.find(p => p && p.perk.name.includes(RangefinderPerkName.value));
     return rangefinderPerk ? 1.1 : 1;
 });
 

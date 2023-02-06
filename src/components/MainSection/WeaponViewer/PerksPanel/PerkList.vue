@@ -24,7 +24,7 @@ function isPerkSelected(column: number, perk: IPerkOption) {
 
 function onPerkClicked(column: number, perk: IPerkOption) {
     // If perk is already selecting, clicking it again deselects it
-    const newPerk = props.selectedPerks[column] && props.selectedPerks[column]!.perk.hash === perk.perk.hash ? undefined : perk;
+    const newPerk = isPerkSelected(column, perk) ? undefined : perk;
     emits("perkSelected", column, newPerk);
 }
 </script>
@@ -41,12 +41,12 @@ function onPerkClicked(column: number, perk: IPerkOption) {
                 class="perk"
                 v-for="(perk, index) in perks.perks"
                 :key="index"
-                :perk="perk.perk"
+                :perk="perk.enhancedPerk || perk.perk"
                 :is-adept="false"
                 :crafting-info="perk.craftingInfo"
                 :selected="isPerkSelected(column, perk)"
                 :retired="!perk.currentlyCanRoll"
-                :enhanced="!!perk.useEnhanced && !props.hideEnhanced"
+                :enhanced="!!perk.enhancedPerk && !props.hideEnhanced"
                 @perk-clicked="onPerkClicked(column, perk)"
             ></PerkDisplay>
         </div>

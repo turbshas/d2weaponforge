@@ -20,7 +20,7 @@ const screenshot = computed(() => {
 const name = computed(() => props.weapon ? props.weapon.name : undefined);
 const type = computed(() => props.weapon ? props.weapon.itemTypeDisplayName : undefined);
 const elementName = computed(() => props.weapon ? props.weapon.damageType.name : "None");
-const elementIcon = computed(() => props.weapon ? props.weapon.damageType.iconUrl : undefined);
+const elementIcon = computed(() => props.weapon ? destinyDataService.getImageUrl(props.weapon.damageType.iconUrl) : undefined);
 const elementLabel = computed(() => `Element Type: ${elementName.value}`);
 const statInfos = computed(() => props.weapon ? props.weapon.statBlock.statInfos : []);
 
@@ -29,11 +29,17 @@ const secondColumnPerk = computed(() => props.selectedPerks.length > 1 ? props.s
 
 const thirdColumnPerkOption = computed(() => props.selectedPerks.length > 2 ? props.selectedPerks[2] : undefined);
 const isThirdEnhanced = computed(() => !!thirdColumnPerkOption.value && thirdColumnPerkOption.value.useEnhanced);
-const thirdColumnPerk = computed(() => thirdColumnPerkOption.value ? thirdColumnPerkOption.value.perk : undefined);
+const thirdColumnPerk = computed(() => {
+    if (!thirdColumnPerkOption.value) return undefined;
+    return isThirdEnhanced.value ? thirdColumnPerkOption.value.enhancedPerk : thirdColumnPerkOption.value.perk;
+});
 
 const fourthColumnPerkOption = computed(() => props.selectedPerks.length > 3 ? props.selectedPerks[3] : undefined);
 const isFourthEnhanced = computed(() => !!fourthColumnPerkOption.value && fourthColumnPerkOption.value.useEnhanced);
-const fourthColumnPerk = computed(() => thirdColumnPerkOption.value ? thirdColumnPerkOption.value.perk : undefined);
+const fourthColumnPerk = computed(() => {
+    if (!fourthColumnPerkOption.value) return undefined;
+    return isFourthEnhanced.value ? fourthColumnPerkOption.value.enhancedPerk : fourthColumnPerkOption.value.perk;
+});
 
 const fifthColumnPerk = computed(() => props.selectedPerks.length > 4 ? props.selectedPerks[4]?.perk : undefined);
 

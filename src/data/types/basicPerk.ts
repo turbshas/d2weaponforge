@@ -4,7 +4,7 @@ import type { ManifestAccessor } from "./manifestAccessor";
 
 export abstract class BasicPerk implements IPerk {
     public readonly hash: number;
-    public readonly name: string | undefined;
+    public readonly name: string;
     public readonly description: string;
     public readonly itemTypeDisplayName: string;
     public readonly iconUrl: string;
@@ -14,7 +14,7 @@ export abstract class BasicPerk implements IPerk {
 
     constructor(
         item: DestinyInventoryItemDefinition,
-        name: string | undefined,
+        name: string,
         manifest: ManifestAccessor,
         ) {
         this.hash = item.hash;

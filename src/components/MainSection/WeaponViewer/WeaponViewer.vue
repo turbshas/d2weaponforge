@@ -5,30 +5,30 @@ import ExtrasPanel from './ExtrasPanel/ExtrasPanel.vue';
 import MasterworkPanel from './MasterworkPanel.vue';
 import ModsPanel from './ModsPanel.vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
-import type { IPerkOption, IWeapon } from '@/data/interfaces';
+import type { IMasterwork, IMod, IPerkOption, IWeapon } from '@/data/interfaces';
 
 const props = defineProps<{
     weapon: IWeapon | undefined
     selectedPerks: (IPerkOption | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    masterwork: IMasterwork | undefined,
+    mod: IMod | undefined,
 }>();
 
 const emits = defineEmits<{
     (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
-    (e: "masterworkChanged", masterwork: DestinyInventoryItemDefinition | undefined): void,
-    (e: "modChanged", mod: DestinyInventoryItemDefinition | undefined): void,
+    (e: "masterworkChanged", masterwork: IMasterwork | undefined): void,
+    (e: "modChanged", mod: IMod | undefined): void,
 }>();
 
 function onPerkSelected(column: number, perk: IPerkOption | undefined) {
     emits("perkSelected", column, perk);
 }
 
-function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefined) {
+function onMasterworkChanged(masterwork: IMasterwork | undefined) {
     emits("masterworkChanged", masterwork);
 }
 
-function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
+function onModChanged(mod: IMod | undefined) {
     emits("modChanged", mod);
 }
 </script>

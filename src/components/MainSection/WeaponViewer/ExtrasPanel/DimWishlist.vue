@@ -15,7 +15,7 @@ const buttonOn = ref(false);
 function copyWishlistItem() {
     buttonOn.value = true;
 
-    const weaponString = props.weapon ? props.weapon.weapon.hash.toString() : "";
+    const weaponString = props.weapon ? props.weapon.hash.toString() : "";
     const perksString = props.selectedPerks.filter(p => !!p).map(p => p!.perk.hash).join(",");
     const itemString = `dimwishlist:item=${weaponString}&perks=${perksString}`;
     navigator.clipboard.writeText(itemString);

@@ -1,24 +1,23 @@
 <script setup lang="ts">
-import { PageSelection, type IPerkOption, type IWeapon } from '@/data/interfaces';
+import { PageSelection, type IMasterwork, type IMod, type IPerkOption, type IWeapon } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import HomePage from './HomePage.vue';
 import Glossary from './Glossary.vue';
 import ComparePage from './ComparePage.vue';
 import WeaponViewer from './WeaponViewer/WeaponViewer.vue';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     page: PageSelection,
     weapon: IWeapon | undefined,
     selectedPerks: (IPerkOption | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    masterwork: IMasterwork | undefined,
+    mod: IMod | undefined,
 }>();
 
 const emits = defineEmits<{
     (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
-    (e: "masterworkChanged", masterwork: DestinyInventoryItemDefinition | undefined): void,
-    (e: "modChanged", mod: DestinyInventoryItemDefinition | undefined): void,
+    (e: "masterworkChanged", masterwork: IMasterwork | undefined): void,
+    (e: "modChanged", mod: IMod | undefined): void,
 }>();
 
 const isHomeSelected = computed(() => {
@@ -41,11 +40,11 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
     emits("perkSelected", column, perk);
 }
 
-function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefined) {
+function onMasterworkChanged(masterwork: IMasterwork | undefined) {
     emits("masterworkChanged", masterwork);
 }
 
-function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
+function onModChanged(mod: IMod | undefined) {
     emits("modChanged", mod);
 }
 </script>

@@ -261,7 +261,8 @@ export interface IPerkOption {
     craftingInfo: ICraftingInfo | undefined,
     currentlyCanRoll: boolean,
     useEnhanced: boolean,
-    get perk(): IPerk;
+    perk: IPerk;
+    enhancedPerk: IPerk | undefined;
 }
 
 export interface ICraftingInfo {
@@ -271,7 +272,7 @@ export interface ICraftingInfo {
 
 export interface IPerk {
     hash: number;
-    name: string | undefined;
+    name: string;
     description: string;
     itemTypeDisplayName: string;
     iconUrl: string;

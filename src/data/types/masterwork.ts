@@ -8,11 +8,11 @@ function getMasterworkStatName(
     manifest: ManifestAccessor,
     ) {
     const increasedStat = masterwork.investmentStats.find(stat => stat.value > 0);
-    if (!increasedStat) return undefined;
+    if (!increasedStat) return "";
     const overrideDisplay = weaponStatGroup && weaponStatGroup.overrides && (weaponStatGroup.overrides[increasedStat.statTypeHash]?.displayProperties);
     if (overrideDisplay) return overrideDisplay.name;
     const statDefinition = manifest.getStatTypeDefinition(increasedStat.statTypeHash);
-    if (!statDefinition) return undefined;
+    if (!statDefinition) return "";
     return statDefinition.displayProperties.name;
 }
 
