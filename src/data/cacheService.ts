@@ -44,8 +44,8 @@ class CacheService {
 
     private getObjectStore = async (transactionMode: IDBTransactionMode) => {
         const db = await this.dbPromise;
-        const readTransaction = db.transaction(ManifestObjectStoreName, transactionMode);
-        const objectStore = readTransaction.objectStore(ManifestObjectStoreName);
+        const transaction = db.transaction(ManifestObjectStoreName, transactionMode);
+        const objectStore = transaction.objectStore(ManifestObjectStoreName);
         return objectStore;
     }
 

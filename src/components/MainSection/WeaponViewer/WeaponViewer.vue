@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
 import WeaponPanel from './WeaponPanel/WeaponPanel.vue';
 import ExtrasPanel from './ExtrasPanel/ExtrasPanel.vue';
 import MasterworkPanel from './MasterworkPanel.vue';

@@ -26,21 +26,21 @@ export class Archetype extends BasicPerk implements IArchetype {
         this.description = intrinsic.displayProperties.description;
         this.iconUrl = intrinsic.displayProperties.icon;
 
-        const rpmStat = this.getArchetypeRpmStat(weaponTypeTraitId, weaponStats, manifest);
+        const rpmStat = getArchetypeRpmStat(weaponTypeTraitId, weaponStats, manifest);
         this.rpmStatHash = rpmStat ? rpmStat.statHash : undefined;
         this.rpmStatValue = rpmStat && weaponStats && weaponStats.stats && weaponStats.stats[rpmStat.statHash]
             ? weaponStats.stats[rpmStat.statHash].value
             : undefined;
         this.rpmUnits = WeaponTypeRpmUnitsMap.value[weaponTypeTraitId] || DefaultWeaponTypeRpmUnits.value;
     }
+}
 
-    private getArchetypeRpmStat = (weaponTypeTraitId: string, weaponStats: DestinyItemStatBlockDefinition | undefined, manifest: ManifestAccessor) => {
-        const searchStatName = WeaponTraitIdMainStatMap.value[weaponTypeTraitId] || DefaultWeaponMainStat.value;
-        const statList = weaponStats ? hashMapToArray(weaponStats.stats) : [];
-        const rpmStat = statList.find(s => {
-            const statType = manifest.getStatTypeDefinition(s.statHash);
-            return statType && statType.displayProperties.name === searchStatName;
-        });
-        return rpmStat;
-    }
+function getArchetypeRpmStat(weaponTypeTraitId: string, weaponStats: DestinyItemStatBlockDefinition | undefined, manifest: ManifestAccessor) {
+    const searchStatName = WeaponTraitIdMainStatMap.value[weaponTypeTraitId] || DefaultWeaponMainStat.value;
+    const statList = weaponStats ? hashMapToArray(weaponStats.stats) : [];
+    const rpmStat = statList.find(s => {
+        const statType = manifest.getStatTypeDefinition(s.statHash);
+        return statType && statType.displayProperties.name === searchStatName;
+    });
+    return rpmStat;
 }

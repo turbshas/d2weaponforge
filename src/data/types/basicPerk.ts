@@ -23,22 +23,22 @@ export abstract class BasicPerk implements IPerk {
         this.itemTypeDisplayName = item.itemTypeDisplayName;
         this.iconUrl = item.displayProperties.icon;
         this.iconWatermarkUrl = item.iconWatermark;
-        this.mainBonuses = this.getBonuses(item, manifest, false);
-        this.adeptOrCraftedBonuses = this.getBonuses(item, manifest, true);
+        this.mainBonuses = getBonuses(item, manifest, false);
+        this.adeptOrCraftedBonuses = getBonuses(item, manifest, true);
     }
+}
 
-    private getBonuses = (masterwork: DestinyInventoryItemDefinition, manifest: ManifestAccessor, conditionallyActive: boolean) => {
-        return masterwork.investmentStats
-            .filter(s => s.isConditionallyActive === conditionallyActive)
-            .map(s => {
-                const statDef = manifest.getStatTypeDefinition(s.statTypeHash);
-                const name = statDef ? statDef.displayProperties.name : "";
-                const bonus: IPerkBonus = {
-                    statHash: s.statTypeHash,
-                    statName: name,
-                    value: s.value,
-                };
-                return bonus;
-            });
-    }
+function getBonuses(masterwork: DestinyInventoryItemDefinition, manifest: ManifestAccessor, conditionallyActive: boolean) {
+    return masterwork.investmentStats
+        .filter(s => s.isConditionallyActive === conditionallyActive)
+        .map(s => {
+            const statDef = manifest.getStatTypeDefinition(s.statTypeHash);
+            const name = statDef ? statDef.displayProperties.name : "";
+            const bonus: IPerkBonus = {
+                statHash: s.statTypeHash,
+                statName: name,
+                value: s.value,
+            };
+            return bonus;
+        });
 }

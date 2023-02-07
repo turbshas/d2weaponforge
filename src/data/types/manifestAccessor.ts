@@ -1,4 +1,4 @@
-import type { DestinyDamageTypeDefinition, DestinyInventoryItemDefinition, DestinyItemTierTypeDefinition, DestinyPlugSetDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
+import type { DestinyDamageTypeDefinition, DestinyInventoryItemDefinition, DestinyItemTierTypeDefinition, DestinyPlugSetDefinition, DestinySeasonDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
 import type { UsedDestinyManifestSlice } from "../interfaces";
 
 export class ManifestAccessor {
@@ -27,10 +27,10 @@ export class ManifestAccessor {
         return this.manifest.DestinySocketTypeDefinition[hash];
     }
 
-
     public getStatGroupDefinition = (hash: number): DestinyStatGroupDefinition | undefined => {
         return this.manifest.DestinyStatGroupDefinition[hash];
     }
+
     public getStatTypeDefinition = (hash: number): DestinyStatDefinition | undefined => {
         return this.manifest.DestinyStatDefinition[hash];
     }

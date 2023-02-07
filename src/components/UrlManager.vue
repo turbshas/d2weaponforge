@@ -106,7 +106,8 @@ function onGameDataChanged() {
     const modHash = urlPerkHashes[5];
 
     const perks = perkHashes.map((hash, index) => {
-        const perk = weapon.perks.perkColumns[index].perks
+        const perkColumn = weapon.perks.perkColumns[index];
+        const perk = perkColumn && perkColumn.perks
             .find(p => (p.enhancedPerk && p.enhancedPerk.hash === hash) || p.perk.hash === hash);
         if (perk && perk.enhancedPerk && hash === perk.enhancedPerk.hash) {
             perk.useEnhanced = true;
