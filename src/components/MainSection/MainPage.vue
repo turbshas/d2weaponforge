@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PageSelection, type IMasterwork, type IMod, type IPerkOption, type IWeapon } from '@/data/interfaces';
+import { PageSelection, type IMasterwork, type IMod, type IPerkOption, type ISelectedGear, type PerkColumnNumber } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import HomePage from './HomePage.vue';
 import Glossary from './Glossary.vue';
@@ -8,14 +8,11 @@ import WeaponViewer from './WeaponViewer/WeaponViewer.vue';
 
 const props = defineProps<{
     page: PageSelection,
-    weapon: IWeapon | undefined,
-    selectedPerks: (IPerkOption | undefined)[],
-    masterwork: IMasterwork | undefined,
-    mod: IMod | undefined,
+    selectedGear: ISelectedGear,
 }>();
 
 const emits = defineEmits<{
-    (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
+    (e: "perkSelected", column: PerkColumnNumber, perk: IPerkOption | undefined): void,
     (e: "masterworkChanged", masterwork: IMasterwork | undefined): void,
     (e: "modChanged", mod: IMod | undefined): void,
 }>();
@@ -36,7 +33,7 @@ const isWeaponSelected = computed(() => {
     return props && props.page === PageSelection.Weapon;
 });
 
-function onPerkSelected(column: number, perk: IPerkOption | undefined) {
+function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {
     emits("perkSelected", column, perk);
 }
 
@@ -57,10 +54,7 @@ function onModChanged(mod: IMod | undefined) {
         <WeaponViewer
             class="item"
             v-else-if="isWeaponSelected"
-            :weapon="weapon"
-            :selected-perks="selectedPerks"
-            :masterwork="masterwork"
-            :mod="mod"
+            :selected-gear="props.selectedGear"
             @perk-selected="onPerkSelected"
             @masterwork-changed="onMasterworkChanged"
             @mod-changed="onModChanged"

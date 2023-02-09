@@ -44,10 +44,18 @@ const tooltipDescription = computed(() => props.perk ? props.perk.description : 
 const tooltipEffects = computed(() => "");
 const tooltipBonuses = computed(() => {
     if (!props.perk) return [];
-    const bonuses = props.perk.mainBonuses;
-    return (selectionService.showCraftedBonus || props.isAdept)
-        ? bonuses.concat(props.perk.adeptOrCraftedBonuses)
-        : bonuses;
+    const allBonuses = (selectionService.showCraftedBonus || props.isAdept)
+        ? props.perk.mainBonuses.concat(props.perk.adeptOrCraftedBonuses)
+        : props.perk.mainBonuses;
+    const convertedBonuses: { statName: string, value: number }[] = allBonuses.map(b => {
+        return {
+            statName: b.statName,
+            value: props.selected
+                ? selectionService.displayValueIfRemovingBonus(b)
+                : selectionService.displayValueIfAddingBonus(b),
+        };
+    });
+    return convertedBonuses;
 });
 const tooltipEnhanced = computed(() => !!props.enhanced);
 // TODO: this require outside data, complete when that is compiled.

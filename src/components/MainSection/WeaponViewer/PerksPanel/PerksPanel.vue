@@ -3,33 +3,23 @@ import { computed } from 'vue';
 import PerkList from './PerkList.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 import BuilderSection from '../../../Common/BuilderSection.vue';
-import type { IMasterwork, IMod, IPerkOption, IWeapon } from '@/data/interfaces';
+import type { IPerkColumn, IPerkOption, PerkColumnNumber, SelectedPerkMap } from '@/data/interfaces';
 
 const props = defineProps<{
-    weapon: IWeapon | undefined,
-    selectedPerks: (IPerkOption | undefined)[],
-    masterwork: IMasterwork | undefined,
-    mod: IMod | undefined,
+    randomRollPerks: IPerkColumn[],
+    curatedPerks: IPerkColumn[],
+    selectedPerks: SelectedPerkMap,
 }>();
 
 const emits = defineEmits<{
-    (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
+    (e: "perkSelected", column: PerkColumnNumber, perk: IPerkOption | undefined): void,
 }>();
 
 const backgroundUrl = computed(() => PerkPanelBackground);
 
-const randomPerkColumns = computed(() => {
-    if (!props.weapon) return [];
-    return props.weapon.perks.perkColumns;
-});
+const hasCuratedPerks = computed(() => props.curatedPerks.length > 0);
 
-const curatedPerks = computed(() => {
-    if (!props.weapon) return [];
-    return props.weapon.curated.perkColumns;
-});
-const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
-
-function onPerkSelected(column: number, perk: IPerkOption | undefined) {
+function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {
     emits("perkSelected", column, perk);
 }
 </script>
@@ -39,7 +29,7 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
         <BuilderSection title="Weapon Perks" class="no-shadow">
             <PerkList
                 :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
-                :perk-option-lists="randomPerkColumns"
+                :perk-option-lists="props.randomRollPerks"
                 :selected-perks="selectedPerks"
                 @perk-selected="onPerkSelected"
             ></PerkList>

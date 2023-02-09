@@ -13,6 +13,7 @@ import type {
     DestinyStatDisplayDefinition,
     DestinyStatGroupDefinition
 } from "bungie-api-ts/destiny2";
+import type { ComputedRef, Ref } from "vue";
 import type { PerkOption } from "./types/perkOption";
 import type { Weapon } from "./types/weapon";
 
@@ -120,6 +121,25 @@ export interface Destiny2GameData {
 
 export type PerkColumnNumber = 1 | 2 | 3 | 4 | 5;
 export type SelectedPerkMap = { [column in keyof PerkColumnNumber as PerkColumnNumber]: IPerkOption | undefined };
+
+export interface ISelectedGear {
+    weapon: Ref<IWeapon | undefined>;
+    perkOptionsMap: Ref<SelectedPerkMap>;
+    perkOptionsList: ComputedRef<(IPerkOption | undefined)[]>;
+    masterwork: Ref<IMasterwork | undefined>;
+    mod: Ref<IMod | undefined>;
+
+    modifiedWeaponStats: ComputedRef<IModifiedStat[]>;
+    modifiedWeaponDisplayStats: ComputedRef<IModifiedStat[]>;
+}
+
+export interface IModifiedStat {
+    statHash: number;
+    statName: string;
+    statDisplay: DestinyStatDisplayDefinition | undefined;
+    baseStat: number;
+    modifiedStat: number;
+}
 
 export interface IWeapon {
     index: number;

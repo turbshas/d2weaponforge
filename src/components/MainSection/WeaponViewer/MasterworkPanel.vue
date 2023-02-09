@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import type { IMasterwork, IWeapon } from '@/data/interfaces';
+import type { IMasterwork } from '@/data/interfaces';
 import BuilderSection from '../../Common/BuilderSection.vue';
 import OptionButton from '@/components/Common/OptionButton.vue';
 import ElementLabel from '@/components/Common/ElementLabel.vue';
 
 const props = defineProps<{
-    weapon: IWeapon | undefined,
+    masterworkList: IMasterwork[],
     masterwork: IMasterwork | undefined,
 }>();
 
@@ -16,9 +16,8 @@ const emits = defineEmits<{
 
 const masterworkOptionsByStatName = computed(() => {
     const masterworks: { [statName: string]: IMasterwork[] } = {};
-    if (!props.weapon) return masterworks;
 
-    for (const mw of props.weapon.masterworks) {
+    for (const mw of props.masterworkList) {
         const name = mw.name;
         if (!name) continue;
         if (!masterworks[name]) {
