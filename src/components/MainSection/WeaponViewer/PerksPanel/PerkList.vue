@@ -49,6 +49,7 @@ function onPerkClicked(column: PerkColumnNumber, perk: IPerkOption) {
                 v-for="(perk, index) in perkColumn.perks.perks"
                 :key="index"
                 :perk="perk.enhancedPerk || perk.perk"
+                :column="perkColumn.column"
                 :is-adept="false"
                 :crafting-info="perk.craftingInfo"
                 :selected="isPerkSelected(perkColumn.column, perk)"

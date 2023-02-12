@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { cacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import type { ILanguageInfo, IMasterwork, IMod, IPerkBonus, IPerkOption, IWeapon, PerkColumnNumber, SelectedPerkMap } from "./interfaces";
+import type { ILanguageInfo, IMasterwork, IMod, IPerkBonus, IPerkOption, IWeapon, PerkColumnNumber, ISelectedPerkMap } from "./interfaces";
 import { SelectedGear } from "./types/selectedGear";
 
 class SelectionService {
@@ -35,7 +35,7 @@ class SelectionService {
         this.selectedGear.perkOptionsMap.value[column] = perk;
     }
 
-    public readonly setPerks = (perks: SelectedPerkMap) => {
+    public readonly setPerks = (perks: ISelectedPerkMap<IPerkOption>) => {
         this.selectedGear.perkOptionsMap.value = perks;
     }
 
@@ -47,9 +47,7 @@ class SelectionService {
         this.selectedGear.mod.value = mod;
     }
 
-    public readonly displayValueIfAddingBonus = (bonus: IPerkBonus) => this.selectedGear.displayValueIfAddingBonus(bonus);
-
-    public readonly displayValueIfRemovingBonus = (bonus: IPerkBonus) => this.selectedGear.displayValueIfRemovingBonus(bonus);
+    public readonly displayValueIfAddingBonus = (column: PerkColumnNumber, bonus: IPerkBonus) => this.selectedGear.displayValueIfAddingBonus(column, bonus);
 
     // Preferences - storing them here for lack of a better place
     private languageWrapper = ref<ILanguageInfo>(DataSearchStrings.DefaultLanguage);

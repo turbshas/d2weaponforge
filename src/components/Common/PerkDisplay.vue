@@ -3,7 +3,7 @@ import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref } from 'vue';
 import Tooltip from './Tooltip.vue';
 import ElementLabel from './ElementLabel.vue';
-import type { ICraftingInfo, IPerk } from '@/data/interfaces';
+import type { ICraftingInfo, IPerk, PerkColumnNumber } from '@/data/interfaces';
 import { selectionService } from '@/data/selectionService';
 
 const props = defineProps<{
@@ -12,6 +12,7 @@ const props = defineProps<{
     craftingInfo: ICraftingInfo | undefined,
     selected: boolean,
     retired: boolean,
+    column?: PerkColumnNumber,
     enhanced?: boolean,
     fullSize?: boolean,
     hideHover?: boolean,
@@ -22,6 +23,8 @@ const emits = defineEmits<{
 }>();
 
 const perkName = computed(() => props.perk && props.perk.name || "Empty");
+const perkTypeDisplayName = computed(() => props.perk && props.perk.itemTypeDisplayName ? props.perk.itemTypeDisplayName : "Empty");
+const perkDescription = computed(() => props.perk && props.perk.description ? props.perk.description : "");
 const perkIcon = computed(() => {
     if (!props.perk) return undefined;
     return destinyDataService.getImageUrl(props.perk.iconUrl);
@@ -30,6 +33,15 @@ const perkWatermark = computed(() => {
     if (!props.perk || !props.perk.iconWatermarkUrl) return undefined;
     return destinyDataService.getImageUrl(props.perk.iconWatermarkUrl);
 });
+const perkBonuses = computed(() => {
+    if (!props.perk) return [];
+    const bonuses = props.perk.mainBonuses;
+    return (selectionService.showCraftedBonus || props.isAdept)
+        ? bonuses.concat(props.perk.adeptOrCraftedBonuses)
+        : bonuses;
+});
+const perkIsEnhanced = computed(() => !!props.enhanced);
+
 const perkId = computed(() => `perk_id_${perkName.value}`);
 const perkLabel = computed(() => `Perk: ${perkName.value}`);
 const perkIconLabel = computed(() => `Perk Icon: ${perkName.value}`);
@@ -37,27 +49,19 @@ const perkWatermarkLabel = computed(() => `Perk Watermark: ${perkName.value}`);
 
 const perkElement = ref<HTMLElement | null>(null);
 const tooltipTargetElement = computed(() => props.perk ? perkElement.value : null);
-const tooltipTitle = computed(() => props.perk && props.perk.name ? props.perk.name : "");
-const tooltipSubtitle = computed(() => props.perk ? props.perk.itemTypeDisplayName : "");
-const tooltipDescription = computed(() => props.perk ? props.perk.description : "");
 // TODO: this require outside data, complete when that is compiled.
 const tooltipEffects = computed(() => "");
 const tooltipBonuses = computed(() => {
-    if (!props.perk) return [];
-    const allBonuses = (selectionService.showCraftedBonus || props.isAdept)
-        ? props.perk.mainBonuses.concat(props.perk.adeptOrCraftedBonuses)
-        : props.perk.mainBonuses;
-    const convertedBonuses: { statName: string, value: number }[] = allBonuses.map(b => {
+    const column = props.column;
+    if (!column) return perkBonuses.value;
+    const convertedBonuses: { statName: string, value: number }[] = perkBonuses.value.map(b => {
         return {
             statName: b.statName,
-            value: props.selected
-                ? selectionService.displayValueIfRemovingBonus(b)
-                : selectionService.displayValueIfAddingBonus(b),
+            value: selectionService.displayValueIfAddingBonus(column, b),
         };
     });
     return convertedBonuses;
 });
-const tooltipEnhanced = computed(() => !!props.enhanced);
 // TODO: this require outside data, complete when that is compiled.
 const tooltipEnhancedBonus = computed(() => "");
 
@@ -92,13 +96,13 @@ function onPerkClick() {
 
         <Tooltip
             :target-element="tooltipTargetElement"
-            :title="tooltipTitle"
-            :subtitle="tooltipSubtitle"
+            :title="perkName"
+            :subtitle="perkTypeDisplayName"
             :crafting-info="props.craftingInfo"
-            :description="tooltipDescription"
+            :description="perkDescription"
             :effect="tooltipEffects"
             :bonuses="tooltipBonuses"
-            :enhanced="tooltipEnhanced"
+            :enhanced="perkIsEnhanced"
             :enhanced-bonus="tooltipEnhancedBonus"
         ></Tooltip>
     </button>

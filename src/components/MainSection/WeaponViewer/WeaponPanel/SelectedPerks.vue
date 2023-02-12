@@ -2,11 +2,12 @@
 import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
-import type { IArchetype, ICraftingInfo, IMasterwork, IMod, IPerk, PerkColumnNumber, SelectedPerkMap } from '@/data/interfaces';
+import type { IArchetype, ICraftingInfo, IMasterwork, IMod, IPerk, PerkColumnNumber, ISelectedPerkMap, IPerkOption } from '@/data/interfaces';
 
 // Remove this if I refactor this component
 interface ISelectedPerkDisplay {
     perk: IPerk | undefined;
+    column: PerkColumnNumber | undefined,
     craftingInfo: ICraftingInfo | undefined;
     enhanced: boolean;
     fullSize: boolean;
@@ -16,7 +17,7 @@ interface ISelectedPerkDisplay {
 
 const props = defineProps<{
     intrinsic: IArchetype | undefined,
-    selectedPerks: SelectedPerkMap,
+    selectedPerks: ISelectedPerkMap<IPerkOption>,
     masterwork: IMasterwork | undefined,
     mod: IMod | undefined,
     isAdept: boolean,
@@ -35,21 +36,21 @@ const perks = computed(() => {
     const perk4 = (perkOption4?.useEnhanced) ? perkOption4.enhancedPerk : (perkOption4?.perk);
 
     const perkList: ISelectedPerkDisplay[] = [
-        { perk: props.intrinsic, craftingInfo: undefined, fullSize: true,  hideHover: true,  enhanced: false, onPerkClicked: () => {}, },
-        { perk: props.selectedPerks[1]?.perk, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
-        { perk: props.selectedPerks[2]?.perk, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
-        { perk: perk3, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: !!(perkOption3?.useEnhanced), onPerkClicked: () => onPerkClicked(3), },
-        { perk: perk4, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: !!(perkOption4?.useEnhanced), onPerkClicked: () => onPerkClicked(4), },
+        { perk: props.intrinsic, column: undefined, craftingInfo: undefined, fullSize: true,  hideHover: true,  enhanced: false, onPerkClicked: () => {}, },
+        { perk: props.selectedPerks[1]?.perk, column: 1, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
+        { perk: props.selectedPerks[2]?.perk, column: 2, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
+        { perk: perk3, column: 3, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: !!(perkOption3?.useEnhanced), onPerkClicked: () => onPerkClicked(3), },
+        { perk: perk4, column: 4, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: !!(perkOption4?.useEnhanced), onPerkClicked: () => onPerkClicked(4), },
     ];
     const originPerk = props.selectedPerks[5];
     if (originPerk) {
-        perkList.push({ perk: originPerk.perk, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+        perkList.push({ perk: originPerk.perk, column: 5, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
     }
     if (props.mod) {
-        perkList.push({ perk: props.mod, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+        perkList.push({ perk: props.mod, column: undefined, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
     }
     if (props.masterwork) {
-        perkList.push({ perk: props.masterwork, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+        perkList.push({ perk: props.masterwork, column: undefined, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
     }
     return perkList;
 });
@@ -68,6 +69,7 @@ function onPerkClicked(column: PerkColumnNumber) {
             :perk="perk.perk"
             :is-adept="props.isAdept"
             :crafting-info="perk.craftingInfo"
+            :column="perk.column"
             :enhanced="perk.enhanced"
             :full-size="perk.fullSize"
             :hide-hover="perk.hideHover"

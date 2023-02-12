@@ -7,7 +7,7 @@ import { onMounted, ref } from "vue";
 import UrlManager from "./components/UrlManager.vue";
 import { destinyDataService } from "./data/destinyDataService";
 import { selectionService } from "./data/selectionService";
-import { PageSelection, type ILanguageInfo, type IMasterwork, type IMod, type IPerkOption, type IWeapon, type PerkColumnNumber, type SelectedPerkMap as SelectedPerksMap } from "./data/interfaces";
+import { PageSelection, type ILanguageInfo, type IMasterwork, type IMod, type IPerkOption, type IWeapon, type PerkColumnNumber, type ISelectedPerkMap } from "./data/interfaces";
 
 const selectedPage = ref(PageSelection.Home);
 const selectedGear = computed(() => selectionService.selectedGear);
@@ -63,7 +63,7 @@ function onModChanged(mod: IMod | undefined) {
 function onUrlParsed(
     page: PageSelection,
     weapon: IWeapon | undefined,
-    perkOptions: SelectedPerksMap,
+    perkOptions: ISelectedPerkMap<IPerkOption>,
     masterwork: IMasterwork | undefined,
     mod: IMod | undefined
 ) {

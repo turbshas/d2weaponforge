@@ -120,11 +120,11 @@ export interface Destiny2GameData {
 }
 
 export type PerkColumnNumber = 1 | 2 | 3 | 4 | 5;
-export type SelectedPerkMap = { [column in keyof PerkColumnNumber as PerkColumnNumber]: IPerkOption | undefined };
+export type ISelectedPerkMap<T> = { [column in keyof PerkColumnNumber as PerkColumnNumber]: T | undefined };
 
 export interface ISelectedGear {
     weapon: Ref<IWeapon | undefined>;
-    perkOptionsMap: Ref<SelectedPerkMap>;
+    perkOptionsMap: Ref<ISelectedPerkMap<T>>;
     perkOptionsList: ComputedRef<(IPerkOption | undefined)[]>;
     masterwork: Ref<IMasterwork | undefined>;
     mod: Ref<IMod | undefined>;

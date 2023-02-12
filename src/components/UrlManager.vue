@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
-import { PageSelection, type IMasterwork, type IMod, type ISelectedGear, type IWeapon, type PerkColumnNumber, type SelectedPerkMap } from '@/data/interfaces';
+import { PageSelection, type IMasterwork, type IMod, type ISelectedGear, type IWeapon, type PerkColumnNumber, type ISelectedPerkMap, type IPerkOption } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import { watch } from 'vue';
 
@@ -20,7 +20,7 @@ const emits = defineEmits<{
     (e: "urlParsed",
         page: PageSelection,
         weapon: IWeapon | undefined,
-        perks: SelectedPerkMap,
+        perks: ISelectedPerkMap<IPerkOption>,
         masterwork: IMasterwork | undefined,
         mod: IMod | undefined,
     ): void,
@@ -57,7 +57,7 @@ watch(() => destinyDataService.gameData, onGameDataChanged);
 watch(() => path.value, onPathChanged);
 
 function onGameDataChanged() {
-    const perkMap: SelectedPerkMap = {
+    const perkMap: ISelectedPerkMap<IPerkOption> = {
         1: undefined,
         2: undefined,
         3: undefined,
