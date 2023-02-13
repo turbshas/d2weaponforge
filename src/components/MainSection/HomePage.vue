@@ -25,6 +25,7 @@ const changelogs = computed<IChangelog[]>(() => [
 
 <template>
     <div class="home">
+        <a class="github-link" href="https://github.com/turbshas/d2weaponforge/blob/main/CHANGELOG.md"><i>View on GitHub</i></a>
         <div class="changelog" v-for="changelog of changelogs" :key="changelog.version">
             <div class="header">
                 <h3 class="title">{{ changelog.title }}</h3>
@@ -65,6 +66,12 @@ const changelogs = computed<IChangelog[]>(() => [
         background-color: #232936;
         mix-blend-mode: multiply;
     }
+}
+
+.github-link {
+    position: absolute;
+    top: 16px;
+    right: 16px;
 }
 
 .header {

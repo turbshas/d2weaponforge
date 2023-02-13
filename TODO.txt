@@ -40,6 +40,8 @@ Unsure about order:
 - change PerkColumnNumber to something better
 - reload speed calculator
 - damage fall off calculator for the remaining weapon types
+- exotic catalyst support
+- filters should probably reset when the search text changes
 
 Research:
 - virtual scrolling on displayed weapons
