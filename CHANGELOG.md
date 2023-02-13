@@ -1,5 +1,11 @@
 # Changelog
 
+## **Name TBD** [ *1.0.1* ] Date TBD
+Description TBD
+
+* Now displays weapon description/flavor text when hovering over weapon name/icon/type.
+* Adept mods no longer display on non-adept weapons.
+
 ## **The Big One** [ *1.0.0* ] 2023-02-12
 Starting a changelog with version 1.0.0, and listing as many features as possible here as well.
 
@@ -10,7 +16,7 @@ Starting a changelog with version 1.0.0, and listing as many features as possibl
   * Selected filters do not clear after applying them.
 * Features unchanged from d2gunsmith:
   * Weapons:
-    * Displays all available stats on a given weapon along with any applied modifiers, coloured in red for net losses or green for net gains.
+    * Displays all available stats on a given weapon along with any applied modifiers, colored in red for net losses or green for net gains.
     * Selection of all 4 standard perks and origin perks, if applicable.
     * Selection of mods and display of their relevant stat bonuses.
     * Selection of any valid masterwork for a given weapon.

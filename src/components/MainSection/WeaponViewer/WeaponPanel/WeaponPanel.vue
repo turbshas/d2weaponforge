@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import Tooltip from '@/components/Common/Tooltip.vue';
 import WeaponIcon from '@/components/Common/WeaponIcon.vue';
 import { destinyDataService } from '@/data/destinyDataService';
 import type { ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
+import { ref } from 'vue';
 import SelectedPerks from './SelectedPerks.vue';
 import WeaponStatBlock from './WeaponStatBlock.vue';
 
@@ -16,12 +18,15 @@ const screenshot = computed(() => {
     return weapon.value ? destinyDataService.getImageUrl(weapon.value.screenshotUrl) : undefined;
 });
 
-const name = computed(() => weapon.value ? weapon.value.name : undefined);
-const type = computed(() => weapon.value ? weapon.value.itemTypeDisplayName : undefined);
+const name = computed(() => weapon.value ? weapon.value.name : "");
+const type = computed(() => weapon.value ? weapon.value.itemTypeDisplayName : "");
+const description = computed(() => weapon.value ? weapon.value.description : "");
 const elementName = computed(() => weapon.value ? weapon.value.damageType.name : "None");
 const elementIcon = computed(() => weapon.value ? destinyDataService.getImageUrl(weapon.value.damageType.iconUrl) : undefined);
 const elementLabel = computed(() => `Element Type: ${elementName.value}`);
 const statInfos = computed(() => props.selectedGear.modifiedWeaponDisplayStats.value);
+
+const weaponNameElement = ref<HTMLElement | null>(null);
 
 function onPerkClicked(column: PerkColumnNumber) {
     const perk = props.selectedGear.perkOptionsMap.value[column];
@@ -33,12 +38,23 @@ function onPerkClicked(column: PerkColumnNumber) {
 <template>
     <div class="panel" :style="{ 'background-image': 'url(' + screenshot + ')' }">
         <div class="summary">
-            <WeaponIcon class="icon" :weapon="weapon"></WeaponIcon>
-            <div class="description">
-                <h1>{{ name }}</h1>
-                <h3>{{ type }}</h3>
+            <div class="summary" :ref="(el) => { weaponNameElement = el as HTMLElement | null; }">
+                <WeaponIcon class="icon" with-border :weapon="weapon"></WeaponIcon>
+                <div class="description">
+                    <h1>{{ name }}</h1>
+                    <h3>{{ type }}</h3>
+                </div>
             </div>
             <img class="element" :src="elementIcon" :alt="elementLabel">
+            <Tooltip
+                :target-element="weaponNameElement"
+                title=""
+                subtitle=""
+                :description="description"
+                :crafting-info="undefined"
+                :effect="null"
+                :bonuses="[]"
+            ></Tooltip>
         </div>
         <WeaponStatBlock
             class="stats"
@@ -73,7 +89,6 @@ function onPerkClicked(column: PerkColumnNumber) {
 .icon {
     width: 52px;
     height: 52px;
-    box-shadow: inset 0 0 0 2px #f5f5f5;
     margin-right: 16px;
 }
 

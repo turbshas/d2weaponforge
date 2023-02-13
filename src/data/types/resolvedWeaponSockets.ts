@@ -39,8 +39,14 @@ export class ResolvedWeaponSockets {
         this.perks = this.getPerkOptionsFromResolvedSockets(resolvedSocketItems);
         this.curated = this.getCuratedFromResolvedSockets(resolvedSocketItems, this.perks);
         this.masterworks = this.getMasterworksFromResolvedSockets(resolvedSocketItems, weapon);
-        this.mods = this.getModsFromResolvedSockets(resolvedSocketItems);
+
         this.adeptMods = this.getAdeptModsFromResolvedSockets(resolvedSocketItems);
+        const allMods = this.getModsFromResolvedSockets(resolvedSocketItems);
+        const adeptModsLookup: { [hash: number]: boolean } = {};
+        for (const mod of this.adeptMods) {
+            adeptModsLookup[mod.hash] = true;
+        }
+        this.mods = allMods.filter(m => !adeptModsLookup[m.hash]);
     }
 
     private resolveWeaponSocketItems = (weapon: DestinyInventoryItemDefinition) => {

@@ -73,9 +73,9 @@ function textForStatValue(value: number) {
 
 <template>
     <div class="tooltip" :style="{ 'top': tooltipTop, 'left': tooltipLeft, }" v-show="showTooltip">
-        <div class="header">
-            <h4 class="title">{{ props.title }}</h4>
-            <div class="subtitle">
+        <div class="header" v-if="!!props.title || !!props.subtitle">
+            <h4 class="title" v-if="!!props.title">{{ props.title }}</h4>
+            <div class="subtitle" v-if="!!props.subtitle">
                 {{ props.subtitle }}
                 <span class="level" v-if="!!requiredCraftLevel">{{ requiredLevelText }}</span>
             </div>
@@ -107,7 +107,7 @@ function textForStatValue(value: number) {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .tooltip {
     position: fixed;
     z-index: 9999;
@@ -158,6 +158,10 @@ function textForStatValue(value: number) {
 }
 
 .body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
     margin: 0;
     padding-top: 8px;
     padding-bottom: 8px;
@@ -169,9 +173,6 @@ function textForStatValue(value: number) {
 }
 
 .description {
-    margin: 0;
-    padding-bottom: 4px;
-
     font-family: neue-haas-grotesk-text, "Helvetica Neue", sans-serif;
     font-weight: 300;
     font-style: normal;
@@ -179,8 +180,6 @@ function textForStatValue(value: number) {
 }
 
 .effect {
-    margin-top: 4px;
-
     font-family: neue-haas-grotesk-text, "Helvetica Neue", sans-serif;
     font-size: 11.2px;
     font-weight: 500;
@@ -226,12 +225,13 @@ function textForStatValue(value: number) {
     align-items: center;
     flex-basis: 60%;
     font-size: 12.8px;
-}
-.stats-list .value.positive {
-    color: #68cc79;
-}
-.stats-list .value.negative {
-    color: #e25954;
+
+    &.positive {
+        color: #68cc79;
+    }
+    &.negative {
+        color: #e25954;
+    }
 }
 
 .enhanced {
@@ -239,14 +239,15 @@ function textForStatValue(value: number) {
     border-top-width: 1px;
     border-top-style: solid;
     border-top-color: #ffce1f;
-}
-.enhanced-bonus::before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 30px;
-    background: linear-gradient(0deg, rgba(183, 140, 37, 0), rgba(255, 206, 31, 0.1));
+
+    &::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 30px;
+        background: linear-gradient(0deg, rgba(183, 140, 37, 0), rgba(255, 206, 31, 0.1));
+    }
 }
 .enhanced-title {
     display: flex;

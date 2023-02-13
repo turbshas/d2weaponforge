@@ -48,6 +48,7 @@ const changelogs = computed<IChangelog[]>(() => [
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    margin-bottom: auto;
     padding: 16px;
 
     font-size: 16px;

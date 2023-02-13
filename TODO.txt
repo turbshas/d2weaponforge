@@ -1,9 +1,4 @@
 Preferred order of work:
-1) Changelog, so I can start recording changes there and on the home screen.
-  - Try to list all current features in version 1.0.0
-  - maybe convert TODO to md file as well?
-2) Weapon icon border, weapon description on hovering over weapon icon (in tooltip)
-3) Fix adept mods showing on all weapons
 2) Move services initialization to single file (e.g. index.ts) and have defined initialization order
 3) Load manifest data before app finishes rendering
 4) Extras toggle for display raw vs display stat values
@@ -27,6 +22,8 @@ Preferred order of work:
   - what should stat arrows display? green only if highest value in list of weapons being compared?
 
 Unsure about order:
+- some perks showing up twice (e.g. vision of confluence, zaouli's bane)
+- fix "include sunset" filter
 - filter for adept weapons
 - make use of inventory size stat
 - elemental cap selector

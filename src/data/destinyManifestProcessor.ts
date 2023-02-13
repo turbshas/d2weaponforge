@@ -83,6 +83,7 @@ export class DestinyManifestProcessor {
         // TODO: find a better way to sort, or manually curate the order to show recent weapons.
         weapons.sort((a, b) => b.index - a.index);
 
+        console.log("weapons", weapons);
         // return weapons.map(this.getWeaponPerkInfo);
         return weapons.map(w => new Weapon(this.manifest, w));
     }
