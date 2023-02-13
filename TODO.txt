@@ -1,6 +1,7 @@
 Preferred order of work:
-5) Button to hide components on top of weapon panel so screenshot can be viewed
 6) Clear filters button, clear filter when search changes?
+  - button in filter panel
+  - also, button in search bar that can be clicked to clear filters
 7) sort weapon filter buttons
 8) hide/set to false "show crafted bonus" when weapon cannot be crafted
 9) try using index for finding stats instead of their name - reduces translation effort
@@ -11,6 +12,13 @@ Preferred order of work:
     off screen and move it to the top or bottom, depending on direction off screen
     - also move weapon items into a "viewed item" list when they scroll into view
   - map of container position number -> weapon item to display (or null/undefined to not display anything)
+  - IDs for containers?
+  - can't just base it on position when using constant number of containers because then they'd be flipping
+    back and forth between top and bottom if there's too many
+  - track size, position of view box and containers?
+  - only swap when required?
+    - when there are too few elements (< 5?): below the view box when scrolling down, or above the view box when scrolling up
+    - track number of containers above/below view box and swap when below threshold
 10) Perk filters
 11) Delay loading when searching, or maybe load in chunks, or load in the background if possible? 
 12) styling cleanup:

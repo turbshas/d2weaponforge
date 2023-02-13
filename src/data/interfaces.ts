@@ -124,7 +124,7 @@ export type ISelectedPerkMap<T> = { [column in keyof PerkColumnNumber as PerkCol
 
 export interface ISelectedGear {
     weapon: Ref<IWeapon | undefined>;
-    perkOptionsMap: Ref<ISelectedPerkMap<T>>;
+    perkOptionsMap: Ref<ISelectedPerkMap<IPerkOption>>;
     perkOptionsList: ComputedRef<(IPerkOption | undefined)[]>;
     masterwork: Ref<IMasterwork | undefined>;
     mod: Ref<IMod | undefined>;
