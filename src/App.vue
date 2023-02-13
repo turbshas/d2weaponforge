@@ -3,20 +3,14 @@ import BackgroundImage from "@/assets/background.jpg";
 import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
 import { computed } from "@vue/reactivity";
-import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import UrlManager from "./components/UrlManager.vue";
 import { destinyDataService } from "./data/destinyDataService";
 import { selectionService } from "./data/selectionService";
-import { PageSelection, type ILanguageInfo, type IPerkOption, type IWeapon } from "./data/types";
+import { PageSelection, type ILanguageInfo, type IMasterwork, type IMod, type IPerkOption, type IWeapon, type PerkColumnNumber, type ISelectedPerkMap } from "./data/interfaces";
 
 const selectedPage = ref(PageSelection.Home);
-const selectedWeapon = ref<IWeapon | undefined>(undefined);
-const selectedPerksMap = ref<{ [column: number]: IPerkOption | undefined }>({ });
-const selectedMasterwork = ref<DestinyInventoryItemDefinition | undefined>(undefined);
-const selectedMod = ref<DestinyInventoryItemDefinition | undefined>(undefined);
-
-const selectedPerks = computed(() => [selectedPerksMap.value[0], selectedPerksMap.value[1], selectedPerksMap.value[2], selectedPerksMap.value[3], selectedPerksMap.value[4]]);
+const selectedGear = computed(() => selectionService.selectedGear);
 
 onMounted(() => {
     destinyDataService.initialize();
@@ -30,23 +24,17 @@ function onTabSelected(tab: PageSelection) {
 
 function onWeaponSelected(weapon: IWeapon | undefined) {
     selectedPage.value = PageSelection.Weapon;
-    selectedWeapon.value = weapon;
-    selectedPerksMap.value = {};
-    selectedMasterwork.value = undefined;
-    selectedMod.value = undefined;
+    selectionService.setWeapon(weapon);
+
     console.log("weapon selected", weapon);
-    if (weapon && weapon.weapon.stats) {
-        const map: { [hash: number]: number } = {};
-        weapon.weapon.investmentStats.forEach(v => { map[v.statTypeHash] = v.value; })
-        const statGroup = destinyDataService.getStatGroupDefinition(weapon.weapon.stats.statGroupHash!);
-        console.log("weapon stats", statGroup?.scaledStats?.map(s => {
-            const stat = destinyDataService.getStatDefinition(s.statHash);
+    if (weapon) {
+        console.log("weapon stats", weapon.statBlock.statInfos.map(s => {
             return {
-                name: stat?.displayProperties?.name,
-                hash: stat?.hash,
-                value: stat ? weapon.weapon.stats?.stats[stat.hash]?.value : -1,
+                name: s.statName,
+                hash: s.statHash,
+                value: s.investmentValue,
             };
-        }) || [], statGroup?.overrides);
+        }));
     }
 }
 
@@ -55,44 +43,40 @@ function onLanguageSelected(language: ILanguageInfo) {
     destinyDataService.refreshGameData();
 }
 
-function onPerkSelected(column: number, perk: IPerkOption | undefined) {
-    selectedPerksMap.value[column] = perk;
+function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {
+    selectionService.setPerk(column, perk);
+
     console.log("perk selected", perk);
     if (perk) {
         perk.useEnhanced = false;
     }
 }
 
-function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefined) {
-    selectedMasterwork.value = masterwork;
+function onMasterworkChanged(masterwork: IMasterwork | undefined) {
+    selectionService.setMasterwork(masterwork);
 }
 
-function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
-    selectedMod.value = mod;
+function onModChanged(mod: IMod | undefined) {
+    selectionService.setMod(mod);
 }
 
 function onUrlParsed(
     page: PageSelection,
     weapon: IWeapon | undefined,
-    perkOptions: (IPerkOption | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined
+    perkOptions: ISelectedPerkMap<IPerkOption>,
+    masterwork: IMasterwork | undefined,
+    mod: IMod | undefined
 ) {
     selectedPage.value = page;
-    selectedWeapon.value = weapon;
-    selectedPerksMap.value = {};
-    selectedMasterwork.value = undefined;
-    selectedMod.value = undefined;
+    selectionService.setWeapon(weapon);
     if (!weapon) {
         return;
     }
 
     selectedPage.value = PageSelection.Weapon;
-    for (let i = 0; i < perkOptions.length; i++) {
-        selectedPerksMap.value[i] = perkOptions[i];
-    }
-    selectedMasterwork.value = masterwork;
-    selectedMod.value = mod;
+    selectionService.setPerks(perkOptions);
+    selectionService.setMasterwork(masterwork);
+    selectionService.setMod(mod);
 }
 </script>
 
@@ -100,10 +84,7 @@ function onUrlParsed(
     <div class="app" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
         <UrlManager
             :page="selectedPage"
-            :weapon="selectedWeapon?.weapon"
-            :selected-perks="selectedPerks"
-            :masterwork="selectedMasterwork"
-            :mod="selectedMod"
+            :selected-gear="selectedGear"
             @url-parsed="onUrlParsed"
         ></UrlManager>
         <Sidebar
@@ -115,10 +96,7 @@ function onUrlParsed(
         <MainPage
             class="main"
             :page="selectedPage"
-            :weapon="selectedWeapon"
-            :selected-perks="selectedPerks"
-            :masterwork="selectedMasterwork"
-            :mod="selectedMod"
+            :selected-gear="selectedGear"
             @perk-selected="onPerkSelected"
             @masterwork-changed="onMasterworkChanged"
             @mod-changed="onModChanged"

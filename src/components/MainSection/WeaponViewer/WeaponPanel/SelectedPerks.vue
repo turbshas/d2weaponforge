@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
-import type { ICraftingInfo } from '@/data/types';
+import type { IArchetype, ICraftingInfo, IMasterwork, IMod, IPerk, PerkColumnNumber, ISelectedPerkMap, IPerkOption } from '@/data/interfaces';
 
 // Remove this if I refactor this component
 interface ISelectedPerkDisplay {
-    perk: DestinyInventoryItemDefinition | undefined;
+    perk: IPerk | undefined;
+    column: PerkColumnNumber | undefined,
     craftingInfo: ICraftingInfo | undefined;
     enhanced: boolean;
     fullSize: boolean;
@@ -16,46 +16,46 @@ interface ISelectedPerkDisplay {
 }
 
 const props = defineProps<{
-    intrinsic: DestinyInventoryItemDefinition | undefined,
-    perk1: DestinyInventoryItemDefinition | undefined,
-    perk2: DestinyInventoryItemDefinition | undefined,
-    perk3: DestinyInventoryItemDefinition | undefined,
-    perk4: DestinyInventoryItemDefinition | undefined,
-    isPerk3Enhanced: boolean,
-    isPerk4Enhanced: boolean,
-    originPerk: DestinyInventoryItemDefinition | undefined,
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    intrinsic: IArchetype | undefined,
+    selectedPerks: ISelectedPerkMap<IPerkOption>,
+    masterwork: IMasterwork | undefined,
+    mod: IMod | undefined,
     isAdept: boolean,
 }>();
 
 const emits = defineEmits<{
-    (e: "perkClicked", column: number): void,
+    (e: "perkClicked", column: PerkColumnNumber): void,
 }>();
 
 const backgroundUrl = computed(() => PerkPanelBackground);
 
 const perks = computed(() => {
+    const perkOption3 = props.selectedPerks[3];
+    const perk3 = (perkOption3?.useEnhanced) ? perkOption3.enhancedPerk : (perkOption3?.perk);
+    const perkOption4 = props.selectedPerks[4];
+    const perk4 = (perkOption4?.useEnhanced) ? perkOption4.enhancedPerk : (perkOption4?.perk);
+
     const perkList: ISelectedPerkDisplay[] = [
-        { perk: props.intrinsic, craftingInfo: undefined, fullSize: true,  hideHover: true,  enhanced: false, onPerkClicked: () => {}, },
-        { perk: props.perk1,     craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
-        { perk: props.perk2,     craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
-        { perk: props.perk3,     craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: props.isPerk3Enhanced, onPerkClicked: () => onPerkClicked(2), },
-        { perk: props.perk4,     craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: props.isPerk4Enhanced, onPerkClicked: () => onPerkClicked(3), },
+        { perk: props.intrinsic, column: undefined, craftingInfo: undefined, fullSize: true,  hideHover: true,  enhanced: false, onPerkClicked: () => {}, },
+        { perk: props.selectedPerks[1]?.perk, column: 1, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
+        { perk: props.selectedPerks[2]?.perk, column: 2, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
+        { perk: perk3, column: 3, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: !!(perkOption3?.useEnhanced), onPerkClicked: () => onPerkClicked(3), },
+        { perk: perk4, column: 4, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: !!(perkOption4?.useEnhanced), onPerkClicked: () => onPerkClicked(4), },
     ];
-    if (!!props.originPerk) {
-        perkList.push({ perk: props.originPerk, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+    const originPerk = props.selectedPerks[5];
+    if (originPerk) {
+        perkList.push({ perk: originPerk.perk, column: 5, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
     }
-    if (!!props.mod) {
-        perkList.push({ perk: props.mod, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+    if (props.mod) {
+        perkList.push({ perk: props.mod, column: undefined, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
     }
-    if (!!props.masterwork) {
-        perkList.push({ perk: props.masterwork, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+    if (props.masterwork) {
+        perkList.push({ perk: props.masterwork, column: undefined, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
     }
     return perkList;
 });
 
-function onPerkClicked(column: number) {
+function onPerkClicked(column: PerkColumnNumber) {
     emits("perkClicked", column);
 }
 </script>
@@ -69,6 +69,7 @@ function onPerkClicked(column: number) {
             :perk="perk.perk"
             :is-adept="props.isAdept"
             :crafting-info="perk.craftingInfo"
+            :column="perk.column"
             :enhanced="perk.enhanced"
             :full-size="perk.fullSize"
             :hide-hover="perk.hideHover"

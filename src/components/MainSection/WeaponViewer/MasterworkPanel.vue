@@ -1,52 +1,32 @@
 <script setup lang="ts">
-import { destinyDataService } from '@/data/destinyDataService';
 import { computed, ref, watch } from 'vue';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
-import type { IWeapon } from '@/data/types';
+import type { IMasterwork } from '@/data/interfaces';
 import BuilderSection from '../../Common/BuilderSection.vue';
 import OptionButton from '@/components/Common/OptionButton.vue';
 import ElementLabel from '@/components/Common/ElementLabel.vue';
 
 const props = defineProps<{
-    weapon: IWeapon | undefined,
-    masterwork: DestinyInventoryItemDefinition | undefined,
+    masterworkList: IMasterwork[],
+    masterwork: IMasterwork | undefined,
 }>();
 
 const emits = defineEmits<{
-    (e: "masterworkChanged", masterwork: DestinyInventoryItemDefinition | undefined): void
+    (e: "masterworkChanged", masterwork: IMasterwork | undefined): void
 }>();
 
-const weaponStatGroup = computed(() => {
-    if (!props.weapon || !props.weapon.weapon.stats) return undefined;
-    const statGroupHash = props.weapon.weapon.stats.statGroupHash;
-    if (!statGroupHash) return undefined;
-    return destinyDataService.getStatGroupDefinition(statGroupHash);
-});
-
 const masterworkOptionsByStatName = computed(() => {
-    const masterworks: { [statName: string]: DestinyInventoryItemDefinition[] } = {};
-    if (!props.weapon) return masterworks;
+    const masterworks: { [statName: string]: IMasterwork[] } = {};
 
-    for (const plugItem of props.weapon.masterworks) {
-        const name = getStatNameForMasterwork(plugItem);
+    for (const mw of props.masterworkList) {
+        const name = mw.name;
         if (!name) continue;
         if (!masterworks[name]) {
             masterworks[name] = [];
         }
-        masterworks[name].push(plugItem);
+        masterworks[name].push(mw);
     }
     return masterworks;
 });
-
-function getStatNameForMasterwork(masterwork: DestinyInventoryItemDefinition) {
-    const increasedStat = masterwork.investmentStats.find(stat => stat.value > 0);
-    if (!increasedStat) return undefined;
-    const overrideDisplay = weaponStatGroup.value?.overrides[increasedStat.statTypeHash]?.displayProperties;
-    if (overrideDisplay) return overrideDisplay.name;
-    const statDefinition = destinyDataService.getStatDefinition(increasedStat.statTypeHash);
-    if (!statDefinition) return undefined;
-    return statDefinition.displayProperties.name;
-}
 
 const masterworkStatNames = computed(() => Object.keys(masterworkOptionsByStatName.value));
 
@@ -66,7 +46,7 @@ function initSelectedStatName() {
     if (!props.masterwork) {
         return masterworkStatNames.value.length > 0 ? masterworkStatNames.value[0] : undefined;
     } else {
-        return getStatNameForMasterwork(props.masterwork);
+        return props.masterwork.name;
     }
 }
 

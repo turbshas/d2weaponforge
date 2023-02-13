@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import OptionButton from '@/components/Common/OptionButton.vue';
 import { selectionService } from '@/data/selectionService';
-import type { IPerkOption, IWeapon } from '@/data/types';
+import type { IMasterwork, IMod, IPerkOption, ISelectedGear, IWeapon } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import BuilderSection from '../../../Common/BuilderSection.vue';
 import AddToComparisons from './AddToComparisons.vue';
 import DamageFalloff from './DamageFalloff.vue';
@@ -12,15 +11,16 @@ import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 import ReloadSpeed from './ReloadSpeed.vue';
 
 const props = defineProps<{
-    weapon: IWeapon | undefined,
-    selectedPerks: (IPerkOption | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    selectedGear: ISelectedGear,
 }>();
 
 const hideRetiredText = computed(() => selectionService.hideRetiredPerks ? "Active" : "Inactive");
 const showCraftedBonusText = computed(() => selectionService.showCraftedBonus ? "Active" : "Inactive");
 
+const weapon = computed(() => props.selectedGear.weapon.value);
+const selectedPerks = computed(() => props.selectedGear.perkOptionsList.value)
+const masterwork = computed(() => props.selectedGear.masterwork.value);
+const mod = computed(() => props.selectedGear.mod.value);
 
 function onHideRetiredClicked() {
     selectionService.hideRetiredPerks = !selectionService.hideRetiredPerks;
@@ -33,16 +33,16 @@ function onShowCraftedBonusClicked() {
 
 <template>
     <BuilderSection title="Extras">
-        <DimWishlist :weapon="props.weapon" :selected-perks="props.selectedPerks"></DimWishlist>
+        <DimWishlist :weapon="weapon" :selected-perks="selectedPerks"></DimWishlist>
         <ExtrasListItem label="Hide Retired Perks">
             <OptionButton :text="hideRetiredText" :active="selectionService.hideRetiredPerks" @click="onHideRetiredClicked"></OptionButton>
         </ExtrasListItem>
         <!-- TODO: add tooltip here that explains what this means - +3 stat bonus for lvl 10 crafted with enhanced intrinsic -->
-        <ExtrasListItem label="Show Crafted Bonus" v-if="!props.weapon?.isAdept">
+        <ExtrasListItem label="Show Crafted Bonus" v-if="!weapon?.isAdept">
             <OptionButton :text="showCraftedBonusText" :active="selectionService.showCraftedBonus" @click="onShowCraftedBonusClicked"></OptionButton>
         </ExtrasListItem>
         <AddToComparisons></AddToComparisons>
-        <DamageFalloff :weapon="props.weapon" :selected-perks="props.selectedPerks" :masterwork="props.masterwork" :mod="props.mod"></DamageFalloff>
+        <DamageFalloff :weapon="weapon" :selected-perks="selectedPerks" :masterwork="masterwork" :mod="mod"></DamageFalloff>
         <ReloadSpeed></ReloadSpeed>
     </BuilderSection>
 </template>

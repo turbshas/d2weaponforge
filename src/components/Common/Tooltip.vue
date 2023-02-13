@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ICraftingInfo } from '@/data/types';
+import type { ICraftingInfo } from '@/data/interfaces';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
@@ -23,6 +23,7 @@ const mouseY = ref(0);
 const showTooltip = computed(() => !!props.targetElement && mouseIsHovering.value);
 const tooltipTop = computed(() => `${mouseY.value}px`);
 const tooltipLeft = computed(() => `${mouseX.value - tooltipWidth}px`);
+const showDescription = computed(() => !!props.description);
 const showBonuses = computed(() => props.bonuses && props.bonuses.length > 0);
 
 const requiredCraftLevel = computed(() => props.craftingInfo && props.craftingInfo.requiredLevel);
@@ -81,7 +82,7 @@ function textForStatValue(value: number) {
         </div>
 
         <div class="body">
-            <div class="description">{{ props.description }}</div>
+            <div class="description" v-if="showDescription">{{ props.description }}</div>
             <div class="effect" v-if="props.effect">{{ props.effect }}</div>
 
             <div class="stats" v-if="showBonuses">

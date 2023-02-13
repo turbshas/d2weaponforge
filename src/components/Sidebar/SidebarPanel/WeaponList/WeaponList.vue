@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IWeapon } from '@/data/types';
+import type { IWeapon } from '@/data/interfaces';
 import WeaponListEntry from './WeaponListEntry.vue';
 
 const props = defineProps<{
@@ -19,7 +19,7 @@ function onEntryClicked(weapon: IWeapon) {
     <div class="list">
         <WeaponListEntry
             v-for="weapon of props.weapons"
-            :key="weapon.weapon.hash"
+            :key="weapon.hash"
             :weapon="weapon"
             @entry-clicked="onEntryClicked"
         ></WeaponListEntry>

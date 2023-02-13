@@ -3,76 +3,60 @@ import { WeaponCategoryRangeValuesMap } from '@/data/constants';
 import { DataSearchStrings } from '@/data/dataSearchStringService';
 import { destinyDataService } from '@/data/destinyDataService';
 import { selectionService } from '@/data/selectionService';
-import type { IPerkOption, IWeapon } from '@/data/types';
-import { hashMapToArray } from '@/data/util';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
+import type { IMasterwork, IMod, IPerk, IPerkBonus, IPerkOption, IWeapon } from '@/data/interfaces';
 import { computed } from 'vue';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 
 const props = defineProps<{
     weapon: IWeapon | undefined,
     selectedPerks: (IPerkOption | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    masterwork: IMasterwork | undefined,
+    mod: IMod | undefined,
 }>();
 
 // TODO: find a better way to identify specific items in the manifest, perhaps index? unsure if that is consistent across languages
 const RangeStatName = computed(() => DataSearchStrings.Stats.Range.value);
 const ZoomStatName = computed(() => DataSearchStrings.Stats.Zoom.value);
 const RangefinderPerkName = computed(() => DataSearchStrings.Misc.RangefinderPerkName.value);
-
-const weaponCategory = computed(() => {
-    if (!props.weapon || !props.weapon.weapon.itemCategoryHashes) return undefined;
-    console.log("weapon stats", hashMapToArray(props.weapon.weapon.stats!.stats).map(s => destinyDataService.getStatDefinition(s.statHash)));
-    const categoryHashes = props.weapon.weapon.itemCategoryHashes;
-    return destinyDataService.itemCategories
-        .filter(c => !!c.itemTypeRegex && !!WeaponCategoryRangeValuesMap.value[c.itemTypeRegex])
-        .find(c => categoryHashes.includes(c.hash));
-});
-
-const weaponCategoryRegex = computed(() => {
-    return weaponCategory.value ? weaponCategory.value.itemTypeRegex : "";
-});
-
-const rangeValues = computed(() => {
-    return WeaponCategoryRangeValuesMap.value[weaponCategoryRegex.value];
-});
-
+const weaponCategoryRegex = computed(() => props.weapon ? props.weapon.weaponCategoryRegex : "");
+const rangeValues = computed(() => WeaponCategoryRangeValuesMap.value[weaponCategoryRegex.value]);
 const hasRangeValues = computed(() => !!rangeValues.value);
 
+const isAdept = computed(() => props.weapon ? props.weapon.isAdept : false);
+
+const weaponStatInfos = computed(() => props.weapon ? props.weapon.statBlock.statInfos : []);
+const weaponStats = computed(() => weaponStatInfos.value.map(s => {
+    const stat: IPerkBonus = {
+        statHash: s.statHash,
+        statName: s.statName,
+        value: s.investmentValue,
+    };
+    return stat;
+}));
+
 const allStats = computed(() => {
-    const weaponStats = getStatsForItem(props.weapon?.weapon);
-    const perkStats = props.selectedPerks.map(p => getStatsForItem(p?.perk)).reduce((total, current) => total.concat(current), []);
-    const masterworkStats = getStatsForItem(props.masterwork)
-        .filter(s => selectionService.showCraftedBonus
-            || (props.weapon && props.weapon.isAdept)
-            || !s.isConditionallyActive);
+    const perkStats = props.selectedPerks.map(p => getStatsForItem(p?.enhancedPerk || p?.perk)).reduce((total, current) => total.concat(current), []);
+    const masterworkStats = getStatsForItem(props.masterwork);
     const modStats = getStatsForItem(props.mod);
     console.log("damage falloff props", props);
-    console.log("all stats", weaponStats, weaponStats.map(s => destinyDataService.getStatDefinition(s.statTypeHash)), perkStats, masterworkStats, modStats);
-    return [...weaponStats, ...perkStats, ...masterworkStats, ...modStats];
+    console.log("all stats", weaponStats, weaponStats.value.map(s => destinyDataService.getStatDefinition(s.statHash)), perkStats, masterworkStats, modStats);
+    return [...weaponStats.value, ...perkStats, ...masterworkStats, ...modStats];
 });
 
 const range = computed(() => {
     return allStats.value
-        .filter(s => {
-            const statDef = destinyDataService.getStatDefinition(s.statTypeHash);
-            return !!statDef && statDef.displayProperties.name === RangeStatName.value;
-        })
+        .filter(s => s.statName === RangeStatName.value)
         .reduce((total, current) => total + current.value, 0);
 });
 
 const zoom = computed(() => {
     return allStats.value
-        .filter(s => {
-            const statDef = destinyDataService.getStatDefinition(s.statTypeHash);
-            return !!statDef && statDef.displayProperties.name === ZoomStatName.value;
-        })
+        .filter(s => s.statName === ZoomStatName.value)
         .reduce((total, current) => total + current.value, 0);
 });
 
 const rangefinderMultiplier = computed(() => {
-    const rangefinderPerk = props.selectedPerks.find(p => p?.perk.displayProperties.name === RangefinderPerkName.value);
+    const rangefinderPerk = props.selectedPerks.find(p => p && p.perk.name.includes(RangefinderPerkName.value));
     return rangefinderPerk ? 1.1 : 1;
 });
 
@@ -100,21 +84,12 @@ const text = computed(() => {
     return `${roundedHipFire}m / ${roundedADS}m`
 });
 
-function getStatsForItem(item: DestinyInventoryItemDefinition | undefined) {
+function getStatsForItem(item: IPerk | undefined) {
     if (!item) return [];
-    if (item.stats) {
-        return hashMapToArray(item.stats.stats)
-            .map(s => {
-                return {
-                    isConditionallyActive: false,
-                    statTypeHash: s.statHash,
-                    value: s.value,
-                };
-            });
-    } else if (item.investmentStats) {
-        return item.investmentStats;
-    }
-    return [];
+    const bonuses = item.mainBonuses;
+    return (selectionService.showCraftedBonus || isAdept.value)
+        ? bonuses.concat(item.adeptOrCraftedBonuses)
+        : bonuses;
 }
 </script>
 

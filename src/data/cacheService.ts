@@ -1,5 +1,5 @@
 import type { DestinyManifest, DestinyManifestLanguage } from "bungie-api-ts/destiny2";
-import type { Destiny2GameData, ILanguageInfo } from "./types";
+import type { Destiny2GameData, ILanguageInfo } from "./interfaces";
 
 interface ICachedManifest {
     /** Version specific to this app, and the data it expects from the cache. Not the Bungie manifest version. */
@@ -44,8 +44,8 @@ class CacheService {
 
     private getObjectStore = async (transactionMode: IDBTransactionMode) => {
         const db = await this.dbPromise;
-        const readTransaction = db.transaction(ManifestObjectStoreName, transactionMode);
-        const objectStore = readTransaction.objectStore(ManifestObjectStoreName);
+        const transaction = db.transaction(ManifestObjectStoreName, transactionMode);
+        const objectStore = transaction.objectStore(ManifestObjectStoreName);
         return objectStore;
     }
 

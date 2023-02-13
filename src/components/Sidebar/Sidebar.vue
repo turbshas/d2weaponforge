@@ -4,7 +4,7 @@ import Searchbar from "./Searchbar.vue";
 import TabBar from "./TabBar.vue";
 import SidebarPanel from "./SidebarPanel/SidebarPanel.vue";
 
-import { SidebarPanelSelection, type ILanguageInfo, type IWeapon, type PageSelection } from "@/data/types";
+import { SidebarPanelSelection, type ILanguageInfo, type IWeapon, type PageSelection } from "@/data/interfaces";
 import { computed, ref } from "vue";
 import LanguageButton from "./LanguageButton.vue";
 import { selectionService } from "@/data/selectionService";

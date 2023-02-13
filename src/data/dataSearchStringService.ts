@@ -52,6 +52,7 @@ class Stats {
     public GuardResistance = computed(() => TranslationMap[this.languageRef.value].stats.guardResistance);
     public Handling = computed(() => TranslationMap[this.languageRef.value].stats.handling);
     public Impact = computed(() => TranslationMap[this.languageRef.value].stats.impact);
+    public InventorySize = computed(() => "Inventory Size");
     public MagSize = computed(() => TranslationMap[this.languageRef.value].stats.magSize);
     public Range = computed(() => TranslationMap[this.languageRef.value].stats.range);
     public RecoilDirection = computed(() => TranslationMap[this.languageRef.value].stats.recoilDirection);

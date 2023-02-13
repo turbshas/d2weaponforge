@@ -1,81 +1,32 @@
 <script setup lang="ts">
 import { DataSearchStrings } from '@/data/dataSearchStringService';
-import { StatDisplayType } from '@/data/types';
+import { StatDisplayType, type IModifiedStat } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
-import type { DestinyItemInvestmentStatDefinition, DestinyStatDefinition, DestinyStatDisplayDefinition, DestinyStatGroupDefinition, DestinyStatOverrideDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
-    definition: DestinyStatDefinition | undefined,
-    override: DestinyStatOverrideDefinition | undefined,
-    statDisplay: DestinyStatDisplayDefinition | undefined,
-    investmentValue: DestinyItemInvestmentStatDefinition,
-    modifier: number,
+    displayStat: IModifiedStat,
 }>();
 
-const statHash = computed(() => props.definition && props.definition.hash);
-
-const name = computed(() => {
-    if (!statHash.value) return "";
-    const displayProps = props.override || props.definition;
-    return displayProps ? displayProps.displayProperties.name : "";
-});
-
 const recoilDirectionPieLabel = "Recoil Direction Angle Graphic";
+const name = computed(() => props.displayStat.statName);
+const showStat = computed(() => !!props.displayStat.statDisplay);
 
-const showStat = computed(() => !!props.statDisplay);
-
-const statTotal = computed(() => {
-    const value = props.investmentValue.value + props.modifier;
-    // The min is always 0.
-    const max = props.statDisplay ? props.statDisplay.maximumValue : 100;
-    if (value < 0) return 0;
-    if (value > max) return max;
-    return value;
-});
-
-const baseDisplayValue = computed(() => convertToDisplayValue(props.investmentValue.value));
-const displayedTotal = computed(() => convertToDisplayValue(statTotal.value));
+const baseDisplayValue = computed(() => props.displayStat.baseStat);
+const displayedTotal = computed(() => props.displayStat.modifiedStat);
 
 const displayModifier = computed(() => displayedTotal.value - baseDisplayValue.value);
 const displayModifierMagnitude = computed(() => Math.abs(displayModifier.value));
 const modifierSign = computed(() => displayModifier.value > 0 ? "+" : "");
 const modifierText = computed(() => `${modifierSign.value}${displayModifier.value}`);
-const filledWidthPercent = computed(() => props.modifier > 0 ? baseDisplayValue.value : displayedTotal.value);
+const filledWidthPercent = computed(() => displayModifier.value > 0 ? baseDisplayValue.value : displayedTotal.value);
 
 const statDisplayType = computed(() => {
-    if (!name.value || !props.statDisplay) return StatDisplayType.Bar;
-    if (!props.statDisplay.displayAsNumeric) return StatDisplayType.Bar;
+    if (!name.value || !props.displayStat.statDisplay) return StatDisplayType.Bar;
+    if (!props.displayStat.statDisplay.displayAsNumeric) return StatDisplayType.Bar;
     return name.value === DataSearchStrings.Stats.RecoilDirection.value ? StatDisplayType.Angle : StatDisplayType.Number;
 });
 const isBarDisplayType = computed(() => statDisplayType.value === StatDisplayType.Bar);
 const isAngleDisplayType = computed(() => statDisplayType.value === StatDisplayType.Angle);
-
-function convertToDisplayValue(statValue: number) {
-    if (!props.statDisplay) return statValue;
-    const displayInterpolation = props.statDisplay.displayInterpolation;
-
-    // Check if values has an exact match.
-    const existing = displayInterpolation.find(d => d.value === statValue);
-    if (existing) return existing.weight;
-
-    // Else, we need to interpolate.
-    // The ranges are *mostly* linear. Sometimes archetypes each get their own subdivision in the range, and each subdivision is linear.
-    const start = displayInterpolation.slice().reverse().find(d => d.value < statValue);
-    const end = displayInterpolation.find(d => d.value > statValue);
-    if (!start || !end) return statValue;
-
-    const stepSize = end.value - start.value;
-    const rangeSize = end.weight - start.weight;
-    const valueWithinStep = statValue - start.value;
-    const offset = Math.ceil(rangeSize * (valueWithinStep / stepSize));
-    const value = offset + start.weight;
-    // For some stats, a higher value is a lower weight (like charge time).
-    const upperBound = Math.max(start.weight, end.weight);
-    const lowerBound = Math.min(start.weight, end.weight);
-    if (value < lowerBound) return lowerBound;
-    if (value > upperBound) return upperBound;
-    return value;
-}
 
 function recoilDirectionFunction(recoilDirection: number) {
     // Decay function is a straight line with slope -1, y-intercept 100

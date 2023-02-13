@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import WeaponIcon from "@/components/Common/WeaponIcon.vue";
 import { computed } from 'vue';
-import type { IWeapon } from '@/data/types';
+import type { IWeapon } from "@/data/interfaces";
 
 const props = defineProps<{
     weapon: IWeapon,
@@ -11,8 +11,8 @@ const emit = defineEmits<{
     (e: "entryClicked", weapon: IWeapon): void,
 }>();
 
-const href = computed(() => props.weapon ? `/w/${props.weapon.weapon.hash}` : "");
-const weaponName = computed(() => props.weapon.weapon.displayProperties.name);
+const href = computed(() => props.weapon ? `/w/${props.weapon.hash}` : "");
+const weaponName = computed(() => props.weapon.name);
 
 function onEntryClicked(e: Event) {
     emit("entryClicked", props.weapon);
@@ -23,7 +23,7 @@ function onEntryClicked(e: Event) {
 <template>
     <a class="entry" :href="href" @click="onEntryClicked">
         <span class="text">{{ weaponName }}</span>
-        <WeaponIcon class="icon" :weapon="props.weapon.weapon"></WeaponIcon>
+        <WeaponIcon class="icon" :weapon="props.weapon"></WeaponIcon>
     </a>
 </template>
 

@@ -1,34 +1,39 @@
 <script setup lang="ts">
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
 import WeaponPanel from './WeaponPanel/WeaponPanel.vue';
 import ExtrasPanel from './ExtrasPanel/ExtrasPanel.vue';
 import MasterworkPanel from './MasterworkPanel.vue';
 import ModsPanel from './ModsPanel.vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
-import type { IPerkOption, IWeapon } from '@/data/types';
+import type { IMasterwork, IMod, IPerkOption, ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
+import { computed } from 'vue';
 
 const props = defineProps<{
-    weapon: IWeapon | undefined
-    selectedPerks: (IPerkOption | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    selectedGear: ISelectedGear,
 }>();
 
 const emits = defineEmits<{
-    (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
-    (e: "masterworkChanged", masterwork: DestinyInventoryItemDefinition | undefined): void,
-    (e: "modChanged", mod: DestinyInventoryItemDefinition | undefined): void,
+    (e: "perkSelected", column: PerkColumnNumber, perk: IPerkOption | undefined): void,
+    (e: "masterworkChanged", masterwork: IMasterwork | undefined): void,
+    (e: "modChanged", mod: IMod | undefined): void,
 }>();
 
-function onPerkSelected(column: number, perk: IPerkOption | undefined) {
+const weapon = computed(() => props.selectedGear.weapon.value);
+
+const randomRollPerks = computed(() => weapon.value ? weapon.value.perks.perkColumns : []);
+const curatedPerks = computed(() => weapon.value ? weapon.value.curated.perkColumns : []);
+
+const masterworkList = computed(() => weapon.value ? weapon.value.masterworks : []);
+const modList = computed(() => weapon.value ? weapon.value.mods : []);
+
+function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {
     emits("perkSelected", column, perk);
 }
 
-function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefined) {
+function onMasterworkChanged(masterwork: IMasterwork | undefined) {
     emits("masterworkChanged", masterwork);
 }
 
-function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
+function onModChanged(mod: IMod | undefined) {
     emits("modChanged", mod);
 }
 </script>
@@ -37,38 +42,31 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
     <div class="viewer">
         <div class="weapon">
             <WeaponPanel
-                :weapon="props.weapon"
-                :selected-perks="props.selectedPerks"
-                :masterwork="props.masterwork"
-                :mod="props.mod"
+                :selected-gear="props.selectedGear"
             ></WeaponPanel>
             <div class="extras-mws-mods">
                 <ExtrasPanel
-                    :weapon="props.weapon"
-                    :selected-perks="props.selectedPerks"
-                    :masterwork="props.masterwork"
-                    :mod="props.mod"
+                    :selected-gear="props.selectedGear"
                 ></ExtrasPanel>
                 <div class="mods-masterwork">
                     <MasterworkPanel
                         class="mw"
-                        :weapon="props.weapon"
-                        :masterwork="props.masterwork"
+                        :masterwork-list="masterworkList"
+                        :masterwork="props.selectedGear.masterwork.value"
                         @masterwork-changed="onMasterworkChanged"
                     ></MasterworkPanel>
                     <ModsPanel
-                        :weapon="props.weapon"
-                        :mod="props.mod"
+                        :mod-list="modList"
+                        :mod="props.selectedGear.mod.value"
                         @mod-changed="onModChanged"
                     ></ModsPanel>
                 </div>
             </div>
         </div>
         <PerksPanel
-            :weapon="props.weapon"
-            :selected-perks="props.selectedPerks"
-            :masterwork="props.masterwork"
-            :mod="props.mod"
+            :random-roll-perks="randomRollPerks"
+            :curated-perks="curatedPerks"
+            :selected-perks="props.selectedGear.perkOptionsMap.value"
             @perk-selected="onPerkSelected"
         ></PerksPanel>
     </div>

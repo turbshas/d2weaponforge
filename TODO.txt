@@ -1,8 +1,23 @@
-- ordering weapons by release date to the API (might have to be manual)
-  - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
-
-- glossary (will probably need this done manually anyway for the perk descriptions/tooltips)
-- compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
+Preferred order of work:
+1) Changelog, so I can start recording changes there and on the home screen.
+  - Try to list all current features in version 1.0.0
+  - maybe convert TODO to md file as well?
+2) Weapon icon border, weapon description on hovering over weapon icon (in tooltip)
+3) Fix adept mods showing on all weapons
+2) Move services initialization to single file (e.g. index.ts) and have defined initialization order
+3) Load manifest data before app finishes rendering
+4) Extras toggle for display raw vs display stat values
+5) Button to hide components on top of weapon panel so screenshot can be viewed
+6) Clear filters button, clear filter when search changes?
+7) sort weapon filter buttons
+8) hide/set to false "show crafted bonus" when weapon cannot be crafted
+9) try using index for finding stats instead of their name - reduces translation effort
+10) Perk filters
+11) Delay loading when searching, or maybe load in chunks, or load in the background if possible? 
+12) styling cleanup:
+  - put common values into variables in base.css
+  - convert to using rem instead of px
+13) compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
   - ideas:
   - each weapon is 1 row
   - stats only display numbers
@@ -10,28 +25,32 @@
   - icon + name/type on left side
   - stats in middle
   - what should stat arrows display? green only if highest value in list of weapons being compared?
-- required level for enhanced perks
-- sunset weapons filter
-- collections filters
-- hide/set to false "show crafted bonus" when weapon cannot be crafted
-- button to hide components on top of weapon panel so screenshot can be viewed
-- cache certain options
-- sort weapon filter buttons
-- styling cleanup:
-  - put common values into variables in base.css
-  - convert to using rem instead of px
-- tab bar text isn't centered properly
+
+Unsure about order:
+- filter for adept weapons
+- make use of inventory size stat
 - elemental cap selector
 - show that page is refreshing when game data is being reloaded
+- ordering weapons by release date to the API (might have to be manual)
+  - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
+  - I actually like the ordering as I have it now...
+- glossary (will probably need this done manually anyway for the perk descriptions/tooltips)
+- collections filters
+- tab bar text isn't centered properly
+- change PerkColumnNumber to something better
+- reload speed calculator
+- damage fall off calculator for the remaining weapon types
+- exotic catalyst support
+- filters should probably reset when the search text changes
 
-- tooltip for magazine still says mag stat instead of actual mag increase
+Research:
+- virtual scrolling on displayed weapons
+  - array of 50 (probably?) container objects for weapon items
+  - array of equal length holding HTMLElement for each container
+  - on every scroll event, check for any container that is 500px (maybe different value? depends on number of containers?)
+    off screen and move it to the top or bottom, depending on direction off screen
+    - also move weapon items into a "viewed item" list when they scroll into view
+  - map of container position number -> weapon item to display (or null/undefined to not display anything)
 - look into precision damage stat, maybe can include that?
 - look into weapon ready/stow stat?
 - look into ADS stat?
-
-- weapon viewer
-  - extras (comparisons integrations, damage falloff, reload speed)
-- process weapons into wrapper classes, including stats and display info
-  - find a way to move stats to a more central location that all components that need stats can look at
-    - right now, need to make modifications (e.g. crafted stat bonus) in multiple locations
-    - this would probably be a part of a rework to process data from the API better

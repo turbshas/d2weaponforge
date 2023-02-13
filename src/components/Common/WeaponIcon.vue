@@ -1,32 +1,19 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/destinyDataService';
+import type { IWeapon } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
 
 const props = defineProps<{
-    weapon: DestinyInventoryItemDefinition | undefined,
+    weapon: IWeapon | undefined,
 }>();
 
-const baseIconPath = computed(() => props.weapon && props.weapon.displayProperties && props.weapon.displayProperties.icon);
+const baseIconPath = computed(() => props.weapon && props.weapon.iconUrl);
 const baseIcon = computed(() => baseIconPath.value && destinyDataService.getImageUrl(baseIconPath.value));
 
-const watermarkPath = computed(() => {
-    // Priority here: weapon.quality.displayVersionWatermarkIcons -> weapon.iconWatermarkShelved -> weapon.iconWatermark
-    return props.weapon
-        && (
-            (
-                props.weapon.quality
-                && props.weapon.quality.displayVersionWatermarkIcons.length > 0
-                && props.weapon.quality.displayVersionWatermarkIcons[0]
-                && props.weapon.quality.displayVersionWatermarkIcons[0]
-            )
-            || props.weapon.iconWatermarkShelved
-            || props.weapon.iconWatermark
-        );
-});
+const watermarkPath = computed(() => props.weapon && props.weapon.iconWatermarkUrl);
 const watermark = computed(() => watermarkPath.value && destinyDataService.getImageUrl(watermarkPath.value));
 
-const iconLabel = computed(() => props.weapon ? `Weapon Icon: ${props.weapon.displayProperties.name}` : "");
+const iconLabel = computed(() => props.weapon ? `Weapon Icon: ${props.weapon.name}` : "");
 const watermarkLabel = "Watermark: Season of release";
 </script>
 

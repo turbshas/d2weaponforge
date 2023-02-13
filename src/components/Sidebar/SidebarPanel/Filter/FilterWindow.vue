@@ -3,7 +3,7 @@ import { destinyDataService } from "@/data/destinyDataService";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
 import TierIcons from "@/assets/TierIcons";
-import type { FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton } from "@/data/types";
+import type { FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton } from "@/data/interfaces";
 import OptionButton from "@/components/Common/OptionButton.vue";
 import ElementLabel from "@/components/Common/ElementLabel.vue";
 import { OriginFilters, SeasonIconMap, WeaponCategoryIconMap } from "@/data/constants";
@@ -34,7 +34,7 @@ const damageTypeFilters = computed(() => {
                 text: d.displayProperties.name,
                 iconUrl: destinyDataService.getImageUrl(d.displayProperties.icon),
                 filter: (item: IWeapon) => {
-                    return item.weapon.damageTypeHashes.includes(d.hash);
+                    return item.damageType.hash === d.hash;
                 },
             };
             return filter;
@@ -53,12 +53,12 @@ const weaponCategoryArchetypeMap = computed(() => {
             archetypeFilters[weaponType.traitId].push({
                 text: `${rpmTextPrefix}${archetype.name}`,
                 filter: (item: IWeapon) => {
-                    if (!item.intrinsic) return false;
-                    const name = item.intrinsic.displayProperties.name;
+                    if (!item.archetype) return false;
+                    const name = item.archetype.name;
                     return name === archetype.name
                         && (
                             !weaponType.compareUsingRpm
-                            || (!!item.weapon.stats && archetype.rpm === item.weapon.stats.stats[archetype.statHash].value)
+                            || (!!item.archetype && archetype.rpm === item.archetype.rpmStatValue)
                             );
                 },
             });
@@ -77,14 +77,12 @@ const weaponCategoryFilters = computed(() => {
                 iconUrl: WeaponCategoryIconMap.value[t.weaponCategoryRegex],
                 archetypes: weaponCategoryArchetypeMap.value[t.traitId],
                 filter: (item: IWeapon) => {
-                    const weapon = item.weapon;
-                    if (!weapon.itemCategoryHashes) return false;
-                    if (!weapon.itemCategoryHashes.includes(t.weaponCategoryHash)) return false;
+                    if (item.weaponCategoryRegex !== t.weaponCategoryRegex) return false;
                     const activeArchetypeFilters = filter.archetypes.filter(a => props.activeFilters["Archetype"][a.text]);
                     // If no archetypes chosen, allow all.
                     if (activeArchetypeFilters.length === 0) return true;
                     // If no intrinsic, can't check archetype so return false.
-                    if (!item.intrinsic) return false;
+                    if (!item.archetype) return false;
                     return activeArchetypeFilters.some(a => a.filter(item));
                 },
             };
@@ -106,7 +104,7 @@ const collectionCategoryFilters = computed(() => {
                 iconUrl: iconUrl,
                 filter: (item: IWeapon) => {
                     // TODO: this may not work for a lot of weapons, is there a better way to check?
-                    return !!item.weapon.seasonHash && item.weapon.seasonHash === s.hash;
+                    return item.seasonHash === s.hash;
                 },
             };
             return filter;
@@ -127,7 +125,7 @@ const itemTierFilters = computed(() => {
                 text: tier.displayProperties.name,
                 iconUrl: tierIndexToIcon(tier.index),
                 filter: (item: IWeapon) => {
-                    return !!item.weapon.inventory && item.weapon.inventory.tierTypeHash === tier.hash;
+                    return item.tierTypeIndex === tier.index;
                 }
             });
         }
@@ -150,7 +148,7 @@ const rarityFilterCategory = computed<ICategoryInfo>(() => {
 });
 
 const filterCategories = computed(() => {
-    return [damageTypeFilterCategory.value, weaponFilterCategory.value, collectionsFilterCategory.value, rarityFilterCategory.value];
+    return [damageTypeFilterCategory.value, weaponFilterCategory.value, /* collectionsFilterCategory.value, */ rarityFilterCategory.value];
 });
 
 const activeWeaponFilters = computed(() => {

@@ -1,30 +1,37 @@
 <script setup lang="ts">
-import type { IPerkOption, IPerkSlotOptions } from '@/data/types';
+import type { IPerkColumn, IPerkOption, PerkColumnNumber } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 
 const props = defineProps<{
-    perkOptionLists: IPerkSlotOptions[] | undefined,
-    selectedPerks: { [column: number]: IPerkOption | undefined },
+    perkOptionLists: IPerkColumn[] | undefined,
+    selectedPerks: { [column in PerkColumnNumber]: IPerkOption | undefined },
     hideEnhanced?: boolean,
 }>();
 
 const emits = defineEmits<{
-    (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
+    (e: "perkSelected", column: PerkColumnNumber, perk: IPerkOption | undefined): void,
 }>();
 
-const perkSlots = computed(() => {
+const perkColumns = computed(() => {
     if (!props.perkOptionLists) return [];
-    return props.perkOptionLists;
+    return props.perkOptionLists.map((l, index) => {
+        const perkColumn: { column: PerkColumnNumber, perks: IPerkColumn } = {
+            column: (index + 1) as PerkColumnNumber,
+            perks: l,
+        };
+        return perkColumn;
+    });
 });
 
-function isPerkSelected(column: number, perk: IPerkOption) {
-    return !!props.selectedPerks && !!props.selectedPerks[column] && props.selectedPerks[column]!.perk.hash === perk.perk.hash;
+function isPerkSelected(column: PerkColumnNumber, perk: IPerkOption) {
+    const selectedPerk = props.selectedPerks[column];
+    return !!selectedPerk && selectedPerk.perk.hash === perk.perk.hash;
 }
 
-function onPerkClicked(column: number, perk: IPerkOption) {
+function onPerkClicked(column: PerkColumnNumber, perk: IPerkOption) {
     // If perk is already selecting, clicking it again deselects it
-    const newPerk = props.selectedPerks[column] && props.selectedPerks[column]!.perk.hash === perk.perk.hash ? undefined : perk;
+    const newPerk = isPerkSelected(column, perk) ? undefined : perk;
     emits("perkSelected", column, newPerk);
 }
 </script>
@@ -33,21 +40,22 @@ function onPerkClicked(column: number, perk: IPerkOption) {
     <div class="grid">
         <div
             class="column"
-            v-for="(slot, column) in perkSlots"
-            :key="column"
-            :class="{ 'first': column === 0, }"
+            v-for="perkColumn in perkColumns"
+            :key="perkColumn.column"
+            :class="{ 'first': perkColumn.column === 1, }"
         >
             <PerkDisplay
                 class="perk"
-                v-for="(perk, index) in slot.options"
+                v-for="(perk, index) in perkColumn.perks.perks"
                 :key="index"
                 :perk="perk.enhancedPerk || perk.perk"
+                :column="perkColumn.column"
                 :is-adept="false"
                 :crafting-info="perk.craftingInfo"
-                :selected="isPerkSelected(column, perk)"
+                :selected="isPerkSelected(perkColumn.column, perk)"
                 :retired="!perk.currentlyCanRoll"
                 :enhanced="!!perk.enhancedPerk && !props.hideEnhanced"
-                @perk-clicked="onPerkClicked(column, perk)"
+                @perk-clicked="onPerkClicked(perkColumn.column, perk)"
             ></PerkDisplay>
         </div>
     </div>

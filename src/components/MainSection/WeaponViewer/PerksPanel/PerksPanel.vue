@@ -1,36 +1,25 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 import PerkList from './PerkList.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 import BuilderSection from '../../../Common/BuilderSection.vue';
-import type { IPerkOption, IWeapon } from '@/data/types';
+import type { IPerkColumn, IPerkOption, PerkColumnNumber, ISelectedPerkMap } from '@/data/interfaces';
 
 const props = defineProps<{
-    weapon: IWeapon | undefined,
-    selectedPerks: (IPerkOption | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    randomRollPerks: IPerkColumn[],
+    curatedPerks: IPerkColumn[],
+    selectedPerks: ISelectedPerkMap<IPerkOption>,
 }>();
 
 const emits = defineEmits<{
-    (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
+    (e: "perkSelected", column: PerkColumnNumber, perk: IPerkOption | undefined): void,
 }>();
 
 const backgroundUrl = computed(() => PerkPanelBackground);
 
-const perkOptionListsPerSlot = computed(() => {
-    if (!props.weapon) return [];
-    return props.weapon.perks;
-});
+const hasCuratedPerks = computed(() => props.curatedPerks.length > 0);
 
-const curatedPerks = computed(() => {
-    if (!props.weapon) return [];
-    return props.weapon.curated;
-});
-const hasCuratedPerks = computed(() => curatedPerks.value.length > 0);
-
-function onPerkSelected(column: number, perk: IPerkOption | undefined) {
+function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {
     emits("perkSelected", column, perk);
 }
 </script>
@@ -40,7 +29,7 @@ function onPerkSelected(column: number, perk: IPerkOption | undefined) {
         <BuilderSection title="Weapon Perks" class="no-shadow">
             <PerkList
                 :style="{ 'background-image': 'url(' + backgroundUrl + ')' }"
-                :perk-option-lists="perkOptionListsPerSlot"
+                :perk-option-lists="props.randomRollPerks"
                 :selected-perks="selectedPerks"
                 @perk-selected="onPerkSelected"
             ></PerkList>

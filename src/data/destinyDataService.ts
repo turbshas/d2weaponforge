@@ -3,7 +3,8 @@ import { ref } from "vue";
 import { cacheService } from "./cacheService";
 import { destinyApiService } from "./destinyApiService";
 import { selectionService } from "./selectionService";
-import type { Destiny2GameData } from "./types";
+import type { Destiny2GameData } from "./interfaces";
+import { hashMapToArray } from "./util";
 
 class DestinyDataService {
     private initialized: boolean = false;
@@ -36,6 +37,10 @@ class DestinyDataService {
 
     public get itemTiers() {
         return this.gameData ? this.gameData.itemTierTypes : [];
+    }
+
+    public get stats() {
+        return this.gameData ? this.gameData.statsLookup : [];
     }
 
     public initialize = async () => {
@@ -138,6 +143,7 @@ class DestinyDataService {
         const start = Date.now();
         const gameData = await destinyApiService.retrieveManifest(language ? language.language : "en");
         const end = Date.now();
+        const stats = hashMapToArray(gameData.statsLookup);
         console.log("loading manifest took", end - start);
         console.log(gameData);
 

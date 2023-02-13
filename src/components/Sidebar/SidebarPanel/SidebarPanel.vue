@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/destinyDataService";
-import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon } from "@/data/types";
+import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon } from "@/data/interfaces";
 import { computed, ref } from "vue";
 import FilterWindow from "./Filter/FilterWindow.vue";
 import LanguageSelector from "./LanguageSelector.vue";
@@ -50,25 +50,20 @@ const areFiltersChosen = computed(() => {
 const filteredWeapons = computed(() => {
     // If no filter or search, return truncated list
     if (!areFiltersChosen.value && !props.searchString) {
-        // return weapons.value.filter(w => !isWeaponSunset(w)).slice(0, 22);
-        return weapons.value.filter(w => !isWeaponSunset(w)).slice(0, 44);
+        return weapons.value.filter(w => !w.isSunset).slice(0, 22);
     }
 
     return weapons.value
-        .filter(w => !filters.value.includeSunsetWeapons || !isWeaponSunset(w))
+        .filter(w => !filters.value.includeSunsetWeapons || !w.isSunset)
         .filter(w => checkFilterCategoryOnWeapon(filters.value.collectionsFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.damageFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.rarityFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.weaponFilters, w))
-        .filter(s => s.weapon.displayProperties.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
+        .filter(w => w.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
 });
 
 const showFilterWindow = computed(() => props.sidebarPanelSelection === SidebarPanelSelection.Filters);
 const showLanguageWindow = computed(() => props.sidebarPanelSelection === SidebarPanelSelection.Languages);
-
-function isWeaponSunset(weapon: IWeapon) {
-    return !!weapon.weapon.iconWatermarkShelved;
-}
 
 function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: IWeapon) {
     return !category || category.length === 0 || category.some(predicate => predicate(weapon));

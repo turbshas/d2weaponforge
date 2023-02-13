@@ -1,24 +1,20 @@
 <script setup lang="ts">
-import { PageSelection, type IPerkOption, type IWeapon } from '@/data/types';
+import { PageSelection, type IMasterwork, type IMod, type IPerkOption, type ISelectedGear, type PerkColumnNumber } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import HomePage from './HomePage.vue';
 import Glossary from './Glossary.vue';
 import ComparePage from './ComparePage.vue';
 import WeaponViewer from './WeaponViewer/WeaponViewer.vue';
-import type { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 
 const props = defineProps<{
     page: PageSelection,
-    weapon: IWeapon | undefined,
-    selectedPerks: (IPerkOption | undefined)[],
-    masterwork: DestinyInventoryItemDefinition | undefined,
-    mod: DestinyInventoryItemDefinition | undefined,
+    selectedGear: ISelectedGear,
 }>();
 
 const emits = defineEmits<{
-    (e: "perkSelected", column: number, perk: IPerkOption | undefined): void,
-    (e: "masterworkChanged", masterwork: DestinyInventoryItemDefinition | undefined): void,
-    (e: "modChanged", mod: DestinyInventoryItemDefinition | undefined): void,
+    (e: "perkSelected", column: PerkColumnNumber, perk: IPerkOption | undefined): void,
+    (e: "masterworkChanged", masterwork: IMasterwork | undefined): void,
+    (e: "modChanged", mod: IMod | undefined): void,
 }>();
 
 const isHomeSelected = computed(() => {
@@ -37,15 +33,15 @@ const isWeaponSelected = computed(() => {
     return props && props.page === PageSelection.Weapon;
 });
 
-function onPerkSelected(column: number, perk: IPerkOption | undefined) {
+function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {
     emits("perkSelected", column, perk);
 }
 
-function onMasterworkChanged(masterwork: DestinyInventoryItemDefinition | undefined) {
+function onMasterworkChanged(masterwork: IMasterwork | undefined) {
     emits("masterworkChanged", masterwork);
 }
 
-function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
+function onModChanged(mod: IMod | undefined) {
     emits("modChanged", mod);
 }
 </script>
@@ -58,10 +54,7 @@ function onModChanged(mod: DestinyInventoryItemDefinition | undefined) {
         <WeaponViewer
             class="item"
             v-else-if="isWeaponSelected"
-            :weapon="weapon"
-            :selected-perks="selectedPerks"
-            :masterwork="masterwork"
-            :mod="mod"
+            :selected-gear="props.selectedGear"
             @perk-selected="onPerkSelected"
             @masterwork-changed="onMasterworkChanged"
             @mod-changed="onModChanged"

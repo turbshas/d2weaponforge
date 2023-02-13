@@ -3,7 +3,7 @@ import OriginIcons from "@/assets/OriginIcons";
 import WeaponIcons from "@/assets/WeaponIcons";
 import { computed } from "vue";
 import { DataSearchStrings } from "./dataSearchStringService";
-import type { IFilterButton, ILanguageInfo, IWeaponRangeValues } from "./types";
+import type { IFilterButton, ILanguageInfo, IWeaponRangeValues } from "./interfaces";
 
 export const LanguageInfos = computed<ILanguageInfo[]>(() => [
     { language: "de", flagIcon: FlagIcons.DE, text: "Altsächsisch", },
@@ -69,6 +69,7 @@ export const WeaponTypeRpmUnitsMap = computed<{ [traitId: string]: string }>(() 
         [DataSearchStrings.TraitIDs.LinearFusion]: "ms",
     }
 });
+export const DefaultWeaponTypeRpmUnits = computed(() => "RPM");
 
 export const WeaponTypeTraitToRegex = computed<{ [traitId: string]: string }>(() => {
     return {
