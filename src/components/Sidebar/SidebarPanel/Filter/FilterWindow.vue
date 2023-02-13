@@ -148,7 +148,7 @@ const rarityFilterCategory = computed<ICategoryInfo>(() => {
 });
 
 const filterCategories = computed(() => {
-    return [damageTypeFilterCategory.value, weaponFilterCategory.value, collectionsFilterCategory.value, rarityFilterCategory.value];
+    return [damageTypeFilterCategory.value, weaponFilterCategory.value, /* collectionsFilterCategory.value, */ rarityFilterCategory.value];
 });
 
 const activeWeaponFilters = computed(() => {
