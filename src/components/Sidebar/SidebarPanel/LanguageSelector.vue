@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import type { ILanguageInfo } from '@/data/interfaces';
-import { DataSearchStrings } from '@/data/dataSearchStringService';
+import { DataSearchStrings } from '@/data/services';
 
 const emits = defineEmits<{
     (e: "languageSelected", language: ILanguageInfo): void,

@@ -7,7 +7,7 @@ import SidebarPanel from "./SidebarPanel/SidebarPanel.vue";
 import { SidebarPanelSelection, type ILanguageInfo, type IWeapon, type PageSelection } from "@/data/interfaces";
 import { computed, ref } from "vue";
 import LanguageButton from "./LanguageButton.vue";
-import { selectionService } from "@/data/selectionService";
+import { selectionService } from "@/data/services";
 
 const emit = defineEmits<{
     (e: "weaponSelected", weapon: IWeapon): void,

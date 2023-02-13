@@ -3,18 +3,14 @@ import BackgroundImage from "@/assets/background.jpg";
 import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
 import { computed } from "@vue/reactivity";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import UrlManager from "./components/UrlManager.vue";
-import { destinyDataService } from "./data/destinyDataService";
-import { selectionService } from "./data/selectionService";
+import { destinyDataService } from "./data/services";
+import { selectionService } from "./data/services";
 import { PageSelection, type ILanguageInfo, type IMasterwork, type IMod, type IPerkOption, type IWeapon, type PerkColumnNumber, type ISelectedPerkMap } from "./data/interfaces";
 
 const selectedPage = ref(PageSelection.Home);
 const selectedGear = computed(() => selectionService.selectedGear);
-
-onMounted(() => {
-    destinyDataService.initialize();
-});
 
 const backgroundUrl = computed(() => BackgroundImage);
 
@@ -40,7 +36,7 @@ function onWeaponSelected(weapon: IWeapon | undefined) {
 
 function onLanguageSelected(language: ILanguageInfo) {
     selectionService.language = language;
-    destinyDataService.refreshGameData();
+    destinyDataService.refreshGameData(language);
 }
 
 function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {

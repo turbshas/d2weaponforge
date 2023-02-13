@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition } from "bungie-api-ts/destiny2";
 import { AllowedPlugCategoryIds } from "./constants";
-import { DataSearchStrings } from "./dataSearchStringService";
+import { DataSearchStrings } from "./services/dataSearchStringService";
 import { ItemTierIndex, type IWeaponTypeInfo, type UsedDestinyManifestSlice } from "./interfaces";
 import { ManifestAccessor } from "./types/manifestAccessor";
 import { Weapon } from "./types/weapon";

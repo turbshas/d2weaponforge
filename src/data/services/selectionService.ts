@@ -1,18 +1,19 @@
 import { ref } from "vue";
-import { cacheService } from "./cacheService";
+import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import type { ILanguageInfo, IMasterwork, IMod, IPerkBonus, IPerkOption, IWeapon, PerkColumnNumber, ISelectedPerkMap } from "./interfaces";
-import { SelectedGear } from "./types/selectedGear";
+import type { ILanguageInfo, IMasterwork, IMod, IPerkBonus, IPerkOption, IWeapon, PerkColumnNumber, ISelectedPerkMap } from "../interfaces";
+import { SelectedGear } from "../types/selectedGear";
 
-class SelectionService {
+export class SelectionService {
+    public readonly preferencesLoaded: Promise<void>;
     public readonly selectedGear = new SelectedGear();
 
-    constructor() {
-        this.initializePreferences();
+    constructor(private readonly cacheService: CacheService) {
+        this.preferencesLoaded = this.initializePreferences();
     }
 
     private initializePreferences = async () => {
-        const language = await cacheService.getLanguage();
+        const language = await this.cacheService.getLanguage();
         if (language) {
             this.languageWrapper.value = language;
         }
@@ -57,7 +58,7 @@ class SelectionService {
     public get language() { return this.languageWrapper.value; }
     public set language(value: ILanguageInfo) {
         this.languageWrapper.value = value;
-        cacheService.setLanguage(value);
+        this.cacheService.setLanguage(value);
     }
 
     public get hideRetiredPerks() { return this.hideRetiredPerksWrapper.value; }
@@ -66,4 +67,3 @@ class SelectionService {
     public get showCraftedBonus() { return this.showCraftedBonusWrapper.value; }
     public set showCraftedBonus(value: boolean) { this.showCraftedBonusWrapper.value = value; }
 }
-export const selectionService = new SelectionService();

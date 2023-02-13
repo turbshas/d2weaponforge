@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { WeaponCategoryRangeValuesMap } from '@/data/constants';
-import { DataSearchStrings } from '@/data/dataSearchStringService';
-import { destinyDataService } from '@/data/destinyDataService';
-import { selectionService } from '@/data/selectionService';
+import { DataSearchStrings } from '@/data/services';
+import { destinyDataService } from '@/data/services';
+import { selectionService } from '@/data/services';
 import type { IMasterwork, IMod, IPerk, IPerkBonus, IPerkOption, IWeapon } from '@/data/interfaces';
 import { computed } from 'vue';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';

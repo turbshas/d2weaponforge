@@ -1,21 +1,23 @@
 import { Destiny2 } from "bungie-api-ts";
 import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import type { HttpClientConfig } from "bungie-api-ts/http";
-import { cacheService } from "./cacheService";
+import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import { DestinyManifestProcessor } from "./destinyManifestProcessor";
-import type { Destiny2GameData } from "./interfaces";
-import type { Weapon } from "./types/weapon";
+import { DestinyManifestProcessor } from "../destinyManifestProcessor";
+import type { Destiny2GameData } from "../interfaces";
+import type { Weapon } from "../types/weapon";
 
 const CurrentCachedManifestVersion = 3;
 
-class DestinyApiService {
+export class DestinyApiService {
+    constructor(private readonly cacheService: CacheService) { }
+
     public retrieveManifest = async (language: DestinyManifestLanguage) => {
         DataSearchStrings.setLanguage(language);
 
         // Get manifest metadata
         const manifestInfoPromise = Destiny2.getDestinyManifest(this.makeRequest);
-        const cachedManifestPromise = cacheService.getCachedManifest();
+        const cachedManifestPromise = this.cacheService.getCachedManifest();
         const [manifestInfo, cachedManifest] = await Promise.all([manifestInfoPromise, cachedManifestPromise]);
 
         console.log("manifest info", manifestInfo);
@@ -86,7 +88,7 @@ class DestinyApiService {
             socketTypeLookup: manifestProcessor.socketTypeLookup,
         };
 
-        cacheService.setCachedManifest({
+        this.cacheService.setCachedManifest({
             version: CurrentCachedManifestVersion,
             language: language,
             manifestInfo: manifestInfo.Response,
@@ -104,4 +106,3 @@ class DestinyApiService {
         return await response.json();
     }
 }
-export const destinyApiService = new DestinyApiService();

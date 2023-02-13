@@ -1,15 +1,14 @@
 import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { ref } from "vue";
-import { cacheService } from "./cacheService";
-import { destinyApiService } from "./destinyApiService";
-import { selectionService } from "./selectionService";
-import type { Destiny2GameData } from "./interfaces";
-import { hashMapToArray } from "./util";
+import type { DestinyApiService } from "./destinyApiService";
+import type { Destiny2GameData, ILanguageInfo } from "../interfaces";
+import { hashMapToArray } from "../util";
 
-class DestinyDataService {
+export class DestinyDataService {
     private initialized: boolean = false;
+    private readonly gameDataWrapper = ref<Destiny2GameData | null>(null);
 
-    private gameDataWrapper = ref<Destiny2GameData | null>(null);
+    constructor(private readonly destinyApiService: DestinyApiService) { }
 
     public get gameData() {
         return this.gameDataWrapper.value;
@@ -43,10 +42,10 @@ class DestinyDataService {
         return this.gameData ? this.gameData.statsLookup : [];
     }
 
-    public initialize = async () => {
+    public initialize = async (language: ILanguageInfo | undefined) => {
         if (this.initialized) return;
 
-        await this.refreshGameData();
+        await this.refreshGameData(language);
 
         this.initialized = true;
     }
@@ -136,12 +135,11 @@ class DestinyDataService {
     //         - crafting frame
     //         - memento
     //         - red box pattern extract button
-    public refreshGameData = async () => {
+    public refreshGameData = async (language: ILanguageInfo | undefined) => {
         // TODO: need to show the user that the data is refreshing somehow...
         // Get manifest slices we care about
-        const language = await cacheService.getLanguage();
         const start = Date.now();
-        const gameData = await destinyApiService.retrieveManifest(language ? language.language : "en");
+        const gameData = await this.destinyApiService.retrieveManifest(language ? language.language : "en");
         const end = Date.now();
         const stats = hashMapToArray(gameData.statsLookup);
         console.log("loading manifest took", end - start);
@@ -150,5 +148,3 @@ class DestinyDataService {
         this.gameDataWrapper.value = gameData;
     }
 }
-
-export const destinyDataService = new DestinyDataService();

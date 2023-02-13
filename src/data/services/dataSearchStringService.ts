@@ -1,7 +1,7 @@
 import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import { computed, ref, type Ref } from "vue";
-import { EnglishLanguageIndex, LanguageInfos } from "./constants";
-import TranslationMap from "./translations/translationMap";
+import { EnglishLanguageIndex, LanguageInfos } from "../constants";
+import TranslationMap from "../translations/translationMap";
 
 class CategoryIds {
     // Weapon perk plug category IDs

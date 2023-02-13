@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyPlugItemCraftingRequirements, DestinySocketTypeDefinition, DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { ValidPerkPlugCategories } from "../constants";
-import { DataSearchStrings } from "../dataSearchStringService";
+import { DataSearchStrings } from "../services/dataSearchStringService";
 import { ItemTierIndex } from "../interfaces";
 import type { ManifestAccessor } from "./manifestAccessor";
 import { Perk } from "./perk";

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Tooltip from '@/components/Common/Tooltip.vue';
 import WeaponIcon from '@/components/Common/WeaponIcon.vue';
-import { destinyDataService } from '@/data/destinyDataService';
+import { destinyDataService } from '@/data/services';
 import type { ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import { ref } from 'vue';

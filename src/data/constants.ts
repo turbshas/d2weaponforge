@@ -2,7 +2,7 @@ import FlagIcons from "@/assets/FlagIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import WeaponIcons from "@/assets/WeaponIcons";
 import { computed } from "vue";
-import { DataSearchStrings } from "./dataSearchStringService";
+import { DataSearchStrings } from "./services/dataSearchStringService";
 import type { IFilterButton, ILanguageInfo, IWeaponRangeValues } from "./interfaces";
 
 export const LanguageInfos = computed<ILanguageInfo[]>(() => [

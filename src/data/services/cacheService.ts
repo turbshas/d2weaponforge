@@ -1,5 +1,5 @@
 import type { DestinyManifest, DestinyManifestLanguage } from "bungie-api-ts/destiny2";
-import type { Destiny2GameData, ILanguageInfo } from "./interfaces";
+import type { Destiny2GameData, ILanguageInfo } from "../interfaces";
 
 interface ICachedManifest {
     /** Version specific to this app, and the data it expects from the cache. Not the Bungie manifest version. */
@@ -14,7 +14,7 @@ const ManifestObjectStoreName = "manifestObjectStore";
 const ManifestCacheKey = "d2gunsmith_2_destiny_manifest";
 const LanguageCacheKey = "d2gunsmith_2_language";
 
-class CacheService {
+export class CacheService {
     private readonly dbPromise: Promise<IDBDatabase>;
 
     constructor() {
@@ -82,4 +82,3 @@ class CacheService {
         });
     }
 }
-export const cacheService = new CacheService();

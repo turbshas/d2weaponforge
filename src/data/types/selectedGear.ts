@@ -1,7 +1,7 @@
 import type { DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
 import type { IMasterwork, IMod, IModifiedStat, IPerk, IPerkBonus, IPerkOption, ISelectedGear, IWeapon, ISelectedPerkMap, PerkColumnNumber } from "../interfaces";
-import { selectionService } from "../selectionService";
+import { selectionService } from "../services";
 import { hashMapToArray } from "../util";
 
 export class SelectedGear implements ISelectedGear {

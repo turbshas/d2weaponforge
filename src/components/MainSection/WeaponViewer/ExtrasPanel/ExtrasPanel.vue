@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import OptionButton from '@/components/Common/OptionButton.vue';
-import { selectionService } from '@/data/selectionService';
-import type { IMasterwork, IMod, IPerkOption, ISelectedGear, IWeapon } from '@/data/interfaces';
+import { selectionService } from '@/data/services';
+import type { ISelectedGear } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import BuilderSection from '../../../Common/BuilderSection.vue';
 import AddToComparisons from './AddToComparisons.vue';

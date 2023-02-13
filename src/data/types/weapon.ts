@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { WeaponTypeTraitToRegex } from "../constants";
-import { DataSearchStrings } from "../dataSearchStringService";
+import { DataSearchStrings } from "../services/dataSearchStringService";
 import { ItemTierIndex, type IWeapon } from "../interfaces";
 import { Archetype } from "./archetype";
 import { DamageType } from "./damageType";

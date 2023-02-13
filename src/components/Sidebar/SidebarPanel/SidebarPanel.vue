@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { destinyDataService } from "@/data/destinyDataService";
+import { destinyDataService } from "@/data/services";
 import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon } from "@/data/interfaces";
 import { computed, ref } from "vue";
 import FilterWindow from "./Filter/FilterWindow.vue";
