@@ -53,7 +53,7 @@ const tooltipTargetElement = computed(() => props.perk ? perkElement.value : nul
 const tooltipEffects = computed(() => "");
 const tooltipBonuses = computed(() => {
     const column = props.column;
-    if (!column) return perkBonuses.value;
+    if (!column || selectionService.rawStatValues) return perkBonuses.value;
     const convertedBonuses: { statName: string, value: number }[] = perkBonuses.value.map(b => {
         return {
             statName: b.statName,

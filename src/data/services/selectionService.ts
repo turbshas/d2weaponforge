@@ -12,11 +12,28 @@ export class SelectionService {
         this.preferencesLoaded = this.initializePreferences();
     }
 
-    private initializePreferences = async () => {
-        const language = await this.cacheService.getLanguage();
-        if (language) {
-            this.languageWrapper.value = language;
+    private readonly initializePreferences = async () => {
+        const preferences = await this.cacheService.getPreferences();
+        if (preferences) {
+            this.languageWrapper.value = preferences.language;
+            this.hideRetiredPerksWrapper.value = preferences.hideRetiredPerks;
+            this.showCraftedBonusWrapper.value = preferences.showCraftedBonus;
+            this.rawStatValuesWrapper.value = preferences.rawStatValues;
         }
+    }
+
+    private readonly setPreferences = async () => {
+        const language = this.languageWrapper.value;
+
+        this.cacheService.setPreferences({
+            // Need to clone object here to get rid of vue inserted properties/methods.
+            language: {
+                ...language,
+            },
+            hideRetiredPerks: this.hideRetiredPerksWrapper.value,
+            showCraftedBonus: this.showCraftedBonusWrapper.value,
+            rawStatValues: this.rawStatValuesWrapper.value,
+        });
     }
 
     public readonly setWeapon = (weapon: IWeapon | undefined) => {
@@ -51,19 +68,32 @@ export class SelectionService {
     public readonly displayValueIfAddingBonus = (column: PerkColumnNumber, bonus: IPerkBonus) => this.selectedGear.displayValueIfAddingBonus(column, bonus);
 
     // Preferences - storing them here for lack of a better place
-    private languageWrapper = ref<ILanguageInfo>(DataSearchStrings.DefaultLanguage);
-    private hideRetiredPerksWrapper = ref(false);
-    private showCraftedBonusWrapper = ref(false);
+    private readonly languageWrapper = ref<ILanguageInfo>(DataSearchStrings.DefaultLanguage);
+    private readonly hideRetiredPerksWrapper = ref(false);
+    private readonly showCraftedBonusWrapper = ref(false);
+    private readonly rawStatValuesWrapper = ref(false);
 
     public get language() { return this.languageWrapper.value; }
     public set language(value: ILanguageInfo) {
         this.languageWrapper.value = value;
-        this.cacheService.setLanguage(value);
+        this.setPreferences();
     }
 
     public get hideRetiredPerks() { return this.hideRetiredPerksWrapper.value; }
-    public set hideRetiredPerks(value: boolean) { this.hideRetiredPerksWrapper.value = value; }
+    public set hideRetiredPerks(value: boolean) {
+        this.hideRetiredPerksWrapper.value = value;
+        this.setPreferences();
+    }
 
     public get showCraftedBonus() { return this.showCraftedBonusWrapper.value; }
-    public set showCraftedBonus(value: boolean) { this.showCraftedBonusWrapper.value = value; }
+    public set showCraftedBonus(value: boolean) {
+        this.showCraftedBonusWrapper.value = value;
+        this.setPreferences();
+    }
+
+    public get rawStatValues() { return this.rawStatValuesWrapper.value; }
+    public set rawStatValues(value: boolean) {
+        this.rawStatValuesWrapper.value = value;
+        this.setPreferences();
+    }
 }

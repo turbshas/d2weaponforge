@@ -16,6 +16,7 @@ const props = defineProps<{
 
 const hideRetiredText = computed(() => selectionService.hideRetiredPerks ? "Active" : "Inactive");
 const showCraftedBonusText = computed(() => selectionService.showCraftedBonus ? "Active" : "Inactive");
+const rawStatValuesText = computed(() => selectionService.rawStatValues ? "Active" : "Inactive");
 
 const weapon = computed(() => props.selectedGear.weapon.value);
 const selectedPerks = computed(() => props.selectedGear.perkOptionsList.value)
@@ -29,6 +30,10 @@ function onHideRetiredClicked() {
 function onShowCraftedBonusClicked() {
     selectionService.showCraftedBonus = !selectionService.showCraftedBonus;
 }
+
+function onRawStatValuesClicked() {
+    selectionService.rawStatValues = !selectionService.rawStatValues;
+}
 </script>
 
 <template>
@@ -40,6 +45,9 @@ function onShowCraftedBonusClicked() {
         <!-- TODO: add tooltip here that explains what this means - +3 stat bonus for lvl 10 crafted with enhanced intrinsic -->
         <ExtrasListItem label="Show Crafted Bonus" v-if="!weapon?.isAdept">
             <OptionButton :text="showCraftedBonusText" :active="selectionService.showCraftedBonus" @click="onShowCraftedBonusClicked"></OptionButton>
+        </ExtrasListItem>
+        <ExtrasListItem label="Raw Stat Bonus Values">
+            <OptionButton :text="rawStatValuesText" :active="selectionService.rawStatValues" @click="onRawStatValuesClicked"></OptionButton>
         </ExtrasListItem>
         <AddToComparisons></AddToComparisons>
         <DamageFalloff :weapon="weapon" :selected-perks="selectedPerks" :masterwork="masterwork" :mod="mod"></DamageFalloff>

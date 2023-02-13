@@ -5,6 +5,9 @@ Description TBD
 
 * Now displays weapon description/flavor text when hovering over weapon name/icon/type.
 * Adept mods no longer display on non-adept weapons.
+* Changes to page loading which may improve speed slightly.
+* Added toggle to display raw values for stat bonuses.
+* Preferences ("Extras" area) now save across page load.
 
 ## **The Big One** [ *1.0.0* ] 2023-02-12
 Starting a changelog with version 1.0.0, and listing as many features as possible here as well.
