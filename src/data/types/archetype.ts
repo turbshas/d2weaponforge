@@ -36,11 +36,11 @@ export class Archetype extends BasicPerk implements IArchetype {
 }
 
 function getArchetypeRpmStat(weaponTypeTraitId: string, weaponStats: DestinyItemStatBlockDefinition | undefined, manifest: ManifestAccessor) {
-    const searchStatName = WeaponTraitIdMainStatMap.value[weaponTypeTraitId] || DefaultWeaponMainStat.value;
+    const searchStatIndex = WeaponTraitIdMainStatMap.value[weaponTypeTraitId] || DefaultWeaponMainStat.value;
     const statList = weaponStats ? hashMapToArray(weaponStats.stats) : [];
     const rpmStat = statList.find(s => {
         const statType = manifest.getStatTypeDefinition(s.statHash);
-        return statType && statType.displayProperties.name === searchStatName;
+        return statType && statType.index === searchStatIndex;
     });
     return rpmStat;
 }
