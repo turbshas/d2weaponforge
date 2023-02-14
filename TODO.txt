@@ -1,10 +1,11 @@
 Preferred order of work:
+9) try using index for finding stats instead of their name - reduces translation effort
+5) Lowering bundle size to speed up load time
 6) Clear filters button, clear filter when search changes?
   - button in filter panel
   - also, button in search bar that can be clicked to clear filters
 7) sort weapon filter buttons
 8) hide/set to false "show crafted bonus" when weapon cannot be crafted
-9) try using index for finding stats instead of their name - reduces translation effort
 10) virtual scrolling on displayed weapons
   - array of 50 (probably?) container objects for weapon items
   - array of equal length holding HTMLElement for each container

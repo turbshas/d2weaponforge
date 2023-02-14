@@ -14,8 +14,6 @@ import type {
     DestinyStatGroupDefinition
 } from "bungie-api-ts/destiny2";
 import type { ComputedRef, Ref } from "vue";
-import type { PerkOption } from "./types/perkOption";
-import type { Weapon } from "./types/weapon";
 
 export type UsedDestinyManifestSlice = DestinyManifestSlice<(
     "DestinyDamageTypeDefinition"
