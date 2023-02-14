@@ -6,10 +6,6 @@ import { BasicPerk } from "./basicPerk";
 import type { ManifestAccessor } from "./manifestAccessor";
 
 export class Archetype extends BasicPerk implements IArchetype {
-    public readonly name: string;
-    public readonly description: string;
-    public readonly iconUrl: string;
-
     public readonly rpmStatHash: number | undefined;
     public readonly rpmStatValue: number | undefined;
     public readonly rpmUnits: string;
@@ -20,11 +16,7 @@ export class Archetype extends BasicPerk implements IArchetype {
         weaponStats: DestinyItemStatBlockDefinition | undefined,
         manifest: ManifestAccessor,
         ) {
-        super(intrinsic, intrinsic.displayProperties.name, manifest);
-
-        this.name = intrinsic.displayProperties.name;
-        this.description = intrinsic.displayProperties.description;
-        this.iconUrl = intrinsic.displayProperties.icon;
+        super(intrinsic, manifest);
 
         const rpmStat = getArchetypeRpmStat(weaponTypeTraitId, weaponStats, manifest);
         this.rpmStatHash = rpmStat ? rpmStat.statHash : undefined;

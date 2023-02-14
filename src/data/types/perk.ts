@@ -7,6 +7,6 @@ export class Perk extends BasicPerk {
         perk: DestinyInventoryItemDefinition,
         manifest: ManifestAccessor,
         ) {
-        super(perk, perk.displayProperties.name, manifest);
+        super(perk, manifest);
     }
 }

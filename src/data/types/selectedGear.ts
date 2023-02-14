@@ -58,10 +58,10 @@ export class SelectedGear implements ISelectedGear {
         })
     );
 
-    public readonly displayValueIfAddingBonus = (column: PerkColumnNumber, bonus: IPerkBonus) => {
+    public readonly displayValueIfAddingBonus = (bonus: IPerkBonus, column?: PerkColumnNumber) => {
         const currentStat = this.modifiedStatMap.value[bonus.statHash];
         if (!currentStat) return bonus.value;
-        const perkBonusesMap = this.perkBonusesMap.value[column] || {};
+        const perkBonusesMap = column && this.perkBonusesMap.value[column] || {};
         const currentColumnBonuses = perkBonusesMap[bonus.statHash] || 0;
         const currentStatWithoutColumn = currentStat.modifiedStat - currentColumnBonuses;
         const currentDisplayStat = this.convertToDisplayValue(currentStatWithoutColumn, currentStat.statDisplay);

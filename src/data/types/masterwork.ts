@@ -22,6 +22,6 @@ export class Masterwork extends BasicPerk {
         weaponStatGroup: DestinyStatGroupDefinition | undefined,
         manifest: ManifestAccessor,
         ) {
-        super(masterwork, getMasterworkStatName(masterwork, weaponStatGroup, manifest), manifest);
+        super(masterwork, manifest, getMasterworkStatName(masterwork, weaponStatGroup, manifest));
     }
 }

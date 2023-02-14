@@ -22,6 +22,7 @@ export type UsedDestinyManifestSlice = DestinyManifestSlice<(
     | "DestinySeasonDefinition"
     | "DestinyInventoryItemDefinition"
     | "DestinyPlugSetDefinition"
+    | "DestinySandboxPerkDefinition"
     | "DestinyStatDefinition"
     | "DestinyStatGroupDefinition"
     | "DestinySocketCategoryDefinition"
@@ -55,6 +56,12 @@ export enum ItemTierIndex {
     Rare = 3,
     Legendary = 4,
     Exotic = 5,
+}
+
+export enum ItemPerkVisibility {
+    Visible = 0,
+    Disabled = 1,
+    Hidden = 2,
 }
 
 export interface ILanguageInfo {

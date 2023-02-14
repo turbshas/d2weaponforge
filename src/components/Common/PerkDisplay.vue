@@ -52,12 +52,12 @@ const tooltipTargetElement = computed(() => props.perk ? perkElement.value : nul
 // TODO: this require outside data, complete when that is compiled.
 const tooltipEffects = computed(() => "");
 const tooltipBonuses = computed(() => {
+    if (selectionService.rawStatValues) return perkBonuses.value
     const column = props.column;
-    if (!column || selectionService.rawStatValues) return perkBonuses.value;
     const convertedBonuses: { statName: string, value: number }[] = perkBonuses.value.map(b => {
         return {
             statName: b.statName,
-            value: selectionService.displayValueIfAddingBonus(column, b),
+            value: selectionService.displayValueIfAddingBonus(b, column),
         };
     });
     return convertedBonuses;

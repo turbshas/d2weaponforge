@@ -79,6 +79,9 @@ export class Weapon implements IWeapon {
         }
 
         this.seasonHash = weaponItem.seasonHash;
+        if (this.name === "Blowout") {
+            console.log("mods are", resolvedWeaponSockets.mods);
+        }
     }
 }
 

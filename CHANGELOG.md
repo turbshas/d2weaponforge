@@ -1,5 +1,11 @@
 # Changelog
 
+## **Name TBD** [ *1.1.1* ] Date TBD
+Description TBD
+
+* Fixed mods not having descriptions.
+* Fixed mods always showing raw stat values.
+
 ## **Improve Page Load Times + Quality of Life** [ *1.1.0* ] 2023-02-13
 This change brings improvements to page load times as well as some quality of life changes such as
 preferences saving across refreshes, weapon flavor text tooltip, and hiding the weapon panel UI

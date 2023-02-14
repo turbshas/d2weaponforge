@@ -14,12 +14,13 @@ export abstract class BasicPerk implements IPerk {
 
     constructor(
         item: DestinyInventoryItemDefinition,
-        name: string,
         manifest: ManifestAccessor,
+        name?: string,
+        description?: string,
         ) {
         this.hash = item.hash;
-        this.name = name;
-        this.description = item.displayProperties.description;
+        this.name = name || item.displayProperties.name;
+        this.description = description || item.displayProperties.description;
         this.itemTypeDisplayName = item.itemTypeDisplayName;
         this.iconUrl = item.displayProperties.icon;
         this.iconWatermarkUrl = item.iconWatermark;
