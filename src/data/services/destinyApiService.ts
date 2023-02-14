@@ -1,9 +1,7 @@
-import { Destiny2 } from "bungie-api-ts";
-import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
+import { getDestinyManifest, getDestinyManifestSlice, type DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import { DestinyManifestProcessor } from "../destinyManifestProcessor";
 import type { Destiny2GameData } from "../interfaces";
 import type { Weapon } from "../types/weapon";
 
@@ -16,7 +14,7 @@ export class DestinyApiService {
         DataSearchStrings.setLanguage(language);
 
         // Get manifest metadata
-        const manifestInfoPromise = Destiny2.getDestinyManifest(this.makeRequest);
+        const manifestInfoPromise = getDestinyManifest(this.makeRequest);
         const cachedManifestPromise = this.cacheService.getCachedManifest();
         const [manifestInfo, cachedManifest] = await Promise.all([manifestInfoPromise, cachedManifestPromise]);
 
@@ -37,7 +35,7 @@ export class DestinyApiService {
         // */
 
         // Get manifest slices we care about
-        const manifestSlice = await Destiny2.getDestinyManifestSlice(this.makeRequest, {
+        const manifestSlice = await getDestinyManifestSlice(this.makeRequest, {
             destinyManifest: manifestInfo.Response,
             language: language,
             tableNames: [
@@ -58,7 +56,8 @@ export class DestinyApiService {
 
         console.log(manifestSlice);
 
-        const manifestProcessor = new DestinyManifestProcessor(manifestSlice);
+        const manifestProcessorImport = await import("../destinyManifestProcessor");
+        const manifestProcessor = new manifestProcessorImport.DestinyManifestProcessor(manifestSlice);
 
         const weapons = manifestProcessor.weapons;
         const weaponsLookup: { [weaponItemHash: number]: Weapon } = {};

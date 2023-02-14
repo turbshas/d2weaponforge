@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/services";
 import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon } from "@/data/interfaces";
-import { computed, ref } from "vue";
-import FilterWindow from "./Filter/FilterWindow.vue";
-import LanguageSelector from "./LanguageSelector.vue";
+import { computed, defineAsyncComponent, ref } from "vue";
+// import FilterWindow from "./Filter/FilterWindow.vue";
+// import LanguageSelector from "./LanguageSelector.vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
+
+const FilterWindow = defineAsyncComponent(() => import("./Filter/FilterWindow.vue"));
+const LanguageSelector = defineAsyncComponent(() => import("./LanguageSelector.vue"));
 
 const props = defineProps<{
     sidebarPanelSelection: SidebarPanelSelection,

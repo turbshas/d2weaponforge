@@ -1,6 +1,6 @@
 # Changelog
 
-## **Name TBD** [ *1.0.1* ] Date TBD
+## **Name TBD** [ *1.1.0* ] Date TBD
 Description TBD
 
 * Now displays weapon description/flavor text when hovering over weapon name/icon/type.
@@ -10,6 +10,7 @@ Description TBD
 * Preferences ("Extras" area) now save across page load.
 * Add show/hide button for UI elements on weapon panel to allow viewing weapon preview.
 * Convert stat lookups to use index instead of stat name - removes need for translating stat names.
+* Dramatically reduce bundle + asset size to improve page load time.
 
 ## **The Big One** [ *1.0.0* ] 2023-02-12
 Starting a changelog with version 1.0.0, and listing as many features as possible here as well.

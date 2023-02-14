@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import BackgroundImage from "@/assets/background.jpg";
+import LowResBackgroundImage from "@/assets/background_low_res.jpg";
 import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
-import { computed } from "@vue/reactivity";
-import { ref } from "vue";
 import UrlManager from "./components/UrlManager.vue";
 import { destinyDataService } from "./data/services";
 import { selectionService } from "./data/services";
 import { PageSelection, type ILanguageInfo, type IMasterwork, type IMod, type IPerkOption, type IWeapon, type PerkColumnNumber, type ISelectedPerkMap } from "./data/interfaces";
+import { computed, ref } from "vue";
 
 const selectedPage = ref(PageSelection.Home);
 const selectedGear = computed(() => selectionService.selectedGear);
 
-const backgroundUrl = computed(() => BackgroundImage);
+const backgroundUrl = computed(() => LowResBackgroundImage);
 
 function onTabSelected(tab: PageSelection) {
     selectedPage.value = tab;
