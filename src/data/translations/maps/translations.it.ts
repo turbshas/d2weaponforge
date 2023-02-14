@@ -1,6 +1,7 @@
 import type { IDataSearchStrings } from "../schemas";
 
 const translations: IDataSearchStrings = {
+    /*
     stats: {
         accuracy: "Precisione",
         aimAssistance: "Mira assistita",
@@ -26,6 +27,7 @@ const translations: IDataSearchStrings = {
         velocity: "Velocità",
         zoom: "Zoom",
     },
+    */
     misc: {
         adept: "affinata",
         harrowed: "tormentata",

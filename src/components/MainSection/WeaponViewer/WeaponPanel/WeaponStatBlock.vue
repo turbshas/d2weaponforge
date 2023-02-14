@@ -5,35 +5,35 @@ import { computed } from '@vue/reactivity';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
 
 const statOrdering = computed(() => [
-    DataSearchStrings.Stats.Impact.value,
-    DataSearchStrings.Stats.BlastRadius.value,
+    DataSearchStrings.StatIndices.Impact,
+    DataSearchStrings.StatIndices.BlastRadius,
 
-    DataSearchStrings.Stats.Range.value,
-    DataSearchStrings.Stats.Accuracy.value,
-    DataSearchStrings.Stats.Velocity.value,
+    DataSearchStrings.StatIndices.Range,
+    DataSearchStrings.StatIndices.Accuracy,
+    DataSearchStrings.StatIndices.Velocity,
 
-    DataSearchStrings.Stats.ShieldDuration.value,
-    DataSearchStrings.Stats.Stability.value,
-    DataSearchStrings.Stats.Handling.value,
-    DataSearchStrings.Stats.ReloadSpeed.value,
-    DataSearchStrings.Stats.AimAssistance.value,
-    DataSearchStrings.Stats.AirborneEffectiveness.value,
-    DataSearchStrings.Stats.Zoom.value,
-    DataSearchStrings.Stats.RecoilDirection.value,
+    DataSearchStrings.StatIndices.ShieldDuration,
+    DataSearchStrings.StatIndices.Stability,
+    DataSearchStrings.StatIndices.Handling,
+    DataSearchStrings.StatIndices.ReloadSpeed,
+    DataSearchStrings.StatIndices.AimAssistance,
+    DataSearchStrings.StatIndices.AirborneEffectiveness,
+    DataSearchStrings.StatIndices.Zoom,
+    DataSearchStrings.StatIndices.RecoilDirection,
 
-    DataSearchStrings.Stats.SwingSpeed.value,
-    DataSearchStrings.Stats.ChargeRate.value,
-    DataSearchStrings.Stats.GuardEfficiency.value,
-    DataSearchStrings.Stats.GuardResistance.value,
-    DataSearchStrings.Stats.GuardEndurance.value,
+    DataSearchStrings.StatIndices.SwingSpeed,
+    DataSearchStrings.StatIndices.ChargeRate,
+    DataSearchStrings.StatIndices.GuardEfficiency,
+    DataSearchStrings.StatIndices.GuardResistance,
+    DataSearchStrings.StatIndices.GuardEndurance,
 
-    DataSearchStrings.Stats.Rpm.value,
-    DataSearchStrings.Stats.DrawTime.value,
-    DataSearchStrings.Stats.ChargeTime.value,
+    DataSearchStrings.StatIndices.Rpm,
+    DataSearchStrings.StatIndices.DrawTime,
+    DataSearchStrings.StatIndices.ChargeTime,
 
-    DataSearchStrings.Stats.MagSize.value,
-    DataSearchStrings.Stats.AmmoCapacity.value,
-    DataSearchStrings.Stats.InventorySize,
+    DataSearchStrings.StatIndices.MagSize,
+    DataSearchStrings.StatIndices.AmmoCapacity,
+    DataSearchStrings.StatIndices.InventorySize,
 ]);
 
 const props = defineProps<{
@@ -52,7 +52,7 @@ const orderedStats = computed(() => {
     const workingStatList: (IModifiedStat | undefined)[] = statOrdering.value.map(_ => undefined);
 
     for (const statInfo of props.displayStats) {
-        const index = statOrdering.value.findIndex(name => name === statInfo.statName);
+        const index = statOrdering.value.findIndex(index => index === statInfo.index);
         if (index < 0) continue;
         // Some weapons (e.g. swords) have stats that appear in their scaledStats list but not their investmentStats.
         workingStatList[index] = statInfoMap.value[statInfo.statHash] || defaultStatInfo(statInfo.statHash);
@@ -63,6 +63,7 @@ const orderedStats = computed(() => {
 
 function defaultStatInfo(statHash: number): IModifiedStat {
     return {
+        index: -1,
         statHash: statHash,
         statName: "",
         statDisplay: undefined,

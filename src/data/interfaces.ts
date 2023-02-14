@@ -132,6 +132,7 @@ export interface ISelectedGear {
 }
 
 export interface IModifiedStat {
+    index: number;
     statHash: number;
     statName: string;
     statDisplay: DestinyStatDisplayDefinition | undefined;
@@ -174,6 +175,7 @@ export interface IStatBlock {
 }
 
 export interface IStatInfo {
+    index: number;
     statHash: number;
     statName: string;
     investmentValue: number;

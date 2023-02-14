@@ -9,6 +9,7 @@ Description TBD
 * Added toggle to display raw values for stat bonuses.
 * Preferences ("Extras" area) now save across page load.
 * Add show/hide button for UI elements on weapon panel to allow viewing weapon preview.
+* Convert stat lookups to use index instead of stat name - removes need for translating stat names.
 
 ## **The Big One** [ *1.0.0* ] 2023-02-12
 Starting a changelog with version 1.0.0, and listing as many features as possible here as well.

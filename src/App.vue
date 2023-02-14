@@ -23,15 +23,6 @@ function onWeaponSelected(weapon: IWeapon | undefined) {
     selectionService.setWeapon(weapon);
 
     console.log("weapon selected", weapon);
-    if (weapon) {
-        console.log("weapon stats", weapon.statBlock.statInfos.map(s => {
-            return {
-                name: s.statName,
-                hash: s.statHash,
-                value: s.investmentValue,
-            };
-        }));
-    }
 }
 
 function onLanguageSelected(language: ILanguageInfo) {

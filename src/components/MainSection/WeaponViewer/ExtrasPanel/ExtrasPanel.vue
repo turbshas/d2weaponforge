@@ -50,7 +50,7 @@ function onRawStatValuesClicked() {
             <OptionButton :text="rawStatValuesText" :active="selectionService.rawStatValues" @click="onRawStatValuesClicked"></OptionButton>
         </ExtrasListItem>
         <AddToComparisons></AddToComparisons>
-        <DamageFalloff :weapon="weapon" :selected-perks="selectedPerks" :masterwork="masterwork" :mod="mod"></DamageFalloff>
+        <DamageFalloff :selected-gear="props.selectedGear"></DamageFalloff>
         <ReloadSpeed></ReloadSpeed>
     </BuilderSection>
 </template>

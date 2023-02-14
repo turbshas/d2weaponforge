@@ -36,6 +36,7 @@ class CategoryIds {
     public get WeaponModMagazine() { return "v400.weapon.mod_magazine"; }
 }
 
+/*
 class Stats {
     constructor(private readonly languageRef: Ref<DestinyManifestLanguage>) {}
 
@@ -63,6 +64,34 @@ class Stats {
     public SwingSpeed = computed(() => TranslationMap[this.languageRef.value].stats.swingSpeed);
     public Velocity = computed(() => TranslationMap[this.languageRef.value].stats.velocity);
     public Zoom = computed(() => TranslationMap[this.languageRef.value].stats.zoom);
+}
+*/
+
+class StatIndices {
+    public get Accuracy() { return 17; }
+    public get AimAssistance() { return 30; }
+    public get AirborneEffectiveness() { return 43; }
+    public get AmmoCapacity() { return 40; }
+    public get BlastRadius() { return 21; }
+    public get ChargeRate() { return 19; }
+    public get ChargeTime() { return 18; }
+    public get DrawTime() { return 50; }
+    public get GuardEfficiency() { return 39; }
+    public get GuardEndurance() { return 41; }
+    public get GuardResistance() { return 38; }
+    public get Handling() { return 26; }
+    public get Impact() { return 15; }
+    public get InventorySize() { return 25; }
+    public get MagSize() { return 24; }
+    public get Range() { return 16; }
+    public get RecoilDirection() { return 31; }
+    public get ReloadSpeed() { return 27; }
+    public get Rpm() { return 14; }
+    public get ShieldDuration() { return 42; }
+    public get Stability() { return 22; }
+    public get SwingSpeed() { return 37; }
+    public get Velocity() { return 20; }
+    public get Zoom() { return 32; }
 }
 
 class Misc {
@@ -120,7 +149,7 @@ export class DataSearchStrings {
     private static readonly language = ref<DestinyManifestLanguage>("en");
 
     private static readonly _categoryIds = new CategoryIds();
-    private static readonly _stats = new Stats(this.language);
+    private static readonly _statIndices = new StatIndices();
     private static readonly _misc = new Misc(this.language);
     private static readonly _traitIds = new TraitIds();
     private static readonly _weaponCategoryRegex = new WeaponCategoryRegex();
@@ -133,7 +162,7 @@ export class DataSearchStrings {
     }
 
     public static get CategoryIDs() { return this._categoryIds; }
-    public static get Stats() { return this._stats; }
+    public static get StatIndices() { return this._statIndices; }
     public static get Misc() { return this._misc; }
     public static get TraitIDs() { return this._traitIds; }
     public static get WeaponCategoryRegex() { return this._weaponCategoryRegex; }
