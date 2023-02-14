@@ -1,11 +1,12 @@
 # Changelog
 
-## **Name TBD** [ *1.1.0* ] Date TBD
-Description TBD
+## **Improve Page Load Times + Quality of Life** [ *1.1.0* ] 2023-02-13
+This change brings improvements to page load times as well as some quality of life changes such as
+preferences saving across refreshes, weapon flavor text tooltip, and hiding the weapon panel UI
+to view the weapon screenshot.
 
 * Now displays weapon description/flavor text when hovering over weapon name/icon/type.
 * Adept mods no longer display on non-adept weapons.
-* Changes to page loading which may improve speed slightly.
 * Added toggle to display raw values for stat bonuses.
 * Preferences ("Extras" area) now save across page load.
 * Add show/hide button for UI elements on weapon panel to allow viewing weapon preview.
