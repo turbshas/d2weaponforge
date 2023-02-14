@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import OptionButton from '@/components/Common/OptionButton.vue';
-import { selectionService } from '@/data/selectionService';
-import type { IMasterwork, IMod, IPerkOption, ISelectedGear, IWeapon } from '@/data/interfaces';
+import { selectionService } from '@/data/services';
+import type { ISelectedGear } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import BuilderSection from '../../../Common/BuilderSection.vue';
 import AddToComparisons from './AddToComparisons.vue';
@@ -16,6 +16,7 @@ const props = defineProps<{
 
 const hideRetiredText = computed(() => selectionService.hideRetiredPerks ? "Active" : "Inactive");
 const showCraftedBonusText = computed(() => selectionService.showCraftedBonus ? "Active" : "Inactive");
+const rawStatValuesText = computed(() => selectionService.rawStatValues ? "Active" : "Inactive");
 
 const weapon = computed(() => props.selectedGear.weapon.value);
 const selectedPerks = computed(() => props.selectedGear.perkOptionsList.value)
@@ -29,6 +30,10 @@ function onHideRetiredClicked() {
 function onShowCraftedBonusClicked() {
     selectionService.showCraftedBonus = !selectionService.showCraftedBonus;
 }
+
+function onRawStatValuesClicked() {
+    selectionService.rawStatValues = !selectionService.rawStatValues;
+}
 </script>
 
 <template>
@@ -41,8 +46,11 @@ function onShowCraftedBonusClicked() {
         <ExtrasListItem label="Show Crafted Bonus" v-if="!weapon?.isAdept">
             <OptionButton :text="showCraftedBonusText" :active="selectionService.showCraftedBonus" @click="onShowCraftedBonusClicked"></OptionButton>
         </ExtrasListItem>
+        <ExtrasListItem label="Raw Stat Bonus Values">
+            <OptionButton :text="rawStatValuesText" :active="selectionService.rawStatValues" @click="onRawStatValuesClicked"></OptionButton>
+        </ExtrasListItem>
         <AddToComparisons></AddToComparisons>
-        <DamageFalloff :weapon="weapon" :selected-perks="selectedPerks" :masterwork="masterwork" :mod="mod"></DamageFalloff>
+        <DamageFalloff :selected-gear="props.selectedGear"></DamageFalloff>
         <ReloadSpeed></ReloadSpeed>
     </BuilderSection>
 </template>

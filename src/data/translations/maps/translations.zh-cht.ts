@@ -1,6 +1,7 @@
 import type { IDataSearchStrings } from "../schemas";
 
 const translations: IDataSearchStrings = {
+    /*
     stats: {
         accuracy: "精準度",
         aimAssistance: "瞄準輔助",
@@ -26,6 +27,7 @@ const translations: IDataSearchStrings = {
         velocity: "子彈速度",
         zoom: "瞄準焦距",
     },
+    */
     misc: {
         adept: "精通",
         harrowed: "折磨",

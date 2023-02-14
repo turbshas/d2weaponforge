@@ -33,6 +33,7 @@ function getStatInfos(
         const scaling = scaledStats.find(scaled => scaled.statHash === s.statTypeHash);
 
         const statInfo: IStatInfo = {
+            index: statDef ? statDef.index : -1,
             statHash: s.statTypeHash,
             statName: displayProps ? displayProps.name : "",
             investmentValue: s.value,

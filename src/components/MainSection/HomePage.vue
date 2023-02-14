@@ -10,6 +10,23 @@ interface IChangelog {
 
 const changelogs = computed<IChangelog[]>(() => [
     {
+        version: "1.1.0",
+        date: "2023-02-13",
+        title: "Improve Page Load Times + Quality of Life",
+        description: "This change brings improvements to page load times as well as some quality of life changes"
+            + " such as preferences saving across refreshes, weapon flavor text tooltip, and hiding the weapon panel UI"
+            + " to view the weapon screenshot.",
+        changes: [
+            "Now displays weapon description/flavor text when hovering over weapon name/icon/type.",
+            "Adept mods no longer display on non-adept weapons.",
+            "Added toggle to display raw values for stat bonuses.",
+            "Preferences (\"Extras\" area) now save across page load.",
+            "Add show/hide button for UI elements on weapon panel to allow viewing weapon preview.",
+            "Convert stat lookups to use index instead of stat name - removes need for translating stat names.",
+            "Dramatically reduce bundle + asset size to improve page load time.",
+        ],
+    },
+    {
         version: "1.0.0",
         date: "2023-02-12",
         title: "The Big One",
@@ -48,6 +65,8 @@ const changelogs = computed<IChangelog[]>(() => [
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: 32px;
+    margin-bottom: auto;
     padding: 16px;
 
     font-size: 16px;

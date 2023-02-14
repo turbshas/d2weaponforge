@@ -1,5 +1,5 @@
 import type { DestinyManifest, DestinyManifestLanguage } from "bungie-api-ts/destiny2";
-import type { Destiny2GameData, ILanguageInfo } from "./interfaces";
+import type { Destiny2GameData, ILanguageInfo } from "../interfaces";
 
 interface ICachedManifest {
     /** Version specific to this app, and the data it expects from the cache. Not the Bungie manifest version. */
@@ -9,12 +9,19 @@ interface ICachedManifest {
     manifestData: Destiny2GameData;
 }
 
-const ManifestDatabaseName = "d2gunsmith_2_manifest_database";
-const ManifestObjectStoreName = "manifestObjectStore";
-const ManifestCacheKey = "d2gunsmith_2_destiny_manifest";
-const LanguageCacheKey = "d2gunsmith_2_language";
+interface IPreferences {
+    language: ILanguageInfo;
+    hideRetiredPerks: boolean;
+    showCraftedBonus: boolean;
+    rawStatValues: boolean;
+}
 
-class CacheService {
+const ManifestDatabaseName = "d2weaponforge_manifest_database";
+const ManifestObjectStoreName = "manifestObjectStore";
+const ManifestCacheKey = "d2weaponforge_destiny_manifest";
+const PreferencesCacheKey = "d2weaponforge_preferences";
+
+export class CacheService {
     private readonly dbPromise: Promise<IDBDatabase>;
 
     constructor() {
@@ -28,8 +35,8 @@ class CacheService {
     public getCachedManifest = () => this.getValue<ICachedManifest>(ManifestCacheKey);
     public setCachedManifest = async (cachedManifest: ICachedManifest) => this.setValue(ManifestCacheKey, cachedManifest);
 
-    public getLanguage = async () => this.getValue<ILanguageInfo>(LanguageCacheKey);
-    public setLanguage = async (language: ILanguageInfo) => this.setValue(LanguageCacheKey, language);
+    public getPreferences = async () => this.getValue<IPreferences>(PreferencesCacheKey);
+    public setPreferences = async (preferences: IPreferences) => { console.log("setting preferences", preferences); this.setValue(PreferencesCacheKey, preferences); }
 
     private getValue = async <T>(key: IDBValidKey | IDBKeyRange): Promise<T | undefined> => {
         const objectStore = await this.getObjectStore("readonly");
@@ -82,4 +89,3 @@ class CacheService {
         });
     }
 }
-export const cacheService = new CacheService();

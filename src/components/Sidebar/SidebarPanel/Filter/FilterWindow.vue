@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { destinyDataService } from "@/data/destinyDataService";
+import { destinyDataService } from "@/data/services";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
 import TierIcons from "@/assets/TierIcons";

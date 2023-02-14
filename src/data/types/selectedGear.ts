@@ -1,7 +1,7 @@
 import type { DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
 import type { IMasterwork, IMod, IModifiedStat, IPerk, IPerkBonus, IPerkOption, ISelectedGear, IWeapon, ISelectedPerkMap, PerkColumnNumber } from "../interfaces";
-import { selectionService } from "../selectionService";
+import { selectionService } from "../services";
 import { hashMapToArray } from "../util";
 
 export class SelectedGear implements ISelectedGear {
@@ -31,6 +31,7 @@ export class SelectedGear implements ISelectedGear {
             const bonusTotal = perk1Bonus + perk2Bonus + perk3Bonus + perk4Bonus + perk5Bonus;
 
             const statInfo: IModifiedStat = {
+                index: s.index,
                 statHash: s.statHash,
                 statDisplay: s.statDisplay,
                 statName: s.statName,
@@ -46,6 +47,7 @@ export class SelectedGear implements ISelectedGear {
             const baseDisplayValue = this.convertToDisplayValue(s.baseStat, s.statDisplay);
             const modifiedDisplayValue = this.convertToDisplayValue(s.modifiedStat, s.statDisplay);
             const statInfo: IModifiedStat = {
+                index: s.index,
                 statHash: s.statHash,
                 statName: s.statName,
                 statDisplay: s.statDisplay,
@@ -116,6 +118,7 @@ export class SelectedGear implements ISelectedGear {
         return this.weaponStats.value.map(s => {
             const masterworkModsBonus = this.masterworksModsBonusesMap.value[s.statHash] || 0;
             const statInfo: IModifiedStat = {
+                index: s.index,
                 statHash: s.statHash,
                 statDisplay: s.statDisplay,
                 statName: s.statName,

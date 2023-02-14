@@ -1,5 +1,18 @@
 # Changelog
 
+## **Improve Page Load Times + Quality of Life** [ *1.1.0* ] 2023-02-13
+This change brings improvements to page load times as well as some quality of life changes such as
+preferences saving across refreshes, weapon flavor text tooltip, and hiding the weapon panel UI
+to view the weapon screenshot.
+
+* Now displays weapon description/flavor text when hovering over weapon name/icon/type.
+* Adept mods no longer display on non-adept weapons.
+* Added toggle to display raw values for stat bonuses.
+* Preferences ("Extras" area) now save across page load.
+* Add show/hide button for UI elements on weapon panel to allow viewing weapon preview.
+* Convert stat lookups to use index instead of stat name - removes need for translating stat names.
+* Dramatically reduce bundle + asset size to improve page load time.
+
 ## **The Big One** [ *1.0.0* ] 2023-02-12
 Starting a changelog with version 1.0.0, and listing as many features as possible here as well.
 
@@ -10,7 +23,7 @@ Starting a changelog with version 1.0.0, and listing as many features as possibl
   * Selected filters do not clear after applying them.
 * Features unchanged from d2gunsmith:
   * Weapons:
-    * Displays all available stats on a given weapon along with any applied modifiers, coloured in red for net losses or green for net gains.
+    * Displays all available stats on a given weapon along with any applied modifiers, colored in red for net losses or green for net gains.
     * Selection of all 4 standard perks and origin perks, if applicable.
     * Selection of mods and display of their relevant stat bonuses.
     * Selection of any valid masterwork for a given weapon.

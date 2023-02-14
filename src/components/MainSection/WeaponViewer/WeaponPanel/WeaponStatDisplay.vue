@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DataSearchStrings } from '@/data/dataSearchStringService';
+import { DataSearchStrings } from '@/data/services';
 import { StatDisplayType, type IModifiedStat } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 
@@ -8,6 +8,7 @@ const props = defineProps<{
 }>();
 
 const recoilDirectionPieLabel = "Recoil Direction Angle Graphic";
+const index = computed(() => props.displayStat.index);
 const name = computed(() => props.displayStat.statName);
 const showStat = computed(() => !!props.displayStat.statDisplay);
 
@@ -23,7 +24,7 @@ const filledWidthPercent = computed(() => displayModifier.value > 0 ? baseDispla
 const statDisplayType = computed(() => {
     if (!name.value || !props.displayStat.statDisplay) return StatDisplayType.Bar;
     if (!props.displayStat.statDisplay.displayAsNumeric) return StatDisplayType.Bar;
-    return name.value === DataSearchStrings.Stats.RecoilDirection.value ? StatDisplayType.Angle : StatDisplayType.Number;
+    return index.value === DataSearchStrings.StatIndices.RecoilDirection ? StatDisplayType.Angle : StatDisplayType.Number;
 });
 const isBarDisplayType = computed(() => statDisplayType.value === StatDisplayType.Bar);
 const isAngleDisplayType = computed(() => statDisplayType.value === StatDisplayType.Angle);

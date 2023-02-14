@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { destinyDataService } from '@/data/destinyDataService';
+import { destinyDataService } from '@/data/services';
 import { computed, ref } from 'vue';
 import Tooltip from './Tooltip.vue';
 import ElementLabel from './ElementLabel.vue';
 import type { ICraftingInfo, IPerk, PerkColumnNumber } from '@/data/interfaces';
-import { selectionService } from '@/data/selectionService';
+import { selectionService } from '@/data/services';
 
 const props = defineProps<{
     perk: IPerk | undefined,
@@ -53,7 +53,7 @@ const tooltipTargetElement = computed(() => props.perk ? perkElement.value : nul
 const tooltipEffects = computed(() => "");
 const tooltipBonuses = computed(() => {
     const column = props.column;
-    if (!column) return perkBonuses.value;
+    if (!column || selectionService.rawStatValues) return perkBonuses.value;
     const convertedBonuses: { statName: string, value: number }[] = perkBonuses.value.map(b => {
         return {
             statName: b.statName,

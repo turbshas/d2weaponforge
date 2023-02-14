@@ -2,7 +2,7 @@ import FlagIcons from "@/assets/FlagIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import WeaponIcons from "@/assets/WeaponIcons";
 import { computed } from "vue";
-import { DataSearchStrings } from "./dataSearchStringService";
+import { DataSearchStrings } from "./services/dataSearchStringService";
 import type { IFilterButton, ILanguageInfo, IWeaponRangeValues } from "./interfaces";
 
 export const LanguageInfos = computed<ILanguageInfo[]>(() => [
@@ -22,16 +22,16 @@ export const LanguageInfos = computed<ILanguageInfo[]>(() => [
 ]);
 export const EnglishLanguageIndex = computed(() => LanguageInfos.value.findIndex(l => l.language === "en"));
 
-export const WeaponTraitIdMainStatMap = computed<{ [traitId: string]: string }>(() => {
+export const WeaponTraitIdMainStatMap = computed<{ [traitId: string]: number }>(() => {
     return {
-        [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.Stats.DrawTime.value,
-        [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.Stats.ChargeTime.value,
-        [DataSearchStrings.TraitIDs.LinearFusion]: DataSearchStrings.Stats.ChargeTime.value,
-        [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.Stats.Impact.value,
+        [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.StatIndices.DrawTime,
+        [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.StatIndices.ChargeTime,
+        [DataSearchStrings.TraitIDs.LinearFusion]: DataSearchStrings.StatIndices.ChargeTime,
+        [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.StatIndices.Impact,
     };
 });
 // All other weapons types use RPM.
-export const DefaultWeaponMainStat = computed(() => DataSearchStrings.Stats.Rpm.value);
+export const DefaultWeaponMainStat = computed(() => DataSearchStrings.StatIndices.Rpm);
 
 export const ValidPerkPlugCategories = computed(() => [
     DataSearchStrings.CategoryIDs.BarrelsPlug,

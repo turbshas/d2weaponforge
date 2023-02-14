@@ -32,6 +32,6 @@ export interface IMisc {
 }
 
 export interface IDataSearchStrings {
-    stats: IStats;
+    // stats: IStats;
     misc: IMisc;
 }

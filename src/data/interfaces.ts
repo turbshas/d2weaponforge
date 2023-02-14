@@ -14,8 +14,6 @@ import type {
     DestinyStatGroupDefinition
 } from "bungie-api-ts/destiny2";
 import type { ComputedRef, Ref } from "vue";
-import type { PerkOption } from "./types/perkOption";
-import type { Weapon } from "./types/weapon";
 
 export type UsedDestinyManifestSlice = DestinyManifestSlice<(
     "DestinyDamageTypeDefinition"
@@ -124,7 +122,7 @@ export type ISelectedPerkMap<T> = { [column in keyof PerkColumnNumber as PerkCol
 
 export interface ISelectedGear {
     weapon: Ref<IWeapon | undefined>;
-    perkOptionsMap: Ref<ISelectedPerkMap<T>>;
+    perkOptionsMap: Ref<ISelectedPerkMap<IPerkOption>>;
     perkOptionsList: ComputedRef<(IPerkOption | undefined)[]>;
     masterwork: Ref<IMasterwork | undefined>;
     mod: Ref<IMod | undefined>;
@@ -134,6 +132,7 @@ export interface ISelectedGear {
 }
 
 export interface IModifiedStat {
+    index: number;
     statHash: number;
     statName: string;
     statDisplay: DestinyStatDisplayDefinition | undefined;
@@ -176,6 +175,7 @@ export interface IStatBlock {
 }
 
 export interface IStatInfo {
+    index: number;
     statHash: number;
     statName: string;
     investmentValue: number;

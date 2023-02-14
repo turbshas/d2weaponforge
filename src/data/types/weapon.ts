@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { WeaponTypeTraitToRegex } from "../constants";
-import { DataSearchStrings } from "../dataSearchStringService";
+import { DataSearchStrings } from "../services/dataSearchStringService";
 import { ItemTierIndex, type IWeapon } from "../interfaces";
 import { Archetype } from "./archetype";
 import { DamageType } from "./damageType";
@@ -42,7 +42,7 @@ export class Weapon implements IWeapon {
         this.index = weaponItem.index;
         this.hash = weaponItem.hash;
         this.name = weaponItem.displayProperties.name;
-        this.description = weaponItem.displayProperties.description;
+        this.description = weaponItem.flavorText || weaponItem.displayProperties.description;
         this.itemTypeDisplayName = weaponItem.itemTypeDisplayName;
         this.screenshotUrl = weaponItem.screenshot;
         this.iconUrl = weaponItem.displayProperties.icon;
@@ -66,7 +66,10 @@ export class Weapon implements IWeapon {
         this.perks = resolvedWeaponSockets.perks;
         this.curated = resolvedWeaponSockets.curated;
         this.masterworks = resolvedWeaponSockets.masterworks.map(mw => new Masterwork(mw, statGroup, manifest));
-        this.mods = resolvedWeaponSockets.mods.map(mod => new Mod(mod, manifest));
+        const baseMods = resolvedWeaponSockets.mods.map(mod => new Mod(mod, manifest));
+        this.mods = this.isAdept
+            ? baseMods.concat(resolvedWeaponSockets.adeptMods.map(mod => new Mod(mod, manifest)))
+            : baseMods;
 
         // This is gross, but meh it seems to work.
         const isAutoTraitId = this.traitId === DataSearchStrings.TraitIDs.AutoRifle;
