@@ -31,6 +31,7 @@ Preferred order of work:
   - what should stat arrows display? green only if highest value in list of weapons being compared?
 
 Unsure about order:
+- selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
 - convert as many ID comparisons, etc. as possible to hashes
 - convert collections lists to enum instead of magic numbers
 - convert rangefinder perk name to perk hash, as those are apparently stable

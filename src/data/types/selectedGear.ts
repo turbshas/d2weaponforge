@@ -71,6 +71,7 @@ export class SelectedGear implements ISelectedGear {
 
     private readonly weaponStats = computed(() => this.weapon.value ? this.weapon.value.statBlock.statInfos : []);
     private readonly isWeaponAdept = computed(() => !!this.weapon.value && this.weapon.value.isAdept);
+    private readonly isWeaponCraftable = computed(() => !!this.weapon.value && this.weapon.value.isCraftable);
     private readonly perkMap = computed(() => {
         const map:  ISelectedPerkMap<IPerk> = {
             1: this.getPerkFromOption(this.perkOptionsMap.value[1]),
@@ -145,7 +146,7 @@ export class SelectedGear implements ISelectedGear {
     private readonly getBonusesForPerk = (perk: IPerk | undefined) => {
         if (!perk) return [];
         const bonuses = perk.mainBonuses;
-        return (selectionService.showCraftedBonus || this.isWeaponAdept.value)
+        return ((this.isWeaponCraftable.value && selectionService.showCraftedBonus) || this.isWeaponAdept.value)
             ? bonuses.concat(perk.adeptOrCraftedBonuses)
             : bonuses;
     }

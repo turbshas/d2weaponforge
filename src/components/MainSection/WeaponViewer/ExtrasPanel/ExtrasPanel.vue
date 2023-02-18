@@ -19,9 +19,9 @@ const showCraftedBonusText = computed(() => selectionService.showCraftedBonus ? 
 const rawStatValuesText = computed(() => selectionService.rawStatValues ? "Active" : "Inactive");
 
 const weapon = computed(() => props.selectedGear.weapon.value);
+const isWeaponAdept = computed(() => !!weapon.value && weapon.value.isAdept);
+const isWeaponCraftable = computed(() => !!weapon.value && weapon.value.isCraftable);
 const selectedPerks = computed(() => props.selectedGear.perkOptionsList.value)
-const masterwork = computed(() => props.selectedGear.masterwork.value);
-const mod = computed(() => props.selectedGear.mod.value);
 
 function onHideRetiredClicked() {
     selectionService.hideRetiredPerks = !selectionService.hideRetiredPerks;
@@ -43,7 +43,7 @@ function onRawStatValuesClicked() {
             <OptionButton :text="hideRetiredText" :active="selectionService.hideRetiredPerks" @click="onHideRetiredClicked"></OptionButton>
         </ExtrasListItem>
         <!-- TODO: add tooltip here that explains what this means - +3 stat bonus for lvl 10 crafted with enhanced intrinsic -->
-        <ExtrasListItem label="Show Crafted Bonus" v-if="!weapon?.isAdept">
+        <ExtrasListItem label="Show Crafted Bonus" v-if="!isWeaponAdept && isWeaponCraftable">
             <OptionButton :text="showCraftedBonusText" :active="selectionService.showCraftedBonus" @click="onShowCraftedBonusClicked"></OptionButton>
         </ExtrasListItem>
         <ExtrasListItem label="Raw Stat Bonus Values">

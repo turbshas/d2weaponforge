@@ -161,6 +161,7 @@ export interface IWeapon {
     iconUrl: string;
     iconWatermarkUrl: string;
     isAdept: boolean;
+    isCraftable: boolean;
     isSunset: boolean;
     tierTypeIndex: number;
     traitId: string;

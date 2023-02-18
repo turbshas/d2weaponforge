@@ -21,6 +21,7 @@ export class Weapon implements IWeapon {
     public readonly iconUrl: string;
     public readonly iconWatermarkUrl: string;
     public readonly isAdept: boolean;
+    public readonly isCraftable: boolean;
     public readonly isSunset: boolean;
     public readonly tierTypeIndex: number;
 
@@ -79,9 +80,7 @@ export class Weapon implements IWeapon {
         }
 
         this.seasonHash = weaponItem.seasonHash;
-        if (this.name === "Blowout") {
-            console.log("mods are", resolvedWeaponSockets.mods);
-        }
+        this.isCraftable = this.perks.perkColumns.some(c => c.perks.some(p => !!p.enhancedPerk));
     }
 }
 

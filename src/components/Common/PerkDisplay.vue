@@ -36,7 +36,7 @@ const perkWatermark = computed(() => {
 const perkBonuses = computed(() => {
     if (!props.perk) return [];
     const bonuses = props.perk.mainBonuses;
-    return (selectionService.showCraftedBonus || props.isAdept)
+    return ((props.enhanced && selectionService.showCraftedBonus) || props.isAdept)
         ? bonuses.concat(props.perk.adeptOrCraftedBonuses)
         : bonuses;
 });
