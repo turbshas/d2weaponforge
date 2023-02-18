@@ -5,6 +5,9 @@ Description TBD
 
 * Fixed mods not having descriptions.
 * Fixed mods always showing raw stat values.
+* Added Clear Filters button.
+* Clear filters on search text change.
+* Clear search text whenever filters are applied.
 
 ## **Improve Page Load Times + Quality of Life** [ *1.1.0* ] 2023-02-13
 This change brings improvements to page load times as well as some quality of life changes such as
