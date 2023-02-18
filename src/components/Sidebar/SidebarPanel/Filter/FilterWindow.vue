@@ -20,6 +20,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     (e: "filtersApplied", applied: IAppliedFilters): void,
+    (e: "filtersCleared"): void,
     (e: "filterToggled", categoryName: FilterCategory, filterText: string, active: boolean): void,
 }>();
 
@@ -193,6 +194,10 @@ function includeSunsetToggled() {
     includeSunsetWeapons.value = !includeSunsetWeapons.value;
 }
 
+function onClearFilters() {
+    emits("filtersCleared");
+}
+
 function onApplyFilters() {
     const appliedFilters: IAppliedFilters = {
         includeSunsetWeapons: includeSunsetWeapons.value,
@@ -219,7 +224,10 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
     <div class="filters">
         <div class="header">
             <span class="title">Filters</span>
-            <OptionButton text="Apply Filters" :active="true" @click="onApplyFilters"></OptionButton>
+            <div class="actions">
+                <OptionButton text="Clear Filters" :active="false" @click="onClearFilters"></OptionButton>
+                <OptionButton text="Apply Filters" :active="true" @click="onApplyFilters"></OptionButton>
+            </div>
         </div>
 
         <CollapsibleSection name="Perks">
@@ -284,7 +292,7 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .filters {
     overflow-x: hidden;
     overflow-y: scroll;
@@ -302,14 +310,20 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-}
 
-.title {
-    font-size: 19.2px;
-    font-weight: 600;
-    line-height: 19.2px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    .title {
+        font-size: 19.2px;
+        font-weight: 600;
+        line-height: 19.2px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .actions {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+    }
 }
 
 .perk-search-wrapper {

@@ -1,7 +1,4 @@
 Preferred order of work:
-6) Clear filters button, clear filter when search changes?
-  - button in filter panel
-  - also, button in search bar that can be clicked to clear filters
 7) sort weapon filter buttons
 8) hide/set to false "show crafted bonus" when weapon cannot be crafted
 10) virtual scrolling on displayed weapons
@@ -35,6 +32,11 @@ Preferred order of work:
   - what should stat arrows display? green only if highest value in list of weapons being compared?
 
 Unsure about order:
+- convert as many ID comparisons, etc. as possible to hashes
+- convert collections lists to enum instead of magic numbers
+- convert rangefinder perk name to perk hash, as those are apparently stable
+- convert Item Tier Index to hash, as those are stable
+- better solution for dealing with enums from bungie-api-ts and isolatedModules?
 - load background image after manifest has loaded to ensure it doesn't delay page load on low speed networks
   - the home page loads until the background fills in, then it transitions to the weapon page
 - some perks showing up twice (e.g. vision of confluence, zaouli's bane)

@@ -91,6 +91,7 @@ const changelogs = computed<IChangelog[]>(() => [
     position: absolute;
     top: 16px;
     right: 16px;
+    z-index: 1;
 }
 
 .header {
