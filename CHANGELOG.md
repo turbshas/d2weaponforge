@@ -8,6 +8,8 @@ Description TBD
 * Added Clear Filters button.
 * Clear filters on search text change.
 * Clear search text whenever filters are applied.
+* Sort weapon filters by name.
+* Sort weapon archetype filters by RPM/charge time if applicable.
 
 ## **Improve Page Load Times + Quality of Life** [ *1.1.0* ] 2023-02-13
 This change brings improvements to page load times as well as some quality of life changes such as

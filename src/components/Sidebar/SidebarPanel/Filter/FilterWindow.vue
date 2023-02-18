@@ -46,13 +46,15 @@ const weaponCategoryArchetypeMap = computed(() => {
     const archetypeFilters: { [weaponType: string]: IArchetypeFilter[] } = {};
     
     for (const weaponType of destinyDataService.weaponTypes) {
-        archetypeFilters[weaponType.traitId] = [];
+        const archetypeFilterList: IArchetypeFilter[] = [];
 
         for (const archetype of weaponType.archetypes) {
-            const rpmTextPrefix = weaponType.showRpm ? `${archetype.rpm} ${weaponType.rpmUnits} // ` : "";
+            const rpmPrefix = weaponType.showRpm ? `${archetype.rpm} ${weaponType.rpmUnits} // ` : "";
 
-            archetypeFilters[weaponType.traitId].push({
-                text: `${rpmTextPrefix}${archetype.name}`,
+            archetypeFilterList.push({
+                rpm: archetype.rpm,
+                name: archetype.name,
+                text: `${rpmPrefix}${archetype.name}`,
                 filter: (item: IWeapon) => {
                     if (!item.archetype) return false;
                     const name = item.archetype.name;
@@ -64,19 +66,22 @@ const weaponCategoryArchetypeMap = computed(() => {
                 },
             });
         }
+
+        archetypeFilterList.sort((a, b) => a.rpm - b.rpm);
+        archetypeFilters[weaponType.weaponCategoryRegex] = archetypeFilterList;
     }
 
     return archetypeFilters;
 });
 
 const weaponCategoryFilters = computed(() => {
-    return destinyDataService.weaponTypes
+    const weaponFilters = destinyDataService.weaponTypes
         .filter(t => t.traitId && WeaponCategoryIconMap.value[t.weaponCategoryRegex])
         .map(t => {
             const filter: IWeaponFilterButton = {
                 text: t.weaponTypeName,
                 iconUrl: WeaponCategoryIconMap.value[t.weaponCategoryRegex],
-                archetypes: weaponCategoryArchetypeMap.value[t.traitId],
+                archetypes: weaponCategoryArchetypeMap.value[t.weaponCategoryRegex],
                 filter: (item: IWeapon) => {
                     if (item.weaponCategoryRegex !== t.weaponCategoryRegex) return false;
                     const activeArchetypeFilters = filter.archetypes.filter(a => props.activeFilters["Archetype"][a.text]);
@@ -89,6 +94,8 @@ const weaponCategoryFilters = computed(() => {
             };
             return filter;
         });
+    weaponFilters.sort((a, b) => a.text.localeCompare(b.text));
+    return weaponFilters;
 });
 
 const collectionCategoryFilters = computed(() => {

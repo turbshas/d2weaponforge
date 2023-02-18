@@ -81,6 +81,10 @@ export interface IFilterButton {
 }
 
 export interface IArchetypeFilter {
+    /** Whatever constitutes as an "RPM" for this weapon type. (Fusion are charge time, bows are draw time, etc.) */
+    rpm: number;
+    /** The name of the archetype. */
+    name: string;
     text: string;
     filter: FilterPredicate;
 }

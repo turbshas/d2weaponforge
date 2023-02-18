@@ -1,5 +1,4 @@
 Preferred order of work:
-7) sort weapon filter buttons
 8) hide/set to false "show crafted bonus" when weapon cannot be crafted
 10) virtual scrolling on displayed weapons
   - possible to load weapons into the list over time (as they are processed) instead of all at once?
