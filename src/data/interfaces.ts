@@ -126,6 +126,9 @@ export interface Destiny2GameData {
     plugSetLookup: { [hash: number]: DestinyPlugSetDefinition };
     socketCategoryLookup: { [hash: number]: DestinySocketCategoryDefinition };
     socketTypeLookup: { [hash: number]: DestinySocketTypeDefinition };
+
+    perkInsights: IPerkInsightCollection;
+    collectionsLists: ICollectionsLists;
 }
 
 export type PerkColumnNumber = 1 | 2 | 3 | 4 | 5;
@@ -276,7 +279,7 @@ export interface IWeaponRangeValues {
     zoomAdjustment: number;
 }
 
-export enum PerkHashes {
+export enum PerkHash {
     Adagio = 3673922083,
     AdagioEnhanced = 2889515627,
     AdaptiveMunitions = 1048183818,
@@ -504,7 +507,7 @@ export enum PerkHashes {
     ZenMoment = 2387244414,
 }
 
-export enum ModHashes {
+export enum ModHash {
     RampageSpec = 666440382,
     MajorSpec = 984527513,
     SurroundedSpec = 1471333428,
@@ -515,8 +518,8 @@ export enum ModHashes {
 }
 
 export interface IPerkInsightCollection {
-    weaponPerks: IPerkInsights<PerkHashes>;
-    weaponMods: IPerkInsights<ModHashes>;
+    weaponPerks: IPerkInsights<PerkHash>;
+    weaponMods: IPerkInsights<ModHash>;
 }
 
 export type IPerkInsights<T extends string | number | symbol> = {
@@ -527,44 +530,67 @@ export interface IPerkInsight {
     description: string;
 }
 
-export enum Collections {
-    WorldCurrent,
-    WorldOld,
-    VanguardOps,
-    Crucible,
-    Gambit,
-    IronBanner,
-    TrialsOfOsiris,
-    Nightfall,
-    Ikelos,
-    KingsFall,
-    Duality,
-    Opulent,
-    VowOfTheDisciple,
-    ThroneWorld,
-    Anniversary,
-    VaultOfGlass,
-    Europa,
-    DeepStoneCrypt,
-    Prophecy,
-    AltarsOfSorrow,
-    PitOfHeresy,
-    Dreambane,
-    GardenOfSalvation,
-    TheDreamingCity,
-    LastWish,
-    Seraph,
-    Plunder,
-    Haunted,
-    Risen,
-    Lost,
-    Splicer,
-    Chosen,
-    Hunt,
-    Arrivals,
-    Worthy,
+export enum Collection {
+    WorldCurrent = "WorldCurrent",
+    WorldOld = "WorldOld",
+
+    VanguardOps = "VanguardOps",
+    Crucible = "Crucible",
+    Gambit = "Gambit",
+    IronBanner = "IronBanner",
+    TrialsOfOsiris = "TrialsOfOsiris",
+    Nightfall = "Nightfall",
+
+    Ikelos = "Ikelos",
+
+    KingsFall = "KingsFall",
+
+    Duality = "Duality",
+    Opulent = "Opulent",
+
+    VowOfTheDisciple = "VowOfTheDisciple",
+    ThroneWorld = "ThroneWorld",
+
+    Anniversary = "Anniversary",
+
+    VaultOfGlass = "VaultOfGlass",
+
+    Europa = "Europa",
+    DeepStoneCrypt = "DeepStoneCrypt",
+    Prophecy = "Prophecy",
+
+    AltarsOfSorrow = "AltarsOfSorrow",
+    PitOfHeresy = "PitOfHeresy",
+    Dreambane = "Dreambane",
+    GardenOfSalvation = "GardenOfSalvation",
+
+    TheDreamingCity = "TheDreamingCity",
+    LastWish = "LastWish",
+
+    Seraph = "Seraph",
+    Plunder = "Plunder",
+    Haunted = "Haunted",
+    Risen = "Risen",
+    Lost = "Lost",
+    Splicer = "Splicer",
+    Chosen = "Chosen",
+    Hunt = "Hunt",
+    Arrivals = "Arrivals",
+    Worthy = "Worthy",
+
+    Dawn = "Dawn",
+    Undying = "Undying",
+    Opulence = "Opulence",
+    Drifter = "Drifter",
+    Forge = "Forge",
+    Outlaw = "Outlaw",
+    Warmind = "Warmind",
+    CurseOfOsiris = "CurseOfOsiris",
+    TheRedWar = "TheRedWar",
 }
 
 export type ICollectionsLists = {
-    [key in Collections]: number[];
+    [key in Collection]: number[];
 }
+
+export type SeasonNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 |18 | 19;

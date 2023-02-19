@@ -3,10 +3,10 @@ import { destinyDataService } from "@/data/services";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
 import TierIcons from "@/assets/TierIcons";
-import type { FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton } from "@/data/interfaces";
+import type { Collection, FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton, SeasonNumber } from "@/data/interfaces";
 import OptionButton from "@/components/Common/OptionButton.vue";
 import ElementLabel from "@/components/Common/ElementLabel.vue";
-import { OriginFilters, SeasonIconMap, WeaponCategoryIconMap } from "@/data/constants";
+import { OriginFilterInfos, SeasonIconMap, SeasonToCollectionMap, WeaponCategoryIconMap } from "@/data/constants";
 
 interface ICategoryInfo {
     name: FilterCategory;
@@ -98,26 +98,47 @@ const weaponCategoryFilters = computed(() => {
     return weaponFilters;
 });
 
-const collectionCategoryFilters = computed(() => {
-    // Just seasons right now, TODO: add other collections
-    const collections = OriginFilters.value;
-    const seasonCollections = destinyDataService.seasons
+const originFilters = computed(() => {
+    return OriginFilterInfos.value.map(info => {
+        const collectionsMap = getCollectionsWeaponMap(info.collection);
+
+        const filter: IFilterButton = {
+            text: info.text,
+            iconUrl: info.iconUrl,
+            filter: (weapon: IWeapon) => !!collectionsMap[weapon.hash],
+        }
+        return filter;
+    });
+});
+
+const seasonFilters = computed(() => {
+    // The list of seasons seems to include the upcoming, yet-to-be-released one.
+    const currentDate = new Date(Date.now());
+
+    return destinyDataService.seasons
         .filter(s => includeSunsetWeapons.value || !destinyDataService.isSeasonSunset(s))
+        .filter(s => !s.startDate || (new Date(s.startDate) <= currentDate))
         .map(s => {
+            const seasonNumber = s.seasonNumber as SeasonNumber;
             const iconUrl = s.displayProperties.hasIcon
                 ? destinyDataService.getImageUrl(s.displayProperties.icon)
-                : SeasonIconMap.value[s.seasonNumber];
+                : (SeasonIconMap.value[seasonNumber] || "");
+            const collectionId = SeasonToCollectionMap.value[seasonNumber];
+            const collectionMap = getCollectionsWeaponMap(collectionId);
+
             const filter: IFilterButton = {
                 text: s.displayProperties.name || "The Red War",
                 iconUrl: iconUrl,
-                filter: (item: IWeapon) => {
-                    // TODO: this may not work for a lot of weapons, is there a better way to check?
-                    return item.seasonHash === s.hash;
-                },
+                filter: (item: IWeapon) => !!collectionMap[item.hash],
             };
             return filter;
         });
-    return collections.concat(seasonCollections);
+});
+
+const collectionCategoryFilters = computed(() => {
+    const originCollections = originFilters.value;
+    const seasonCollections = seasonFilters.value;
+    return originCollections.concat(seasonCollections);
 });
 
 const itemTierFilters = computed(() => {
@@ -156,7 +177,7 @@ const rarityFilterCategory = computed<ICategoryInfo>(() => {
 });
 
 const filterCategories = computed(() => {
-    return [damageTypeFilterCategory.value, weaponFilterCategory.value, /* collectionsFilterCategory.value, */ rarityFilterCategory.value];
+    return [damageTypeFilterCategory.value, weaponFilterCategory.value, collectionsFilterCategory.value, rarityFilterCategory.value];
 });
 
 const activeWeaponFilters = computed(() => {
@@ -224,6 +245,20 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
     return category.filters
         .filter(f => activeFilterMap[f.text])
         .map(f => f.filter);
+}
+
+function getCollectionsWeaponMap(collection: Collection) {
+    const collectionList = getCollectionsList(collection) || [];
+    const collectionsMap: { [weaponItemHash: number]: boolean | undefined } = {};
+    for (const item of collectionList) {
+        collectionsMap[item] = true;
+    }
+    return collectionsMap;
+}
+
+function getCollectionsList(collection: Collection) {
+    const lists = destinyDataService.collectionsLists;
+    return lists ? lists[collection] : undefined;
 }
 </script>
 

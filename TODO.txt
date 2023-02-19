@@ -1,6 +1,6 @@
 Preferred order of work:
-8) hide/set to false "show crafted bonus" when weapon cannot be crafted
-10) virtual scrolling on displayed weapons
+10) glossary/perk insights
+11) virtual scrolling on displayed weapons
   - possible to load weapons into the list over time (as they are processed) instead of all at once?
     - is this valuable at all? once processed, the indexed db has everything cached so the only slow down may be the DOM manipulation
   - array of 50 (probably?) container objects for weapon items
@@ -16,12 +16,12 @@ Preferred order of work:
   - only swap when required?
     - when there are too few elements (< 5?): below the view box when scrolling down, or above the view box when scrolling up
     - track number of containers above/below view box and swap when below threshold
-10) Perk filters
-11) Delay loading when searching, or maybe load in chunks, or load in the background if possible? 
-12) styling cleanup:
+12) Perk filters
+13) Delay loading when searching, or maybe load in chunks, or load in the background if possible? 
+14) styling cleanup:
   - put common values into variables in base.css
   - convert to using rem instead of px
-13) compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
+15) compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
   - ideas:
   - each weapon is 1 row
   - stats only display numbers
@@ -31,6 +31,8 @@ Preferred order of work:
   - what should stat arrows display? green only if highest value in list of weapons being compared?
 
 Unsure about order:
+- for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
+- add icons, collections for seasons before season of worthy
 - selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
 - convert as many ID comparisons, etc. as possible to hashes
 - convert collections lists to enum instead of magic numbers

@@ -29,8 +29,6 @@ export class CacheService {
     }
 
     // TODO: support caching settings e.g. language, show crafted bonus, etc.
-    // TODO: use DB or local storage for settings?
-    // TODO: open DB in constructor?
     // TODO: when to close DB?
     public getCachedManifest = () => this.getValue<ICachedManifest>(ManifestCacheKey);
     public setCachedManifest = async (cachedManifest: ICachedManifest) => this.setValue(ManifestCacheKey, cachedManifest);

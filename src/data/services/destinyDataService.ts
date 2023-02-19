@@ -42,6 +42,14 @@ export class DestinyDataService {
         return this.gameData ? this.gameData.statsLookup : [];
     }
 
+    public get perkInsights() {
+        return this.gameData ? this.gameData.perkInsights : undefined;
+    }
+
+    public get collectionsLists() {
+        return this.gameData ? this.gameData.collectionsLists : undefined;
+    }
+
     public initialize = async (language: ILanguageInfo | undefined) => {
         if (this.initialized) return;
 
@@ -141,7 +149,6 @@ export class DestinyDataService {
         const start = Date.now();
         const gameData = await this.destinyApiService.retrieveManifest(language ? language.language : "en");
         const end = Date.now();
-        const stats = hashMapToArray(gameData.statsLookup);
         console.log("loading manifest took", end - start);
         console.log(gameData);
 

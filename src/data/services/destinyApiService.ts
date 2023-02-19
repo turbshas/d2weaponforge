@@ -1,16 +1,15 @@
-import { getDestinyManifest, getDestinyManifestSlice, type DestinyManifestLanguage } from "bungie-api-ts/destiny2";
+import { getDestinyManifest, getDestinyManifestSlice, type DestinyManifest, type DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import type { Destiny2GameData } from "../interfaces";
-import type { Weapon } from "../types/weapon";
+import type { Destiny2GameData, IWeapon, UsedDestinyManifestSlice } from "../interfaces";
 
-const CurrentCachedManifestVersion = 3;
+const CurrentCachedManifestVersion = 4;
 
 export class DestinyApiService {
     constructor(private readonly cacheService: CacheService) { }
 
-    public retrieveManifest = async (language: DestinyManifestLanguage) => {
+    public readonly retrieveManifest = async (language: DestinyManifestLanguage) => {
         DataSearchStrings.setLanguage(language);
 
         // Get manifest metadata
@@ -34,9 +33,21 @@ export class DestinyApiService {
         }
         // */
 
+        const gameData = await this.getGameDataFromApi(manifestInfo.Response, language);
+
+        this.cacheService.setCachedManifest({
+            version: CurrentCachedManifestVersion,
+            language: language,
+            manifestInfo: manifestInfo.Response,
+            manifestData: gameData,
+        }).catch(err => console.error("Failed to cache manifest.", err));
+        return gameData;
+    }
+    
+    private readonly getGameDataFromApi = async (manifestInfo: DestinyManifest, language: DestinyManifestLanguage) => {
         // Get manifest slices we care about
         const manifestSlice = await getDestinyManifestSlice(this.makeRequest, {
-            destinyManifest: manifestInfo.Response,
+            destinyManifest: manifestInfo,
             language: language,
             tableNames: [
                 "DestinyDamageTypeDefinition",
@@ -56,11 +67,11 @@ export class DestinyApiService {
 
         console.log(manifestSlice);
 
-        const manifestProcessorImport = await import("../destinyManifestProcessor");
-        const manifestProcessor = new manifestProcessorImport.DestinyManifestProcessor(manifestSlice);
+        const promises = [this.getManifestProcessor(manifestSlice), this.getPerkInsightCollection(), this.getCollectionsLists()] as const;
+        const [manifestProcessor, perkInsights, collectionsLists] = await Promise.all(promises);
 
         const weapons = manifestProcessor.weapons;
-        const weaponsLookup: { [weaponItemHash: number]: Weapon } = {};
+        const weaponsLookup: { [weaponItemHash: number]: IWeapon } = {};
         for (const weapon of weapons) {
             weaponsLookup[weapon.hash] = weapon;
         }
@@ -85,18 +96,29 @@ export class DestinyApiService {
             plugSetLookup: manifestProcessor.plugSetLookup,
             socketCategoryLookup: manifestProcessor.socketCategoryLookup,
             socketTypeLookup: manifestProcessor.socketTypeLookup,
-        };
 
-        this.cacheService.setCachedManifest({
-            version: CurrentCachedManifestVersion,
-            language: language,
-            manifestInfo: manifestInfo.Response,
-            manifestData: gameData,
-        }).catch(err => console.error("Failed to cache manifest.", err));
+            perkInsights: perkInsights,
+            collectionsLists: collectionsLists,
+        };
         return gameData;
     }
 
-    private makeRequest = async (config: HttpClientConfig) => {
+    private readonly getManifestProcessor = async (manifest: UsedDestinyManifestSlice) => {
+        const manifestProcessorImport = await import("../destinyManifestProcessor");
+        return new manifestProcessorImport.DestinyManifestProcessor(manifest);
+    }
+
+    private readonly getPerkInsightCollection = async () => {
+        const perkInsightImport = await import("../curatedData/PerkInsights");
+        return perkInsightImport.default;
+    }
+
+    private readonly getCollectionsLists = async () => {
+        const collectionsListsImport = await import("../curatedData/CollectionsLists");
+        return collectionsListsImport.default;
+    }
+
+    private readonly makeRequest = async (config: HttpClientConfig) => {
         const query = !config.params ? "" : Object.keys(config.params)
             .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(config.params[k])}`)
             .join("&");
