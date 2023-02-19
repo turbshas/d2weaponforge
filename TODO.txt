@@ -31,6 +31,11 @@ Preferred order of work:
   - what should stat arrows display? green only if highest value in list of weapons being compared?
 
 Unsure about order:
+- more accessibility changes:
+  - keyboard arrow key/page up/page down navigation
+  - rework <div> usage into semantic elements
+    - https://www.freecodecamp.org/news/semantic-html-alternatives-to-using-divs/
+    - https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 - Move constants into class/interface, add Destiny2GameData as a property to be cached (hopefully reduce bundle size)
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
 - add icons, collections for seasons before season of worthy
