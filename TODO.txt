@@ -31,6 +31,7 @@ Preferred order of work:
   - what should stat arrows display? green only if highest value in list of weapons being compared?
 
 Unsure about order:
+- Move constants into class/interface, add Destiny2GameData as a property to be cached (hopefully reduce bundle size)
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
 - add icons, collections for seasons before season of worthy
 - selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
@@ -57,9 +58,10 @@ Unsure about order:
 - reload speed calculator
 - damage fall off calculator for the remaining weapon types
 - exotic catalyst support
-- filters should probably reset when the search text changes
 
 Research:
+- make perk insights async loading - load when glossary is selected OR a weapon is selected?
+- look into using the indexed DB as a proper DB - object store for each property on Destiny2GameData. see if improves read times
 - sandbox perks - do they have any info we could want for things other than mods?
 - if possible, some feedback from the URL -> weapon list so that the weapon in the URL gets loaded first?
 - hashes for weapons do actually seem to be the same across languages... is that something I can rely on?

@@ -523,7 +523,7 @@ export interface IPerkInsightCollection {
 }
 
 export type IPerkInsights<T extends string | number | symbol> = {
-    [key in T]: IPerkInsight;
+    [key in T]: IPerkInsight | undefined;
 };
 
 export interface IPerkInsight {

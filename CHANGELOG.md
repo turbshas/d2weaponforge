@@ -12,6 +12,7 @@ Description TBD
 * Sort weapon archetype filters by RPM/charge time if applicable.
 * Show Crafted bonus option now hidden for non-crafted weapons.
 * Added filters for seasonal weapons and various other collections (seasons prior to Season of Worthy not yet implemented).
+* Insights/community info on perks added to tooltips for perks and mods.
 
 ## **Improve Page Load Times + Quality of Life** [ *1.1.0* ] 2023-02-13
 This change brings improvements to page load times as well as some quality of life changes such as

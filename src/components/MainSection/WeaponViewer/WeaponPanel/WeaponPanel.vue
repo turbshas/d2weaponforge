@@ -62,6 +62,7 @@ function onPerkClicked(column: PerkColumnNumber) {
                 :crafting-info="undefined"
                 :effect="null"
                 :bonuses="[]"
+                :enhanced-bonuses="[]"
             ></Tooltip>
         </div>
         <WeaponStatBlock

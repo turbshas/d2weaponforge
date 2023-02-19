@@ -6,13 +6,10 @@ import type { IArchetype, ICraftingInfo, IMasterwork, IMod, IPerk, PerkColumnNum
 
 // Remove this if I refactor this component
 interface ISelectedPerkDisplay {
-    perk: IPerk | undefined;
+    perkOption: IPerkOption | undefined;
     column: PerkColumnNumber | undefined,
-    craftingInfo: ICraftingInfo | undefined;
-    enhanced: boolean;
     fullSize: boolean;
     hideHover: boolean;
-    onPerkClicked: () => void;
 }
 
 const props = defineProps<{
@@ -30,52 +27,76 @@ const emits = defineEmits<{
 const backgroundUrl = computed(() => PerkPanelBackground);
 
 const perks = computed(() => {
-    const perkOption3 = props.selectedPerks[3];
-    const perk3 = (perkOption3?.useEnhanced) ? perkOption3.enhancedPerk : (perkOption3?.perk);
-    const perkOption4 = props.selectedPerks[4];
-    const perk4 = (perkOption4?.useEnhanced) ? perkOption4.enhancedPerk : (perkOption4?.perk);
-
     const perkList: ISelectedPerkDisplay[] = [
-        { perk: props.intrinsic, column: undefined, craftingInfo: undefined, fullSize: true,  hideHover: true,  enhanced: false, onPerkClicked: () => {}, },
-        { perk: props.selectedPerks[1]?.perk, column: 1, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
-        { perk: props.selectedPerks[2]?.perk, column: 2, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, },
-        { perk: perk3, column: 3, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: !!(perkOption3?.useEnhanced), onPerkClicked: () => onPerkClicked(3), },
-        { perk: perk4, column: 4, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: !!(perkOption4?.useEnhanced), onPerkClicked: () => onPerkClicked(4), },
+        { perkOption: getPerkOptionFromPerkLike(props.intrinsic), column: undefined, fullSize: true,  hideHover: true, },
+        { perkOption: props.selectedPerks[1], column: 1, fullSize: false, hideHover: false, },
+        { perkOption: props.selectedPerks[2], column: 2, fullSize: false, hideHover: false, },
+        { perkOption: props.selectedPerks[3], column: 3, fullSize: false, hideHover: false, },
+        { perkOption: props.selectedPerks[4], column: 4, fullSize: false, hideHover: false, },
     ];
     const originPerk = props.selectedPerks[5];
     if (originPerk) {
-        perkList.push({ perk: originPerk.perk, column: 5, craftingInfo: undefined, fullSize: false, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+        perkList.push({ perkOption: originPerk, column: 5, fullSize: false, hideHover: false, });
     }
     if (props.mod) {
-        perkList.push({ perk: props.mod, column: undefined, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+        perkList.push({ perkOption: getPerkOptionFromPerkLike(props.mod), column: undefined, fullSize: true, hideHover: false, });
     }
     if (props.masterwork) {
-        perkList.push({ perk: props.masterwork, column: undefined, craftingInfo: undefined, fullSize: true, hideHover: false, enhanced: false, onPerkClicked: () => {}, });
+        perkList.push({ perkOption: getPerkOptionFromPerkLike(props.masterwork), column: undefined, fullSize: true, hideHover: false, });
     }
     return perkList;
 });
 
-function onPerkClicked(column: PerkColumnNumber) {
-    emits("perkClicked", column);
+function getPerkOptionFromPerkLike(perk: IPerk | undefined) {
+    if (!perk) return undefined;
+    const perkOption: IPerkOption = {
+        perk: perk,
+        enhancedPerk: undefined,
+        craftingInfo: undefined,
+        currentlyCanRoll: true,
+        useEnhanced: false,
+    };
+    return perkOption;
+}
+
+function getPerkOptionHash(perkOption: IPerkOption | undefined) {
+    if (!perkOption) return 0;
+    return perkOption.perk.hash;
+}
+
+function useEnhancedPerk(perkOption: IPerkOption | undefined) {
+    return !!perkOption && perkOption.useEnhanced && !!perkOption.enhancedPerk;
+}
+
+function getActivePerk(perkOption: IPerkOption | undefined) {
+    if (!perkOption) return undefined;
+    return useEnhancedPerk(perkOption) ? perkOption.enhancedPerk : perkOption.perk;
+}
+
+function onPerkClicked(perkOption: IPerkOption | undefined) {
+    if (!perkOption) return;
+    perkOption.useEnhanced = !perkOption.useEnhanced;
 }
 </script>
 
 <template>
     <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
         <PerkDisplay
-            v-for="perk of perks"
-            :key="perk.perk?.hash"
             class="perk"
-            :perk="perk.perk"
+            v-for="perk of perks"
+            :key="getPerkOptionHash(perk.perkOption)"
+
+            :perk="getActivePerk(perk.perkOption)"
             :is-adept="props.isAdept"
-            :crafting-info="perk.craftingInfo"
+            :crafting-info="perk.perkOption?.craftingInfo"
             :column="perk.column"
-            :enhanced="perk.enhanced"
+            :enhanced="useEnhancedPerk(perk.perkOption)"
+            :enhanced-bonuses="[]"
             :full-size="perk.fullSize"
             :hide-hover="perk.hideHover"
             :selected="false"
             :retired="false"
-            @perk-clicked="perk.onPerkClicked()"
+            @perk-clicked="onPerkClicked(perk.perkOption)"
         ></PerkDisplay>
     </div>
 </template>
