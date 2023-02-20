@@ -10,6 +10,23 @@ interface IChangelog {
 
 const changelogs = computed<IChangelog[]>(() => [
     {
+        version: "1.2.0",
+        date: "2023-02-20",
+        title: "Collections Filters + Perk Insights",
+        description: "This change implements the collections filters for sources of weapons,"
+            + " perk insights from community info (+ glossary) for perk details, and some other bug fixes.",
+        changes: [
+            "Added filters for seasonal weapons and various other collections (seasons prior to Season of Worthy not yet implemented).",
+            "Insights/community info on perks added to tooltips for perks and mods (+ glossary available).",
+            "Added Clear Filters button.",
+            "Clear filters on search text change.",
+            "Clear search text whenever filters are applied.",
+            "Fixed mods not having descriptions.",
+            "Fixed mods always showing raw stat values.",
+            "Show Crafted bonus option now hidden for non-crafted weapons.",
+        ],
+    },
+    {
         version: "1.1.0",
         date: "2023-02-13",
         title: "Improve Page Load Times + Quality of Life",

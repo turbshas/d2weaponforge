@@ -1,7 +1,9 @@
 # Changelog
 
-## **Name TBD** [ *1.2.0* ] Date TBD
-Description TBD
+## **Collections Filters + Perk Insights** [ *1.2.0* ] 2023-02-20
+This change implements the collections filters for sources of weapons,
+perk insights from community info (+ glossary) for perk details,
+and some other bug fixes.
 
 * Fixed mods not having descriptions.
 * Fixed mods always showing raw stat values.
@@ -15,7 +17,6 @@ Description TBD
 * Insights/community info on perks added to tooltips for perks and mods.
 * Glossary implemented to display list of all insights/community info.
 * Fixed background image placement.
-* Removed glossary terms for Rampage Spec, Dragonfly Spec, and Surrounded Spec.
 
 ## **Improve Page Load Times + Quality of Life** [ *1.1.0* ] 2023-02-13
 This change brings improvements to page load times as well as some quality of life changes such as
