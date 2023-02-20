@@ -2,8 +2,6 @@
 import { destinyDataService } from "@/data/services";
 import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon } from "@/data/interfaces";
 import { computed, defineAsyncComponent, ref } from "vue";
-// import FilterWindow from "./Filter/FilterWindow.vue";
-// import LanguageSelector from "./LanguageSelector.vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
 
 const FilterWindow = defineAsyncComponent(() => import("./Filter/FilterWindow.vue"));
@@ -12,34 +10,20 @@ const LanguageSelector = defineAsyncComponent(() => import("./LanguageSelector.v
 const props = defineProps<{
     sidebarPanelSelection: SidebarPanelSelection,
     searchString: string,
+    appliedFilters: IAppliedFilters,
+    activeFilters: Record<FilterCategory, { [filterText: string]: boolean }>,
 }>();
 
 const emit = defineEmits<{
     (e: "weaponSelected", weapon: IWeapon): void,
-    (e: "filtersApplied"): void,
+    (e: "filtersApplied", newFilters: IAppliedFilters): void,
+    (e: "filtersCleared"): void,
     (e: "languageSelected", language: ILanguageInfo): void,
 }>();
 
-const activeFilters = ref<Record<FilterCategory, { [filterText: string]: boolean }>>({
-    "Archetype": {},
-    "Collections": {},
-    "Damage Type": {},
-    "Rarity": {},
-    "Weapon": {},
-});
-
-const filters = ref<IAppliedFilters>({
-    includeSunsetWeapons: false,
-    collectionsFilters: [],
-    damageFilters: [],
-    rarityFilters: [],
-    weaponFilters: [],
-    perkNames: [],
-});
-
-const weapons = computed(() => {
-    return destinyDataService.weapons;
-});
+const weapons = computed(() => destinyDataService.weapons);
+const filters = computed(() => props.appliedFilters);
+const activeFilters = computed(() => props.activeFilters);
 
 const areFiltersChosen = computed(() => {
     return filters.value.includeSunsetWeapons
@@ -73,8 +57,11 @@ function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: IWeapo
 }
 
 function onFiltersApplied(newFilters: IAppliedFilters) {
-    filters.value = newFilters;
-    emit("filtersApplied");
+    emit("filtersApplied", newFilters);
+}
+
+function onFiltersCleared() {
+    emit("filtersCleared");
 }
 
 function onFilterToggled(categoryName: FilterCategory, filterText: string, active: boolean) {
@@ -96,6 +83,7 @@ function onWeaponSelected(weapon: IWeapon) {
             v-if="showFilterWindow"
             :active-filters="activeFilters"
             @filters-applied="onFiltersApplied"
+            @filters-cleared="onFiltersCleared"
             @filter-toggled="onFilterToggled"
         ></FilterWindow>
         <LanguageSelector

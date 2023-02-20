@@ -3,10 +3,10 @@ import { destinyDataService } from "@/data/services";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
 import TierIcons from "@/assets/TierIcons";
-import type { FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton } from "@/data/interfaces";
+import type { Collection, FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton, SeasonNumber } from "@/data/interfaces";
 import OptionButton from "@/components/Common/OptionButton.vue";
 import ElementLabel from "@/components/Common/ElementLabel.vue";
-import { OriginFilters, SeasonIconMap, WeaponCategoryIconMap } from "@/data/constants";
+import { OriginFilterInfos, SeasonIconMap, SeasonToCollectionMap, WeaponCategoryIconMap } from "@/data/constants";
 
 interface ICategoryInfo {
     name: FilterCategory;
@@ -20,6 +20,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     (e: "filtersApplied", applied: IAppliedFilters): void,
+    (e: "filtersCleared"): void,
     (e: "filterToggled", categoryName: FilterCategory, filterText: string, active: boolean): void,
 }>();
 
@@ -45,13 +46,15 @@ const weaponCategoryArchetypeMap = computed(() => {
     const archetypeFilters: { [weaponType: string]: IArchetypeFilter[] } = {};
     
     for (const weaponType of destinyDataService.weaponTypes) {
-        archetypeFilters[weaponType.traitId] = [];
+        const archetypeFilterList: IArchetypeFilter[] = [];
 
         for (const archetype of weaponType.archetypes) {
-            const rpmTextPrefix = weaponType.showRpm ? `${archetype.rpm} ${weaponType.rpmUnits} // ` : "";
+            const rpmPrefix = weaponType.showRpm ? `${archetype.rpm} ${weaponType.rpmUnits} // ` : "";
 
-            archetypeFilters[weaponType.traitId].push({
-                text: `${rpmTextPrefix}${archetype.name}`,
+            archetypeFilterList.push({
+                rpm: archetype.rpm,
+                name: archetype.name,
+                text: `${rpmPrefix}${archetype.name}`,
                 filter: (item: IWeapon) => {
                     if (!item.archetype) return false;
                     const name = item.archetype.name;
@@ -63,19 +66,22 @@ const weaponCategoryArchetypeMap = computed(() => {
                 },
             });
         }
+
+        archetypeFilterList.sort((a, b) => a.rpm - b.rpm);
+        archetypeFilters[weaponType.weaponCategoryRegex] = archetypeFilterList;
     }
 
     return archetypeFilters;
 });
 
 const weaponCategoryFilters = computed(() => {
-    return destinyDataService.weaponTypes
+    const weaponFilters = destinyDataService.weaponTypes
         .filter(t => t.traitId && WeaponCategoryIconMap.value[t.weaponCategoryRegex])
         .map(t => {
             const filter: IWeaponFilterButton = {
                 text: t.weaponTypeName,
                 iconUrl: WeaponCategoryIconMap.value[t.weaponCategoryRegex],
-                archetypes: weaponCategoryArchetypeMap.value[t.traitId],
+                archetypes: weaponCategoryArchetypeMap.value[t.weaponCategoryRegex],
                 filter: (item: IWeapon) => {
                     if (item.weaponCategoryRegex !== t.weaponCategoryRegex) return false;
                     const activeArchetypeFilters = filter.archetypes.filter(a => props.activeFilters["Archetype"][a.text]);
@@ -88,28 +94,51 @@ const weaponCategoryFilters = computed(() => {
             };
             return filter;
         });
+    weaponFilters.sort((a, b) => a.text.localeCompare(b.text));
+    return weaponFilters;
 });
 
-const collectionCategoryFilters = computed(() => {
-    // Just seasons right now, TODO: add other collections
-    const collections = OriginFilters.value;
-    const seasonCollections = destinyDataService.seasons
+const originFilters = computed(() => {
+    return OriginFilterInfos.value.map(info => {
+        const collectionsMap = getCollectionsWeaponMap(info.collection);
+
+        const filter: IFilterButton = {
+            text: info.text,
+            iconUrl: info.iconUrl,
+            filter: (weapon: IWeapon) => !!collectionsMap[weapon.hash],
+        }
+        return filter;
+    });
+});
+
+const seasonFilters = computed(() => {
+    // The list of seasons seems to include the upcoming, yet-to-be-released one.
+    const currentDate = new Date(Date.now());
+
+    return destinyDataService.seasons
         .filter(s => includeSunsetWeapons.value || !destinyDataService.isSeasonSunset(s))
+        .filter(s => !s.startDate || (new Date(s.startDate) <= currentDate))
         .map(s => {
+            const seasonNumber = s.seasonNumber as SeasonNumber;
             const iconUrl = s.displayProperties.hasIcon
                 ? destinyDataService.getImageUrl(s.displayProperties.icon)
-                : SeasonIconMap.value[s.seasonNumber];
+                : (SeasonIconMap.value[seasonNumber] || "");
+            const collectionId = SeasonToCollectionMap.value[seasonNumber];
+            const collectionMap = getCollectionsWeaponMap(collectionId);
+
             const filter: IFilterButton = {
                 text: s.displayProperties.name || "The Red War",
                 iconUrl: iconUrl,
-                filter: (item: IWeapon) => {
-                    // TODO: this may not work for a lot of weapons, is there a better way to check?
-                    return item.seasonHash === s.hash;
-                },
+                filter: (item: IWeapon) => !!collectionMap[item.hash],
             };
             return filter;
         });
-    return collections.concat(seasonCollections);
+});
+
+const collectionCategoryFilters = computed(() => {
+    const originCollections = originFilters.value;
+    const seasonCollections = seasonFilters.value;
+    return originCollections.concat(seasonCollections);
 });
 
 const itemTierFilters = computed(() => {
@@ -148,7 +177,7 @@ const rarityFilterCategory = computed<ICategoryInfo>(() => {
 });
 
 const filterCategories = computed(() => {
-    return [damageTypeFilterCategory.value, weaponFilterCategory.value, /* collectionsFilterCategory.value, */ rarityFilterCategory.value];
+    return [damageTypeFilterCategory.value, weaponFilterCategory.value, collectionsFilterCategory.value, rarityFilterCategory.value];
 });
 
 const activeWeaponFilters = computed(() => {
@@ -193,6 +222,10 @@ function includeSunsetToggled() {
     includeSunsetWeapons.value = !includeSunsetWeapons.value;
 }
 
+function onClearFilters() {
+    emits("filtersCleared");
+}
+
 function onApplyFilters() {
     const appliedFilters: IAppliedFilters = {
         includeSunsetWeapons: includeSunsetWeapons.value,
@@ -213,13 +246,30 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
         .filter(f => activeFilterMap[f.text])
         .map(f => f.filter);
 }
+
+function getCollectionsWeaponMap(collection: Collection) {
+    const collectionList = getCollectionsList(collection) || [];
+    const collectionsMap: { [weaponItemHash: number]: boolean | undefined } = {};
+    for (const item of collectionList) {
+        collectionsMap[item] = true;
+    }
+    return collectionsMap;
+}
+
+function getCollectionsList(collection: Collection) {
+    const lists = destinyDataService.collectionsLists;
+    return lists ? lists[collection] : undefined;
+}
 </script>
 
 <template>
     <div class="filters">
         <div class="header">
             <span class="title">Filters</span>
-            <OptionButton text="Apply Filters" :active="true" @click="onApplyFilters"></OptionButton>
+            <div class="actions">
+                <OptionButton text="Clear Filters" :active="false" @click="onClearFilters"></OptionButton>
+                <OptionButton text="Apply Filters" :active="true" @click="onApplyFilters"></OptionButton>
+            </div>
         </div>
 
         <CollapsibleSection name="Perks">
@@ -284,7 +334,7 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .filters {
     overflow-x: hidden;
     overflow-y: scroll;
@@ -302,14 +352,20 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-}
 
-.title {
-    font-size: 19.2px;
-    font-weight: 600;
-    line-height: 19.2px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    .title {
+        font-size: 19.2px;
+        font-weight: 600;
+        line-height: 19.2px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .actions {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+    }
 }
 
 .perk-search-wrapper {

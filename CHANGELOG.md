@@ -1,5 +1,23 @@
 # Changelog
 
+## **Collections Filters + Perk Insights** [ *1.2.0* ] 2023-02-20
+This change implements the collections filters for sources of weapons,
+perk insights from community info (+ glossary) for perk details,
+and some other bug fixes.
+
+* Fixed mods not having descriptions.
+* Fixed mods always showing raw stat values.
+* Added Clear Filters button.
+* Clear filters on search text change.
+* Clear search text whenever filters are applied.
+* Sort weapon filters by name.
+* Sort weapon archetype filters by RPM/charge time if applicable.
+* Show Crafted bonus option now hidden for non-crafted weapons.
+* Added filters for seasonal weapons and various other collections (seasons prior to Season of Worthy not yet implemented).
+* Insights/community info on perks added to tooltips for perks and mods.
+* Glossary implemented to display list of all insights/community info.
+* Fixed background image placement.
+
 ## **Improve Page Load Times + Quality of Life** [ *1.1.0* ] 2023-02-13
 This change brings improvements to page load times as well as some quality of life changes such as
 preferences saving across refreshes, weapon flavor text tooltip, and hiding the weapon panel UI

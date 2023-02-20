@@ -21,6 +21,7 @@ export class Weapon implements IWeapon {
     public readonly iconUrl: string;
     public readonly iconWatermarkUrl: string;
     public readonly isAdept: boolean;
+    public readonly isCraftable: boolean;
     public readonly isSunset: boolean;
     public readonly tierTypeIndex: number;
 
@@ -79,6 +80,7 @@ export class Weapon implements IWeapon {
         }
 
         this.seasonHash = weaponItem.seasonHash;
+        this.isCraftable = this.perks.perkColumns.some(c => c.perks.some(p => !!p.enhancedPerk));
     }
 }
 

@@ -2,7 +2,7 @@
 import { PageSelection, type IMasterwork, type IMod, type IPerkOption, type ISelectedGear, type PerkColumnNumber } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import HomePage from './HomePage.vue';
-import Glossary from './Glossary.vue';
+import Glossary from './Glossary/Glossary.vue';
 import ComparePage from './ComparePage.vue';
 import WeaponViewer from './WeaponViewer/WeaponViewer.vue';
 
@@ -64,8 +64,6 @@ function onModChanged(mod: IMod | undefined) {
 
 <style scoped>
 .main {
-    overflow-x: hidden;
-    overflow-y: scroll;
     display: flex;
     justify-content: center;
     margin-left: 16px;

@@ -65,7 +65,7 @@ export class SelectionService {
         this.selectedGear.mod.value = mod;
     }
 
-    public readonly displayValueIfAddingBonus = (column: PerkColumnNumber, bonus: IPerkBonus) => this.selectedGear.displayValueIfAddingBonus(column, bonus);
+    public readonly displayValueIfAddingBonus = (bonus: IPerkBonus, column?: PerkColumnNumber) => this.selectedGear.displayValueIfAddingBonus(bonus, column);
 
     // Preferences - storing them here for lack of a better place
     private readonly languageWrapper = ref<ILanguageInfo>(DataSearchStrings.DefaultLanguage);

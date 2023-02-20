@@ -7,7 +7,7 @@ function getMasterworkStatName(
     weaponStatGroup: DestinyStatGroupDefinition | undefined,
     manifest: ManifestAccessor,
     ) {
-    const increasedStat = masterwork.investmentStats.find(stat => stat.value > 0);
+    const increasedStat = masterwork.investmentStats.find(stat => !stat.isConditionallyActive && stat.value > 0);
     if (!increasedStat) return "";
     const overrideDisplay = weaponStatGroup && weaponStatGroup.overrides && (weaponStatGroup.overrides[increasedStat.statTypeHash]?.displayProperties);
     if (overrideDisplay) return overrideDisplay.name;
@@ -22,6 +22,6 @@ export class Masterwork extends BasicPerk {
         weaponStatGroup: DestinyStatGroupDefinition | undefined,
         manifest: ManifestAccessor,
         ) {
-        super(masterwork, getMasterworkStatName(masterwork, weaponStatGroup, manifest), manifest);
+        super(masterwork, manifest, getMasterworkStatName(masterwork, weaponStatGroup, manifest));
     }
 }

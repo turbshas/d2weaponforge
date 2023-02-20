@@ -4,7 +4,7 @@ import Searchbar from "./Searchbar.vue";
 import TabBar from "./TabBar.vue";
 import SidebarPanel from "./SidebarPanel/SidebarPanel.vue";
 
-import { SidebarPanelSelection, type ILanguageInfo, type IWeapon, type PageSelection } from "@/data/interfaces";
+import { SidebarPanelSelection, type FilterCategory, type IAppliedFilters, type ILanguageInfo, type IWeapon, type PageSelection } from "@/data/interfaces";
 import { computed, ref } from "vue";
 import LanguageButton from "./LanguageButton.vue";
 import { selectionService } from "@/data/services";
@@ -18,6 +18,9 @@ const emit = defineEmits<{
 const panelSelection = ref(SidebarPanelSelection.Weapons);
 const searchString = ref("");
 const selectedLanguage = computed(() => selectionService.language);
+
+const appliedFilters = ref<IAppliedFilters>(emptyAppliedFilters());
+const activeFilters = ref<Record<FilterCategory, { [filterText: string]: boolean }>>(emptyActiveFilters());
 
 const viewingFilter = computed(() => panelSelection.value === SidebarPanelSelection.Filters);
 const viewingLanguages = computed(() => panelSelection.value === SidebarPanelSelection.Languages);
@@ -35,8 +38,16 @@ function onLanguageSelected(language: ILanguageInfo) {
     emit("languageSelected", language);
 }
 
-function onFiltersApplied() {
+function onFiltersApplied(newFilters: IAppliedFilters) {
+    appliedFilters.value = newFilters;
+    // Clear search bar, may end up with empty results after a filter which may be confusing.
+    searchString.value = "";
     panelSelection.value = SidebarPanelSelection.Weapons;
+}
+
+function onFiltersCleared() {
+    appliedFilters.value = emptyAppliedFilters();
+    activeFilters.value = emptyActiveFilters();
 }
 
 function onFilterToggled() {
@@ -45,10 +56,33 @@ function onFilterToggled() {
 
 function onSearchChanged(newSearchString: string) {
     searchString.value = newSearchString;
+    // Clear filters - if the user is searching for a specific name they probably don't need them, and empty results may be confusing.
+    appliedFilters.value = emptyAppliedFilters();
+    activeFilters.value = emptyActiveFilters();
 }
 
 function onLanguagesToggled() {
     panelSelection.value = viewingLanguages.value ? SidebarPanelSelection.Weapons : SidebarPanelSelection.Languages;
+}
+
+function emptyAppliedFilters(): IAppliedFilters {
+    return {
+        includeSunsetWeapons: false,
+        collectionsFilters: [],
+        damageFilters: [],
+        rarityFilters: [],
+        weaponFilters: [],
+        perkNames: [],
+    };
+}
+function emptyActiveFilters(): Record<FilterCategory, { [filterText: string]: boolean }> {
+    return {
+        "Archetype": {},
+        "Collections": {},
+        "Damage Type": {},
+        "Rarity": {},
+        "Weapon": {},
+    }
 }
 </script>
 
@@ -68,8 +102,11 @@ function onLanguagesToggled() {
         <SidebarPanel
             :sidebar-panel-selection="panelSelection"
             :search-string="searchString"
+            :applied-filters="appliedFilters"
+            :active-filters="activeFilters"
             @weapon-selected="onWeaponSelected"
             @filters-applied="onFiltersApplied"
+            @filters-cleared="onFiltersCleared"
             @language-selected="onLanguageSelected"
         ></SidebarPanel>
     </div>
