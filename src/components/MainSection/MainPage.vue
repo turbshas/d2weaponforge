@@ -64,8 +64,6 @@ function onModChanged(mod: IMod | undefined) {
 
 <style scoped>
 .main {
-    overflow-x: hidden;
-    overflow-y: scroll;
     display: flex;
     justify-content: center;
     margin-left: 16px;

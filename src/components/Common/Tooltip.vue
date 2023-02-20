@@ -130,6 +130,7 @@ function onMouseLeave() {
 }
 
 .title {
+    margin: 0;
     font-size: 20.8px;
     font-weight: 600;
     text-transform: uppercase;

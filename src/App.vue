@@ -79,14 +79,15 @@ function onUrlParsed(
             @weapon-selected="onWeaponSelected"
             @language-selected="onLanguageSelected"
         ></Sidebar>
-        <MainPage
-            class="main"
-            :page="selectedPage"
-            :selected-gear="selectedGear"
-            @perk-selected="onPerkSelected"
-            @masterwork-changed="onMasterworkChanged"
-            @mod-changed="onModChanged"
-        ></MainPage>
+        <div class="main">
+            <MainPage
+                :page="selectedPage"
+                :selected-gear="selectedGear"
+                @perk-selected="onPerkSelected"
+                @masterwork-changed="onMasterworkChanged"
+                @mod-changed="onModChanged"
+            ></MainPage>
+        </div>
     </div>
 </template>
 
@@ -97,13 +98,28 @@ function onUrlParsed(
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    background-size: cover;
 }
 
 .sidebar {
     width: 460px;
+    height: 100vh;
+    overflow: hidden;
+}
+@media screen and (min-width: 1200px) {
+    .sidebar {
+        width: 360px;
+    }
+}
+@media screen and (min-width: 1920px) {
+    .sidebar {
+        width: 460px;
+    }
 }
 
 .main {
     flex: 1;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 </style>

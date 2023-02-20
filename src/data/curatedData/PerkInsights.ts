@@ -229,20 +229,11 @@ const perkInsightMap: IPerkInsightCollection = {
         [PerkHash.ZenMoment]: { description: "Reduces the Maximum Recoil Angle, Weapon Shake, and removes Reticle Bounce for controller input for 1 second.", },
     },
     weaponMods: {
-        [ModHash.RampageSpec]: {
-            description: "Increases duration to 4.5 seconds.",
-        },
         [ModHash.MajorSpec]: {
             description: "7.8% damage increase to Major (Shield and Downward Triangle Badge) combatants. This includes Champions and Minibosses.",
         },
-        [ModHash.SurroundedSpec]: {
-            description: "Increases the perk's damage bonus to 40%. Swords increase to 35%. Bonus lingers for 1.5s after leaving Surrounded range.",
-        },
         [ModHash.TakenSpec]: {
             description: "10% damage increase to all Taken combatants, including Riven and Techeuns (Sedia, Kalli, & Shuro-Chi)",
-        },
-        [ModHash.DragonflySpec]: {
-            description: "Explosion radius increased by 50%. Increases damage up to 50% from the epicentre of the explosion.",
         },
         [ModHash.BossSpec]: {
             description: "7.8% damage increase to Boss (Diamond Badge) combatants.",

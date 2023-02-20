@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import { ModHash, PerkHash, type IPerkInsights } from '@/data/interfaces';
+import { ModHash, PerkHash, type IInsightDisplay, type IPerkInsights } from '@/data/interfaces';
 import { destinyDataService } from '@/data/services';
 import { computed } from 'vue';
-
-interface IInsightDisplay {
-    name: string;
-    hash: number;
-    description: string;
-}
+import GlossaryInsightGroup from './GlossaryInsightGroup.vue';
 
 const isDataLoaded = computed(() => !!destinyDataService.gameData);
 const weaponPerkInsights = computed(() => destinyDataService.perkInsights ? destinyDataService.perkInsights.weaponPerks : undefined);
@@ -19,12 +14,16 @@ const modHashes = computed(() => getHashesFromEnum(ModHash));
 const perkInsights = computed(() => {
     const insightMap = weaponPerkInsights.value;
     if (!insightMap) return [];
-    return perkHashes.value.map(h => getInsightFromHash(h, insightMap));
+    const insights = perkHashes.value.map(h => getInsightFromHash(h, insightMap));
+    insights.sort((a, b) => a.name.localeCompare(b.name));
+    return insights;
 });
 const modInsights = computed(() => {
     const insightMap = weaponModInsights.value;
     if (!insightMap) return [];
-    return modHashes.value.map(h => getInsightFromHash(h, insightMap));
+    const insights = modHashes.value.map(h => getInsightFromHash(h, insightMap));
+    insights.sort((a, b) => a.name.localeCompare(b.name));
+    return insights;
 });
 
 function getHashesFromEnum(enumObject: Object) {
@@ -42,8 +41,9 @@ function getInsightFromHash<T extends string | number | symbol>(hash: number, in
     const perkItem = destinyDataService.getItemDefinition(hash);
     const perkInsight = destinyDataService.perkInsights ? insightMap[hash as T] : undefined;
     const insightDisplay: IInsightDisplay = {
-        name: perkItem ? perkItem.displayProperties.name : "",
         hash: hash,
+        name: perkItem ? perkItem.displayProperties.name : "",
+        iconUrl: perkItem ? destinyDataService.getImageUrl(perkItem.displayProperties.icon) : "",
         description: perkInsight ? perkInsight.description : "",
     };
     return insightDisplay;
@@ -51,47 +51,32 @@ function getInsightFromHash<T extends string | number | symbol>(hash: number, in
 </script>
 
 <template>
-    <div v-if="isDataLoaded">
+    <div class="glossary" v-if="isDataLoaded">
         <h1>Glossary</h1>
-        <ul class="group">
-            <li class="insight" v-for="insight of perkInsights" :key="insight.hash">
-                <h4 class="name">{{ insight.name }}</h4>
-                <span class="hash">{{ insight.hash }}</span>
-                <pre class="description">{{ insight.description }}</pre>
-            </li>
-        </ul>
-        <ul class="group">
-            <li class="insight" v-for="insight of modInsights" :key="insight.hash">
-                <h4 class="name">{{ insight.name }}</h4>
-                <span class="hash">{{ insight.hash }}</span>
-                <pre class="description">{{ insight.description }}</pre>
-            </li>
-        </ul>
+        <p>
+            Some perks names may appear more than once in this list.
+            In some cases these are duplicates, in others they are the enhanced version.
+        </p>
+        <GlossaryInsightGroup :insights="perkInsights"></GlossaryInsightGroup>
+        <GlossaryInsightGroup :insights="modInsights"></GlossaryInsightGroup>
     </div>
 </template>
 
 <style scoped lang="less">
-.group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    list-style-type: none;
-    padding: 0;
-}
+.glossary {
+    position: relative;
+    padding-left: 1rem;
 
-.insight {
-    width: 350px;
-    display: flex;
-    flex-direction: column;
-    padding-bottom: 0.25rem;
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
 
-    .name {
-        margin: 0;
-    }
-
-    .description {
-        margin: 0;
-        white-space: pre-wrap;
+        background-color: #232936;
+        mix-blend-mode: multiply;
     }
 }
 </style>

@@ -508,11 +508,8 @@ export enum PerkHash {
 }
 
 export enum ModHash {
-    RampageSpec = 666440382,
     MajorSpec = 984527513,
-    SurroundedSpec = 1471333428,
     TakenSpec = 1513326571,
-    DragonflySpec = 1837151577,
     BossSpec = 2788909693,
     MinorSpec = 4091000557,
 }
@@ -594,3 +591,10 @@ export type ICollectionsLists = {
 }
 
 export type SeasonNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 |18 | 19;
+
+export interface IInsightDisplay {
+    hash: number;
+    name: string;
+    iconUrl: string;
+    description: string;
+}
