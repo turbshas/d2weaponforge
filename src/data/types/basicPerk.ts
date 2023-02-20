@@ -11,6 +11,7 @@ export abstract class BasicPerk implements IPerk {
     public readonly iconWatermarkUrl: string;
     public readonly mainBonuses: IPerkBonus[];
     public readonly adeptOrCraftedBonuses: IPerkBonus[];
+    public readonly categoryId: string;
 
     constructor(
         item: DestinyInventoryItemDefinition,
@@ -26,6 +27,7 @@ export abstract class BasicPerk implements IPerk {
         this.iconWatermarkUrl = item.iconWatermark;
         this.mainBonuses = getBonuses(item, manifest, false);
         this.adeptOrCraftedBonuses = getBonuses(item, manifest, true);
+        this.categoryId = item.plug ? item.plug.plugCategoryIdentifier : "";
     }
 }
 

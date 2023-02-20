@@ -34,6 +34,11 @@ export class ResolvedWeaponSockets {
     public readonly adeptMods: DestinyInventoryItemDefinition[];
 
     constructor(weapon: DestinyInventoryItemDefinition, private readonly manifest: ManifestAccessor) {
+        // TODO for perk lookup changes:
+        //  - pass in perk, masterwork, mod lookups
+        //  - instead of converting perks to IPerk, convert to hashes for normal/enhanced, wrap in IPerkOption with other props
+        //  - try not passing on masterwork/mod hashes if possible? only if we don't need to query the info on them basically
+        //  - convert mods and masterworks to hashes for later lookup
         const resolvedSocketItems = this.resolveWeaponSocketItems(weapon);
         this.intrinsic = this.getIntrinsicFromResolvedSockets(resolvedSocketItems);
         this.perks = this.getPerkOptionsFromResolvedSockets(resolvedSocketItems);

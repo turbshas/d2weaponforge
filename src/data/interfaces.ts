@@ -117,6 +117,9 @@ export interface Destiny2GameData {
 
     weapons: IWeapon[];
     weaponsLookup: { [weaponHash: number]: IWeapon };
+    perkLookup: IPerkLookup;
+    masterworkLookup: { [hash: number]: IMasterwork | undefined };
+    modLookup: { [hash: number]: IMod | undefined };
 
     weaponTypes: IWeaponTypeInfo[];
 
@@ -129,6 +132,18 @@ export interface Destiny2GameData {
 
     perkInsights: IPerkInsightCollection;
     collectionsLists: ICollectionsLists;
+}
+
+export interface IPerkLookup {
+    normal: { [hash: number]: IPerk | undefined };
+    enhanced: { [hash: number]: IPerk | undefined };
+    perkPairs: IPerkPair[];
+    perkPairLookup: { [normalPerkHash: number]: IPerkPair | undefined };
+}
+
+export interface IPerkPair {
+    perk: IPerk;
+    enhanced: IPerk | undefined;
 }
 
 export type PerkColumnNumber = 1 | 2 | 3 | 4 | 5;
@@ -233,6 +248,7 @@ export interface IPerk {
     iconWatermarkUrl: string;
     mainBonuses: IPerkBonus[];
     adeptOrCraftedBonuses: IPerkBonus[];
+    categoryId: string;
 }
 
 export interface IPerkBonus {

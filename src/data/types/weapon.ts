@@ -1,7 +1,7 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { WeaponTypeTraitToRegex } from "../constants";
 import { DataSearchStrings } from "../services/dataSearchStringService";
-import { ItemTierIndex, type IWeapon } from "../interfaces";
+import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type IWeapon } from "../interfaces";
 import { Archetype } from "./archetype";
 import { DamageType } from "./damageType";
 import type { ManifestAccessor } from "./manifestAccessor";
@@ -39,7 +39,13 @@ export class Weapon implements IWeapon {
     // TODO: is this possible?
     public readonly seasonHash: number | undefined;
 
-    constructor(manifest: ManifestAccessor, weaponItem: DestinyInventoryItemDefinition) {
+    constructor(
+        weaponItem: DestinyInventoryItemDefinition,
+        manifest: ManifestAccessor,
+        perkLookup: IPerkLookup,
+        masterworkLookup: { [hash: number]: IMasterwork | undefined },
+        modLookup: { [hash: number]: IMod | undefined },
+        ) {
         this.index = weaponItem.index;
         this.hash = weaponItem.hash;
         this.name = weaponItem.displayProperties.name;
@@ -60,6 +66,7 @@ export class Weapon implements IWeapon {
             ? manifest.getStatGroupDefinition(weaponItem.stats.statGroupHash)
             : undefined;
         this.statBlock = new StatBlock(statGroup, weaponItem.investmentStats, manifest);
+
         const resolvedWeaponSockets = new ResolvedWeaponSockets(weaponItem, manifest);
         this.archetype = resolvedWeaponSockets.intrinsic
             ? new Archetype(resolvedWeaponSockets.intrinsic, this.traitId, weaponItem.stats, manifest)

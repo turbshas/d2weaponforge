@@ -54,12 +54,20 @@ export const ValidPerkPlugCategories = computed(() => [
     DataSearchStrings.CategoryIDs.StocksPlug,
 ]);
 
-export const AllowedPlugCategoryIds = computed(() => [...ValidPerkPlugCategories.value,
+export const AllPerkPlugCategoryIds = computed(() => [
     DataSearchStrings.CategoryIDs.IntrinsicPlug,
+    ...ValidPerkPlugCategories.value
+]);
 
+export const ModPlugCategoryIds = computed(() => [
     DataSearchStrings.CategoryIDs.WeaponModDamage,
     DataSearchStrings.CategoryIDs.WeaponModGuns,
     DataSearchStrings.CategoryIDs.WeaponModMagazine,
+]);
+
+export const AllowedPlugCategoryIds = computed(() => [
+    ...AllPerkPlugCategoryIds.value,
+    ...ModPlugCategoryIds.value,
 ]);
 
 export const WeaponTypeRpmUnitsMap = computed<{ [traitId: string]: string }>(() => {

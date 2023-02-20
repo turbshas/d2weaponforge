@@ -31,6 +31,9 @@ Preferred order of work:
   - what should stat arrows display? green only if highest value in list of weapons being compared?
 
 Unsure about order:
+- filter armour plugs out of the kept data (definitely shows up as intrinsics, maybe others too...)
+- involve stat display override when creating masterworks in DestinyManifestProcessor
+- change drang/mida mini-tool intrinsic checks to use hashes
 - glossary revamp:
   - requires pulling all perks from the manifest instead of for each weapon
     - this also means we wouldn't be processing the same perks for every weapon they appear on...

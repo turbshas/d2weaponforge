@@ -1,15 +1,28 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition } from "bungie-api-ts/destiny2";
-import { AllowedPlugCategoryIds } from "./constants";
+import { AllowedPlugCategoryIds, AllPerkPlugCategoryIds, ModPlugCategoryIds } from "./constants";
 import { DataSearchStrings } from "./services/dataSearchStringService";
-import { ItemTierIndex, type IWeaponTypeInfo, type UsedDestinyManifestSlice } from "./interfaces";
+import { ItemTierIndex, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type IWeaponTypeInfo, type UsedDestinyManifestSlice } from "./interfaces";
 import { ManifestAccessor } from "./types/manifestAccessor";
 import { Weapon } from "./types/weapon";
-import { hashMapToArray } from "./util";
+import { arrayToExistenceMap, arrayToHashMap, hashMapToArray } from "./util";
+import { Perk } from "./types/perk";
+import { Masterwork } from "./types/masterwork";
+import { Mod } from "./types/mod";
+
+interface IGroupedItems {
+    weapons: DestinyInventoryItemDefinition[];
+    perks: DestinyInventoryItemDefinition[];
+    masterworks: DestinyInventoryItemDefinition[];
+    mods: DestinyInventoryItemDefinition[];
+}
 
 export class DestinyManifestProcessor {
     private readonly manifest: ManifestAccessor;
     private readonly _weapons: Weapon[];
     private readonly _weaponTypes: IWeaponTypeInfo[];
+    private readonly _perkLookup: IPerkLookup;
+    private readonly _masterworkLookup: { [hash: number]: IMasterwork | undefined };
+    private readonly _modLookup: { [hash: number]: IMod | undefined };
     private readonly _itemCategories: DestinyItemCategoryDefinition[];
 
     constructor(manifestSlice: UsedDestinyManifestSlice) {
@@ -17,11 +30,17 @@ export class DestinyManifestProcessor {
         this.stripRedactedAndUnneeded();
 
         this._itemCategories = hashMapToArray(this.manifest.slice.DestinyItemCategoryDefinition);
-        this._weapons = this.processWeapons();
+
+        const groupedItems = this.groupItems();
+        this._perkLookup = this.processPerks(groupedItems.perks);
+        this._masterworkLookup = arrayToHashMap(this.processMasterworks(groupedItems.masterworks), "hash");
+        this._modLookup = arrayToHashMap(this.processMods(groupedItems.mods), "hash");
+
+        this._weapons = this.processWeapons(groupedItems.weapons, this.perkLookup, this.masterworkLookup, this.modLookup);
         this._weaponTypes = this.processArchetypes(this._weapons);
     }
 
-    private stripRedactedAndUnneeded = () => {
+    private readonly stripRedactedAndUnneeded = () => {
         // Remove everything we don't need - this makes loading from cache much faster (and actually usable).
         // Only doing this for DestinyInventoryItemDefinition as it is by far the largest table.
         // The others are fairly small and don't need this.
@@ -65,30 +84,120 @@ export class DestinyManifestProcessor {
         }
     }
 
-    private processWeapons = () => {
-        const weapons: DestinyInventoryItemDefinition[] = [];
+    private readonly groupItems = () => {
+        const grouped: IGroupedItems = {
+            weapons: [],
+            perks: [],
+            masterworks: [],
+            mods: [],
+        };
+
+        const perkPlugCategoryIdMap = arrayToExistenceMap(AllPerkPlugCategoryIds.value);
+        const modPlugCategoryIdMap = arrayToExistenceMap(ModPlugCategoryIds.value);
 
         for (const key in this.manifest.slice.DestinyInventoryItemDefinition) {
             const item = this.manifest.slice.DestinyInventoryItemDefinition[key];
-            // No categories, ignore. No display name means it's probably not an item we care about.
-            if (!item.traitIds || !item.displayProperties.name) continue;
+            if (!item) continue;
+            // If no name, probably not an item we care about.
+            if (!item.displayProperties.name) continue;
 
-            // Seem to be duplicates for some weapons that don't have a screenshot - this
-            // is probably the item used for the crafting menu, so ignore it.
-            if (item.traitIds.includes(DataSearchStrings.TraitIDs.Weapon) && !!item.screenshot) {
-                weapons.push(item);
+            const isWeapon =
+                // If no categories, probably not an item we care about.
+                !!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.Weapon)
+                // Some weapons don't have screenshots (including some duplicates) - probably for the crafting menu.
+                && !!item.screenshot
+                // Others don't have an infusion category, probably also crafting related.
+                && !!item.quality
+                && (!!item.quality.infusionCategoryHash
+                    || (!!item.quality.infusionCategoryHashes && item.quality.infusionCategoryHashes.length > 0));
+            const isPerk = !!item.plug && perkPlugCategoryIdMap[item.plug.plugCategoryIdentifier];
+            const isMod = !!item.plug && modPlugCategoryIdMap[item.plug.plugCategoryIdentifier];
+            const isMasterwork = !!item.plug
+                && item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
+
+            if (isWeapon) {
+                grouped.weapons.push(item);
+            } else if (isPerk) {
+                grouped.perks.push(item);
+            } else if (isMod) {
+                grouped.mods.push(item);
+            } else if (isMasterwork) {
+                grouped.masterworks.push(item);
             }
         }
+
+        return grouped;
+    }
+
+    private readonly processWeapons = (
+        weapons: DestinyInventoryItemDefinition[],
+        perkLookup: IPerkLookup,
+        masterworkLookup: { [hash: number]: IMasterwork | undefined },
+        modLookup: { [hash: number]: IMod | undefined },
+        ) => {
         // Sort the weapons newest to oldest (roughly).
         // TODO: find a better way to sort, or manually curate the order to show recent weapons.
         weapons.sort((a, b) => b.index - a.index);
 
         console.log("weapons", weapons);
-        // return weapons.map(this.getWeaponPerkInfo);
-        return weapons.map(w => new Weapon(this.manifest, w));
+        return weapons.map(w => new Weapon(w, this.manifest, perkLookup, masterworkLookup, modLookup));
     }
 
-    private processArchetypes = (weapons: Weapon[]) => {
+    private readonly processPerks = (perks: DestinyInventoryItemDefinition[]) => {
+        const normalPerks: IPerk[] = [];
+        const enhancedPerks: IPerk[] = [];
+        const enhancedPerkNameMap: { [name: string]: IPerk | undefined } = {};
+
+        // Separate by normal/enhanced, add enhanced to lookup table by name for faster matching with normal perks.
+        for (const perkItem of perks) {
+            if (!perkItem.inventory) continue;
+            const itemTier = this.manifest.getItemTierDefinition(perkItem.inventory.tierTypeHash);
+            if (!itemTier) continue;
+
+            const perk = new Perk(perkItem, this.manifest);
+            if (itemTier.index === ItemTierIndex.Common) {
+                normalPerks.push(perk);
+            } else if (itemTier.index === ItemTierIndex.Uncommon) {
+                enhancedPerks.push(perk);
+                enhancedPerkNameMap[perk.name] = perk;
+            }
+        }
+
+        // Group normal + enhanced together.
+        const perkPairs: IPerkPair[] = [];
+        const perkPairMap: { [normalPerkHash: number]: IPerkPair | undefined } = {};
+        for (const perk of normalPerks) {
+            const perkPair: IPerkPair = {
+                perk: perk,
+                enhanced: undefined,
+            };
+            if (perk.categoryId === DataSearchStrings.CategoryIDs.FramesPlug) {
+                // Searching through the array could be slow, so only bother for perks that CAN be enhanced.
+                perkPair.enhanced = enhancedPerkNameMap[perk.name] || enhancedPerks.find(e => e.name.includes(perk.name));
+            }
+            perkPairs.push(perkPair);
+            perkPairMap[perk.hash] = perkPair;
+        }
+
+        const perkLookup: IPerkLookup = {
+            normal: arrayToHashMap(normalPerks, "hash"),
+            enhanced: arrayToHashMap(enhancedPerks, "hash"),
+            perkPairs: perkPairs,
+            perkPairLookup: perkPairMap,
+        };
+        return perkLookup;
+    }
+
+    private readonly processMods = (mods: DestinyInventoryItemDefinition[]) => {
+        return mods.map(m => new Mod(m, this.manifest));
+    }
+
+    private readonly processMasterworks = (masterworks: DestinyInventoryItemDefinition[]) => {
+        // TODO: how to involve stat display override?
+        return masterworks.map(mw => new Masterwork(mw, undefined, this.manifest));
+    }
+
+    private readonly processArchetypes = (weapons: Weapon[]) => {
         const activeWeapons = weapons.filter(w => !w.isSunset);
 
         const seenArchetypes: {
@@ -155,6 +264,9 @@ export class DestinyManifestProcessor {
     // Output values
     public get weapons() { return this._weapons; }
     public get weaponTypes() { return this._weaponTypes; }
+    public get perkLookup() { return this._perkLookup; }
+    public get masterworkLookup() { return this._masterworkLookup; }
+    public get modLookup() { return this._modLookup; }
 
     public get damageTypes() { return hashMapToArray(this.manifest.slice.DestinyDamageTypeDefinition); }
     public get damageTypeLookup() { return this.manifest.slice.DestinyDamageTypeDefinition; }

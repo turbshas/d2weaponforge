@@ -30,6 +30,14 @@ export function arrayToHashMap<T extends ArrayToHashMapItem<T>>(array: T[], key:
     return map;
 }
 
+export function arrayToExistenceMap<T extends string | number | symbol>(array: T[]): { [key in T]?: boolean } {
+    const map: { [key in T]?: boolean } = {};
+    for (const item of array) {
+        map[item] = true;
+    }
+    return map;
+}
+
 export function findItemInTable<T>(table: { [hash: number]: T }, predicate: (item: T) => boolean) {
     for (const key in table) {
         const item = table[key];

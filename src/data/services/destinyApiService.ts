@@ -89,6 +89,9 @@ export class DestinyApiService {
             weapons: weapons,
             weaponsLookup: weaponsLookup,
             weaponTypes: manifestProcessor.weaponTypes,
+            perkLookup: manifestProcessor.perkLookup,
+            masterworkLookup: manifestProcessor.masterworkLookup,
+            modLookup: manifestProcessor.modLookup,
 
             statsLookup: manifestProcessor.statsLookup,
             statGroupsLookup: manifestProcessor.statGroupsLookup,
