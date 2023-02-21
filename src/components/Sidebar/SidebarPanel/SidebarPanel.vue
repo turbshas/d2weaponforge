@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from "@/data/services";
-import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon } from "@/data/interfaces";
+import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon, type LookupMap } from "@/data/interfaces";
 import { computed, defineAsyncComponent, ref } from "vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
 
@@ -11,7 +11,7 @@ const props = defineProps<{
     sidebarPanelSelection: SidebarPanelSelection,
     searchString: string,
     appliedFilters: IAppliedFilters,
-    activeFilters: Record<FilterCategory, { [filterText: string]: boolean }>,
+    activeFilters: Record<FilterCategory, LookupMap<string, boolean>>,
 }>();
 
 const emit = defineEmits<{

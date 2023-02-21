@@ -2,7 +2,7 @@ import { getDestinyManifest, getDestinyManifestSlice, type DestinyManifest, type
 import type { HttpClientConfig } from "bungie-api-ts/http";
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import type { Destiny2GameData, IWeapon, UsedDestinyManifestSlice } from "../interfaces";
+import type { Destiny2GameData, ItemHash, IWeapon, LookupMap, UsedDestinyManifestSlice } from "../interfaces";
 
 const CurrentCachedManifestVersion = 4;
 
@@ -71,7 +71,7 @@ export class DestinyApiService {
         const [manifestProcessor, perkInsights, collectionsLists] = await Promise.all(promises);
 
         const weapons = manifestProcessor.weapons;
-        const weaponsLookup: { [weaponItemHash: number]: IWeapon } = {};
+        const weaponsLookup: LookupMap<ItemHash, IWeapon> = {};
         for (const weapon of weapons) {
             weaponsLookup[weapon.hash] = weapon;
         }

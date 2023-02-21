@@ -1,7 +1,7 @@
 import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinyPlugItemCraftingRequirements, DestinySocketTypeDefinition, DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { ValidPerkPlugCategories } from "../constants";
 import { DataSearchStrings } from "../services/dataSearchStringService";
-import { ItemTierIndex } from "../interfaces";
+import { ItemTierIndex, type ItemHash, type LookupMap } from "../interfaces";
 import type { ManifestAccessor } from "./manifestAccessor";
 import { Perk } from "./perk";
 import { PerkColumn } from "./perkColumn";
@@ -33,7 +33,10 @@ export class ResolvedWeaponSockets {
     public readonly mods: DestinyInventoryItemDefinition[];
     public readonly adeptMods: DestinyInventoryItemDefinition[];
 
-    constructor(weapon: DestinyInventoryItemDefinition, private readonly manifest: ManifestAccessor) {
+    constructor(
+        weapon: DestinyInventoryItemDefinition,
+        private readonly manifest: ManifestAccessor,
+        ) {
         // TODO for perk lookup changes:
         //  - pass in perk, masterwork, mod lookups
         //  - instead of converting perks to IPerk, convert to hashes for normal/enhanced, wrap in IPerkOption with other props
@@ -47,7 +50,7 @@ export class ResolvedWeaponSockets {
 
         this.adeptMods = this.getAdeptModsFromResolvedSockets(resolvedSocketItems);
         const allMods = this.getModsFromResolvedSockets(resolvedSocketItems);
-        const adeptModsLookup: { [hash: number]: boolean } = {};
+        const adeptModsLookup: LookupMap<ItemHash, boolean> = {};
         for (const mod of this.adeptMods) {
             adeptModsLookup[mod.hash] = true;
         }
@@ -122,9 +125,9 @@ export class ResolvedWeaponSockets {
     }
 
     private getPerkOptionsFromPlugSet = (plugItems: IResolvedPlugItem[]) => {
-        const currentlyCanRollMap: { [plugItemHash: number]: boolean } = {};
-        const requiredCraftedLevelMap: { [plugItemHash: number]: number | undefined } = {};
-        const seenPlugItems: { [plugItemHash: number]: boolean } = {};
+        const currentlyCanRollMap: LookupMap<ItemHash, boolean> = {};
+        const requiredCraftedLevelMap: LookupMap<ItemHash, number> = {};
+        const seenPlugItems: LookupMap<ItemHash, boolean> = {};
         const perksInSlot: DestinyInventoryItemDefinition[] = [];
 
         // Remove duplicates and group by name to capture normal + enhanced perks together
@@ -169,7 +172,7 @@ export class ResolvedWeaponSockets {
                 new Perk(perk, this.manifest),
                 enhancedPerk ? new Perk(enhancedPerk, this.manifest) : undefined,
                 craftingInfo,
-                currentlyCanRollMap[perk.hash],
+                !!currentlyCanRollMap[perk.hash],
                 false);
             perkOptions.push(perkOption);
         }
@@ -225,7 +228,7 @@ export class ResolvedWeaponSockets {
         const statGroup = weaponItem.stats && weaponItem.stats.statGroupHash ? this.manifest.getStatGroupDefinition(weaponItem.stats.statGroupHash) : undefined;
         if (!statGroup) return masterworks;
 
-        const scaledStatsLookup: { [statHash: number]: DestinyStatDisplayDefinition } = {};
+        const scaledStatsLookup: LookupMap<ItemHash, DestinyStatDisplayDefinition> = {};
         for (const stat of statGroup.scaledStats) {
             scaledStatsLookup[stat.statHash] = stat;
         }

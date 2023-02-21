@@ -3,10 +3,11 @@ import { destinyDataService } from "@/data/services";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
 import TierIcons from "@/assets/TierIcons";
-import type { Collection, FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton, SeasonNumber } from "@/data/interfaces";
+import type { Collection, FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton, LookupMap, SeasonNumber } from "@/data/interfaces";
 import OptionButton from "@/components/Common/OptionButton.vue";
 import ElementLabel from "@/components/Common/ElementLabel.vue";
 import { OriginFilterInfos, SeasonIconMap, SeasonToCollectionMap, WeaponCategoryIconMap } from "@/data/constants";
+import { stringifyExpression } from "@vue/compiler-core";
 
 interface ICategoryInfo {
     name: FilterCategory;
@@ -15,7 +16,7 @@ interface ICategoryInfo {
 }
 
 const props = defineProps<{
-    activeFilters: Record<FilterCategory, { [filterText: string]: boolean }>,
+    activeFilters: Record<FilterCategory, LookupMap<string, boolean>>,
 }>();
 
 const emits = defineEmits<{
@@ -43,7 +44,7 @@ const damageTypeFilters = computed(() => {
 });
 
 const weaponCategoryArchetypeMap = computed(() => {
-    const archetypeFilters: { [weaponType: string]: IArchetypeFilter[] } = {};
+    const archetypeFilters: LookupMap<string, IArchetypeFilter[]> = {};
     
     for (const weaponType of destinyDataService.weaponTypes) {
         const archetypeFilterList: IArchetypeFilter[] = [];
@@ -81,7 +82,7 @@ const weaponCategoryFilters = computed(() => {
             const filter: IWeaponFilterButton = {
                 text: t.weaponTypeName,
                 iconUrl: WeaponCategoryIconMap.value[t.weaponCategoryRegex],
-                archetypes: weaponCategoryArchetypeMap.value[t.weaponCategoryRegex],
+                archetypes: weaponCategoryArchetypeMap.value[t.weaponCategoryRegex] || [],
                 filter: (item: IWeapon) => {
                     if (item.weaponCategoryRegex !== t.weaponCategoryRegex) return false;
                     const activeArchetypeFilters = filter.archetypes.filter(a => props.activeFilters["Archetype"][a.text]);
@@ -144,7 +145,7 @@ const collectionCategoryFilters = computed(() => {
 const itemTierFilters = computed(() => {
     // For some reason, the "Basic" (i.e. white-coloured) tier shows up 3 times, grab uniques and sort them
     const uniqueTiers: IFilterButton[] = [];
-    const seenTiers: { [name: string]: boolean } = {};
+    const seenTiers: LookupMap<string, boolean> = {};
     const itemTierDefinitions = destinyDataService.itemTiers;
 
     for (const tier of itemTierDefinitions) {
@@ -249,7 +250,7 @@ function findActiveFilterPredicates(category: ICategoryInfo) {
 
 function getCollectionsWeaponMap(collection: Collection) {
     const collectionList = getCollectionsList(collection) || [];
-    const collectionsMap: { [weaponItemHash: number]: boolean | undefined } = {};
+    const collectionsMap: LookupMap<number, boolean> = {};
     for (const item of collectionList) {
         collectionsMap[item] = true;
     }

@@ -64,6 +64,48 @@ export enum ItemPerkVisibility {
     Hidden = 2,
 }
 
+export type ItemHash = number;
+
+export type TraitId =
+    "item_type.weapon"
+    | "weapon_type.auto_rifle"
+    | "weapon_type.bow"
+    | "weapon_type.fusion_rifle"
+    | "weapon_type.glaive"
+    | "weapon_type.grenade_launcher"
+    | "weapon_type.hand_cannon"
+    | "weapon_type.linear_fusion_rifle"
+    | "weapon_type.machinegun"
+    | "weapon_type.pulse_rifle"
+    | "weapon_type.rocket_launcher"
+    | "weapon_type.scout_rifle"
+    | "weapon_type.shotgun"
+    | "weapon_type.sidearm"
+    | "weapon_type.sniper_rifle"
+    | "weapon_type.submachinegun"
+    | "weapon_type.sword";
+
+export type WeaponCategoryRegex =
+    ".*_auto_rifle"
+    | "type_weapon_bow"
+    | ".*_hand_cannon"
+    | "type_weapon_fusion_rifle"
+    | ".*_glaive"
+    | ".*_grenade_launcher"
+    | ".*_fusion_rifle_line"
+    | ".*_machinegun"
+    | ".*_pulse_rifle"
+    | ".*_rocket_launcher"
+    | ".*_scout_rifle"
+    | ".*_sidearm"
+    | ".*_shotgun"
+    | ".*_sniper_rifle"
+    | ".*_submachinegun"
+    | "type_weapon_sword"
+    | ".*_beam_rifle";
+
+export type LookupMap<K extends string | number | symbol, V> = { [key in K]?: V };
+
 export interface ILanguageInfo {
     language: DestinyManifestLanguage;
     flagIcon: string;
@@ -104,41 +146,41 @@ export interface IAppliedFilters {
 
 export interface Destiny2GameData {
     damageTypes: DestinyDamageTypeDefinition[];
-    damageTypesLookup: { [hash: number]: DestinyDamageTypeDefinition };
+    damageTypesLookup: LookupMap<ItemHash, DestinyDamageTypeDefinition>;
 
     itemCategories: DestinyItemCategoryDefinition[];
-    itemCategoriesLookup: { [hash: number]: DestinyItemCategoryDefinition };
+    itemCategoriesLookup: LookupMap<ItemHash, DestinyItemCategoryDefinition>;
 
     itemTierTypes: DestinyItemTierTypeDefinition[];
-    itemTierTypesLookup: { [hash: number]: DestinyItemTierTypeDefinition };
+    itemTierTypesLookup: LookupMap<ItemHash, DestinyItemTierTypeDefinition>;
 
     seasons: DestinySeasonDefinition[];
-    seasonsLookup: { [hash: number]: DestinySeasonDefinition };
+    seasonsLookup: LookupMap<ItemHash, DestinySeasonDefinition>;
 
     weapons: IWeapon[];
-    weaponsLookup: { [weaponHash: number]: IWeapon };
+    weaponsLookup: LookupMap<ItemHash, IWeapon>;
     perkLookup: IPerkLookup;
-    masterworkLookup: { [hash: number]: IMasterwork | undefined };
-    modLookup: { [hash: number]: IMod | undefined };
+    masterworkLookup: LookupMap<ItemHash, IMasterwork>;
+    modLookup: LookupMap<ItemHash, IMod>;
 
     weaponTypes: IWeaponTypeInfo[];
 
-    statsLookup: { [hash: number]: DestinyStatDefinition };
-    statGroupsLookup: { [hash: number]: DestinyStatGroupDefinition };
-    itemLookup: { [hash: number]: DestinyInventoryItemDefinition };
-    plugSetLookup: { [hash: number]: DestinyPlugSetDefinition };
-    socketCategoryLookup: { [hash: number]: DestinySocketCategoryDefinition };
-    socketTypeLookup: { [hash: number]: DestinySocketTypeDefinition };
+    statsLookup: LookupMap<ItemHash, DestinyStatDefinition>;
+    statGroupsLookup: LookupMap<ItemHash, DestinyStatGroupDefinition>;
+    itemLookup: LookupMap<ItemHash, DestinyInventoryItemDefinition>;
+    plugSetLookup: LookupMap<ItemHash, DestinyPlugSetDefinition>;
+    socketCategoryLookup: LookupMap<ItemHash, DestinySocketCategoryDefinition>;
+    socketTypeLookup: LookupMap<ItemHash, DestinySocketTypeDefinition>;
 
     perkInsights: IPerkInsightCollection;
     collectionsLists: ICollectionsLists;
 }
 
 export interface IPerkLookup {
-    normal: { [hash: number]: IPerk | undefined };
-    enhanced: { [hash: number]: IPerk | undefined };
+    normal: LookupMap<ItemHash, IPerk>;
+    enhanced: LookupMap<ItemHash, IPerk>;
     perkPairs: IPerkPair[];
-    perkPairLookup: { [normalPerkHash: number]: IPerkPair | undefined };
+    perkPairLookup: LookupMap<ItemHash, IPerkPair>;
 }
 
 export interface IPerkPair {
@@ -182,8 +224,8 @@ export interface IWeapon {
     isCraftable: boolean;
     isSunset: boolean;
     tierTypeIndex: number;
-    traitId: string;
-    weaponCategoryRegex: string;
+    traitId: TraitId;
+    weaponCategoryRegex: WeaponCategoryRegex;
     damageType: IDamageType;
     statBlock: IStatBlock;
     archetype: IArchetype | undefined;

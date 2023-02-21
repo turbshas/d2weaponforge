@@ -1,7 +1,7 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition } from "bungie-api-ts/destiny2";
 import { AllowedPlugCategoryIds, AllPerkPlugCategoryIds, ModPlugCategoryIds } from "./constants";
 import { DataSearchStrings } from "./services/dataSearchStringService";
-import { ItemTierIndex, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type IWeaponTypeInfo, type UsedDestinyManifestSlice } from "./interfaces";
+import { ItemTierIndex, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type ItemHash, type IWeaponTypeInfo, type LookupMap, type UsedDestinyManifestSlice, type WeaponCategoryRegex } from "./interfaces";
 import { ManifestAccessor } from "./types/manifestAccessor";
 import { Weapon } from "./types/weapon";
 import { arrayToExistenceMap, arrayToHashMap, hashMapToArray } from "./util";
@@ -21,8 +21,8 @@ export class DestinyManifestProcessor {
     private readonly _weapons: Weapon[];
     private readonly _weaponTypes: IWeaponTypeInfo[];
     private readonly _perkLookup: IPerkLookup;
-    private readonly _masterworkLookup: { [hash: number]: IMasterwork | undefined };
-    private readonly _modLookup: { [hash: number]: IMod | undefined };
+    private readonly _masterworkLookup: LookupMap<ItemHash, IMasterwork>;
+    private readonly _modLookup: LookupMap<ItemHash, IMod>;
     private readonly _itemCategories: DestinyItemCategoryDefinition[];
 
     constructor(manifestSlice: UsedDestinyManifestSlice) {
@@ -132,8 +132,8 @@ export class DestinyManifestProcessor {
     private readonly processWeapons = (
         weapons: DestinyInventoryItemDefinition[],
         perkLookup: IPerkLookup,
-        masterworkLookup: { [hash: number]: IMasterwork | undefined },
-        modLookup: { [hash: number]: IMod | undefined },
+        masterworkLookup: LookupMap<ItemHash, IMasterwork>,
+        modLookup: LookupMap<ItemHash, IMod>,
         ) => {
         // Sort the weapons newest to oldest (roughly).
         // TODO: find a better way to sort, or manually curate the order to show recent weapons.
@@ -146,7 +146,7 @@ export class DestinyManifestProcessor {
     private readonly processPerks = (perks: DestinyInventoryItemDefinition[]) => {
         const normalPerks: IPerk[] = [];
         const enhancedPerks: IPerk[] = [];
-        const enhancedPerkNameMap: { [name: string]: IPerk | undefined } = {};
+        const enhancedPerkNameMap: LookupMap<string, IPerk> = {};
 
         // Separate by normal/enhanced, add enhanced to lookup table by name for faster matching with normal perks.
         for (const perkItem of perks) {
@@ -165,7 +165,7 @@ export class DestinyManifestProcessor {
 
         // Group normal + enhanced together.
         const perkPairs: IPerkPair[] = [];
-        const perkPairMap: { [normalPerkHash: number]: IPerkPair | undefined } = {};
+        const perkPairMap: LookupMap<ItemHash, IPerkPair> = {};
         for (const perk of normalPerks) {
             const perkPair: IPerkPair = {
                 perk: perk,
@@ -207,7 +207,7 @@ export class DestinyManifestProcessor {
                 },
             },
         } = {};
-        const weaponTypeInfoMap: { [weaponType: string]: IWeaponTypeInfo } = {};
+        const weaponTypeInfoMap: LookupMap<WeaponCategoryRegex, IWeaponTypeInfo> = {};
 
         for (const weapon of activeWeapons) {
             if (!weapon.archetype || (weapon.tierTypeIndex !== ItemTierIndex.Legendary)) continue;
@@ -250,7 +250,7 @@ export class DestinyManifestProcessor {
             if (seenArchetypes[weapon.weaponCategoryRegex][archetypeName][stat]) continue;
             seenArchetypes[weapon.weaponCategoryRegex][archetypeName][stat] = true;
 
-            weaponTypeInfoMap[weapon.weaponCategoryRegex].archetypes.push({
+            weaponTypeInfoMap[weapon.weaponCategoryRegex]!.archetypes.push({
                 weaponType: weaponTypeTraitId,
                 name: archetypeName,
                 rpm: stat,

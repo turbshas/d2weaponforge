@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import type { IMasterwork } from '@/data/interfaces';
+import type { IMasterwork, LookupMap } from '@/data/interfaces';
 import BuilderSection from '../../Common/BuilderSection.vue';
 import OptionButton from '@/components/Common/OptionButton.vue';
 import ElementLabel from '@/components/Common/ElementLabel.vue';
@@ -15,7 +15,7 @@ const emits = defineEmits<{
 }>();
 
 const masterworkOptionsByStatName = computed(() => {
-    const masterworks: { [statName: string]: IMasterwork[] } = {};
+    const masterworks: LookupMap<string, IMasterwork[]> = {};
 
     for (const mw of props.masterworkList) {
         const name = mw.name;
@@ -23,7 +23,7 @@ const masterworkOptionsByStatName = computed(() => {
         if (!masterworks[name]) {
             masterworks[name] = [];
         }
-        masterworks[name].push(mw);
+        masterworks[name]!.push(mw);
     }
     return masterworks;
 });
@@ -53,6 +53,7 @@ function initSelectedStatName() {
 function initSelectedMasterworkLevel() {
     if (!props.masterwork || !selectedMasterworkStatName.value) return 0;
     const masterworkOptions = masterworkOptionsByStatName.value[selectedMasterworkStatName.value];
+    if (!masterworkOptions) return 0;
     const masterworkIndex = masterworkOptions.findIndex(mw => mw.hash === props.masterwork!.hash);
     // Masterworks are 1-indexed, and level 0 masterworks don't actually exist, so would return -1 anyway.
     return masterworkIndex + 1;
@@ -61,7 +62,7 @@ function initSelectedMasterworkLevel() {
 function emitMasterworkChange(statName: string, level: number) {
     const masterworkList = masterworkOptionsByStatName.value[statName];
     // A value of 0 basically disables the masterwork, set to undefined
-    const masterwork = level > 0 ? masterworkList[level - 1] : undefined;
+    const masterwork = masterworkList && (level > 0) ? masterworkList[level - 1] : undefined;
     emits("masterworkChanged", masterwork);
 }
 

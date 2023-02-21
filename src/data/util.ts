@@ -1,3 +1,5 @@
+import type { LookupMap } from "./interfaces";
+
 type PropertiesOfType<T, U> = { [key in keyof T]: T[key] extends U ? key : never };
 type PropertyNamesOfType<T, U> = PropertiesOfType<T, U>[keyof T];
 
@@ -30,8 +32,8 @@ export function arrayToHashMap<T extends ArrayToHashMapItem<T>>(array: T[], key:
     return map;
 }
 
-export function arrayToExistenceMap<T extends string | number | symbol>(array: T[]): { [key in T]?: boolean } {
-    const map: { [key in T]?: boolean } = {};
+export function arrayToExistenceMap<T extends string | number | symbol>(array: T[]): LookupMap<T, boolean> {
+    const map: LookupMap<T, boolean> = {};
     for (const item of array) {
         map[item] = true;
     }

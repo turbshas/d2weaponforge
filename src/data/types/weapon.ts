@@ -1,7 +1,7 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { WeaponTypeTraitToRegex } from "../constants";
 import { DataSearchStrings } from "../services/dataSearchStringService";
-import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type IWeapon } from "../interfaces";
+import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type ItemHash, type IWeapon, type LookupMap, type TraitId, type WeaponCategoryRegex } from "../interfaces";
 import { Archetype } from "./archetype";
 import { DamageType } from "./damageType";
 import type { ManifestAccessor } from "./manifestAccessor";
@@ -25,8 +25,8 @@ export class Weapon implements IWeapon {
     public readonly isSunset: boolean;
     public readonly tierTypeIndex: number;
 
-    public readonly traitId: string;
-    public readonly weaponCategoryRegex: string;
+    public readonly traitId: TraitId;
+    public readonly weaponCategoryRegex: WeaponCategoryRegex;
 
     public readonly damageType: DamageType;
     public readonly statBlock: StatBlock;
@@ -43,8 +43,8 @@ export class Weapon implements IWeapon {
         weaponItem: DestinyInventoryItemDefinition,
         manifest: ManifestAccessor,
         perkLookup: IPerkLookup,
-        masterworkLookup: { [hash: number]: IMasterwork | undefined },
-        modLookup: { [hash: number]: IMod | undefined },
+        masterworkLookup: LookupMap<ItemHash, IMasterwork>,
+        modLookup: LookupMap<ItemHash, IMod>,
         ) {
         this.index = weaponItem.index;
         this.hash = weaponItem.hash;
@@ -59,7 +59,7 @@ export class Weapon implements IWeapon {
         this.tierTypeIndex = getWeaponTierTypeIndex(weaponItem, manifest);
 
         this.traitId = getWeaponTraitId(weaponItem);
-        this.weaponCategoryRegex = WeaponTypeTraitToRegex.value[this.traitId];
+        this.weaponCategoryRegex = WeaponTypeTraitToRegex.value[this.traitId]!;
 
         this.damageType = new DamageType(weaponItem, manifest);
         const statGroup = weaponItem.stats && weaponItem.stats.statGroupHash
@@ -83,7 +83,7 @@ export class Weapon implements IWeapon {
         const isAutoTraitId = this.traitId === DataSearchStrings.TraitIDs.AutoRifle;
         const hasTraceRifleRpm = this.archetype && this.archetype.rpmStatValue && this.archetype.rpmStatValue >= 1000;
         if (isAutoTraitId && hasTraceRifleRpm) {
-            this.weaponCategoryRegex = DataSearchStrings.WeaponCategoryRegex.TraceRifle;
+            this.weaponCategoryRegex = DataSearchStrings.WeaponCategoryRegex.TraceRifle as WeaponCategoryRegex;
         }
 
         this.seasonHash = weaponItem.seasonHash;
@@ -121,4 +121,4 @@ function getWeaponTierTypeIndex(weapon: DestinyInventoryItemDefinition, manifest
     return tierType ? (tierType.index as ItemTierIndex) : ItemTierIndex.Basic;
 }
 // Archetype trait ID seems to always be last one in the list, hopefully that doesn't change.
-function getWeaponTraitId(weapon: DestinyInventoryItemDefinition) { return weapon.traitIds[weapon.traitIds.length - 1]; }
+function getWeaponTraitId(weapon: DestinyInventoryItemDefinition) { return weapon.traitIds[weapon.traitIds.length - 1] as TraitId; }

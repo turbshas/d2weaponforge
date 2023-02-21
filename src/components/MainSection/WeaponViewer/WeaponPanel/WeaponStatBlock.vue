@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DataSearchStrings } from '@/data/services';
-import type { IModifiedStat } from '@/data/interfaces';
+import type { IModifiedStat, LookupMap } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
 
@@ -41,7 +41,7 @@ const props = defineProps<{
 }>();
 
 const statInfoMap = computed(() => {
-    const map: { [statHash: number]: IModifiedStat | undefined } = {};
+    const map: LookupMap<number, IModifiedStat> = {};
     for (const stat of props.displayStats) {
         map[stat.statHash] = stat;
     }
