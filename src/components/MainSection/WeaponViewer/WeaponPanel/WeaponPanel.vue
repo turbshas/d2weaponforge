@@ -35,12 +35,6 @@ const weaponNameElement = ref<HTMLElement | null>(null);
 function onHideElementsClicked() {
     showUiElements.value = !showUiElements.value;
 }
-
-function onPerkClicked(column: PerkColumnNumber) {
-    const perk = props.selectedGear.perkOptionsMap.value[column];
-    if (!perk) return;
-    perk.useEnhanced = !perk.useEnhanced;
-}
 </script>
 
 <template>
@@ -85,7 +79,6 @@ function onPerkClicked(column: PerkColumnNumber) {
                 :masterwork="props.selectedGear.masterwork.value"
                 :mod="props.selectedGear.mod.value"
                 :is-adept="!!(weapon?.isAdept)"
-                @perk-clicked="onPerkClicked"
             ></SelectedPerks>
         </div>
     </div>

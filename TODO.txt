@@ -35,8 +35,6 @@ Unsure about order:
 - involve stat display override when creating masterworks in DestinyManifestProcessor
 - change drang/mida mini-tool intrinsic checks to use hashes
 - glossary revamp:
-  - requires pulling all perks from the manifest instead of for each weapon
-    - this also means we wouldn't be processing the same perks for every weapon they appear on...
   - group perk + enhanced together into collapsible selections
   - icon + name for collapsible section header
   - within collapsible section body, show base + hash + description, then enhanced + hash + description
@@ -61,7 +59,6 @@ Unsure about order:
 - selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
 - convert as many ID comparisons, etc. as possible to hashes
 - convert collections lists to enum instead of magic numbers
-- convert rangefinder perk name to perk hash, as those are apparently stable
 - convert Item Tier Index to hash, as those are stable
 - load background image after manifest has loaded to ensure it doesn't delay page load on low speed connections
   - the home page loads until the background fills in, then it transitions to the weapon page

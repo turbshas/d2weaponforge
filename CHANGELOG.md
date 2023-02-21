@@ -1,5 +1,14 @@
 # Changelog
 
+## **Title TBD** [ *1.3.0* ] Date TBD
+Description TBD
+
+* Parse perks, masterworks, and mods once each directly from the manifest definitions instead of once for every weapon they appear on.
+  * Should reduce size of parsed data stored in IndexedDB.
+  * Each weapon now contains hashes as references to these parsed items.
+* Use Rangefinder perk hash instead of name - reduces translation map size.
+* Pull useEnhanced out of IPerkOption and into (new) ISelectedPerk (which isn't serialized).
+
 ## **Collections Filters + Perk Insights** [ *1.2.0* ] 2023-02-20
 This change implements the collections filters for sources of weapons,
 perk insights from community info (+ glossary) for perk details,

@@ -1,16 +1,29 @@
 <script setup lang="ts">
-import type { IMod } from '@/data/interfaces';
+import type { IMod, ItemHash } from '@/data/interfaces';
 import PerkDisplay from '../../Common/PerkDisplay.vue';
 import BuilderSection from '../../Common/BuilderSection.vue';
+import { destinyDataService } from '@/data/services';
+import { computed } from 'vue';
 
 const props = defineProps<{
-    modList: IMod[],
+    modList: ItemHash[],
     mod: IMod | undefined,
 }>();
 
 const emits = defineEmits<{
     (e: "modChanged", mod: IMod | undefined): void
 }>();
+
+const modItems = computed(() => {
+    const modItems: IMod[] = [];
+    for (const modItemHash of props.modList) {
+        if (!modItemHash) continue;
+        const modItem = destinyDataService.getMasterworkDefinition(modItemHash);
+        if (!modItem) continue;
+        modItems.push(modItem);
+    }
+    return modItems;
+})
 
 function onModClicked(mod: IMod) {
     // Selecting the current mod will de-select it
@@ -24,7 +37,7 @@ function onModClicked(mod: IMod) {
         <div class="list">
             <PerkDisplay
                 class="mod"
-                v-for="mod of props.modList"
+                v-for="mod of modItems"
                 :key="mod.hash"
                 :perk="mod"
                 :is-adept="false"

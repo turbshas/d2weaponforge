@@ -36,8 +36,8 @@ export class DestinyManifestProcessor {
         this._masterworkLookup = arrayToHashMap(this.processMasterworks(groupedItems.masterworks), "hash");
         this._modLookup = arrayToHashMap(this.processMods(groupedItems.mods), "hash");
 
-        this._weapons = this.processWeapons(groupedItems.weapons, this.perkLookup, this.masterworkLookup, this.modLookup);
-        this._weaponTypes = this.processArchetypes(this._weapons);
+        this._weapons = this.processWeapons(groupedItems.weapons, this._perkLookup, this._masterworkLookup, this._modLookup);
+        this._weaponTypes = this.processArchetypes(this._weapons, this._perkLookup);
     }
 
     private readonly stripRedactedAndUnneeded = () => {
@@ -168,12 +168,13 @@ export class DestinyManifestProcessor {
         const perkPairMap: LookupMap<ItemHash, IPerkPair> = {};
         for (const perk of normalPerks) {
             const perkPair: IPerkPair = {
-                perk: perk,
+                perk: perk.hash,
                 enhanced: undefined,
             };
             if (perk.categoryId === DataSearchStrings.CategoryIDs.FramesPlug) {
                 // Searching through the array could be slow, so only bother for perks that CAN be enhanced.
-                perkPair.enhanced = enhancedPerkNameMap[perk.name] || enhancedPerks.find(e => e.name.includes(perk.name));
+                const enhancedPerk = enhancedPerkNameMap[perk.name] || enhancedPerks.find(e => e.name.includes(perk.name));
+                perkPair.enhanced = enhancedPerk?.hash;
             }
             perkPairs.push(perkPair);
             perkPairMap[perk.hash] = perkPair;
@@ -197,7 +198,7 @@ export class DestinyManifestProcessor {
         return masterworks.map(mw => new Masterwork(mw, undefined, this.manifest));
     }
 
-    private readonly processArchetypes = (weapons: Weapon[]) => {
+    private readonly processArchetypes = (weapons: Weapon[], perkLookup: IPerkLookup) => {
         const activeWeapons = weapons.filter(w => !w.isSunset);
 
         const seenArchetypes: {
@@ -218,7 +219,9 @@ export class DestinyManifestProcessor {
                 || weaponNameLower.includes(DataSearchStrings.Misc.MidaMiniToolName.value.toLocaleLowerCase())) continue;
 
             const weaponTypeTraitId = weapon.traitId;
-            const archetypeName = weapon.archetype.name;
+            const archetypePerk = perkLookup.normal[weapon.archetype.intrinsicPerkHash];
+            if (!archetypePerk) continue;
+            const archetypeName = archetypePerk.name;
 
             const weaponRpmStatHash = weapon.archetype.rpmStatHash;
             const stat = weapon.archetype.rpmStatValue;
@@ -252,6 +255,7 @@ export class DestinyManifestProcessor {
 
             weaponTypeInfoMap[weapon.weaponCategoryRegex]!.archetypes.push({
                 weaponType: weaponTypeTraitId,
+                hash: archetypePerk.hash,
                 name: archetypeName,
                 rpm: stat,
                 statHash: weaponRpmStatHash,

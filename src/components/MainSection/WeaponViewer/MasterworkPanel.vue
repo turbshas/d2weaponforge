@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import type { IMasterwork, LookupMap } from '@/data/interfaces';
+import type { IMasterwork, ItemHash, LookupMap } from '@/data/interfaces';
 import BuilderSection from '../../Common/BuilderSection.vue';
 import OptionButton from '@/components/Common/OptionButton.vue';
 import ElementLabel from '@/components/Common/ElementLabel.vue';
+import { destinyDataService } from '@/data/services';
 
 const props = defineProps<{
-    masterworkList: IMasterwork[],
+    masterworkList: ItemHash[],
     masterwork: IMasterwork | undefined,
 }>();
 
@@ -14,10 +15,21 @@ const emits = defineEmits<{
     (e: "masterworkChanged", masterwork: IMasterwork | undefined): void
 }>();
 
+const masterworkItems = computed(() => {
+    const mwItems: IMasterwork[] = [];
+    for (const mwItemHash of props.masterworkList) {
+        if (!mwItemHash) continue;
+        const mwItem = destinyDataService.getMasterworkDefinition(mwItemHash);
+        if (!mwItem) continue;
+        mwItems.push(mwItem);
+    }
+    return mwItems;
+})
+
 const masterworkOptionsByStatName = computed(() => {
     const masterworks: LookupMap<string, IMasterwork[]> = {};
 
-    for (const mw of props.masterworkList) {
+    for (const mw of masterworkItems.value) {
         const name = mw.name;
         if (!name) continue;
         if (!masterworks[name]) {

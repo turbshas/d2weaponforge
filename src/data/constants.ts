@@ -54,6 +54,11 @@ export const ValidPerkPlugCategories = computed(() => [
     DataSearchStrings.CategoryIDs.StocksPlug,
 ]);
 
+export const ExcludedPerkPlugCategories = computed(() => [
+    DataSearchStrings.CategoryIDs.TrackerPlug,
+    DataSearchStrings.CategoryIDs.WeaponModEmpty,
+]);
+
 export const AllPerkPlugCategoryIds = computed(() => [
     DataSearchStrings.CategoryIDs.IntrinsicPlug,
     ...ValidPerkPlugCategories.value

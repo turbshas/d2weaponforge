@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { IPerkColumn, IPerkOption, PerkColumnNumber } from '@/data/interfaces';
+import type { IPerkColumn, IPerkOption, ISelectedPerk, ISelectedPerkMap, PerkColumnNumber } from '@/data/interfaces';
+import { destinyDataService } from '@/data/services';
 import { computed } from '@vue/reactivity';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 
 const props = defineProps<{
     perkOptionLists: IPerkColumn[] | undefined,
-    selectedPerks: { [column in PerkColumnNumber]: IPerkOption | undefined },
+    selectedPerks: ISelectedPerkMap<ISelectedPerk>,
     hideEnhanced?: boolean,
 }>();
 
@@ -24,9 +25,18 @@ const perkColumns = computed(() => {
     });
 });
 
+function getPerkItem(perkOption: IPerkOption) {
+    return destinyDataService.getPerkDefinition(perkOption.perk);
+}
+
+function getEnhancedPerkItem(perkOption: IPerkOption) {
+    if (props.hideEnhanced || !perkOption.enhancedPerk) return undefined;
+    return destinyDataService.getEnhancedPerkDefinition(perkOption.enhancedPerk);
+}
+
 function isPerkSelected(column: PerkColumnNumber, perk: IPerkOption) {
     const selectedPerk = props.selectedPerks[column];
-    return !!selectedPerk && selectedPerk.perk.hash === perk.perk.hash;
+    return !!selectedPerk && selectedPerk.perkOption.perk === perk.perk;
 }
 
 function onPerkClicked(column: PerkColumnNumber, perk: IPerkOption) {
@@ -48,8 +58,8 @@ function onPerkClicked(column: PerkColumnNumber, perk: IPerkOption) {
                 class="perk"
                 v-for="(perk, index) in perkColumn.perks.perks"
                 :key="index"
-                :perk="perk.perk"
-                :enhanced-perk="props.hideEnhanced ? undefined : perk.enhancedPerk"
+                :perk="getPerkItem(perk)"
+                :enhanced-perk="getEnhancedPerkItem(perk)"
                 :column="perkColumn.column"
                 :is-adept="false"
                 :crafting-info="perk.craftingInfo"

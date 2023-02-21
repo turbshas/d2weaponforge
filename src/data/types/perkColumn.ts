@@ -1,7 +1,6 @@
-import type { IPerkColumn } from "../interfaces";
-import type { PerkOption } from "./perkOption";
+import type { IPerkColumn, IPerkOption } from "../interfaces";
 
 export class PerkColumn implements IPerkColumn {
-    constructor(public readonly perks: PerkOption[]) {
+    constructor(public readonly perks: IPerkOption[]) {
     }
 }

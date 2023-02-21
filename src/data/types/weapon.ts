@@ -33,8 +33,8 @@ export class Weapon implements IWeapon {
     public readonly archetype: Archetype | undefined;
     public readonly perks: PerkGrid;
     public readonly curated: PerkGrid;
-    public readonly masterworks: Masterwork[];
-    public readonly mods: Mod[];
+    public readonly masterworks: ItemHash[];
+    public readonly mods: ItemHash[];
 
     // TODO: is this possible?
     public readonly seasonHash: number | undefined;
@@ -67,16 +67,18 @@ export class Weapon implements IWeapon {
             : undefined;
         this.statBlock = new StatBlock(statGroup, weaponItem.investmentStats, manifest);
 
-        const resolvedWeaponSockets = new ResolvedWeaponSockets(weaponItem, manifest);
+        const resolvedWeaponSockets = new ResolvedWeaponSockets(weaponItem, manifest, perkLookup, masterworkLookup, modLookup);
         this.archetype = resolvedWeaponSockets.intrinsic
             ? new Archetype(resolvedWeaponSockets.intrinsic, this.traitId, weaponItem.stats, manifest)
             : undefined;
         this.perks = resolvedWeaponSockets.perks;
         this.curated = resolvedWeaponSockets.curated;
-        this.masterworks = resolvedWeaponSockets.masterworks.map(mw => new Masterwork(mw, statGroup, manifest));
-        const baseMods = resolvedWeaponSockets.mods.map(mod => new Mod(mod, manifest));
+
+        this.masterworks = resolvedWeaponSockets.masterworks;
+
+        const baseMods = resolvedWeaponSockets.mods;
         this.mods = this.isAdept
-            ? baseMods.concat(resolvedWeaponSockets.adeptMods.map(mod => new Mod(mod, manifest)))
+            ? baseMods.concat(resolvedWeaponSockets.adeptMods)
             : baseMods;
 
         // This is gross, but meh it seems to work.

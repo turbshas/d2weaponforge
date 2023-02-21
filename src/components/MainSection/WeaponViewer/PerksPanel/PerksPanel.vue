@@ -3,12 +3,12 @@ import { computed } from 'vue';
 import PerkList from './PerkList.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
 import BuilderSection from '../../../Common/BuilderSection.vue';
-import type { IPerkColumn, IPerkOption, PerkColumnNumber, ISelectedPerkMap } from '@/data/interfaces';
+import type { IPerkColumn, IPerkOption, PerkColumnNumber, ISelectedPerkMap, ISelectedPerk } from '@/data/interfaces';
 
 const props = defineProps<{
     randomRollPerks: IPerkColumn[],
     curatedPerks: IPerkColumn[],
-    selectedPerks: ISelectedPerkMap<IPerkOption>,
+    selectedPerks: ISelectedPerkMap<ISelectedPerk>,
 }>();
 
 const emits = defineEmits<{

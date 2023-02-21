@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { destinyDataService } from '@/data/services';
-import { PageSelection, type IMasterwork, type IMod, type ISelectedGear, type IWeapon, type PerkColumnNumber, type ISelectedPerkMap, type IPerkOption } from '@/data/interfaces';
+import { PageSelection, type ISelectedGear, type IWeapon, type PerkColumnNumber, type ISelectedPerkMap, type ItemHash, type ISelectedPerk, type IMasterwork, type IMod } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import { watch } from 'vue';
 
@@ -20,7 +20,7 @@ const emits = defineEmits<{
     (e: "urlParsed",
         page: PageSelection,
         weapon: IWeapon | undefined,
-        perks: ISelectedPerkMap<IPerkOption>,
+        perks: ISelectedPerkMap<ISelectedPerk>,
         masterwork: IMasterwork | undefined,
         mod: IMod | undefined,
     ): void,
@@ -57,7 +57,7 @@ watch(() => destinyDataService.gameData, onGameDataChanged);
 watch(() => path.value, onPathChanged);
 
 function onGameDataChanged() {
-    const perkMap: ISelectedPerkMap<IPerkOption> = {
+    const perkMap: ISelectedPerkMap<ISelectedPerk> = {
         1: undefined,
         2: undefined,
         3: undefined,
@@ -105,26 +105,28 @@ function onGameDataChanged() {
     // If weapon doesn't exist, the other values aren't valid.
     if (!weapon) return
 
-    const perkHashes = [urlPerkHashes[0], urlPerkHashes[1], urlPerkHashes[2], urlPerkHashes[3], urlPerkHashes[6]];
+    const perkHashes: [number, number, number, number, number] = [urlPerkHashes[0], urlPerkHashes[1], urlPerkHashes[2], urlPerkHashes[3], urlPerkHashes[6]];
     const masterworkHash = urlPerkHashes[4];
     const modHash = urlPerkHashes[5];
 
     const perks = perkHashes.map((hash, index) => {
         const perkColumn = weapon.perks.perkColumns[index];
-        const perk = perkColumn && perkColumn.perks
-            .find(p => (p.enhancedPerk && p.enhancedPerk.hash === hash) || p.perk.hash === hash);
-        if (perk && perk.enhancedPerk && hash === perk.enhancedPerk.hash) {
-            perk.useEnhanced = true;
-        }
-        return perk;
+        const perk = !!perkColumn && perkColumn.perks.find(p => (p.enhancedPerk === hash) || (p.perk === hash));
+
+        if (!perk) return undefined;
+        const selectedPerk: ISelectedPerk = {
+            perkOption: perk,
+            useEnhanced: !!perk && (hash === perk.enhancedPerk),
+        };
+        return selectedPerk;
     });
     perkMap[1] = perks[0];
     perkMap[2] = perks[1];
     perkMap[3] = perks[2];
     perkMap[4] = perks[3];
     perkMap[5] = perks[4];
-    const masterwork = weapon.masterworks.find(mw => mw.hash === masterworkHash);
-    const mod = weapon.mods.find(mod => mod.hash === modHash);
+    const masterwork = destinyDataService.getMasterworkDefinition(masterworkHash);
+    const mod = destinyDataService.getModDefinition(modHash);
 
     emits("urlParsed", PageSelection.Weapon, weapon, perkMap, masterwork, mod);
 }
@@ -134,10 +136,10 @@ function onPathChanged() {
 }
 
 function getPerkHashAtIndex(column: PerkColumnNumber) {
-    const perkOption = props.selectedGear.perkOptionsMap.value[column];
-    if (!perkOption) return 0;
-    const perk = perkOption.useEnhanced ? perkOption.enhancedPerk : perkOption.perk;
-    return perk?.hash || 0;
+    const selectedPerk = props.selectedGear.perkOptionsMap.value[column];
+    if (!selectedPerk) return 0;
+    const perk = selectedPerk.useEnhanced ? selectedPerk.perkOption.enhancedPerk : selectedPerk.perkOption.perk;
+    return perk || 0;
 }
 </script>
 

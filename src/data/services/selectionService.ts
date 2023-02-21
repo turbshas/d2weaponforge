@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import type { ILanguageInfo, IMasterwork, IMod, IPerkBonus, IPerkOption, IWeapon, PerkColumnNumber, ISelectedPerkMap } from "../interfaces";
+import type { ILanguageInfo, IMasterwork, IMod, IPerkBonus, IPerkOption, IWeapon, PerkColumnNumber, ISelectedPerkMap, ISelectedPerk } from "../interfaces";
 import { SelectedGear } from "../types/selectedGear";
 
 export class SelectionService {
@@ -50,11 +50,15 @@ export class SelectionService {
     }
 
     public readonly setPerk = (column: PerkColumnNumber, perk: IPerkOption | undefined) => {
-        this.selectedGear.perkOptionsMap.value[column] = perk;
+        this.selectedGear.perkOptionsMap.value[column] = this.perkOptionToSelectedPerk(perk);
     }
 
-    public readonly setPerks = (perks: ISelectedPerkMap<IPerkOption>) => {
+    public readonly setPerks = (perks: ISelectedPerkMap<ISelectedPerk>) => {
         this.selectedGear.perkOptionsMap.value = perks;
+    }
+
+    private readonly perkOptionToSelectedPerk = (perkOption: IPerkOption | undefined) => {
+        return perkOption ? { perkOption: perkOption, useEnhanced: false, } : undefined;
     }
 
     public readonly setMasterwork = (masterwork: IMasterwork | undefined) => {

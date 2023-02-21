@@ -1,7 +1,7 @@
 import type { DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
-import type { IMasterwork, IMod, IModifiedStat, IPerk, IPerkBonus, IPerkOption, ISelectedGear, IWeapon, ISelectedPerkMap, PerkColumnNumber, LookupMap, ItemHash } from "../interfaces";
-import { selectionService } from "../services";
+import type { IMasterwork, IMod, IModifiedStat, IPerk, IPerkBonus, ISelectedGear, IWeapon, ISelectedPerkMap, PerkColumnNumber, LookupMap, ItemHash, ISelectedPerk } from "../interfaces";
+import { destinyDataService, selectionService } from "../services";
 import { hashMapToArray } from "../util";
 
 export class SelectedGear implements ISelectedGear {
@@ -10,7 +10,7 @@ export class SelectedGear implements ISelectedGear {
     }
 
     public readonly weapon = ref<IWeapon | undefined>(undefined);
-    public readonly perkOptionsMap = ref<ISelectedPerkMap<IPerkOption>>({
+    public readonly perkOptionsMap = ref<ISelectedPerkMap<ISelectedPerk>>({
         1: undefined,
         2: undefined,
         3: undefined,
@@ -74,11 +74,11 @@ export class SelectedGear implements ISelectedGear {
     private readonly isWeaponCraftable = computed(() => !!this.weapon.value && this.weapon.value.isCraftable);
     private readonly perkMap = computed(() => {
         const map:  ISelectedPerkMap<IPerk> = {
-            1: this.getPerkFromOption(this.perkOptionsMap.value[1]),
-            2: this.getPerkFromOption(this.perkOptionsMap.value[2]),
-            3: this.getPerkFromOption(this.perkOptionsMap.value[3]),
-            4: this.getPerkFromOption(this.perkOptionsMap.value[4]),
-            5: this.getPerkFromOption(this.perkOptionsMap.value[5]),
+            1: this.getPerkFromSelected(this.perkOptionsMap.value[1]),
+            2: this.getPerkFromSelected(this.perkOptionsMap.value[2]),
+            3: this.getPerkFromSelected(this.perkOptionsMap.value[3]),
+            4: this.getPerkFromSelected(this.perkOptionsMap.value[4]),
+            5: this.getPerkFromSelected(this.perkOptionsMap.value[5]),
         };
         return map;
     });
@@ -138,9 +138,14 @@ export class SelectedGear implements ISelectedGear {
         return map;
     });
 
-    private readonly getPerkFromOption = (perkOption: IPerkOption | undefined) => {
-        if (!perkOption) return undefined;
-        return perkOption.useEnhanced ? perkOption.enhancedPerk : perkOption.perk;
+    private readonly getPerkFromSelected = (selectedPerk: ISelectedPerk | undefined) => {
+        if (!selectedPerk) return undefined;
+        if (selectedPerk.useEnhanced) {
+            const hash = selectedPerk.perkOption.enhancedPerk;
+            return hash ? destinyDataService.getEnhancedPerkDefinition(hash) : undefined;
+        } else {
+            return destinyDataService.getPerkDefinition(selectedPerk.perkOption.perk);
+        }
     }
 
     private readonly getBonusesForPerk = (perk: IPerk | undefined) => {

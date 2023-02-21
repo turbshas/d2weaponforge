@@ -7,7 +7,6 @@ import type { Collection, FilterCategory, IAppliedFilters, IArchetypeFilter, IFi
 import OptionButton from "@/components/Common/OptionButton.vue";
 import ElementLabel from "@/components/Common/ElementLabel.vue";
 import { OriginFilterInfos, SeasonIconMap, SeasonToCollectionMap, WeaponCategoryIconMap } from "@/data/constants";
-import { stringifyExpression } from "@vue/compiler-core";
 
 interface ICategoryInfo {
     name: FilterCategory;
@@ -58,8 +57,8 @@ const weaponCategoryArchetypeMap = computed(() => {
                 text: `${rpmPrefix}${archetype.name}`,
                 filter: (item: IWeapon) => {
                     if (!item.archetype) return false;
-                    const name = item.archetype.name;
-                    return name === archetype.name
+                    const hash = item.archetype.intrinsicPerkHash;
+                    return hash === archetype.hash
                         && (
                             !weaponType.compareUsingRpm
                             || (!!item.archetype && archetype.rpm === item.archetype.rpmStatValue)
@@ -81,7 +80,7 @@ const weaponCategoryFilters = computed(() => {
         .map(t => {
             const filter: IWeaponFilterButton = {
                 text: t.weaponTypeName,
-                iconUrl: WeaponCategoryIconMap.value[t.weaponCategoryRegex],
+                iconUrl: WeaponCategoryIconMap.value[t.weaponCategoryRegex] || "",
                 archetypes: weaponCategoryArchetypeMap.value[t.weaponCategoryRegex] || [],
                 filter: (item: IWeapon) => {
                     if (item.weaponCategoryRegex !== t.weaponCategoryRegex) return false;

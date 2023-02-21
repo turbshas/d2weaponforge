@@ -1,7 +1,7 @@
 import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { ref } from "vue";
 import type { DestinyApiService } from "./destinyApiService";
-import type { Destiny2GameData, ILanguageInfo } from "../interfaces";
+import type { Destiny2GameData, ILanguageInfo, ItemHash } from "../interfaces";
 import { hashMapToArray } from "../util";
 
 export class DestinyDataService {
@@ -89,6 +89,22 @@ export class DestinyDataService {
     public isSeasonSunset = (season: DestinySeasonDefinition) => {
         // Season of Dawn is last sunset season
         return !season || season.seasonNumber <= 9;
+    }
+
+    public getPerkDefinition = (perkHash: ItemHash) => {
+        return this.gameData?.perkLookup.normal[perkHash];
+    }
+
+    public getEnhancedPerkDefinition = (perkHash: ItemHash) => {
+        return this.gameData?.perkLookup.enhanced[perkHash];
+    }
+
+    public getMasterworkDefinition = (mwHash: ItemHash) => {
+        return this.gameData?.masterworkLookup[mwHash];
+    }
+
+    public getModDefinition = (modHash: ItemHash) => {
+        return this.gameData?.modLookup[modHash];
     }
 
     // Notes
