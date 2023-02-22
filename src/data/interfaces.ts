@@ -49,6 +49,14 @@ export enum StatDisplayType {
     Number = "Number",
 }
 
+export enum WeaponSocketCategoryHash {
+    Intrinsic = 3956125808,
+    /** Includes regular perks, origin perks, and trackers. */
+    Perks = 4241085061,
+    /** Includes mods, masterworks, and maybe red border socket? */
+    Mods = 2685412949,
+}
+
 export enum ItemTierIndex {
     Basic = 0,
     Common = 1,
@@ -64,13 +72,55 @@ export enum ItemPerkVisibility {
     Hidden = 2,
 }
 
+export type ItemHash = number;
+
+export type TraitId =
+    "item_type.weapon"
+    | "weapon_type.auto_rifle"
+    | "weapon_type.bow"
+    | "weapon_type.fusion_rifle"
+    | "weapon_type.glaive"
+    | "weapon_type.grenade_launcher"
+    | "weapon_type.hand_cannon"
+    | "weapon_type.linear_fusion_rifle"
+    | "weapon_type.machinegun"
+    | "weapon_type.pulse_rifle"
+    | "weapon_type.rocket_launcher"
+    | "weapon_type.scout_rifle"
+    | "weapon_type.shotgun"
+    | "weapon_type.sidearm"
+    | "weapon_type.sniper_rifle"
+    | "weapon_type.submachinegun"
+    | "weapon_type.sword";
+
+export type WeaponCategoryRegex =
+    ".*_auto_rifle"
+    | "type_weapon_bow"
+    | ".*_hand_cannon"
+    | "type_weapon_fusion_rifle"
+    | ".*_glaive"
+    | ".*_grenade_launcher"
+    | ".*_fusion_rifle_line"
+    | ".*_machinegun"
+    | ".*_pulse_rifle"
+    | ".*_rocket_launcher"
+    | ".*_scout_rifle"
+    | ".*_sidearm"
+    | ".*_shotgun"
+    | ".*_sniper_rifle"
+    | ".*_submachinegun"
+    | "type_weapon_sword"
+    | ".*_beam_rifle";
+
+export type LookupMap<K extends string | number | symbol, V> = { [key in K]?: V };
+
 export interface ILanguageInfo {
     language: DestinyManifestLanguage;
     flagIcon: string;
     text: string;
 }
 
-export type FilterCategory = "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";
+export type FilterCategory = "Perks" | "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";
 
 export type FilterPredicate = (item: IWeapon) => boolean;
 
@@ -95,6 +145,9 @@ export interface IWeaponFilterButton extends IFilterButton {
 
 export interface IAppliedFilters {
     includeSunsetWeapons: boolean;
+    craftedWeapons: boolean;
+    adeptWeapons: boolean;
+    perkFilter: FilterPredicate | undefined;
     collectionsFilters: FilterPredicate[];
     damageFilters: FilterPredicate[];
     rarityFilters: FilterPredicate[];
@@ -104,31 +157,31 @@ export interface IAppliedFilters {
 
 export interface Destiny2GameData {
     damageTypes: DestinyDamageTypeDefinition[];
-    damageTypesLookup: { [hash: number]: DestinyDamageTypeDefinition };
-
-    itemCategories: DestinyItemCategoryDefinition[];
-    itemCategoriesLookup: { [hash: number]: DestinyItemCategoryDefinition };
-
     itemTierTypes: DestinyItemTierTypeDefinition[];
-    itemTierTypesLookup: { [hash: number]: DestinyItemTierTypeDefinition };
-
     seasons: DestinySeasonDefinition[];
-    seasonsLookup: { [hash: number]: DestinySeasonDefinition };
 
     weapons: IWeapon[];
-    weaponsLookup: { [weaponHash: number]: IWeapon };
-
     weaponTypes: IWeaponTypeInfo[];
 
-    statsLookup: { [hash: number]: DestinyStatDefinition };
-    statGroupsLookup: { [hash: number]: DestinyStatGroupDefinition };
-    itemLookup: { [hash: number]: DestinyInventoryItemDefinition };
-    plugSetLookup: { [hash: number]: DestinyPlugSetDefinition };
-    socketCategoryLookup: { [hash: number]: DestinySocketCategoryDefinition };
-    socketTypeLookup: { [hash: number]: DestinySocketTypeDefinition };
+    perkLookup: IPerkLookup;
+    masterworkLookup: LookupMap<ItemHash, IMasterwork>;
+    modLookup: LookupMap<ItemHash, IMod>;
 
     perkInsights: IPerkInsightCollection;
     collectionsLists: ICollectionsLists;
+}
+
+export interface IPerkLookup {
+    normal: LookupMap<ItemHash, IPerk>;
+    enhanced: LookupMap<ItemHash, IPerk>;
+    perkPairs: IPerkPair[];
+    /** Keyed by the normal perk hash. */
+    perkPairLookup: LookupMap<ItemHash, IPerkPair>;
+}
+
+export interface IPerkPair {
+    perk: ItemHash;
+    enhanced: ItemHash | undefined;
 }
 
 export type PerkColumnNumber = 1 | 2 | 3 | 4 | 5;
@@ -136,13 +189,18 @@ export type ISelectedPerkMap<T> = { [column in keyof PerkColumnNumber as PerkCol
 
 export interface ISelectedGear {
     weapon: Ref<IWeapon | undefined>;
-    perkOptionsMap: Ref<ISelectedPerkMap<IPerkOption>>;
-    perkOptionsList: ComputedRef<(IPerkOption | undefined)[]>;
+    perkOptionsMap: Ref<ISelectedPerkMap<ISelectedPerk>>;
+    perkOptionsList: ComputedRef<(ISelectedPerk | undefined)[]>;
     masterwork: Ref<IMasterwork | undefined>;
     mod: Ref<IMod | undefined>;
 
     modifiedWeaponStats: ComputedRef<IModifiedStat[]>;
     modifiedWeaponDisplayStats: ComputedRef<IModifiedStat[]>;
+}
+
+export interface ISelectedPerk {
+    perkOption: IPerkOption;
+    useEnhanced: boolean;
 }
 
 export interface IModifiedStat {
@@ -167,15 +225,15 @@ export interface IWeapon {
     isCraftable: boolean;
     isSunset: boolean;
     tierTypeIndex: number;
-    traitId: string;
-    weaponCategoryRegex: string;
+    traitId: TraitId;
+    weaponCategoryRegex: WeaponCategoryRegex;
     damageType: IDamageType;
     statBlock: IStatBlock;
     archetype: IArchetype | undefined;
     perks: IPerkGrid;
     curated: IPerkGrid;
-    masterworks: IMasterwork[];
-    mods: IMod[];
+    masterworks: ItemHash[];
+    mods: ItemHash[];
     seasonHash: number | undefined;
 }
 
@@ -197,8 +255,9 @@ export interface IStatInfo {
     statDisplay: DestinyStatDisplayDefinition | undefined;
 }
 
-export interface IArchetype extends IPerk {
-    rpmStatHash: number | undefined;
+export interface IArchetype {
+    intrinsicPerkHash: ItemHash;
+    rpmStatHash: ItemHash | undefined;
     rpmStatValue: number | undefined;
     rpmUnits: string;
 }
@@ -214,9 +273,8 @@ export interface IPerkColumn {
 export interface IPerkOption {
     craftingInfo: ICraftingInfo | undefined,
     currentlyCanRoll: boolean,
-    useEnhanced: boolean,
-    perk: IPerk;
-    enhancedPerk: IPerk | undefined;
+    perk: ItemHash;
+    enhancedPerk: ItemHash | undefined;
 }
 
 export interface ICraftingInfo {
@@ -233,6 +291,7 @@ export interface IPerk {
     iconWatermarkUrl: string;
     mainBonuses: IPerkBonus[];
     adeptOrCraftedBonuses: IPerkBonus[];
+    categoryId: string;
 }
 
 export interface IPerkBonus {
@@ -248,9 +307,9 @@ export interface IWeaponTypeInfo {
     /** User-friendly name of the weapon type. */
     weaponTypeName: string;
     /** The trait ID of this weapon type (@see {@link DestinyInventoryItemDefinition.traitIds}). */
-    traitId: string;
+    traitId: TraitId;
     /** The regex from @see {@link DestinyItemCategoryDefinition.itemTypeRegex} that matches this weapon type. */
-    weaponCategoryRegex: string;
+    weaponCategoryRegex: WeaponCategoryRegex;
     /** The hash of the weapon type's category, from @see {@link DestinyItemCategoryDefinition.hash}. */
     weaponCategoryHash: number;
     /** Whether to show the RPM value in the filter. */
@@ -265,6 +324,8 @@ export interface IWeaponTypeInfo {
 export interface IArchetypeInfo {
     /** Trait ID of the weapon archetype. */
     weaponType: string;
+    /** Hash of the archetype's intrinsic perk. */
+    hash: ItemHash;
     /** Name of the archetype's intrinsic perk. */
     name: string;
     /** The RPM of the archetype, or equivalent. */

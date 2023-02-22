@@ -1,4 +1,5 @@
-<script setup lang="ts">import { computed } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
 
 interface IChangelog {
     version: string;
@@ -9,6 +10,22 @@ interface IChangelog {
 }
 
 const changelogs = computed<IChangelog[]>(() => [
+    {
+        version: "1.3.0",
+        date: "2023-02-22",
+        title: "Perk Filters + Other Filter Improvements",
+        description: "Filtering by perks on a weapon is now implemented along with some other filter improvements and bug fixes.",
+        changes: [
+            "Added perk filters.",
+            "Add filter for craftable weapons (includes adept versions - not fixing this since they will be able to be enhanced sometime in Lightfall).",
+            "Add filter for adept weapons.",
+            "Reduced load times when reading from the cached manifest.",
+            "Fix some weapons having duplicate perks.",
+            "Limit weapon search results to 100 to speed up searching. Weapon list now has \"Show All\" at bottom to show every result.",
+            "Fixed sunset weapon filter excluding non-sunset weapons.",
+            "Fix reissued weapons displaying their sunset logo.",
+        ],
+    },
     {
         version: "1.2.0",
         date: "2023-02-20",

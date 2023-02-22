@@ -2,8 +2,8 @@ import FlagIcons from "@/assets/FlagIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import WeaponIcons from "@/assets/WeaponIcons";
 import { computed } from "vue";
+import { Collection, type ILanguageInfo, type IWeaponRangeValues, type LookupMap, type SeasonNumber, type TraitId, type WeaponCategoryRegex } from "./interfaces";
 import { DataSearchStrings } from "./services/dataSearchStringService";
-import { Collection, type ILanguageInfo, type IWeaponRangeValues, type SeasonNumber } from "./interfaces";
 
 export const LanguageInfos = computed<ILanguageInfo[]>(() => [
     { language: "de", flagIcon: FlagIcons.DE, text: "Altsächsisch", },
@@ -22,7 +22,7 @@ export const LanguageInfos = computed<ILanguageInfo[]>(() => [
 ]);
 export const EnglishLanguageIndex = computed(() => LanguageInfos.value.findIndex(l => l.language === "en"));
 
-export const WeaponTraitIdMainStatMap = computed<{ [traitId: string]: number }>(() => {
+export const WeaponTraitIdMainStatMap = computed<LookupMap<TraitId, number>>(() => {
     return {
         [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.StatIndices.DrawTime,
         [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.StatIndices.ChargeTime,
@@ -54,15 +54,28 @@ export const ValidPerkPlugCategories = computed(() => [
     DataSearchStrings.CategoryIDs.StocksPlug,
 ]);
 
-export const AllowedPlugCategoryIds = computed(() => [...ValidPerkPlugCategories.value,
-    DataSearchStrings.CategoryIDs.IntrinsicPlug,
+export const ExcludedPerkPlugCategories = computed(() => [
+    DataSearchStrings.CategoryIDs.TrackerPlug,
+    DataSearchStrings.CategoryIDs.WeaponModEmpty,
+]);
 
+export const AllPerkPlugCategoryIds = computed(() => [
+    DataSearchStrings.CategoryIDs.IntrinsicPlug,
+    ...ValidPerkPlugCategories.value
+]);
+
+export const ModPlugCategoryIds = computed(() => [
     DataSearchStrings.CategoryIDs.WeaponModDamage,
     DataSearchStrings.CategoryIDs.WeaponModGuns,
     DataSearchStrings.CategoryIDs.WeaponModMagazine,
 ]);
 
-export const WeaponTypeRpmUnitsMap = computed<{ [traitId: string]: string }>(() => {
+export const AllowedPlugCategoryIds = computed(() => [
+    ...AllPerkPlugCategoryIds.value,
+    ...ModPlugCategoryIds.value,
+]);
+
+export const WeaponTypeRpmUnitsMap = computed<LookupMap<TraitId, string>>(() => {
     return {
         [DataSearchStrings.TraitIDs.Bow]: "ms",
         [DataSearchStrings.TraitIDs.FusionRifle]: "ms",
@@ -71,7 +84,7 @@ export const WeaponTypeRpmUnitsMap = computed<{ [traitId: string]: string }>(() 
 });
 export const DefaultWeaponTypeRpmUnits = computed(() => "RPM");
 
-export const WeaponTypeTraitToRegex = computed<{ [traitId: string]: string }>(() => {
+export const WeaponTypeTraitToRegex = computed<LookupMap<TraitId, WeaponCategoryRegex>>(() => {
     return {
         [DataSearchStrings.TraitIDs.AutoRifle]: DataSearchStrings.WeaponCategoryRegex.AutoRifle,
         [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.WeaponCategoryRegex.Bow,
@@ -95,7 +108,7 @@ export const WeaponTypeTraitToRegex = computed<{ [traitId: string]: string }>(()
 
 // Numbers from: https://docs.google.com/spreadsheets/d/1B2zWeT99SksMzmptNeIt66Mv8YZu38R7t-KR50BJ0p0/view#gid=817864056
 // TODO: numbers for exotics are different, like vex that acts as an auto rifle
-export const WeaponCategoryRangeValuesMap = computed<{ [itemRegex: string]: IWeaponRangeValues }>(() => {
+export const WeaponCategoryRangeValuesMap = computed<LookupMap<WeaponCategoryRegex, IWeaponRangeValues>>(() => {
     return {
         // TODO: hand cannons are different for 120s, include that somehow
         // TODO: some weapons have a "zoom scalar" that is added to the base zoom?
@@ -124,7 +137,7 @@ export const WeaponCategoryRangeValuesMap = computed<{ [itemRegex: string]: IWea
 
 // This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
 // weapon type, since hash could theoretically change.
-export const WeaponCategoryIconMap = computed<{ [itemRegex: string]: string }>(() => {
+export const WeaponCategoryIconMap = computed<LookupMap<WeaponCategoryRegex, string>>(() => {
     return {
         [DataSearchStrings.WeaponCategoryRegex.AutoRifle]: WeaponIcons.AutoRifle,
         [DataSearchStrings.WeaponCategoryRegex.HandCannon]: WeaponIcons.HandCannon,

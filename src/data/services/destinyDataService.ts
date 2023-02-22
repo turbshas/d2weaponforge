@@ -1,8 +1,7 @@
 import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { ref } from "vue";
+import type { Destiny2GameData, ILanguageInfo, ItemHash, IWeapon } from "../interfaces";
 import type { DestinyApiService } from "./destinyApiService";
-import type { Destiny2GameData, ILanguageInfo } from "../interfaces";
-import { hashMapToArray } from "../util";
 
 export class DestinyDataService {
     private initialized: boolean = false;
@@ -26,10 +25,6 @@ export class DestinyDataService {
         return this.gameData ? this.gameData.damageTypes : [];
     }
 
-    public get itemCategories() {
-        return this.gameData ? this.gameData.itemCategories : [];
-    }
-
     public get seasons() {
         return this.gameData ? this.gameData.seasons : []
     }
@@ -38,12 +33,12 @@ export class DestinyDataService {
         return this.gameData ? this.gameData.itemTierTypes : [];
     }
 
-    public get stats() {
-        return this.gameData ? this.gameData.statsLookup : [];
-    }
-
     public get perkInsights() {
         return this.gameData ? this.gameData.perkInsights : undefined;
+    }
+
+    public get perkPairs() {
+        return this.gameData ? this.gameData.perkLookup.perkPairs : [];
     }
 
     public get collectionsLists() {
@@ -62,33 +57,29 @@ export class DestinyDataService {
         return `https://www.bungie.net${imgFileName}`;
     }
 
-    public getWeapon = (hash: number) => {
-        return this.gameData?.weaponsLookup[hash];
-    }
-
-    public getDamageType = (hash: number) => {
-        return this.gameData?.damageTypesLookup[hash];
-    }
-
-    public getStatDefinition = (statHash: number) => {
-        return this.gameData?.statsLookup[statHash];
-    }
-
-    public getStatGroupDefinition = (statGroupHash: number) => {
-        return this.gameData?.statGroupsLookup[statGroupHash];
-    }
-
-    public getItemDefinition = (itemHash: number) => {
-        return this.gameData?.itemLookup[itemHash];
-    }
-
-    public getSeasonDefinition = (seasonHash: number) => {
-        return this.gameData?.seasonsLookup[seasonHash];
+    public getWeapon = (hash: number): IWeapon | undefined => {
+        return this.gameData?.weapons.find(w => w.hash === hash);
     }
 
     public isSeasonSunset = (season: DestinySeasonDefinition) => {
         // Season of Dawn is last sunset season
         return !season || season.seasonNumber <= 9;
+    }
+
+    public getPerkDefinition = (perkHash: ItemHash) => {
+        return this.gameData?.perkLookup.normal[perkHash];
+    }
+
+    public getEnhancedPerkDefinition = (perkHash: ItemHash) => {
+        return this.gameData?.perkLookup.enhanced[perkHash];
+    }
+
+    public getMasterworkDefinition = (mwHash: ItemHash) => {
+        return this.gameData?.masterworkLookup[mwHash];
+    }
+
+    public getModDefinition = (modHash: ItemHash) => {
+        return this.gameData?.modLookup[modHash];
     }
 
     // Notes

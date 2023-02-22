@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon, type LookupMap } from "@/data/interfaces";
 import { destinyDataService } from "@/data/services";
-import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon } from "@/data/interfaces";
-import { computed, defineAsyncComponent, ref } from "vue";
+import { computed, defineAsyncComponent, ref, watch } from "vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
 
 const FilterWindow = defineAsyncComponent(() => import("./Filter/FilterWindow.vue"));
@@ -11,7 +11,7 @@ const props = defineProps<{
     sidebarPanelSelection: SidebarPanelSelection,
     searchString: string,
     appliedFilters: IAppliedFilters,
-    activeFilters: Record<FilterCategory, { [filterText: string]: boolean }>,
+    activeFilters: Record<FilterCategory, LookupMap<string, boolean>>,
 }>();
 
 const emit = defineEmits<{
@@ -21,12 +21,19 @@ const emit = defineEmits<{
     (e: "languageSelected", language: ILanguageInfo): void,
 }>();
 
+const limitingDisplayedWeapons = ref(true);
+
+watch(() => props.searchString, () => { limitingDisplayedWeapons.value = true; });
+
 const weapons = computed(() => destinyDataService.weapons);
 const filters = computed(() => props.appliedFilters);
 const activeFilters = computed(() => props.activeFilters);
 
 const areFiltersChosen = computed(() => {
     return filters.value.includeSunsetWeapons
+        || filters.value.craftedWeapons
+        || filters.value.adeptWeapons
+        || !!filters.value.perkFilter
         || filters.value.collectionsFilters.length > 0
         || filters.value.damageFilters.length > 0
         || filters.value.rarityFilters.length > 0
@@ -40,13 +47,22 @@ const filteredWeapons = computed(() => {
         return weapons.value.filter(w => !w.isSunset).slice(0, 22);
     }
 
-    return weapons.value
-        .filter(w => !filters.value.includeSunsetWeapons || !w.isSunset)
+    const filtered = weapons.value
+        .filter(w => filters.value.includeSunsetWeapons || !w.isSunset)
+        .filter(w => !filters.value.craftedWeapons || w.isCraftable)
+        .filter(w => !filters.value.adeptWeapons || w.isAdept)
+        .filter(w => filters.value.perkFilter ? filters.value.perkFilter(w) : true)
         .filter(w => checkFilterCategoryOnWeapon(filters.value.collectionsFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.damageFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.rarityFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.weaponFilters, w))
         .filter(w => w.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
+    const test1 = weapons.value.filter(w => !w.isSunset);
+    const test2 = weapons.value.filter(w => filters.value.perkFilter ? filters.value.perkFilter(w) : true);
+    const test3 = test2.filter(w => !w.isSunset);
+    const test4 = test1.filter(w => filters.value.perkFilter ? filters.value.perkFilter(w) : true);
+    console.log("filters are", filters.value, test1, test2, test3, test4);
+    return filtered;
 });
 
 const showFilterWindow = computed(() => props.sidebarPanelSelection === SidebarPanelSelection.Filters);
@@ -57,10 +73,12 @@ function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: IWeapo
 }
 
 function onFiltersApplied(newFilters: IAppliedFilters) {
+    limitingDisplayedWeapons.value = true;
     emit("filtersApplied", newFilters);
 }
 
 function onFiltersCleared() {
+    limitingDisplayedWeapons.value = true;
     emit("filtersCleared");
 }
 
@@ -74,6 +92,10 @@ function onLanguageSelected(language: ILanguageInfo) {
 
 function onWeaponSelected(weapon: IWeapon) {
     emit("weaponSelected", weapon);
+}
+
+function onShowAllWeapons() {
+    limitingDisplayedWeapons.value = false;
 }
 </script>
 
@@ -90,7 +112,13 @@ function onWeaponSelected(weapon: IWeapon) {
             v-else-if="showLanguageWindow"
             @language-selected="onLanguageSelected"
         ></LanguageSelector>
-        <WeaponList v-else :weapons="filteredWeapons" @entry-clicked="onWeaponSelected"></WeaponList>
+        <WeaponList
+            v-else
+            :weapons="filteredWeapons"
+            :limit-weapons="limitingDisplayedWeapons"
+            @entry-clicked="onWeaponSelected"
+            @show-all-weapons="onShowAllWeapons"
+        ></WeaponList>
     </div>
 </template>
 

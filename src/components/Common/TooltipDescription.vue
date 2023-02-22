@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { IPerkBonus } from '@/data/interfaces';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -10,6 +11,10 @@ const props = defineProps<{
 const showDescription = computed(() => !!props.description);
 const showEffect = computed(() => !!props.effect);
 const showBonuses = computed(() => props.bonuses && props.bonuses.length > 0);
+
+function keyForStatValue(bonus: IPerkBonus, index: number) {
+    return `${bonus.statName}_${index}`;
+}
 
 function textForStatValue(value: number) {
     const prefix = value > 0 ? "+" : "";
@@ -24,7 +29,7 @@ function textForStatValue(value: number) {
 
         <div class="stats" v-if="showBonuses">
             <ul class="stats-list">
-                <li class="item" v-for="bonus of props.bonuses" :key="bonus.statName">
+                <li class="item" v-for="(bonus, index) of props.bonuses" :key="keyForStatValue(bonus, index)">
                     <span class="name">{{ bonus.statName }}</span>
                     <span
                         class="value"

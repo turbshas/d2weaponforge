@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { destinyDataService } from '@/data/services';
 import type { IWeapon } from '@/data/interfaces';
+import { destinyDataService } from '@/data/services';
 import { computed } from '@vue/reactivity';
 
 const props = defineProps<{

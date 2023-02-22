@@ -1,5 +1,22 @@
 # Changelog
 
+## **Perk Filters + Other Filter Improvements** [ *1.3.0* ] 2023-02-22
+Filtering by perks on a weapon is now implemented along with some other filter improvements and bug fixes.
+
+* Parse perks, masterworks, and mods once each directly from the manifest definitions instead of once for every weapon they appear on.
+  * Should reduce size of parsed data stored in IndexedDB.
+  * Each weapon now contains hashes as references to these parsed items.
+* Use Rangefinder perk hash instead of name - reduces translation map size.
+* Pull useEnhanced out of IPerkOption and into (new) ISelectedPerk (which isn't serialized).
+* Reduced amount of required stored data to massively improve page load times after first load.
+* Add filter for craftable weapons (includes adept versions - not fixing this since they will be able to be enhanced sometime in Lightfall).
+* Add filter for adept weapons.
+* Fix some weapons having duplicate perks.
+* Limit weapon search results to 100, add "Show All" at bottom of list to show every result.
+* Added perk filters.
+* Fixed sunset weapon filter excluding non-sunset weapons.
+* Fix reissued weapons displaying their sunset logo.
+
 ## **Collections Filters + Perk Insights** [ *1.2.0* ] 2023-02-20
 This change implements the collections filters for sources of weapons,
 perk insights from community info (+ glossary) for perk details,

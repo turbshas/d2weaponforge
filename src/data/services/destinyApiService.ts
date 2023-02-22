@@ -1,10 +1,10 @@
 import { getDestinyManifest, getDestinyManifestSlice, type DestinyManifest, type DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import type { HttpClientConfig } from "bungie-api-ts/http";
+import type { Destiny2GameData, ItemHash, IWeapon, LookupMap, UsedDestinyManifestSlice } from "../interfaces";
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import type { Destiny2GameData, IWeapon, UsedDestinyManifestSlice } from "../interfaces";
 
-const CurrentCachedManifestVersion = 4;
+const CurrentCachedManifestVersion = 7;
 
 export class DestinyApiService {
     constructor(private readonly cacheService: CacheService) { }
@@ -71,31 +71,22 @@ export class DestinyApiService {
         const [manifestProcessor, perkInsights, collectionsLists] = await Promise.all(promises);
 
         const weapons = manifestProcessor.weapons;
-        const weaponsLookup: { [weaponItemHash: number]: IWeapon } = {};
+        const weaponsLookup: LookupMap<ItemHash, IWeapon> = {};
         for (const weapon of weapons) {
             weaponsLookup[weapon.hash] = weapon;
         }
 
         const gameData: Destiny2GameData = {
             damageTypes: manifestProcessor.damageTypes,
-            damageTypesLookup: manifestProcessor.damageTypeLookup,
-            itemCategories: manifestProcessor.itemCategories,
-            itemCategoriesLookup: manifestProcessor.itemCategoriesLookup,
             itemTierTypes: manifestProcessor.itemTierTypes,
-            itemTierTypesLookup: manifestProcessor.itemTierTypesLookup,
             seasons: manifestProcessor.seasons,
-            seasonsLookup: manifestProcessor.seasonsLookup,
 
             weapons: weapons,
-            weaponsLookup: weaponsLookup,
             weaponTypes: manifestProcessor.weaponTypes,
 
-            statsLookup: manifestProcessor.statsLookup,
-            statGroupsLookup: manifestProcessor.statGroupsLookup,
-            itemLookup: manifestProcessor.itemLookup,
-            plugSetLookup: manifestProcessor.plugSetLookup,
-            socketCategoryLookup: manifestProcessor.socketCategoryLookup,
-            socketTypeLookup: manifestProcessor.socketTypeLookup,
+            perkLookup: manifestProcessor.perkLookup,
+            masterworkLookup: manifestProcessor.masterworkLookup,
+            modLookup: manifestProcessor.modLookup,
 
             perkInsights: perkInsights,
             collectionsLists: collectionsLists,

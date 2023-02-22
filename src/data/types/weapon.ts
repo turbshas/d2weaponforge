@@ -1,12 +1,10 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { WeaponTypeTraitToRegex } from "../constants";
+import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type ItemHash, type IWeapon, type LookupMap, type TraitId, type WeaponCategoryRegex } from "../interfaces";
 import { DataSearchStrings } from "../services/dataSearchStringService";
-import { ItemTierIndex, type IWeapon } from "../interfaces";
 import { Archetype } from "./archetype";
 import { DamageType } from "./damageType";
 import type { ManifestAccessor } from "./manifestAccessor";
-import { Masterwork } from "./masterwork";
-import { Mod } from "./mod";
 import type { PerkGrid } from "./perkGrid";
 import { ResolvedWeaponSockets } from "./resolvedWeaponSockets";
 import { StatBlock } from "./statBlock";
@@ -25,21 +23,30 @@ export class Weapon implements IWeapon {
     public readonly isSunset: boolean;
     public readonly tierTypeIndex: number;
 
-    public readonly traitId: string;
-    public readonly weaponCategoryRegex: string;
+    public readonly traitId: TraitId;
+    public readonly weaponCategoryRegex: WeaponCategoryRegex;
 
     public readonly damageType: DamageType;
     public readonly statBlock: StatBlock;
     public readonly archetype: Archetype | undefined;
     public readonly perks: PerkGrid;
     public readonly curated: PerkGrid;
-    public readonly masterworks: Masterwork[];
-    public readonly mods: Mod[];
+    public readonly masterworks: ItemHash[];
+    public readonly mods: ItemHash[];
 
     // TODO: is this possible?
     public readonly seasonHash: number | undefined;
 
-    constructor(manifest: ManifestAccessor, weaponItem: DestinyInventoryItemDefinition) {
+    constructor(
+        weaponItem: DestinyInventoryItemDefinition,
+        manifest: ManifestAccessor,
+        perkLookup: IPerkLookup,
+        masterworkLookup: LookupMap<ItemHash, IMasterwork>,
+        modLookup: LookupMap<ItemHash, IMod>,
+        ) {
+            if (weaponItem.displayProperties.name.includes("Bite of the Fox") || weaponItem.displayProperties.name.includes("Trust")) {
+                console.log("found important item", weaponItem);
+            }
         this.index = weaponItem.index;
         this.hash = weaponItem.hash;
         this.name = weaponItem.displayProperties.name;
@@ -53,30 +60,33 @@ export class Weapon implements IWeapon {
         this.tierTypeIndex = getWeaponTierTypeIndex(weaponItem, manifest);
 
         this.traitId = getWeaponTraitId(weaponItem);
-        this.weaponCategoryRegex = WeaponTypeTraitToRegex.value[this.traitId];
+        this.weaponCategoryRegex = WeaponTypeTraitToRegex.value[this.traitId]!;
 
         this.damageType = new DamageType(weaponItem, manifest);
         const statGroup = weaponItem.stats && weaponItem.stats.statGroupHash
             ? manifest.getStatGroupDefinition(weaponItem.stats.statGroupHash)
             : undefined;
         this.statBlock = new StatBlock(statGroup, weaponItem.investmentStats, manifest);
-        const resolvedWeaponSockets = new ResolvedWeaponSockets(weaponItem, manifest);
+
+        const resolvedWeaponSockets = new ResolvedWeaponSockets(weaponItem, manifest, perkLookup, masterworkLookup, modLookup);
         this.archetype = resolvedWeaponSockets.intrinsic
             ? new Archetype(resolvedWeaponSockets.intrinsic, this.traitId, weaponItem.stats, manifest)
             : undefined;
         this.perks = resolvedWeaponSockets.perks;
         this.curated = resolvedWeaponSockets.curated;
-        this.masterworks = resolvedWeaponSockets.masterworks.map(mw => new Masterwork(mw, statGroup, manifest));
-        const baseMods = resolvedWeaponSockets.mods.map(mod => new Mod(mod, manifest));
+
+        this.masterworks = resolvedWeaponSockets.masterworks;
+
+        const baseMods = resolvedWeaponSockets.mods;
         this.mods = this.isAdept
-            ? baseMods.concat(resolvedWeaponSockets.adeptMods.map(mod => new Mod(mod, manifest)))
+            ? baseMods.concat(resolvedWeaponSockets.adeptMods)
             : baseMods;
 
         // This is gross, but meh it seems to work.
         const isAutoTraitId = this.traitId === DataSearchStrings.TraitIDs.AutoRifle;
         const hasTraceRifleRpm = this.archetype && this.archetype.rpmStatValue && this.archetype.rpmStatValue >= 1000;
         if (isAutoTraitId && hasTraceRifleRpm) {
-            this.weaponCategoryRegex = DataSearchStrings.WeaponCategoryRegex.TraceRifle;
+            this.weaponCategoryRegex = DataSearchStrings.WeaponCategoryRegex.TraceRifle as WeaponCategoryRegex;
         }
 
         this.seasonHash = weaponItem.seasonHash;
@@ -92,8 +102,7 @@ function getWatermarkUrl(weapon: DestinyInventoryItemDefinition) {
             (
                 weapon.quality
                 && weapon.quality.displayVersionWatermarkIcons.length > 0
-                && weapon.quality.displayVersionWatermarkIcons[0]
-                && weapon.quality.displayVersionWatermarkIcons[0]
+                && weapon.quality.displayVersionWatermarkIcons[weapon.quality.displayVersionWatermarkIcons.length - 1]
             )
             || weapon.iconWatermarkShelved
             || weapon.iconWatermark
@@ -107,11 +116,18 @@ function isWeaponAdept(weapon: DestinyInventoryItemDefinition) {
         || name.includes(DataSearchStrings.Misc.Timelost.value);
 }
 
-function isWeaponSunset(weapon: DestinyInventoryItemDefinition) { return !!weapon.iconWatermarkShelved; }
+function isWeaponSunset(weapon: DestinyInventoryItemDefinition) {
+    return !!weapon.iconWatermarkShelved
+        && (!weapon.quality
+            || weapon.quality.displayVersionWatermarkIcons.length === 0
+            || weapon.quality.displayVersionWatermarkIcons[weapon.quality.displayVersionWatermarkIcons.length - 1] === weapon.iconWatermarkShelved);
+}
+
 function getWeaponTierTypeIndex(weapon: DestinyInventoryItemDefinition, manifest: ManifestAccessor) {
     if (!weapon.inventory) return ItemTierIndex.Basic;
     const tierType = manifest.getItemTierDefinition(weapon.inventory.tierTypeHash);
     return tierType ? (tierType.index as ItemTierIndex) : ItemTierIndex.Basic;
 }
+
 // Archetype trait ID seems to always be last one in the list, hopefully that doesn't change.
-function getWeaponTraitId(weapon: DestinyInventoryItemDefinition) { return weapon.traitIds[weapon.traitIds.length - 1]; }
+function getWeaponTraitId(weapon: DestinyInventoryItemDefinition) { return weapon.traitIds[weapon.traitIds.length - 1] as TraitId; }

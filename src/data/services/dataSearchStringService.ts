@@ -1,6 +1,7 @@
 import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import { computed, ref, type Ref } from "vue";
 import { EnglishLanguageIndex, LanguageInfos } from "../constants";
+import type { ItemHash } from "../interfaces";
 import TranslationMap from "../translations/translationMap";
 
 class CategoryIds {
@@ -101,7 +102,8 @@ class Misc {
     public DrangName = computed(() => "Drang");
     public Harrowed = computed(() => TranslationMap[this.languageRef.value].misc.harrowed);
     public MidaMiniToolName = computed(() => "Mini-Tool");
-    public RangefinderPerkName = computed(() => TranslationMap[this.languageRef.value].misc.rangefinderPerk);
+    // public RangefinderPerkName = computed(() => TranslationMap[this.languageRef.value].misc.rangefinderPerk);
+    public get RangefinderPerkHash() { return 2846385770 as ItemHash; }
     public Timelost = computed(() => TranslationMap[this.languageRef.value].misc.timelost);
 }
 

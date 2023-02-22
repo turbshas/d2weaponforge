@@ -31,7 +31,7 @@ const translations: IDataSearchStrings = {
     misc: {
         adept: "숙련자",
         harrowed: "고뇌",
-        rangefinderPerk: "사거리 확보 장치",
+        // rangefinderPerk: "사거리 확보 장치",
         timelost: "잃어버린 시간",
     },
 };

@@ -1,7 +1,7 @@
 import type { DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
-import type { IMasterwork, IMod, IModifiedStat, IPerk, IPerkBonus, IPerkOption, ISelectedGear, IWeapon, ISelectedPerkMap, PerkColumnNumber } from "../interfaces";
-import { selectionService } from "../services";
+import type { IMasterwork, IMod, IModifiedStat, IPerk, IPerkBonus, ISelectedGear, ISelectedPerk, ISelectedPerkMap, ItemHash, IWeapon, LookupMap, PerkColumnNumber } from "../interfaces";
+import { destinyDataService, selectionService } from "../services";
 import { hashMapToArray } from "../util";
 
 export class SelectedGear implements ISelectedGear {
@@ -10,7 +10,7 @@ export class SelectedGear implements ISelectedGear {
     }
 
     public readonly weapon = ref<IWeapon | undefined>(undefined);
-    public readonly perkOptionsMap = ref<ISelectedPerkMap<IPerkOption>>({
+    public readonly perkOptionsMap = ref<ISelectedPerkMap<ISelectedPerk>>({
         1: undefined,
         2: undefined,
         3: undefined,
@@ -74,11 +74,11 @@ export class SelectedGear implements ISelectedGear {
     private readonly isWeaponCraftable = computed(() => !!this.weapon.value && this.weapon.value.isCraftable);
     private readonly perkMap = computed(() => {
         const map:  ISelectedPerkMap<IPerk> = {
-            1: this.getPerkFromOption(this.perkOptionsMap.value[1]),
-            2: this.getPerkFromOption(this.perkOptionsMap.value[2]),
-            3: this.getPerkFromOption(this.perkOptionsMap.value[3]),
-            4: this.getPerkFromOption(this.perkOptionsMap.value[4]),
-            5: this.getPerkFromOption(this.perkOptionsMap.value[5]),
+            1: this.getPerkFromSelected(this.perkOptionsMap.value[1]),
+            2: this.getPerkFromSelected(this.perkOptionsMap.value[2]),
+            3: this.getPerkFromSelected(this.perkOptionsMap.value[3]),
+            4: this.getPerkFromSelected(this.perkOptionsMap.value[4]),
+            5: this.getPerkFromSelected(this.perkOptionsMap.value[5]),
         };
         return map;
     });
@@ -87,7 +87,7 @@ export class SelectedGear implements ISelectedGear {
     private readonly modBonuses = computed(() => this.getBonusesForPerk(this.mod.value));
 
     private readonly masterworksModsBonusesMap = computed(() => {
-        const map: { [hash: number]: number | undefined } = {};
+        const map: LookupMap<ItemHash, number> = {};
         for (const bonus of this.masterworkBonuses.value) {
             const current = map[bonus.statHash] || 0;
             map[bonus.statHash] = current + bonus.value;
@@ -105,7 +105,7 @@ export class SelectedGear implements ISelectedGear {
     private readonly perk4BonusesStatMap = computed(() => this.getBonusesStatMapForPerk(this.perkMap.value[4]));
     private readonly perk5BonusesStatMap = computed(() => this.getBonusesStatMapForPerk(this.perkMap.value[5]));
     private readonly perkBonusesMap = computed(() => {
-        const map: ISelectedPerkMap<{ [hash: number]: number | undefined }> = {
+        const map: ISelectedPerkMap<LookupMap<ItemHash, number>> = {
             1: this.perk1BonusesStatMap.value,
             2: this.perk2BonusesStatMap.value,
             3: this.perk3BonusesStatMap.value,
@@ -131,16 +131,21 @@ export class SelectedGear implements ISelectedGear {
     });
 
     private readonly modifiedStatMap = computed(() => {
-        const map: { [statHash: number]: IModifiedStat | undefined } = {};
+        const map: LookupMap<ItemHash, IModifiedStat> = {};
         for (const stat of this.modifiedWeaponStats.value) {
             map[stat.statHash] = stat;
         }
         return map;
     });
 
-    private readonly getPerkFromOption = (perkOption: IPerkOption | undefined) => {
-        if (!perkOption) return undefined;
-        return perkOption.useEnhanced ? perkOption.enhancedPerk : perkOption.perk;
+    private readonly getPerkFromSelected = (selectedPerk: ISelectedPerk | undefined) => {
+        if (!selectedPerk) return undefined;
+        if (selectedPerk.useEnhanced) {
+            const hash = selectedPerk.perkOption.enhancedPerk;
+            return hash ? destinyDataService.getEnhancedPerkDefinition(hash) : undefined;
+        } else {
+            return destinyDataService.getPerkDefinition(selectedPerk.perkOption.perk);
+        }
     }
 
     private readonly getBonusesForPerk = (perk: IPerk | undefined) => {
@@ -153,7 +158,7 @@ export class SelectedGear implements ISelectedGear {
 
     private readonly getBonusesStatMapForPerk = (perk: IPerk | undefined) => {
         const bonuses = this.getBonusesForPerk(perk);
-        const map: { [hash: number]: number | undefined } = {};
+        const map: LookupMap<ItemHash, number> = {};
         for (const bonus of bonuses) {
             const current = map[bonus.statHash] || 0;
             map[bonus.statHash] = current + bonus.value;

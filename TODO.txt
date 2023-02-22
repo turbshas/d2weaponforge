@@ -1,7 +1,92 @@
 Preferred order of work:
-11) Perk filters
-12) Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar
-13) virtual scrolling on displayed weapons
+3) changes to support multiple screen sizes
+  - sidebar is very wide even on some large screens
+  - at some point, need to change layout for weapon viewer
+  - sidebar can become a menu, weapon viewer must become vertical (weapon -> perks -> MW -> mod -> extras?)
+    - maybe can do something fancier - like pages you swipe left or right to view each panel
+    - weapon panel selected perks area has all slots shown, tap on one to open pop up menu?
+  - use em instead of px when possible (supports users that change text size)
+  - https://developer.mozilla.org/en-US/docs/Web/CSS/@media
+4) more accessibility changes:
+  - keyboard arrow key/page up/page down navigation
+  - rework <div> usage into semantic elements
+    - https://www.freecodecamp.org/news/semantic-html-alternatives-to-using-divs/
+    - https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+5) glossary revamp:
+  - group perk + enhanced together into collapsible selections
+  - icon + name for collapsible section header
+  - within collapsible section body, show base + hash + description, then enhanced + hash + description
+  - only load perk insights when building data from the manifest, attach to IPerk
+  - if possible, allow ctrl-f on the page to expand collapsed sections (make section expand on focus event?)
+
+compare section:
+  - ideas:
+  - each weapon is 1 row
+  - stats only display numbers
+  - perks, intrinsic, origin, MW, and mod in a straight line on the right side
+  - icon + name/type on left side
+  - stats in middle
+  - what should stat arrows display? green only if highest value in list of weapons being compared?
+
+Unsure about order:
+- Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar?
+- ordering weapons by release date to the API (might have to be manual)
+  - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
+  - I actually like the ordering as I have it now...
+  - maybe push that one braytech rwp weapon to the bottom?
+
+Bugs:
+- selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
+- tab bar text isn't centered properly
+
+Filter features:
+- for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
+- add icons, collections for seasons before season of worthy
+- more collections icons https://github.com/justrealmilk/destiny-icons
+- only load collection lists + a few other filter-only properties from cache when opening the filter
+  - it is an async component so it'll take some time anyway
+
+Masterworks/weapon features:
+- exotic catalyst support
+
+Extras panel:
+- elemental cap selector
+- reload speed calculator
+- damage fall off calculator for the remaining weapon types
+
+Load times:
+- load background image after manifest has loaded to ensure it doesn't delay page load on low speed connections
+  - the home page loads until the background fills in, then it transitions to the weapon page
+- show that page is refreshing when game data is being reloaded
+
+Tech debt/processing:
+- involve stat display override when creating masterworks in DestinyManifestProcessor
+- filter armour plugs out of the kept data (definitely shows up as intrinsics, maybe others too...)
+- change PerkColumnNumber to something better
+- convert Item Tier Index to hash, as those are stable
+- convert as many ID comparisons, etc. as possible to hashes
+- Move constants into class/interface, add Destiny2GameData as a property to be cached (hopefully reduce bundle size)
+- change drang/mida mini-tool intrinsic checks to use hashes
+- styling cleanup:
+  - put common values into variables in base.css
+  - convert to using rem instead of px
+
+Research:
+- look into progressive web apps
+  - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
+  - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
+  - https://web.dev/learn/pwa/progressive-web-apps/
+- make perk insights async loading - load when glossary is selected OR a weapon is selected?
+- look into using the indexed DB as a proper DB - object store for each property on Destiny2GameData. see if improves read times
+- sandbox perks - do they have any info we could want for things other than mods?
+- if possible, some feedback from the URL -> weapon list so that the weapon in the URL gets loaded first?
+- make use of inventory size stat
+- look into precision damage stat, maybe can include that?
+- look into weapon ready/stow stat?
+- look into ADS stat?
+- better solution for dealing with enums from bungie-api-ts and isolatedModules?
+
+Virtual scrolling on displayed weapons:
   - possible to load weapons into the list over time (as they are processed) instead of all at once?
     - is this valuable at all? once processed, the indexed db has everything cached so the only slow down may be the DOM manipulation
   - array of 50 (probably?) container objects for weapon items
@@ -17,71 +102,3 @@ Preferred order of work:
   - only swap when required?
     - when there are too few elements (< 5?): below the view box when scrolling down, or above the view box when scrolling up
     - track number of containers above/below view box and swap when below threshold
-14) Delay loading when searching, or maybe load in chunks, or load in the background if possible? 
-15) styling cleanup:
-  - put common values into variables in base.css
-  - convert to using rem instead of px
-16) compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
-  - ideas:
-  - each weapon is 1 row
-  - stats only display numbers
-  - perks, intrinsic, origin, MW, and mod in a straight line on the right side
-  - icon + name/type on left side
-  - stats in middle
-  - what should stat arrows display? green only if highest value in list of weapons being compared?
-
-Unsure about order:
-- glossary revamp:
-  - requires pulling all perks from the manifest instead of for each weapon
-    - this also means we wouldn't be processing the same perks for every weapon they appear on...
-  - group perk + enhanced together into collapsible selections
-  - icon + name for collapsible section header
-  - within collapsible section body, show base + hash + description, then enhanced + hash + description
-  - only load perk insights when building data from the manifest, attach to IPerk
-  - if possible, allow ctrl-f on the page to expand collapsed sections (make section expand on focus event?)
-- changes to support multiple screen sizes
-  - sidebar is very wide even on some large screens
-  - at some point, need to change layout for weapon viewer
-  - sidebar can become a menu, weapon viewer must become vertical (weapon -> perks -> MW -> mod -> extras?)
-    - maybe can do something fancier - like pages you swipe left or right to view each panel
-    - weapon panel selected perks area has all slots shown, tap on one to open pop up menu?
-  - use em instead of px when possible (supports users that change text size)
-  - https://developer.mozilla.org/en-US/docs/Web/CSS/@media
-- more accessibility changes:
-  - keyboard arrow key/page up/page down navigation
-  - rework <div> usage into semantic elements
-    - https://www.freecodecamp.org/news/semantic-html-alternatives-to-using-divs/
-    - https://developer.mozilla.org/en-US/docs/Web/HTML/Element
-- Move constants into class/interface, add Destiny2GameData as a property to be cached (hopefully reduce bundle size)
-- for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
-- add icons, collections for seasons before season of worthy
-- selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
-- convert as many ID comparisons, etc. as possible to hashes
-- convert collections lists to enum instead of magic numbers
-- convert rangefinder perk name to perk hash, as those are apparently stable
-- convert Item Tier Index to hash, as those are stable
-- load background image after manifest has loaded to ensure it doesn't delay page load on low speed connections
-  - the home page loads until the background fills in, then it transitions to the weapon page
-- some perks showing up twice (e.g. vision of confluence, zaouli's bane)
-- filter for adept weapons
-- elemental cap selector
-- show that page is refreshing when game data is being reloaded
-- ordering weapons by release date to the API (might have to be manual)
-  - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
-  - I actually like the ordering as I have it now...
-- tab bar text isn't centered properly
-- change PerkColumnNumber to something better
-- reload speed calculator
-- damage fall off calculator for the remaining weapon types
-- exotic catalyst support
-
-Research:
-- make perk insights async loading - load when glossary is selected OR a weapon is selected?
-- look into using the indexed DB as a proper DB - object store for each property on Destiny2GameData. see if improves read times
-- sandbox perks - do they have any info we could want for things other than mods?
-- if possible, some feedback from the URL -> weapon list so that the weapon in the URL gets loaded first?
-- make use of inventory size stat
-- look into precision damage stat, maybe can include that?
-- look into weapon ready/stow stat?
-- look into ADS stat?
-- better solution for dealing with enums from bungie-api-ts and isolatedModules?

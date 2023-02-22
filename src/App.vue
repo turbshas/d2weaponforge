@@ -2,11 +2,10 @@
 import LowResBackgroundImage from "@/assets/background_low_res.jpg";
 import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
-import UrlManager from "./components/UrlManager.vue";
-import { destinyDataService } from "./data/services";
-import { selectionService } from "./data/services";
-import { PageSelection, type ILanguageInfo, type IMasterwork, type IMod, type IPerkOption, type IWeapon, type PerkColumnNumber, type ISelectedPerkMap } from "./data/interfaces";
 import { computed, ref } from "vue";
+import UrlManager from "./components/UrlManager.vue";
+import { PageSelection, type ILanguageInfo, type IMasterwork, type IMod, type IPerkOption, type ISelectedPerk, type ISelectedPerkMap, type IWeapon, type PerkColumnNumber } from "./data/interfaces";
+import { destinyDataService, selectionService } from "./data/services";
 
 const selectedPage = ref(PageSelection.Home);
 const selectedGear = computed(() => selectionService.selectedGear);
@@ -31,11 +30,7 @@ function onLanguageSelected(language: ILanguageInfo) {
 
 function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {
     selectionService.setPerk(column, perk);
-
     console.log("perk selected", perk);
-    if (perk) {
-        perk.useEnhanced = false;
-    }
 }
 
 function onMasterworkChanged(masterwork: IMasterwork | undefined) {
@@ -49,7 +44,7 @@ function onModChanged(mod: IMod | undefined) {
 function onUrlParsed(
     page: PageSelection,
     weapon: IWeapon | undefined,
-    perkOptions: ISelectedPerkMap<IPerkOption>,
+    perkOptions: ISelectedPerkMap<ISelectedPerk>,
     masterwork: IMasterwork | undefined,
     mod: IMod | undefined
 ) {

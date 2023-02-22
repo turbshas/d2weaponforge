@@ -1,5 +1,4 @@
-import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2"
-import type { IDataSearchStrings } from "./schemas";
+import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import TranslationsDE from "./maps/translations.de";
 import TranslationsEN from "./maps/translations.en";
 import TranslationsES from "./maps/translations.es";
@@ -13,6 +12,7 @@ import TranslationsPT_BR from "./maps/translations.pt-br";
 import TranslationsRU from "./maps/translations.ru";
 import TranslationsZH_CHS from "./maps/translations.zh-chs";
 import TranslationsZH_CHT from "./maps/translations.zh-cht";
+import type { IDataSearchStrings } from "./schemas";
 
 const map: { [language in DestinyManifestLanguage]: IDataSearchStrings } = {
     "de": TranslationsDE,

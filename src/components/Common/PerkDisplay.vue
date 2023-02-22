@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { destinyDataService } from '@/data/services';
-import { computed, ref } from 'vue';
-import Tooltip from './Tooltip.vue';
-import ElementLabel from './ElementLabel.vue';
 import type { ICraftingInfo, IPerk, IPerkBonus, ModHash, PerkColumnNumber, PerkHash } from '@/data/interfaces';
-import { selectionService } from '@/data/services';
+import { destinyDataService, selectionService } from '@/data/services';
+import { computed, ref } from 'vue';
+import ElementLabel from './ElementLabel.vue';
+import Tooltip from './Tooltip.vue';
 
 const props = defineProps<{
     perk: IPerk | undefined,

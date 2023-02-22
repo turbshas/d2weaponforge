@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import EyeIcon from "@/assets/eye_icon.svg";
 import Tooltip from '@/components/Common/Tooltip.vue';
 import WeaponIcon from '@/components/Common/WeaponIcon.vue';
+import type { ISelectedGear } from '@/data/interfaces';
 import { destinyDataService } from '@/data/services';
-import type { ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
 import { computed, ref } from '@vue/reactivity';
 import SelectedPerks from './SelectedPerks.vue';
 import WeaponStatBlock from './WeaponStatBlock.vue';
-import EyeIcon from "@/assets/eye_icon.svg";
 
 const props = defineProps<{
     selectedGear: ISelectedGear,
@@ -34,12 +34,6 @@ const weaponNameElement = ref<HTMLElement | null>(null);
 
 function onHideElementsClicked() {
     showUiElements.value = !showUiElements.value;
-}
-
-function onPerkClicked(column: PerkColumnNumber) {
-    const perk = props.selectedGear.perkOptionsMap.value[column];
-    if (!perk) return;
-    perk.useEnhanced = !perk.useEnhanced;
 }
 </script>
 
@@ -85,7 +79,6 @@ function onPerkClicked(column: PerkColumnNumber) {
                 :masterwork="props.selectedGear.masterwork.value"
                 :mod="props.selectedGear.mod.value"
                 :is-adept="!!(weapon?.isAdept)"
-                @perk-clicked="onPerkClicked"
             ></SelectedPerks>
         </div>
     </div>

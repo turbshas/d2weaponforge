@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import FilterButton from "./FilterButton.vue";
 import Searchbar from "./Searchbar.vue";
-import TabBar from "./TabBar.vue";
 import SidebarPanel from "./SidebarPanel/SidebarPanel.vue";
+import TabBar from "./TabBar.vue";
 
-import { SidebarPanelSelection, type FilterCategory, type IAppliedFilters, type ILanguageInfo, type IWeapon, type PageSelection } from "@/data/interfaces";
+import { SidebarPanelSelection, type FilterCategory, type IAppliedFilters, type ILanguageInfo, type IWeapon, type LookupMap, type PageSelection } from "@/data/interfaces";
+import { selectionService } from "@/data/services";
 import { computed, ref } from "vue";
 import LanguageButton from "./LanguageButton.vue";
-import { selectionService } from "@/data/services";
 
 const emit = defineEmits<{
     (e: "weaponSelected", weapon: IWeapon): void,
@@ -20,7 +20,7 @@ const searchString = ref("");
 const selectedLanguage = computed(() => selectionService.language);
 
 const appliedFilters = ref<IAppliedFilters>(emptyAppliedFilters());
-const activeFilters = ref<Record<FilterCategory, { [filterText: string]: boolean }>>(emptyActiveFilters());
+const activeFilters = ref<Record<FilterCategory, LookupMap<string, boolean>>>(emptyActiveFilters());
 
 const viewingFilter = computed(() => panelSelection.value === SidebarPanelSelection.Filters);
 const viewingLanguages = computed(() => panelSelection.value === SidebarPanelSelection.Languages);
@@ -68,6 +68,9 @@ function onLanguagesToggled() {
 function emptyAppliedFilters(): IAppliedFilters {
     return {
         includeSunsetWeapons: false,
+        craftedWeapons: false,
+        adeptWeapons: false,
+        perkFilter: undefined,
         collectionsFilters: [],
         damageFilters: [],
         rarityFilters: [],
@@ -75,11 +78,12 @@ function emptyAppliedFilters(): IAppliedFilters {
         perkNames: [],
     };
 }
-function emptyActiveFilters(): Record<FilterCategory, { [filterText: string]: boolean }> {
+function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>> {
     return {
         "Archetype": {},
         "Collections": {},
         "Damage Type": {},
+        "Perks": {},
         "Rarity": {},
         "Weapon": {},
     }
