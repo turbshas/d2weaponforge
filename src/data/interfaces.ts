@@ -158,7 +158,6 @@ export interface Destiny2GameData {
     seasons: DestinySeasonDefinition[];
 
     weapons: IWeapon[];
-    weaponsLookup: LookupMap<ItemHash, IWeapon>;
     weaponTypes: IWeaponTypeInfo[];
 
     perkLookup: IPerkLookup;

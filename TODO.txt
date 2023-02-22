@@ -31,6 +31,8 @@ Preferred order of work:
   - what should stat arrows display? green only if highest value in list of weapons being compared?
 
 Unsure about order:
+- only load collection lists + a few other filter-only properties from cache when opening the filter
+  - it is an async component so it'll take some time anyway
 - filter armour plugs out of the kept data (definitely shows up as intrinsics, maybe others too...)
 - involve stat display override when creating masterworks in DestinyManifestProcessor
 - change drang/mida mini-tool intrinsic checks to use hashes

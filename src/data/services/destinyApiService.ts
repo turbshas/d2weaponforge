@@ -4,7 +4,7 @@ import type { Destiny2GameData, ItemHash, IWeapon, LookupMap, UsedDestinyManifes
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
 
-const CurrentCachedManifestVersion = 6;
+const CurrentCachedManifestVersion = 7;
 
 export class DestinyApiService {
     constructor(private readonly cacheService: CacheService) { }
@@ -82,7 +82,6 @@ export class DestinyApiService {
             seasons: manifestProcessor.seasons,
 
             weapons: weapons,
-            weaponsLookup: weaponsLookup,
             weaponTypes: manifestProcessor.weaponTypes,
 
             perkLookup: manifestProcessor.perkLookup,

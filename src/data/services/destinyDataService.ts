@@ -1,6 +1,6 @@
 import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { ref } from "vue";
-import type { Destiny2GameData, ILanguageInfo, ItemHash } from "../interfaces";
+import type { Destiny2GameData, ILanguageInfo, ItemHash, IWeapon } from "../interfaces";
 import type { DestinyApiService } from "./destinyApiService";
 
 export class DestinyDataService {
@@ -53,8 +53,8 @@ export class DestinyDataService {
         return `https://www.bungie.net${imgFileName}`;
     }
 
-    public getWeapon = (hash: number) => {
-        return this.gameData?.weaponsLookup[hash];
+    public getWeapon = (hash: number): IWeapon | undefined => {
+        return this.gameData?.weapons.find(w => w.hash === hash);
     }
 
     public isSeasonSunset = (season: DestinySeasonDefinition) => {
