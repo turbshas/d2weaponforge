@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { IMod, ItemHash } from '@/data/interfaces';
-import PerkDisplay from '../../Common/PerkDisplay.vue';
-import BuilderSection from '../../Common/BuilderSection.vue';
 import { destinyDataService } from '@/data/services';
 import { computed } from 'vue';
+import BuilderSection from '../../Common/BuilderSection.vue';
+import PerkDisplay from '../../Common/PerkDisplay.vue';
 
 const props = defineProps<{
     modList: ItemHash[],

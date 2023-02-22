@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { PageSelection, type IMasterwork, type IMod, type ISelectedGear, type ISelectedPerk, type ISelectedPerkMap, type IWeapon, type PerkColumnNumber } from '@/data/interfaces';
 import { destinyDataService } from '@/data/services';
-import { PageSelection, type ISelectedGear, type IWeapon, type PerkColumnNumber, type ISelectedPerkMap, type ItemHash, type ISelectedPerk, type IMasterwork, type IMod } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import { watch } from 'vue';
 

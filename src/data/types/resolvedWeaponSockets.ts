@@ -1,7 +1,7 @@
 import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryDefinition, DestinyItemSocketEntryPlugItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinySocketTypeDefinition, DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { ExcludedPerkPlugCategories } from "../constants";
-import { DataSearchStrings } from "../services/dataSearchStringService";
 import { WeaponSocketCategoryHash, type IMasterwork, type IMod, type IPerkGrid, type IPerkLookup, type ItemHash, type LookupMap } from "../interfaces";
+import { DataSearchStrings } from "../services/dataSearchStringService";
 import type { ManifestAccessor } from "./manifestAccessor";
 import { PerkColumn } from "./perkColumn";
 import { PerkGrid } from "./perkGrid";

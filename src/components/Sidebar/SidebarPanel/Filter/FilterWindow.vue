@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import TierIcons from "@/assets/TierIcons";
+import ElementLabel from "@/components/Common/ElementLabel.vue";
+import OptionButton from "@/components/Common/OptionButton.vue";
+import { OriginFilterInfos, SeasonIconMap, SeasonToCollectionMap, WeaponCategoryIconMap } from "@/data/constants";
+import type { Collection, FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton, LookupMap, SeasonNumber } from "@/data/interfaces";
 import { destinyDataService } from "@/data/services";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
-import TierIcons from "@/assets/TierIcons";
-import type { Collection, FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton, LookupMap, SeasonNumber } from "@/data/interfaces";
-import OptionButton from "@/components/Common/OptionButton.vue";
-import ElementLabel from "@/components/Common/ElementLabel.vue";
-import { OriginFilterInfos, SeasonIconMap, SeasonToCollectionMap, WeaponCategoryIconMap } from "@/data/constants";
 
 interface ICategoryInfo {
     name: FilterCategory;

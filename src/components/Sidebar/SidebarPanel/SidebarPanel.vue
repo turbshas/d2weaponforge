@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { destinyDataService } from "@/data/services";
 import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon, type LookupMap } from "@/data/interfaces";
-import { computed, defineAsyncComponent, ref } from "vue";
+import { destinyDataService } from "@/data/services";
+import { computed, defineAsyncComponent } from "vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
 
 const FilterWindow = defineAsyncComponent(() => import("./Filter/FilterWindow.vue"));

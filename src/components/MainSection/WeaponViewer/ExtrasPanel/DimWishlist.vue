@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import DimIcon from '@/assets/dim_icon.svg';
 import OptionButton from '@/components/Common/OptionButton.vue';
 import type { ISelectedPerk, IWeapon } from '@/data/interfaces';
-import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
-import DimIcon from '@/assets/dim_icon.svg';
 import { ref } from 'vue';
+import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 
 const props = defineProps<{
     weapon: IWeapon | undefined,

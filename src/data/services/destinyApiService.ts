@@ -1,10 +1,10 @@
 import { getDestinyManifest, getDestinyManifestSlice, type DestinyManifest, type DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import type { HttpClientConfig } from "bungie-api-ts/http";
+import type { Destiny2GameData, ItemHash, IWeapon, LookupMap, UsedDestinyManifestSlice } from "../interfaces";
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import type { Destiny2GameData, ItemHash, IWeapon, LookupMap, UsedDestinyManifestSlice } from "../interfaces";
 
-const CurrentCachedManifestVersion = 4;
+const CurrentCachedManifestVersion = 5;
 
 export class DestinyApiService {
     constructor(private readonly cacheService: CacheService) { }

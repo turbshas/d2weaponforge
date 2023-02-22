@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import EyeIcon from "@/assets/eye_icon.svg";
 import Tooltip from '@/components/Common/Tooltip.vue';
 import WeaponIcon from '@/components/Common/WeaponIcon.vue';
+import type { ISelectedGear } from '@/data/interfaces';
 import { destinyDataService } from '@/data/services';
-import type { ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
 import { computed, ref } from '@vue/reactivity';
 import SelectedPerks from './SelectedPerks.vue';
 import WeaponStatBlock from './WeaponStatBlock.vue';
-import EyeIcon from "@/assets/eye_icon.svg";
 
 const props = defineProps<{
     selectedGear: ISelectedGear,

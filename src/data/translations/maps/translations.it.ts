@@ -31,7 +31,7 @@ const translations: IDataSearchStrings = {
     misc: {
         adept: "affinata",
         harrowed: "tormentata",
-        rangefinderPerk: "Telemetro",
+        // rangefinderPerk: "Telemetro",
         timelost: "perduta nel tempo",
     },
 };

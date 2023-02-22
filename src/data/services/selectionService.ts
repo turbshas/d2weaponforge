@@ -1,8 +1,8 @@
 import { ref } from "vue";
+import type { ILanguageInfo, IMasterwork, IMod, IPerkBonus, IPerkOption, ISelectedPerk, ISelectedPerkMap, IWeapon, PerkColumnNumber } from "../interfaces";
+import { SelectedGear } from "../types/selectedGear";
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
-import type { ILanguageInfo, IMasterwork, IMod, IPerkBonus, IPerkOption, IWeapon, PerkColumnNumber, ISelectedPerkMap, ISelectedPerk } from "../interfaces";
-import { SelectedGear } from "../types/selectedGear";
 
 export class SelectionService {
     public readonly preferencesLoaded: Promise<void>;

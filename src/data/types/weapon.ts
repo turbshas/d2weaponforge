@@ -1,12 +1,10 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
 import { WeaponTypeTraitToRegex } from "../constants";
-import { DataSearchStrings } from "../services/dataSearchStringService";
 import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type ItemHash, type IWeapon, type LookupMap, type TraitId, type WeaponCategoryRegex } from "../interfaces";
+import { DataSearchStrings } from "../services/dataSearchStringService";
 import { Archetype } from "./archetype";
 import { DamageType } from "./damageType";
 import type { ManifestAccessor } from "./manifestAccessor";
-import { Masterwork } from "./masterwork";
-import { Mod } from "./mod";
 import type { PerkGrid } from "./perkGrid";
 import { ResolvedWeaponSockets } from "./resolvedWeaponSockets";
 import { StatBlock } from "./statBlock";

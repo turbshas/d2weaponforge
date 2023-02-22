@@ -27,7 +27,7 @@ export interface IStats {
 export interface IMisc {
     adept: string;
     harrowed: string;
-    rangefinderPerk: string;
+    // rangefinderPerk: string;
     timelost: string;
 }
 

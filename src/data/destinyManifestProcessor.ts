@@ -1,13 +1,13 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition } from "bungie-api-ts/destiny2";
 import { AllowedPlugCategoryIds, AllPerkPlugCategoryIds, ModPlugCategoryIds } from "./constants";
-import { DataSearchStrings } from "./services/dataSearchStringService";
 import { ItemTierIndex, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type ItemHash, type IWeaponTypeInfo, type LookupMap, type UsedDestinyManifestSlice, type WeaponCategoryRegex } from "./interfaces";
+import { DataSearchStrings } from "./services/dataSearchStringService";
 import { ManifestAccessor } from "./types/manifestAccessor";
-import { Weapon } from "./types/weapon";
-import { arrayToExistenceMap, arrayToHashMap, hashMapToArray } from "./util";
-import { Perk } from "./types/perk";
 import { Masterwork } from "./types/masterwork";
 import { Mod } from "./types/mod";
+import { Perk } from "./types/perk";
+import { Weapon } from "./types/weapon";
+import { arrayToExistenceMap, arrayToHashMap, hashMapToArray } from "./util";
 
 interface IGroupedItems {
     weapons: DestinyInventoryItemDefinition[];

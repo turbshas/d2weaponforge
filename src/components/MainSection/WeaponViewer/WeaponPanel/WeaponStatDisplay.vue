@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { DataSearchStrings } from '@/data/services';
 import { StatDisplayType, type IModifiedStat } from '@/data/interfaces';
+import { DataSearchStrings } from '@/data/services';
 import { computed } from '@vue/reactivity';
 
 const props = defineProps<{

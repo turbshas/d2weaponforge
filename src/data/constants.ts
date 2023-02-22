@@ -2,8 +2,8 @@ import FlagIcons from "@/assets/FlagIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import WeaponIcons from "@/assets/WeaponIcons";
 import { computed } from "vue";
-import { DataSearchStrings } from "./services/dataSearchStringService";
 import { Collection, type ILanguageInfo, type IWeaponRangeValues, type LookupMap, type SeasonNumber, type TraitId, type WeaponCategoryRegex } from "./interfaces";
+import { DataSearchStrings } from "./services/dataSearchStringService";
 
 export const LanguageInfos = computed<ILanguageInfo[]>(() => [
     { language: "de", flagIcon: FlagIcons.DE, text: "Altsächsisch", },

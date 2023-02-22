@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import ElementLabel from "@/components/Common/ElementLabel.vue";
+import { ref } from 'vue';
 
 const emits = defineEmits<{
     (e: "searchChanged", searchString: string): void,

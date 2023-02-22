@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import PerkPanelBackground from "@/assets/perk_panel_background.svg";
+import type { IArchetype, IMasterwork, IMod, ISelectedPerk, ISelectedPerkMap, ItemHash, PerkColumnNumber } from '@/data/interfaces';
+import { destinyDataService } from '@/data/services';
 import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
-import PerkPanelBackground from "@/assets/perk_panel_background.svg";
-import type { IArchetype, IMasterwork, IMod, PerkColumnNumber, ISelectedPerkMap, IPerkOption, ISelectedPerk, ItemHash } from '@/data/interfaces';
-import { destinyDataService } from '@/data/services';
 
 // Remove this if I refactor this component
 interface ISelectedPerkDisplay {

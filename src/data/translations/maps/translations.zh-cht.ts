@@ -31,7 +31,7 @@ const translations: IDataSearchStrings = {
     misc: {
         adept: "精通",
         harrowed: "折磨",
-        rangefinderPerk: "旁軸準鏡",
+        // rangefinderPerk: "旁軸準鏡",
         timelost: "失時",
     },
 };

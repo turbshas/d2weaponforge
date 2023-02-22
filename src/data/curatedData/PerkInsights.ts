@@ -1,4 +1,4 @@
-import { type IPerkInsightCollection, PerkHash, ModHash } from "../interfaces";
+import { ModHash, PerkHash, type IPerkInsightCollection } from "../interfaces";
 
 const perkInsightMap: IPerkInsightCollection = {
     weaponPerks: {

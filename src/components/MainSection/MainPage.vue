@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { PageSelection, type IMasterwork, type IMod, type IPerkOption, type ISelectedGear, type PerkColumnNumber } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
-import HomePage from './HomePage.vue';
-import Glossary from './Glossary/Glossary.vue';
 import ComparePage from './ComparePage.vue';
+import Glossary from './Glossary/Glossary.vue';
+import HomePage from './HomePage.vue';
 import WeaponViewer from './WeaponViewer/WeaponViewer.vue';
 
 const props = defineProps<{

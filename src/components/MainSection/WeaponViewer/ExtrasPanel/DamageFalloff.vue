@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { WeaponCategoryRangeValuesMap } from '@/data/constants';
-import { DataSearchStrings } from '@/data/services';
 import type { ISelectedGear } from '@/data/interfaces';
+import { DataSearchStrings } from '@/data/services';
 import { computed } from 'vue';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 

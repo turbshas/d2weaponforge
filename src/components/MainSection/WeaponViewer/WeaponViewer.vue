@@ -4,9 +4,9 @@ import WeaponPanel from './WeaponPanel/WeaponPanel.vue';
 // import ExtrasPanel from './ExtrasPanel/ExtrasPanel.vue';
 // import MasterworkPanel from './MasterworkPanel.vue';
 // import ModsPanel from './ModsPanel.vue';
-import PerksPanel from './PerksPanel/PerksPanel.vue';
 import type { IMasterwork, IMod, IPerkOption, ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
 import { computed } from 'vue';
+import PerksPanel from './PerksPanel/PerksPanel.vue';
 
 // const WeaponPanel = defineAsyncComponent(() => import("./WeaponPanel/WeaponPanel.vue"));
 const ExtrasPanel = defineAsyncComponent(() => import("./ExtrasPanel/ExtrasPanel.vue"));

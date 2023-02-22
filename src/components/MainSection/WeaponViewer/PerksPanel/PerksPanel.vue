@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import PerkList from './PerkList.vue';
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
+import type { IPerkColumn, IPerkOption, ISelectedPerk, ISelectedPerkMap, PerkColumnNumber } from '@/data/interfaces';
+import { computed } from 'vue';
 import BuilderSection from '../../../Common/BuilderSection.vue';
-import type { IPerkColumn, IPerkOption, PerkColumnNumber, ISelectedPerkMap, ISelectedPerk } from '@/data/interfaces';
+import PerkList from './PerkList.vue';
 
 const props = defineProps<{
     randomRollPerks: IPerkColumn[],

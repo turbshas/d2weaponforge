@@ -1,6 +1,6 @@
 import type { DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
-import type { IMasterwork, IMod, IModifiedStat, IPerk, IPerkBonus, ISelectedGear, IWeapon, ISelectedPerkMap, PerkColumnNumber, LookupMap, ItemHash, ISelectedPerk } from "../interfaces";
+import type { IMasterwork, IMod, IModifiedStat, IPerk, IPerkBonus, ISelectedGear, ISelectedPerk, ISelectedPerkMap, ItemHash, IWeapon, LookupMap, PerkColumnNumber } from "../interfaces";
 import { destinyDataService, selectionService } from "../services";
 import { hashMapToArray } from "../util";
 

@@ -1,8 +1,7 @@
 import type { DestinySeasonDefinition } from "bungie-api-ts/destiny2";
 import { ref } from "vue";
-import type { DestinyApiService } from "./destinyApiService";
 import type { Destiny2GameData, ILanguageInfo, ItemHash } from "../interfaces";
-import { hashMapToArray } from "../util";
+import type { DestinyApiService } from "./destinyApiService";
 
 export class DestinyDataService {
     private initialized: boolean = false;

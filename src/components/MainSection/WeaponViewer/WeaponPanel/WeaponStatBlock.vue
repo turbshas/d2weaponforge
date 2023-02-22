@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { DataSearchStrings } from '@/data/services';
 import type { IModifiedStat, LookupMap } from '@/data/interfaces';
+import { DataSearchStrings } from '@/data/services';
 import { computed } from '@vue/reactivity';
 import WeaponStatDisplay from './WeaponStatDisplay.vue';
 

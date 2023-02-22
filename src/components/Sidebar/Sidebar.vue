@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import FilterButton from "./FilterButton.vue";
 import Searchbar from "./Searchbar.vue";
-import TabBar from "./TabBar.vue";
 import SidebarPanel from "./SidebarPanel/SidebarPanel.vue";
+import TabBar from "./TabBar.vue";
 
 import { SidebarPanelSelection, type FilterCategory, type IAppliedFilters, type ILanguageInfo, type IWeapon, type LookupMap, type PageSelection } from "@/data/interfaces";
+import { selectionService } from "@/data/services";
 import { computed, ref } from "vue";
 import LanguageButton from "./LanguageButton.vue";
-import { selectionService } from "@/data/services";
 
 const emit = defineEmits<{
     (e: "weaponSelected", weapon: IWeapon): void,
