@@ -2,9 +2,10 @@
 import TierIcons from "@/assets/TierIcons";
 import ElementLabel from "@/components/Common/ElementLabel.vue";
 import OptionButton from "@/components/Common/OptionButton.vue";
-import { OriginFilterInfos, SeasonIconMap, SeasonToCollectionMap, WeaponCategoryIconMap } from "@/data/constants";
-import type { Collection, FilterCategory, IAppliedFilters, IArchetypeFilter, IFilterButton, IWeapon, IWeaponFilterButton, LookupMap, SeasonNumber } from "@/data/interfaces";
+import { OriginFilterInfos, SeasonIconMap, SeasonToCollectionMap, ValidPerkPlugCategories, WeaponCategoryIconMap } from "@/data/constants";
+import type { Collection, FilterCategory, FilterPredicate, IAppliedFilters, IArchetypeFilter, IFilterButton, ItemHash, IWeapon, IWeaponFilterButton, LookupMap, SeasonNumber } from "@/data/interfaces";
 import { destinyDataService } from "@/data/services";
+import { arrayToExistenceMap } from "@/data/util";
 import { computed, ref } from "vue";
 import CollapsibleSection from "./CollapsibleSection.vue";
 
@@ -12,6 +13,12 @@ interface ICategoryInfo {
     name: FilterCategory;
     filters: IFilterButton[];
     wide: boolean;
+}
+
+interface IPerkFilterInfo {
+    name: string;
+    /** There are some duplicate perks with different hashes but the same name. */
+    perkHashes: ItemHash[];
 }
 
 const props = defineProps<{
@@ -28,6 +35,48 @@ const perkFilter = ref("");
 const includeSunsetWeapons = ref(false);
 const craftedWeapons = ref(false);
 const adeptWeapons = ref(false);
+
+const allPerkOptions = computed(() => {
+    const validPerkMap = arrayToExistenceMap(ValidPerkPlugCategories.value);
+    const seenOptionsMap: LookupMap<string, IPerkFilterInfo> = {};
+    const options: IPerkFilterInfo[] = [];
+
+    for (const pair of destinyDataService.perkPairs) {
+        const perk = destinyDataService.getPerkDefinition(pair.perk);
+        if (!perk || !validPerkMap[perk.categoryId]) continue;
+
+        const existing = seenOptionsMap[perk.name];
+        if (!existing) {
+            const filterInfo: IPerkFilterInfo = {
+                name: perk.name,
+                perkHashes: [pair.perk],
+            };
+            seenOptionsMap[perk.name] = filterInfo;
+            options.push(filterInfo);
+        } else {
+            existing.perkHashes.push(pair.perk);
+        }
+    }
+
+    return options;
+});
+
+const perkOptions = computed(() => {
+    if (!perkFilter.value) return [];
+
+    const filteredOptions = allPerkOptions.value.filter(f => {
+        const lowerPerkName = f.name.toLocaleLowerCase();
+        const lowerSearchText = perkFilter.value.toLocaleLowerCase();
+        return lowerPerkName.includes(lowerSearchText)
+            && !props.activeFilters.Perks[f.name];
+    });
+    return filteredOptions;
+});
+
+const selectedPerkFilters = computed(() => {
+    const selected = allPerkOptions.value.filter(f => props.activeFilters.Perks[f.name]);
+    return selected;
+});
 
 const damageTypeFilters = computed(() => {
     return destinyDataService.damageTypes
@@ -200,8 +249,13 @@ function tierIndexToIcon(tierIndex: number) {
     }
 }
 
-function onPerkFilterChanged() {
-    // TODO: stuff
+function onPerkFilterChosen(perkFilterInfo: IPerkFilterInfo) {
+    props.activeFilters.Perks[perkFilterInfo.name] = true;
+    perkFilter.value = "";
+}
+
+function onPerkFilterCleared(perkFilterInfo: IPerkFilterInfo) {
+    props.activeFilters.Perks[perkFilterInfo.name] = false;
 }
 
 function onFilterToggled(categoryName: FilterCategory, filterText: string, active: boolean) {
@@ -241,6 +295,7 @@ function onApplyFilters() {
         includeSunsetWeapons: includeSunsetWeapons.value,
         craftedWeapons: craftedWeapons.value,
         adeptWeapons: adeptWeapons.value,
+        perkFilter: getPerkFilterPredicate(),
         collectionsFilters: findActiveFilterPredicates(collectionsFilterCategory.value),
         damageFilters: findActiveFilterPredicates(damageTypeFilterCategory.value),
         rarityFilters: findActiveFilterPredicates(rarityFilterCategory.value),
@@ -249,6 +304,25 @@ function onApplyFilters() {
     };
 
     emits("filtersApplied", appliedFilters);
+}
+
+function getPerkFilterPredicate() {
+    const selectedPerks: ItemHash[][] = [];
+    for (const filter of selectedPerkFilters.value) {
+        selectedPerks.push(filter.perkHashes);
+    }
+
+    console.log("selected perk filters", selectedPerks);
+    const predicate: FilterPredicate = (weapon: IWeapon) => {
+        const perkMap: LookupMap<ItemHash, boolean> = {};
+        for (const column of weapon.perks.perkColumns) {
+            for (const perkOption of column.perks) {
+                perkMap[perkOption.perk] = true;
+            }
+        }
+        return selectedPerks.every(perkHashes => perkHashes.some(h => !!perkMap[h]));
+    };
+    return predicate;
 }
 
 function findActiveFilterPredicates(category: ICategoryInfo) {
@@ -291,9 +365,27 @@ function getCollectionsList(collection: Collection) {
                     type="search"
                     placeholder="Filter for specific perks"
                     v-model="perkFilter"
-                    @input="onPerkFilterChanged"
                 >
             </ElementLabel>
+            <div class="perk-options" v-if="selectedPerkFilters.length > 0">
+                <OptionButton
+                    v-for="perkOption of selectedPerkFilters"
+                    :key="perkOption.name"
+                    :text="perkOption.name"
+                    :active="false"
+                    remove
+                    @toggled="onPerkFilterCleared(perkOption)"
+                ></OptionButton>
+            </div>
+            <div class="perk-options unselected" v-if="!!perkFilter">
+                <OptionButton
+                    v-for="perkOption of perkOptions"
+                    :key="perkOption.name"
+                    :text="perkOption.name"
+                    :active="false"
+                    @toggled="onPerkFilterChosen(perkOption)"
+                ></OptionButton>
+            </div>
         </CollapsibleSection>
 
         <CollapsibleSection name="Archetype" v-if="activeWeaponFiltersWithArchetypes.length > 0">
@@ -413,16 +505,30 @@ function getCollectionsList(collection: Collection) {
     border-color: hsla(0, 0%, 100%, 0.5);
     border-radius: 0;
     border-top: none;
+
+    &::placeholder {
+        font-size: 12px;
+        font-family: neue-haas-grotesk-text,"Helvetica Neue",sans-serif;
+        line-height: 16px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+    &:focus {
+        outline: none;
+    }
 }
-.perk-search::placeholder {
-    font-size: 12px;
-    font-family: neue-haas-grotesk-text,"Helvetica Neue",sans-serif;
-    line-height: 16px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-.perk-search:focus {
-    outline: none;
+.perk-options {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-top: 8px;
+    
+    &.unselected {
+        padding-top: 8px;
+        border-top: 1px solid hsla(0, 0%, 100%, 0.5);
+    }
 }
 
 .button-list {

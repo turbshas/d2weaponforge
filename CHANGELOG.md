@@ -1,7 +1,7 @@
 # Changelog
 
-## **Title TBD** [ *1.3.0* ] Date TBD
-Description TBD
+## **Perk Filters + Other Filter Improvements** [ *1.3.0* ] 2023-02-22
+Filtering by perks on a weapon is now implemented along with some other filter improvements and bug fixes.
 
 * Parse perks, masterworks, and mods once each directly from the manifest definitions instead of once for every weapon they appear on.
   * Should reduce size of parsed data stored in IndexedDB.
@@ -13,6 +13,9 @@ Description TBD
 * Add filter for adept weapons.
 * Fix some weapons having duplicate perks.
 * Limit weapon search results to 100, add "Show All" at bottom of list to show every result.
+* Added perk filters.
+* Fixed sunset weapon filter excluding non-sunset weapons.
+* Fix reissued weapons displaying their sunset logo.
 
 ## **Collections Filters + Perk Insights** [ *1.2.0* ] 2023-02-20
 This change implements the collections filters for sources of weapons,

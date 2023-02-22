@@ -7,6 +7,7 @@ const props = defineProps<{
     large?: boolean,
     iconUrl?: string,
     wide?: boolean,
+    remove?: boolean,
 }>();
 
 const emits = defineEmits<{
@@ -21,7 +22,7 @@ function onButtonToggled() {
 </script>
 
 <template>
-    <button class="button" :class="{ 'active': props.active, 'large': props.large, }" @click="onButtonToggled">
+    <button class="button" :class="{ 'active': props.active, 'large': props.large, 'remove': props.remove, }" @click="onButtonToggled">
         <img class="icon" :class="{ 'wide': props.wide }" v-if="!!props.iconUrl" :src="props.iconUrl" :alt="altText">
         <span class="text">{{ props.text }}</span>
     </button>
@@ -82,6 +83,13 @@ function onButtonToggled() {
     &:hover::after, &:focus::after {
         opacity: 0.8;
         transform: scale(1);
+    }
+    &.remove {
+        box-shadow: inset 0 0 0 1px #973835;
+        color: #973835;
+        &::after {
+            box-shadow: 0 0 0 2px #973835;
+        }
     }
 }
 

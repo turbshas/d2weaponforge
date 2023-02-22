@@ -18,6 +18,8 @@ const limitedWeapons = computed(() => {
     return props.limitWeapons && weapons.length > 100 ? weapons.slice(0, 100) : weapons;
 });
 
+const showLimitedResultsText = computed(() => props.limitWeapons && props.weapons.length > 100);
+
 function onEntryClicked(weapon: IWeapon) {
     emit("entryClicked", weapon);
 }
@@ -35,7 +37,7 @@ function onShowAllClick() {
             :weapon="weapon"
             @entry-clicked="onEntryClicked"
         ></WeaponListEntry>
-        <footer class="limited" v-if="props.limitWeapons">
+        <footer class="limited" v-if="showLimitedResultsText">
             <i class="text">Results are currently limited.</i>
             <button class="show" @click="onShowAllClick">
                 <i>Show All</i>

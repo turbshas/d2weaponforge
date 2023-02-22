@@ -68,6 +68,9 @@ function onLanguagesToggled() {
 function emptyAppliedFilters(): IAppliedFilters {
     return {
         includeSunsetWeapons: false,
+        craftedWeapons: false,
+        adeptWeapons: false,
+        perkFilter: undefined,
         collectionsFilters: [],
         damageFilters: [],
         rarityFilters: [],
@@ -80,6 +83,7 @@ function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>
         "Archetype": {},
         "Collections": {},
         "Damage Type": {},
+        "Perks": {},
         "Rarity": {},
         "Weapon": {},
     }

@@ -44,6 +44,9 @@ export class Weapon implements IWeapon {
         masterworkLookup: LookupMap<ItemHash, IMasterwork>,
         modLookup: LookupMap<ItemHash, IMod>,
         ) {
+            if (weaponItem.displayProperties.name.includes("Bite of the Fox") || weaponItem.displayProperties.name.includes("Trust")) {
+                console.log("found important item", weaponItem);
+            }
         this.index = weaponItem.index;
         this.hash = weaponItem.hash;
         this.name = weaponItem.displayProperties.name;
@@ -99,8 +102,7 @@ function getWatermarkUrl(weapon: DestinyInventoryItemDefinition) {
             (
                 weapon.quality
                 && weapon.quality.displayVersionWatermarkIcons.length > 0
-                && weapon.quality.displayVersionWatermarkIcons[0]
-                && weapon.quality.displayVersionWatermarkIcons[0]
+                && weapon.quality.displayVersionWatermarkIcons[weapon.quality.displayVersionWatermarkIcons.length - 1]
             )
             || weapon.iconWatermarkShelved
             || weapon.iconWatermark
@@ -114,11 +116,18 @@ function isWeaponAdept(weapon: DestinyInventoryItemDefinition) {
         || name.includes(DataSearchStrings.Misc.Timelost.value);
 }
 
-function isWeaponSunset(weapon: DestinyInventoryItemDefinition) { return !!weapon.iconWatermarkShelved; }
+function isWeaponSunset(weapon: DestinyInventoryItemDefinition) {
+    return !!weapon.iconWatermarkShelved
+        && (!weapon.quality
+            || weapon.quality.displayVersionWatermarkIcons.length === 0
+            || weapon.quality.displayVersionWatermarkIcons[weapon.quality.displayVersionWatermarkIcons.length - 1] === weapon.iconWatermarkShelved);
+}
+
 function getWeaponTierTypeIndex(weapon: DestinyInventoryItemDefinition, manifest: ManifestAccessor) {
     if (!weapon.inventory) return ItemTierIndex.Basic;
     const tierType = manifest.getItemTierDefinition(weapon.inventory.tierTypeHash);
     return tierType ? (tierType.index as ItemTierIndex) : ItemTierIndex.Basic;
 }
+
 // Archetype trait ID seems to always be last one in the list, hopefully that doesn't change.
 function getWeaponTraitId(weapon: DestinyInventoryItemDefinition) { return weapon.traitIds[weapon.traitIds.length - 1] as TraitId; }

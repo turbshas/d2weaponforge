@@ -1,5 +1,4 @@
 Preferred order of work:
-1) Perk filters
 3) changes to support multiple screen sizes
   - sidebar is very wide even on some large screens
   - at some point, need to change layout for weapon viewer
@@ -35,6 +34,7 @@ Unsure about order:
   - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
   - I actually like the ordering as I have it now...
   - maybe push that one braytech rwp weapon to the bottom?
+
 Bugs:
 - selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
 - tab bar text isn't centered properly

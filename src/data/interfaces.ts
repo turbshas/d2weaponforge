@@ -120,7 +120,7 @@ export interface ILanguageInfo {
     text: string;
 }
 
-export type FilterCategory = "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";
+export type FilterCategory = "Perks" | "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";
 
 export type FilterPredicate = (item: IWeapon) => boolean;
 
@@ -147,6 +147,7 @@ export interface IAppliedFilters {
     includeSunsetWeapons: boolean;
     craftedWeapons: boolean;
     adeptWeapons: boolean;
+    perkFilter: FilterPredicate | undefined;
     collectionsFilters: FilterPredicate[];
     damageFilters: FilterPredicate[];
     rarityFilters: FilterPredicate[];

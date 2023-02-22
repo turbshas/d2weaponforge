@@ -37,6 +37,10 @@ export class DestinyDataService {
         return this.gameData ? this.gameData.perkInsights : undefined;
     }
 
+    public get perkPairs() {
+        return this.gameData ? this.gameData.perkLookup.perkPairs : [];
+    }
+
     public get collectionsLists() {
         return this.gameData ? this.gameData.collectionsLists : undefined;
     }
