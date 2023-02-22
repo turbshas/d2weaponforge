@@ -26,6 +26,8 @@ const emits = defineEmits<{
 
 const perkFilter = ref("");
 const includeSunsetWeapons = ref(false);
+const craftedWeapons = ref(false);
+const adeptWeapons = ref(false);
 
 const damageTypeFilters = computed(() => {
     return destinyDataService.damageTypes
@@ -222,6 +224,14 @@ function includeSunsetToggled() {
     includeSunsetWeapons.value = !includeSunsetWeapons.value;
 }
 
+function craftedWeaponsToggled() {
+    craftedWeapons.value = !craftedWeapons.value;
+}
+
+function adeptWeaponsToggled() {
+    adeptWeapons.value = !adeptWeapons.value;
+}
+
 function onClearFilters() {
     emits("filtersCleared");
 }
@@ -229,6 +239,8 @@ function onClearFilters() {
 function onApplyFilters() {
     const appliedFilters: IAppliedFilters = {
         includeSunsetWeapons: includeSunsetWeapons.value,
+        craftedWeapons: craftedWeapons.value,
+        adeptWeapons: adeptWeapons.value,
         collectionsFilters: findActiveFilterPredicates(collectionsFilterCategory.value),
         damageFilters: findActiveFilterPredicates(damageTypeFilterCategory.value),
         rarityFilters: findActiveFilterPredicates(rarityFilterCategory.value),
@@ -322,12 +334,22 @@ function getCollectionsList(collection: Collection) {
             </div>
         </CollapsibleSection>
 
-        <CollapsibleSection name="Sunset">
+        <CollapsibleSection name="Misc">
             <div class="button-list">
                 <OptionButton
                     text="Include Sunset Weapons"
                     :active="includeSunsetWeapons"
                     @toggled="includeSunsetToggled"
+                ></OptionButton>
+                <OptionButton
+                    text="Crafted"
+                    :active="craftedWeapons"
+                    @toggled="craftedWeaponsToggled"
+                ></OptionButton>
+                <OptionButton
+                    text="Adept"
+                    :active="adeptWeapons"
+                    @toggled="adeptWeaponsToggled"
                 ></OptionButton>
             </div>
         </CollapsibleSection>

@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryDefinition, DestinyItemSocketEntryPlugItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinySocketTypeDefinition, DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { ExcludedPerkPlugCategories } from "../constants";
-import { WeaponSocketCategoryHash, type IMasterwork, type IMod, type IPerkGrid, type IPerkLookup, type ItemHash, type LookupMap } from "../interfaces";
+import { WeaponSocketCategoryHash, type IMasterwork, type IMod, type IPerkGrid, type IPerkLookup, type IPerkOption, type IPerkPair, type ItemHash, type LookupMap } from "../interfaces";
 import { DataSearchStrings } from "../services/dataSearchStringService";
 import type { ManifestAccessor } from "./manifestAccessor";
 import { PerkColumn } from "./perkColumn";
@@ -137,6 +137,7 @@ export class ResolvedWeaponSockets {
         const seenPlugItems: LookupMap<ItemHash, boolean> = {};
 
         const perksInSlot: ItemHash[] = [];
+        const perksInSlotMap: LookupMap<ItemHash, boolean> = {};
 
         // Remove duplicates and group by name to capture normal + enhanced perks together
         for (const plugItem of plugItems || []) {
@@ -149,13 +150,17 @@ export class ResolvedWeaponSockets {
             }
 
             perksInSlot.push(plugItem.plugItemHash);
+            perksInSlotMap[plugItem.plugItemHash] = true;
         }
 
-        const perkOptions: PerkOption[] = [];
+        const perkOptions: IPerkOption[] = [];
         for (const perk of perksInSlot) {
+            // Perk pair lookup is keyed by the normal perk hash.
             const perkPair = this.perkLookup.perkPairLookup[perk];
             // Unknown perk, ignore.
             if (!perkPair) continue;
+
+            const thisWeaponHasEnhanced = !!perkPair.enhanced && !!perksInSlotMap[perkPair.enhanced];
 
             const craftedLevel = requiredCraftedLevelMap[perk];
             const enhancedCraftedLevel = perkPair.enhanced ? requiredCraftedLevelMap[perkPair.enhanced] : undefined;
@@ -168,7 +173,7 @@ export class ResolvedWeaponSockets {
                     : undefined;
             const perkOption = new PerkOption(
                 perk,
-                perkPair.enhanced,
+                thisWeaponHasEnhanced ? perkPair.enhanced : undefined,
                 craftingInfo,
                 !!currentlyCanRollMap[perk],
                 );

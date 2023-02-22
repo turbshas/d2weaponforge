@@ -27,6 +27,8 @@ const activeFilters = computed(() => props.activeFilters);
 
 const areFiltersChosen = computed(() => {
     return filters.value.includeSunsetWeapons
+        || filters.value.craftedWeapons
+        || filters.value.adeptWeapons
         || filters.value.collectionsFilters.length > 0
         || filters.value.damageFilters.length > 0
         || filters.value.rarityFilters.length > 0
@@ -40,13 +42,17 @@ const filteredWeapons = computed(() => {
         return weapons.value.filter(w => !w.isSunset).slice(0, 22);
     }
 
-    return weapons.value
+    const filtered = weapons.value
         .filter(w => !filters.value.includeSunsetWeapons || !w.isSunset)
+        .filter(w => !filters.value.craftedWeapons || w.isCraftable)
+        .filter(w => !filters.value.adeptWeapons || w.isAdept)
         .filter(w => checkFilterCategoryOnWeapon(filters.value.collectionsFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.damageFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.rarityFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.weaponFilters, w))
         .filter(w => w.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
+    console.log("filtered weapons", filtered);
+    return filtered;
 });
 
 const showFilterWindow = computed(() => props.sidebarPanelSelection === SidebarPanelSelection.Filters);

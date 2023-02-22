@@ -145,6 +145,8 @@ export interface IWeaponFilterButton extends IFilterButton {
 
 export interface IAppliedFilters {
     includeSunsetWeapons: boolean;
+    craftedWeapons: boolean;
+    adeptWeapons: boolean;
     collectionsFilters: FilterPredicate[];
     damageFilters: FilterPredicate[];
     rarityFilters: FilterPredicate[];
@@ -172,6 +174,7 @@ export interface IPerkLookup {
     normal: LookupMap<ItemHash, IPerk>;
     enhanced: LookupMap<ItemHash, IPerk>;
     perkPairs: IPerkPair[];
+    /** Keyed by the normal perk hash. */
     perkPairLookup: LookupMap<ItemHash, IPerkPair>;
 }
 
