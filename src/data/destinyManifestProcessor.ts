@@ -110,8 +110,8 @@ export class DestinyManifestProcessor {
                 && !!item.quality
                 && (!!item.quality.infusionCategoryHash
                     || (!!item.quality.infusionCategoryHashes && item.quality.infusionCategoryHashes.length > 0));
-            const isPerk = !!item.plug && perkPlugCategoryIdMap[item.plug.plugCategoryIdentifier];
-            const isMod = !!item.plug && modPlugCategoryIdMap[item.plug.plugCategoryIdentifier];
+            const isPerk = !!item.plug && !!perkPlugCategoryIdMap[item.plug.plugCategoryIdentifier];
+            const isMod = !!item.plug && !!modPlugCategoryIdMap[item.plug.plugCategoryIdentifier];
             const isMasterwork = !!item.plug
                 && item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
 
@@ -150,12 +150,14 @@ export class DestinyManifestProcessor {
 
         // Separate by normal/enhanced, add enhanced to lookup table by name for faster matching with normal perks.
         for (const perkItem of perks) {
+            if (!perkItem.plug) continue;
             if (!perkItem.inventory) continue;
             const itemTier = this.manifest.getItemTierDefinition(perkItem.inventory.tierTypeHash);
             if (!itemTier) continue;
 
             const perk = new Perk(perkItem, this.manifest);
-            if (itemTier.index === ItemTierIndex.Common) {
+            const isIntrinsic = perkItem.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.IntrinsicPlug;
+            if (itemTier.index === ItemTierIndex.Common || isIntrinsic) {
                 normalPerks.push(perk);
             } else if (itemTier.index === ItemTierIndex.Uncommon) {
                 enhancedPerks.push(perk);

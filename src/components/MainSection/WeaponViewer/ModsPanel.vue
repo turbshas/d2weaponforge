@@ -18,7 +18,7 @@ const modItems = computed(() => {
     const modItems: IMod[] = [];
     for (const modItemHash of props.modList) {
         if (!modItemHash) continue;
-        const modItem = destinyDataService.getMasterworkDefinition(modItemHash);
+        const modItem = destinyDataService.getModDefinition(modItemHash);
         if (!modItem) continue;
         modItems.push(modItem);
     }

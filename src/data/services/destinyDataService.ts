@@ -75,6 +75,7 @@ export class DestinyDataService {
     }
 
     public getModDefinition = (modHash: ItemHash) => {
+        console.log("mod lookup info", this.gameData, this.gameData?.modLookup);
         return this.gameData?.modLookup[modHash];
     }
 

@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
-import type { IArchetype, IMasterwork, IMod, ISelectedPerk, ISelectedPerkMap, ItemHash, PerkColumnNumber } from '@/data/interfaces';
+import type { IArchetype, IMasterwork, IMod, IPerk, ISelectedPerk, ISelectedPerkMap, ItemHash, PerkColumnNumber } from '@/data/interfaces';
 import { destinyDataService } from '@/data/services';
 import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 
 // Remove this if I refactor this component
+interface IResolvedSelectedPerk extends ISelectedPerk {
+    perkItem: IPerk;
+    enhancedPerkItem: IPerk | undefined;
+}
+
 interface ISelectedPerkDisplay {
-    selectedPerk: ISelectedPerk | undefined;
+    selectedPerk: IResolvedSelectedPerk | undefined;
     column: PerkColumnNumber | undefined,
     fullSize: boolean;
     hideHover: boolean;
@@ -25,35 +30,62 @@ const backgroundUrl = computed(() => PerkPanelBackground);
 
 const perks = computed(() => {
     const perkList: ISelectedPerkDisplay[] = [
-        { selectedPerk: getSelectedPerkFromPerkLike(props.intrinsic?.intrinsicPerkHash), column: undefined, fullSize: true,  hideHover: true, },
-        { selectedPerk: props.selectedPerks[1], column: 1, fullSize: false, hideHover: false, },
-        { selectedPerk: props.selectedPerks[2], column: 2, fullSize: false, hideHover: false, },
-        { selectedPerk: props.selectedPerks[3], column: 3, fullSize: false, hideHover: false, },
-        { selectedPerk: props.selectedPerks[4], column: 4, fullSize: false, hideHover: false, },
+        { selectedPerk: resolveFromIntrinsic(props.intrinsic?.intrinsicPerkHash), column: undefined, fullSize: true,  hideHover: true, },
+        { selectedPerk: resolveFromSelectedPerk(props.selectedPerks[1]), column: 1, fullSize: false, hideHover: false, },
+        { selectedPerk: resolveFromSelectedPerk(props.selectedPerks[2]), column: 2, fullSize: false, hideHover: false, },
+        { selectedPerk: resolveFromSelectedPerk(props.selectedPerks[3]), column: 3, fullSize: false, hideHover: false, },
+        { selectedPerk: resolveFromSelectedPerk(props.selectedPerks[4]), column: 4, fullSize: false, hideHover: false, },
     ];
     const originPerk = props.selectedPerks[5];
     if (originPerk) {
-        perkList.push({ selectedPerk: originPerk, column: 5, fullSize: false, hideHover: false, });
+        perkList.push({ selectedPerk: resolveFromSelectedPerk(originPerk), column: 5, fullSize: false, hideHover: false, });
     }
     if (props.mod) {
-        perkList.push({ selectedPerk: getSelectedPerkFromPerkLike(props.mod?.hash), column: undefined, fullSize: true, hideHover: false, });
+        perkList.push({ selectedPerk: resolveFromMod(props.mod?.hash), column: undefined, fullSize: true, hideHover: false, });
     }
     if (props.masterwork) {
-        perkList.push({ selectedPerk: getSelectedPerkFromPerkLike(props.masterwork?.hash), column: undefined, fullSize: true, hideHover: false, });
+        perkList.push({ selectedPerk: resolveFromMasterwork(props.masterwork?.hash), column: undefined, fullSize: true, hideHover: false, });
     }
     return perkList;
 });
 
-function getSelectedPerkFromPerkLike(perk: ItemHash | undefined) {
-    if (!perk) return undefined;
-    const selectedPerk: ISelectedPerk = {
+function resolveFromIntrinsic(intrinsicPerkHash: ItemHash | undefined) {
+    if (!intrinsicPerkHash) return undefined;
+    const intrinsic = destinyDataService.getPerkDefinition(intrinsicPerkHash);
+    return resolveWithPerkItems(intrinsic);
+}
+
+function resolveFromSelectedPerk(selectedPerk: ISelectedPerk | undefined) {
+    if (!selectedPerk) return undefined;
+    const perk = destinyDataService.getPerkDefinition(selectedPerk.perkOption.perk);
+    const enhanced = destinyDataService.getEnhancedPerkDefinition(selectedPerk.perkOption.enhancedPerk || 0);
+    return resolveWithPerkItems(perk, enhanced);
+}
+
+function resolveFromMasterwork(masterworkHash: ItemHash | undefined) {
+    if (!masterworkHash) return undefined;
+    const masterwork = destinyDataService.getMasterworkDefinition(masterworkHash);
+    return resolveWithPerkItems(masterwork);
+}
+
+function resolveFromMod(modHash: ItemHash | undefined) {
+    if (!modHash) return undefined;
+    const mod = destinyDataService.getModDefinition(modHash);
+    return resolveWithPerkItems(mod);
+}
+
+function resolveWithPerkItems(perkItem: IPerk | undefined, enhancedPerkItem: IPerk | undefined = undefined) {
+    if (!perkItem) return undefined;
+    const selectedPerk: IResolvedSelectedPerk = {
         perkOption: {
-            perk: perk,
+            perk: perkItem.hash,
             enhancedPerk: undefined,
             craftingInfo: undefined,
             currentlyCanRoll: true,
         },
         useEnhanced: false,
+        perkItem: perkItem,
+        enhancedPerkItem: enhancedPerkItem,
     };
     return selectedPerk;
 }
@@ -67,12 +99,12 @@ function useEnhancedPerk(selectedPerk: ISelectedPerk | undefined) {
     return !!selectedPerk && selectedPerk.useEnhanced && !!selectedPerk.perkOption.enhancedPerk;
 }
 
-function getActivePerk(selectedPerk: ISelectedPerk | undefined) {
+function getActivePerk(selectedPerk: IResolvedSelectedPerk | undefined) {
     if (!selectedPerk) return undefined;
-    if (useEnhancedPerk(selectedPerk) && !!selectedPerk.perkOption.enhancedPerk) {
-        return destinyDataService.getEnhancedPerkDefinition(selectedPerk.perkOption.enhancedPerk);
+    if (useEnhancedPerk(selectedPerk) && !!selectedPerk.enhancedPerkItem) {
+        return selectedPerk.enhancedPerkItem;
     } else {
-        return destinyDataService.getPerkDefinition(selectedPerk.perkOption.perk);
+        return selectedPerk.perkItem;
     }
 }
 
