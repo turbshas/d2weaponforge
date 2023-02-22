@@ -25,20 +25,12 @@ export class DestinyDataService {
         return this.gameData ? this.gameData.damageTypes : [];
     }
 
-    public get itemCategories() {
-        return this.gameData ? this.gameData.itemCategories : [];
-    }
-
     public get seasons() {
         return this.gameData ? this.gameData.seasons : []
     }
 
     public get itemTiers() {
         return this.gameData ? this.gameData.itemTierTypes : [];
-    }
-
-    public get stats() {
-        return this.gameData ? this.gameData.statsLookup : [];
     }
 
     public get perkInsights() {
@@ -63,26 +55,6 @@ export class DestinyDataService {
 
     public getWeapon = (hash: number) => {
         return this.gameData?.weaponsLookup[hash];
-    }
-
-    public getDamageType = (hash: number) => {
-        return this.gameData?.damageTypesLookup[hash];
-    }
-
-    public getStatDefinition = (statHash: number) => {
-        return this.gameData?.statsLookup[statHash];
-    }
-
-    public getStatGroupDefinition = (statGroupHash: number) => {
-        return this.gameData?.statGroupsLookup[statGroupHash];
-    }
-
-    public getItemDefinition = (itemHash: number) => {
-        return this.gameData?.itemLookup[itemHash];
-    }
-
-    public getSeasonDefinition = (seasonHash: number) => {
-        return this.gameData?.seasonsLookup[seasonHash];
     }
 
     public isSeasonSunset = (season: DestinySeasonDefinition) => {

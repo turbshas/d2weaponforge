@@ -154,31 +154,16 @@ export interface IAppliedFilters {
 
 export interface Destiny2GameData {
     damageTypes: DestinyDamageTypeDefinition[];
-    damageTypesLookup: LookupMap<ItemHash, DestinyDamageTypeDefinition>;
-
-    itemCategories: DestinyItemCategoryDefinition[];
-    itemCategoriesLookup: LookupMap<ItemHash, DestinyItemCategoryDefinition>;
-
     itemTierTypes: DestinyItemTierTypeDefinition[];
-    itemTierTypesLookup: LookupMap<ItemHash, DestinyItemTierTypeDefinition>;
-
     seasons: DestinySeasonDefinition[];
-    seasonsLookup: LookupMap<ItemHash, DestinySeasonDefinition>;
 
     weapons: IWeapon[];
     weaponsLookup: LookupMap<ItemHash, IWeapon>;
+    weaponTypes: IWeaponTypeInfo[];
+
     perkLookup: IPerkLookup;
     masterworkLookup: LookupMap<ItemHash, IMasterwork>;
     modLookup: LookupMap<ItemHash, IMod>;
-
-    weaponTypes: IWeaponTypeInfo[];
-
-    statsLookup: LookupMap<ItemHash, DestinyStatDefinition>;
-    statGroupsLookup: LookupMap<ItemHash, DestinyStatGroupDefinition>;
-    itemLookup: LookupMap<ItemHash, DestinyInventoryItemDefinition>;
-    plugSetLookup: LookupMap<ItemHash, DestinyPlugSetDefinition>;
-    socketCategoryLookup: LookupMap<ItemHash, DestinySocketCategoryDefinition>;
-    socketTypeLookup: LookupMap<ItemHash, DestinySocketTypeDefinition>;
 
     perkInsights: IPerkInsightCollection;
     collectionsLists: ICollectionsLists;

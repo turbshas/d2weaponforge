@@ -8,6 +8,7 @@ Description TBD
   * Each weapon now contains hashes as references to these parsed items.
 * Use Rangefinder perk hash instead of name - reduces translation map size.
 * Pull useEnhanced out of IPerkOption and into (new) ISelectedPerk (which isn't serialized).
+* Reduced amount of required stored data to massively improve page load times after first load.
 
 ## **Collections Filters + Perk Insights** [ *1.2.0* ] 2023-02-20
 This change implements the collections filters for sources of weapons,

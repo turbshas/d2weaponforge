@@ -38,12 +38,15 @@ function getHashesFromEnum(enumObject: Object) {
 }
 
 function getInsightFromHash<T extends string | number | symbol>(hash: number, insightMap: IPerkInsights<T>) {
-    const perkItem = destinyDataService.getItemDefinition(hash);
+    // TODO: this is bad for now, but will be fixed when the glossary rework happens.
+    const perkItem = destinyDataService.getModDefinition(hash)
+        || destinyDataService.getEnhancedPerkDefinition(hash)
+        || destinyDataService.getPerkDefinition(hash);
     const perkInsight = destinyDataService.perkInsights ? insightMap[hash as T] : undefined;
     const insightDisplay: IInsightDisplay = {
         hash: hash,
-        name: perkItem ? perkItem.displayProperties.name : "",
-        iconUrl: perkItem ? destinyDataService.getImageUrl(perkItem.displayProperties.icon) : "",
+        name: perkItem ? perkItem.name : "",
+        iconUrl: perkItem ? destinyDataService.getImageUrl(perkItem.iconUrl) : "",
         description: perkInsight ? perkInsight.description : "",
     };
     return insightDisplay;

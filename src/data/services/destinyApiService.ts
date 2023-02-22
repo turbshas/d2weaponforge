@@ -4,7 +4,7 @@ import type { Destiny2GameData, ItemHash, IWeapon, LookupMap, UsedDestinyManifes
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
 
-const CurrentCachedManifestVersion = 5;
+const CurrentCachedManifestVersion = 6;
 
 export class DestinyApiService {
     constructor(private readonly cacheService: CacheService) { }
@@ -78,27 +78,16 @@ export class DestinyApiService {
 
         const gameData: Destiny2GameData = {
             damageTypes: manifestProcessor.damageTypes,
-            damageTypesLookup: manifestProcessor.damageTypeLookup,
-            itemCategories: manifestProcessor.itemCategories,
-            itemCategoriesLookup: manifestProcessor.itemCategoriesLookup,
             itemTierTypes: manifestProcessor.itemTierTypes,
-            itemTierTypesLookup: manifestProcessor.itemTierTypesLookup,
             seasons: manifestProcessor.seasons,
-            seasonsLookup: manifestProcessor.seasonsLookup,
 
             weapons: weapons,
             weaponsLookup: weaponsLookup,
             weaponTypes: manifestProcessor.weaponTypes,
+
             perkLookup: manifestProcessor.perkLookup,
             masterworkLookup: manifestProcessor.masterworkLookup,
             modLookup: manifestProcessor.modLookup,
-
-            statsLookup: manifestProcessor.statsLookup,
-            statGroupsLookup: manifestProcessor.statGroupsLookup,
-            itemLookup: manifestProcessor.itemLookup,
-            plugSetLookup: manifestProcessor.plugSetLookup,
-            socketCategoryLookup: manifestProcessor.socketCategoryLookup,
-            socketTypeLookup: manifestProcessor.socketTypeLookup,
 
             perkInsights: perkInsights,
             collectionsLists: collectionsLists,
