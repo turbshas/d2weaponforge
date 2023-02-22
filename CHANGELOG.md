@@ -12,6 +12,7 @@ Description TBD
 * Add filter for craftable weapons (includes adept versions - not fixing this since they will be able to be enhanced sometime in Lightfall).
 * Add filter for adept weapons.
 * Fix some weapons having duplicate perks.
+* Limit weapon search results to 100, add "Show All" at bottom of list to show every result.
 
 ## **Collections Filters + Perk Insights** [ *1.2.0* ] 2023-02-20
 This change implements the collections filters for sources of weapons,

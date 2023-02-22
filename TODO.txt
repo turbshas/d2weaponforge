@@ -1,7 +1,5 @@
 Preferred order of work:
 1) Perk filters
-2) Delay loading when searching, or maybe load in chunks, or load in the background if possible? 
-  - limit to 100, add "load all" button to bottom?
 3) changes to support multiple screen sizes
   - sidebar is very wide even on some large screens
   - at some point, need to change layout for weapon viewer
@@ -22,28 +20,7 @@ Preferred order of work:
   - only load perk insights when building data from the manifest, attach to IPerk
   - if possible, allow ctrl-f on the page to expand collapsed sections (make section expand on focus event?)
 
-Unsure about order:
-12) Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar
-13) virtual scrolling on displayed weapons
-  - possible to load weapons into the list over time (as they are processed) instead of all at once?
-    - is this valuable at all? once processed, the indexed db has everything cached so the only slow down may be the DOM manipulation
-  - array of 50 (probably?) container objects for weapon items
-  - array of equal length holding HTMLElement for each container
-  - on every scroll event, check for any container that is 500px (maybe different value? depends on number of containers?)
-    off screen and move it to the top or bottom, depending on direction off screen
-    - also move weapon items into a "viewed item" list when they scroll into view
-  - map of container position number -> weapon item to display (or null/undefined to not display anything)
-  - IDs for containers?
-  - can't just base it on position when using constant number of containers because then they'd be flipping
-    back and forth between top and bottom if there's too many
-  - track size, position of view box and containers?
-  - only swap when required?
-    - when there are too few elements (< 5?): below the view box when scrolling down, or above the view box when scrolling up
-    - track number of containers above/below view box and swap when below threshold
-15) styling cleanup:
-  - put common values into variables in base.css
-  - convert to using rem instead of px
-16) compare section (not actually complete in d2gunsmith so gonna have to free ball that one)
+compare section:
   - ideas:
   - each weapon is 1 row
   - stats only display numbers
@@ -51,30 +28,48 @@ Unsure about order:
   - icon + name/type on left side
   - stats in middle
   - what should stat arrows display? green only if highest value in list of weapons being compared?
-- only load collection lists + a few other filter-only properties from cache when opening the filter
-  - it is an async component so it'll take some time anyway
-- filter armour plugs out of the kept data (definitely shows up as intrinsics, maybe others too...)
-- involve stat display override when creating masterworks in DestinyManifestProcessor
-- change drang/mida mini-tool intrinsic checks to use hashes
-- Move constants into class/interface, add Destiny2GameData as a property to be cached (hopefully reduce bundle size)
-- for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
-- add icons, collections for seasons before season of worthy
-- selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
-- convert as many ID comparisons, etc. as possible to hashes
-- convert Item Tier Index to hash, as those are stable
-- load background image after manifest has loaded to ensure it doesn't delay page load on low speed connections
-  - the home page loads until the background fills in, then it transitions to the weapon page
-- elemental cap selector
-- show that page is refreshing when game data is being reloaded
+
+Unsure about order:
+- Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar?
 - ordering weapons by release date to the API (might have to be manual)
   - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
   - I actually like the ordering as I have it now...
+  - maybe push that one braytech rwp weapon to the bottom?
+Bugs:
+- selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
 - tab bar text isn't centered properly
-- change PerkColumnNumber to something better
+
+Filter features:
+- for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
+- add icons, collections for seasons before season of worthy
+- more collections icons https://github.com/justrealmilk/destiny-icons
+- only load collection lists + a few other filter-only properties from cache when opening the filter
+  - it is an async component so it'll take some time anyway
+
+Masterworks/weapon features:
+- exotic catalyst support
+
+Extras panel:
+- elemental cap selector
 - reload speed calculator
 - damage fall off calculator for the remaining weapon types
-- exotic catalyst support
-- more collections icons https://github.com/justrealmilk/destiny-icons
+
+Load times:
+- load background image after manifest has loaded to ensure it doesn't delay page load on low speed connections
+  - the home page loads until the background fills in, then it transitions to the weapon page
+- show that page is refreshing when game data is being reloaded
+
+Tech debt/processing:
+- involve stat display override when creating masterworks in DestinyManifestProcessor
+- filter armour plugs out of the kept data (definitely shows up as intrinsics, maybe others too...)
+- change PerkColumnNumber to something better
+- convert Item Tier Index to hash, as those are stable
+- convert as many ID comparisons, etc. as possible to hashes
+- Move constants into class/interface, add Destiny2GameData as a property to be cached (hopefully reduce bundle size)
+- change drang/mida mini-tool intrinsic checks to use hashes
+- styling cleanup:
+  - put common values into variables in base.css
+  - convert to using rem instead of px
 
 Research:
 - look into progressive web apps
@@ -90,3 +85,20 @@ Research:
 - look into weapon ready/stow stat?
 - look into ADS stat?
 - better solution for dealing with enums from bungie-api-ts and isolatedModules?
+
+Virtual scrolling on displayed weapons:
+  - possible to load weapons into the list over time (as they are processed) instead of all at once?
+    - is this valuable at all? once processed, the indexed db has everything cached so the only slow down may be the DOM manipulation
+  - array of 50 (probably?) container objects for weapon items
+  - array of equal length holding HTMLElement for each container
+  - on every scroll event, check for any container that is 500px (maybe different value? depends on number of containers?)
+    off screen and move it to the top or bottom, depending on direction off screen
+    - also move weapon items into a "viewed item" list when they scroll into view
+  - map of container position number -> weapon item to display (or null/undefined to not display anything)
+  - IDs for containers?
+  - can't just base it on position when using constant number of containers because then they'd be flipping
+    back and forth between top and bottom if there's too many
+  - track size, position of view box and containers?
+  - only swap when required?
+    - when there are too few elements (< 5?): below the view box when scrolling down, or above the view box when scrolling up
+    - track number of containers above/below view box and swap when below threshold

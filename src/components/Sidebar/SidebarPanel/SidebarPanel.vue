@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon, type LookupMap } from "@/data/interfaces";
 import { destinyDataService } from "@/data/services";
-import { computed, defineAsyncComponent } from "vue";
+import { computed, defineAsyncComponent, ref, watch } from "vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
 
 const FilterWindow = defineAsyncComponent(() => import("./Filter/FilterWindow.vue"));
@@ -20,6 +20,10 @@ const emit = defineEmits<{
     (e: "filtersCleared"): void,
     (e: "languageSelected", language: ILanguageInfo): void,
 }>();
+
+const limitingDisplayedWeapons = ref(true);
+
+watch(() => props.searchString, () => { limitingDisplayedWeapons.value = true; });
 
 const weapons = computed(() => destinyDataService.weapons);
 const filters = computed(() => props.appliedFilters);
@@ -63,10 +67,12 @@ function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: IWeapo
 }
 
 function onFiltersApplied(newFilters: IAppliedFilters) {
+    limitingDisplayedWeapons.value = true;
     emit("filtersApplied", newFilters);
 }
 
 function onFiltersCleared() {
+    limitingDisplayedWeapons.value = true;
     emit("filtersCleared");
 }
 
@@ -80,6 +86,10 @@ function onLanguageSelected(language: ILanguageInfo) {
 
 function onWeaponSelected(weapon: IWeapon) {
     emit("weaponSelected", weapon);
+}
+
+function onShowAllWeapons() {
+    limitingDisplayedWeapons.value = false;
 }
 </script>
 
@@ -96,7 +106,13 @@ function onWeaponSelected(weapon: IWeapon) {
             v-else-if="showLanguageWindow"
             @language-selected="onLanguageSelected"
         ></LanguageSelector>
-        <WeaponList v-else :weapons="filteredWeapons" @entry-clicked="onWeaponSelected"></WeaponList>
+        <WeaponList
+            v-else
+            :weapons="filteredWeapons"
+            :limit-weapons="limitingDisplayedWeapons"
+            @entry-clicked="onWeaponSelected"
+            @show-all-weapons="onShowAllWeapons"
+        ></WeaponList>
     </div>
 </template>
 
