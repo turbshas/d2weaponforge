@@ -134,16 +134,14 @@ export class ResolvedWeaponSockets {
     private readonly getPerkOptionsFromPlugSet = (plugItems: DestinyItemSocketEntryPlugItemRandomizedDefinition[]) => {
         const currentlyCanRollMap: LookupMap<ItemHash, boolean> = {};
         const requiredCraftedLevelMap: LookupMap<ItemHash, number> = {};
-        const seenPlugItems: LookupMap<ItemHash, boolean> = {};
 
         const perksInSlot: ItemHash[] = [];
         const perksInSlotMap: LookupMap<ItemHash, boolean> = {};
 
         // Remove duplicates and group by name to capture normal + enhanced perks together
         for (const plugItem of plugItems || []) {
-            if (seenPlugItems[plugItem.plugItemHash]) continue;
-            // TODO: Apparently everything works without this so figure that out
-            // seenPlugItems[plugItem.plugItemHash] = true;
+            if (perksInSlotMap[plugItem.plugItemHash]) continue;
+
             currentlyCanRollMap[plugItem.plugItemHash] = plugItem.currentlyCanRoll;
             if (plugItem.craftingRequirements) {
                 requiredCraftedLevelMap[plugItem.plugItemHash] = plugItem.craftingRequirements.requiredLevel;

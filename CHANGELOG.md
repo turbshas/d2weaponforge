@@ -11,6 +11,7 @@ Description TBD
 * Reduced amount of required stored data to massively improve page load times after first load.
 * Add filter for craftable weapons (includes adept versions - not fixing this since they will be able to be enhanced sometime in Lightfall).
 * Add filter for adept weapons.
+* Fix some weapons having duplicate perks.
 
 ## **Collections Filters + Perk Insights** [ *1.2.0* ] 2023-02-20
 This change implements the collections filters for sources of weapons,

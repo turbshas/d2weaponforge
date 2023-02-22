@@ -64,7 +64,6 @@ Unsure about order:
 - convert Item Tier Index to hash, as those are stable
 - load background image after manifest has loaded to ensure it doesn't delay page load on low speed connections
   - the home page loads until the background fills in, then it transitions to the weapon page
-- some perks showing up twice (e.g. vision of confluence, zaouli's bane)
 - elemental cap selector
 - show that page is refreshing when game data is being reloaded
 - ordering weapons by release date to the API (might have to be manual)
