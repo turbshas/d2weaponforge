@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import type { IPerkBonus } from '@/data/interfaces';
 import { computed } from 'vue';
+
+interface ITooltipBonus {
+    statName: string;
+    value: number;
+}
 
 const props = defineProps<{
     description: string,
     effect: string | null,
-    bonuses: { statName: string, value: number }[],
+    bonuses: ITooltipBonus[],
 }>();
 
 const showDescription = computed(() => !!props.description);
 const showEffect = computed(() => !!props.effect);
 const showBonuses = computed(() => props.bonuses && props.bonuses.length > 0);
 
-function keyForStatValue(bonus: IPerkBonus, index: number) {
+function keyForStatValue(bonus: ITooltipBonus, index: number) {
     return `${bonus.statName}_${index}`;
 }
 
