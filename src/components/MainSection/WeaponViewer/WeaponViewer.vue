@@ -1,18 +1,13 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue';
 import WeaponPanel from './WeaponPanel/WeaponPanel.vue';
-// import ExtrasPanel from './ExtrasPanel/ExtrasPanel.vue';
-// import MasterworkPanel from './MasterworkPanel.vue';
-// import ModsPanel from './ModsPanel.vue';
 import type { IMasterwork, IMod, IPerkOption, ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
 import { computed } from 'vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
 
-// const WeaponPanel = defineAsyncComponent(() => import("./WeaponPanel/WeaponPanel.vue"));
 const ExtrasPanel = defineAsyncComponent(() => import("./ExtrasPanel/ExtrasPanel.vue"));
 const MasterworkPanel = defineAsyncComponent(() => import("./MasterworkPanel.vue"));
 const ModsPanel = defineAsyncComponent(() => import("./ModsPanel.vue"));
-// const PerksPanel = defineAsyncComponent(() => import("./PerksPanel/PerksPanel.vue"));
 
 const props = defineProps<{
     selectedGear: ISelectedGear,
@@ -46,7 +41,7 @@ function onModChanged(mod: IMod | undefined) {
 </script>
 
 <template>
-    <div class="viewer">
+    <div class="viewer" aria-label="Weapon Viewer">
         <div class="weapon">
             <WeaponPanel
                 :selected-gear="props.selectedGear"

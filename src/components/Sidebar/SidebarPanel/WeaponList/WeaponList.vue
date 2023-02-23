@@ -30,7 +30,7 @@ function onShowAllClick() {
 </script>
 
 <template>
-    <nav class="list">
+    <nav class="list" aria-label="Weapon List">
         <WeaponListEntry
             v-for="weapon of limitedWeapons"
             :key="weapon.hash"

@@ -357,16 +357,20 @@ function isSectionCollapsed(name: string) {
 </script>
 
 <template>
-    <div class="filters">
+    <section class="filters" aria-label="Filter Pane">
         <div class="header">
-            <span class="title">Filters</span>
+            <h2 class="title">Filters</h2>
             <div class="actions">
                 <OptionButton text="Clear Filters" :active="false" @click="onClearFilters"></OptionButton>
                 <OptionButton text="Apply Filters" :active="true" @click="onApplyFilters"></OptionButton>
             </div>
         </div>
 
-        <CollapsibleSection name="Perks" :collapsed="isSectionCollapsed('Perks')" @toggled="toggleSectionCollapsed('Perks')">
+        <CollapsibleSection
+            name="Perks"
+            :collapsed="isSectionCollapsed('Perks')"
+            @toggled="toggleSectionCollapsed('Perks')"
+        >
             <ElementLabel text="Perk filter text box" class="perk-search-wrapper">
                 <input
                     class="perk-search"
@@ -396,7 +400,12 @@ function isSectionCollapsed(name: string) {
             </div>
         </CollapsibleSection>
 
-        <CollapsibleSection name="Archetype" v-if="activeWeaponFiltersWithArchetypes.length > 0" :collapsed="isSectionCollapsed('Archetype')" @toggled="toggleSectionCollapsed('Archetype')">
+        <CollapsibleSection
+            name="Archetype"
+            v-if="activeWeaponFiltersWithArchetypes.length > 0"
+            :collapsed="isSectionCollapsed('Archetype')"
+            @toggled="toggleSectionCollapsed('Archetype')"
+        >
             <div
                 class="button-list"
                 v-for="filter of activeWeaponFiltersWithArchetypes"
@@ -418,7 +427,9 @@ function isSectionCollapsed(name: string) {
         <CollapsibleSection
             v-for="category of filterCategories"
             :key="category.name"
-            :name="category.name" :collapsed="isSectionCollapsed(category.name)" @toggled="toggleSectionCollapsed(category.name)"
+            :name="category.name"
+            :collapsed="isSectionCollapsed(category.name)"
+            @toggled="toggleSectionCollapsed(category.name)"
         >
             <div class="button-list">
                 <OptionButton
@@ -434,7 +445,11 @@ function isSectionCollapsed(name: string) {
             </div>
         </CollapsibleSection>
 
-        <CollapsibleSection name="Misc" :collapsed="isSectionCollapsed('Misc')" @toggled="toggleSectionCollapsed('Misc')">
+        <CollapsibleSection
+            name="Misc"
+            :collapsed="isSectionCollapsed('Misc')"
+            @toggled="toggleSectionCollapsed('Misc')"
+        >
             <div class="button-list">
                 <OptionButton
                     text="Include Sunset Weapons"
@@ -453,7 +468,7 @@ function isSectionCollapsed(name: string) {
                 ></OptionButton>
             </div>
         </CollapsibleSection>
-    </div>
+    </section>
 </template>
 
 <style scoped lang="less">
@@ -476,6 +491,7 @@ function isSectionCollapsed(name: string) {
     align-items: center;
 
     .title {
+        margin: 0;
         font-size: 19.2px;
         font-weight: 600;
         line-height: 19.2px;

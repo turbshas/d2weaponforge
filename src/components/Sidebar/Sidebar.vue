@@ -91,8 +91,8 @@ function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>
 </script>
 
 <template>
-    <div class="sidebar">
-        <div class="filter-search">
+    <section class="sidebar" aria-label="Side Bar">
+        <header class="filter-search" aria-label="Side Bar Controls">
             <FilterButton class="button" :active="viewingFilter" @filter-toggled="onFilterToggled"></FilterButton>
             <Searchbar class="search" @search-changed="onSearchChanged"></Searchbar>
             <LanguageButton
@@ -101,7 +101,7 @@ function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>
                 :selected-language="selectedLanguage"
                 @languages-toggled="onLanguagesToggled"
             ></LanguageButton>
-        </div>
+        </header>
         <TabBar @tab-selected="onTabSelected"></TabBar>
         <SidebarPanel
             :sidebar-panel-selection="panelSelection"
@@ -113,7 +113,7 @@ function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>
             @filters-cleared="onFiltersCleared"
             @language-selected="onLanguageSelected"
         ></SidebarPanel>
-    </div>
+    </section>
 </template>
 
 <style scoped>

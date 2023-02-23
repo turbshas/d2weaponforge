@@ -21,6 +21,9 @@ compare section:
   - icon + name/type on left side
   - stats in middle
   - what should stat arrows display? green only if highest value in list of weapons being compared?
+  - should cache which weapons were selected
+  - should have button that goes back to weapon page with that weapon and perks selected
+    - if this is done, and "add to comparisons" is clicked - remove the previous one?
 
 Unsure about order:
 - Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar?

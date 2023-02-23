@@ -5,10 +5,10 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="section">
+    <section class="section" :aria-label="props.title">
         <h2 class="title">{{ props.title }}</h2>
         <slot></slot>
-    </div>
+    </section>
 </template>
 
 <style scoped>
@@ -26,6 +26,7 @@ const props = defineProps<{
 
     position: relative;
     opacity: 0.75;
+    margin-top: 0;
     margin-bottom: 16px;
     padding-bottom: 8px;
 

@@ -114,7 +114,7 @@ function onPerkToggled(perkHash: ItemHash) {
                 <OptionButton text="Expand" :active="true" @toggled="onExpandAll"></OptionButton>
             </div>
         </div>
-        <dl class="perks-list">
+        <dl class="perks-list" aria-label="Perk insights">
             <CollapsibleSection
                 v-for="pair of resolvedPerkPairs"
                 :key="pair.perk.hash"
@@ -140,7 +140,7 @@ function onPerkToggled(perkHash: ItemHash) {
             </CollapsibleSection>
         </dl>
         <h2>Mods</h2>
-        <GlossaryInsightGroup :insights="modInsights"></GlossaryInsightGroup>
+        <GlossaryInsightGroup :insights="modInsights" aria-label="Mod insights"></GlossaryInsightGroup>
     </div>
 </template>
 

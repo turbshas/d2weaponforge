@@ -37,8 +37,11 @@ const perkWatermark = computed(() => {
 const perkBonuses = computed(() => getPerkBonuses(props.perk));
 const enhancedPerkBonuses = computed(() => getPerkBonuses(props.enhancedPerk));
 
-const perkId = computed(() => `perk_id_${perkName.value}`);
-const perkLabel = computed(() => `Perk: ${perkName.value}`);
+const perkId = computed(() => `perk_id_${perkName.value}_${(props.column ? props.column : -1)}`);
+const perkLabel = computed(() => {
+    const prefix = props.column ? `Perk ${props.column}` : "Perk";
+    return `${prefix}: ${perkName.value}`;
+});
 const perkIconLabel = computed(() => `Perk Icon: ${perkName.value}`);
 const perkWatermarkLabel = computed(() => `Perk Watermark: ${perkName.value}`);
 

@@ -13,10 +13,10 @@ const props = defineProps<{
     <div class="insight">
         <dt class="info">
             <h4 class="no-margin">{{ props.name }}</h4>
-            <span class="hash">&lt;{{ props.hash }}&gt;</span>
+            <span class="hash" aria-label="Hash ID">&lt;{{ props.hash }}&gt;</span>
         </dt>
         <dd class="no-margin">
-            <pre class="no-margin description">{{ props.description }}</pre>
+            <pre class="no-margin description" aria-label="Effect">{{ props.description }}</pre>
         </dd>
     </div>
 </template>

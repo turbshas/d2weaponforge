@@ -49,7 +49,7 @@ function onModChanged(mod: IMod | undefined) {
 </script>
 
 <template>
-    <div class="main">
+    <main class="main" aria-label="Main Page">
         <HomePage class="item" v-if="isHomeSelected"></HomePage>
         <Glossary class="item" v-else-if="isGlossarySelected"></Glossary>
         <ComparePage class="item" v-else-if="isCompareSelected"></ComparePage>
@@ -61,7 +61,7 @@ function onModChanged(mod: IMod | undefined) {
             @masterwork-changed="onMasterworkChanged"
             @mod-changed="onModChanged"
         ></WeaponViewer>
-    </div>
+    </main>
 </template>
 
 <style scoped>

@@ -71,16 +71,28 @@ function getSvgPathData(recoilDirection: number) {
     const sweepAngle = 1;
     return `M1,1 L${startX},${startY} A${arcRadiusX},${arcRadiusY} ${xAxisRotation} ${largeArcFlag} ${sweepAngle} ${endX},${endY} Z`;
 }
+
+function getStatNameLabel() {
+    return `Stat: ${name.value}`;
+}
+
+function getStatValueLabel() {
+    return `${name.value} Value: ${displayedTotal.value}`;
+}
+
+function getStatModifierLabel() {
+    return `${name.value} Modifier: ${modifierText.value}`;
+}
 </script>
 
 <template>
     <div class="stat" v-if="showStat">
-        <span class="name">{{ name }}</span>
+        <span class="name" :aria-label="getStatNameLabel()">{{ name }}</span>
         <div class="display">
             <div class="bar" v-if="isBarDisplayType">
                 <div class="value" :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }">
-                    <span>{{ displayedTotal }}</span>
-                    <span class="modifier">({{ modifierText }})</span>
+                    <span :aria-label="getStatValueLabel()">{{ displayedTotal }}</span>
+                    <span class="modifier" :aria-label="getStatModifierLabel()">({{ modifierText }})</span>
                 </div>
                 <div class="filled" :style="{ 'width': filledWidthPercent + '%' }"></div>
                 <div
@@ -92,7 +104,11 @@ function getSvgPathData(recoilDirection: number) {
             </div>
 
             <div class="number" v-else>
-                <span class="text" :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }">{{ displayedTotal }}</span>
+                <span
+                    class="text"
+                    :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }"
+                    :aria-label="getStatValueLabel()"
+                >{{ displayedTotal }}</span>
                 <div class="arrow" :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }"></div>
 
                 <svg

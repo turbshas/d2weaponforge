@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
     name: string,
@@ -19,19 +19,19 @@ function onHeaderClicked() {
 </script>
 
 <template>
-    <div class="section">
+    <section class="section" :aria-label="props.name" :aria-expanded="!props.collapsed">
         <button
             class="header toggle"
             :class="{ 'expanded': !props.collapsed, }"
             @click="onHeaderClicked"
         >
             <img class="icon" v-if="!!props.icon" :src="props.icon" :alt="iconAlt">
-            <h3 class="text" :aria-expanded="!props.collapsed">{{ props.name }}</h3>   
+            <h3 class="text">{{ props.name }}</h3>   
         </button>
         <div class="slot" :class="{ 'hide': props.collapsed, }">
             <slot></slot>
         </div>
-    </div>
+    </section>
 </template>
 
 <style scoped lang="less">
