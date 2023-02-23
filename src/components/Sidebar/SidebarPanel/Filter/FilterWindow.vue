@@ -35,6 +35,7 @@ const perkFilter = ref("");
 const includeSunsetWeapons = ref(false);
 const craftedWeapons = ref(false);
 const adeptWeapons = ref(false);
+const sectionCollapsedMap = ref<LookupMap<string, boolean>>({});
 
 const allPerkOptions = computed(() => {
     const validPerkMap = arrayToExistenceMap(ValidPerkPlugCategories.value);
@@ -312,7 +313,6 @@ function getPerkFilterPredicate() {
         selectedPerks.push(filter.perkHashes);
     }
 
-    console.log("selected perk filters", selectedPerks);
     const predicate: FilterPredicate = (weapon: IWeapon) => {
         const perkMap: LookupMap<ItemHash, boolean> = {};
         for (const column of weapon.perks.perkColumns) {
@@ -346,6 +346,14 @@ function getCollectionsList(collection: Collection) {
     const lists = destinyDataService.collectionsLists;
     return lists ? lists[collection] : undefined;
 }
+
+function toggleSectionCollapsed(name: string) {
+    sectionCollapsedMap.value[name] = !sectionCollapsedMap.value[name];
+}
+
+function isSectionCollapsed(name: string) {
+    return !!sectionCollapsedMap.value[name];
+}
 </script>
 
 <template>
@@ -358,7 +366,7 @@ function getCollectionsList(collection: Collection) {
             </div>
         </div>
 
-        <CollapsibleSection name="Perks">
+        <CollapsibleSection name="Perks" :collapsed="isSectionCollapsed('Perks')" @toggled="toggleSectionCollapsed('Perks')">
             <ElementLabel text="Perk filter text box" class="perk-search-wrapper">
                 <input
                     class="perk-search"
@@ -388,7 +396,7 @@ function getCollectionsList(collection: Collection) {
             </div>
         </CollapsibleSection>
 
-        <CollapsibleSection name="Archetype" v-if="activeWeaponFiltersWithArchetypes.length > 0">
+        <CollapsibleSection name="Archetype" v-if="activeWeaponFiltersWithArchetypes.length > 0" :collapsed="isSectionCollapsed('Archetype')" @toggled="toggleSectionCollapsed('Archetype')">
             <div
                 class="button-list"
                 v-for="filter of activeWeaponFiltersWithArchetypes"
@@ -410,7 +418,7 @@ function getCollectionsList(collection: Collection) {
         <CollapsibleSection
             v-for="category of filterCategories"
             :key="category.name"
-            :name="category.name"
+            :name="category.name" :collapsed="isSectionCollapsed(category.name)" @toggled="toggleSectionCollapsed(category.name)"
         >
             <div class="button-list">
                 <OptionButton
@@ -426,7 +434,7 @@ function getCollectionsList(collection: Collection) {
             </div>
         </CollapsibleSection>
 
-        <CollapsibleSection name="Misc">
+        <CollapsibleSection name="Misc" :collapsed="isSectionCollapsed('Misc')" @toggled="toggleSectionCollapsed('Misc')">
             <div class="button-list">
                 <OptionButton
                     text="Include Sunset Weapons"

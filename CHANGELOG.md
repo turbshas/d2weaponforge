@@ -1,5 +1,10 @@
 # Changelog
 
+## **TBD** [ *1.4.0* ] TBD
+TBD
+
+* Glossary revamp with section for each perk + enhanced pair along with perk icon.
+
 ## **Perk Filters + Other Filter Improvements** [ *1.3.0* ] 2023-02-22
 Filtering by perks on a weapon is now implemented along with some other filter improvements and bug fixes.
 

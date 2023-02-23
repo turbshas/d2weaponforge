@@ -1,79 +1,119 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
     name: string,
+    collapsed: boolean,
+    icon?: string,
 }>();
 
-const isExpanded = ref(true);
+const emit = defineEmits<{
+    (e: "toggled"): void,
+}>();
+
+const iconAlt = computed(() => `${props.name} Icon`);
 
 function onHeaderClicked() {
-    isExpanded.value = !isExpanded.value;
+    emit("toggled");
 }
 </script>
 
 <template>
-    <div class="section" :aria-expanded="isExpanded">
+    <div class="section">
         <button
-            class="header"
-            :class="{ 'expanded': isExpanded, }"
+            class="header toggle"
+            :class="{ 'expanded': !props.collapsed, }"
             @click="onHeaderClicked"
-        >{{ props.name }}</button>
-        <slot v-if="isExpanded"></slot>
+        >
+            <img class="icon" v-if="!!props.icon" :src="props.icon" :alt="iconAlt">
+            <h3 class="text" :aria-expanded="!props.collapsed">{{ props.name }}</h3>   
+        </button>
+        <div class="slot" :class="{ 'hide': props.collapsed, }">
+            <slot></slot>
+        </div>
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .section {
     display: flex;
     flex-direction: column;
 }
 
 .header {
-    cursor: pointer;
     position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
 
+    padding-top: 0;
     padding-bottom: 8px;
+    padding-left: 0;
+    padding-right: 0;
 
-    color: var(--color-text);
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
     opacity: 0.75;
+
+    &::before {
+        content: "";
+        width: 0;
+        height: 0;
+        margin-right: 8px;
+
+        border-top: 5.6px solid transparent;
+        border-bottom: 5.6px solid transparent;
+        border-left: 5.6px solid #fafafa;
+
+        transition: transform 0.4s ease;
+    }
+    &.expanded {
+        &::before {
+            transform: rotate(90deg);
+        }
+    }
+    &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 1px;
+        width: 100%;
+        background-color: #fafafa;
+        opacity: 0.75
+    }
+}
+
+.toggle {
+    cursor: pointer;
     background-color: transparent;
     border: none;
+    color: var(--color-text);
+    text-transform: uppercase;
 
     transition: color 0.4s ease;
-}
-.header:hover {
-    color: #b78c25;
-}
-.header::before {
-    content: "";
-    width: 0;
-    height: 0;
-    margin-right: 8px;
 
-    border-top: 5.6px solid transparent;
-    border-bottom: 5.6px solid transparent;
-    border-left: 5.6px solid #fafafa;
+    &:hover {
+        color: #b78c25;
+    }
+}
 
-    transition: transform 0.4s ease;
+.icon {
+    width: 48px;
+    margin-right: 16px;
 }
-.header.expanded::before {
-    transform: rotate(90deg);
+
+.text {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
 }
-.header::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 1px;
+
+.slot {
+    flex: 1;
     width: 100%;
-    background-color: #fafafa;
-    opacity: 0.75
+
+    &.hide {
+        opacity: 0;
+        max-height: 0;
+    }
 }
 </style>

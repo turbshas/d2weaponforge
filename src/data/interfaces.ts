@@ -580,9 +580,7 @@ export interface IPerkInsightCollection {
     weaponMods: IPerkInsights<ModHash>;
 }
 
-export type IPerkInsights<T extends string | number | symbol> = {
-    [key in T]: IPerkInsight | undefined;
-};
+export type IPerkInsights<T extends string | number | symbol> = LookupMap<T, IPerkInsight>;
 
 export interface IPerkInsight {
     description: string;
@@ -648,13 +646,13 @@ export enum Collection {
 }
 
 export type ICollectionsLists = {
-    [key in Collection]: number[];
+    [key in Collection]: ItemHash[];
 }
 
 export type SeasonNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 |18 | 19;
 
 export interface IInsightDisplay {
-    hash: number;
+    hash: ItemHash;
     name: string;
     iconUrl: string;
     description: string;

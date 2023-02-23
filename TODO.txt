@@ -12,12 +12,6 @@ Preferred order of work:
   - rework <div> usage into semantic elements
     - https://www.freecodecamp.org/news/semantic-html-alternatives-to-using-divs/
     - https://developer.mozilla.org/en-US/docs/Web/HTML/Element
-5) glossary revamp:
-  - group perk + enhanced together into collapsible selections
-  - icon + name for collapsible section header
-  - within collapsible section body, show base + hash + description, then enhanced + hash + description
-  - only load perk insights when building data from the manifest, attach to IPerk
-  - if possible, allow ctrl-f on the page to expand collapsed sections (make section expand on focus event?)
 
 compare section:
   - ideas:
