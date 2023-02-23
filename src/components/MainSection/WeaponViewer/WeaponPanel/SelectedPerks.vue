@@ -46,7 +46,6 @@ const perks = computed(() => {
     if (props.masterwork) {
         perkList.push({ selectedPerk: resolveFromMasterwork(props.masterwork?.hash), column: undefined, fullSize: true, hideHover: false, });
     }
-    console.log("getting selected perks", props.selectedPerks, perkList);
     return perkList;
 });
 
@@ -116,7 +115,7 @@ function onPerkClicked(selectedPerk: ISelectedPerk | undefined) {
 </script>
 
 <template>
-    <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
+    <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }" aria-label="Selected Perks">
         <PerkDisplay
             class="perk"
             v-for="(perk, index) of perks"

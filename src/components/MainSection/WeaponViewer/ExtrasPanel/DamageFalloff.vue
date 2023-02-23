@@ -49,7 +49,6 @@ const hipFireFalloffStart = computed(() => {
     if (!rangeValues.value) return 0;
     const baseFalloffStart = rangeValues.value.baseFalloffStart;
     const rangePerStat = rangeValues.value.hipFireRangePerStat;
-    console.log("hip fire values", baseFalloffStart, rangePerStat, range.value);
     return baseFalloffStart + (range.value * rangePerStat);
 });
 
@@ -58,7 +57,6 @@ const aimDownSightsFalloffStart = computed(() => {
 });
 
 const text = computed(() => {
-    console.log("calculated stats", range.value, zoom.value, rangefinderMultiplier.value);
     const roundedHipFire = Math.round((hipFireFalloffStart.value + Number.EPSILON) * 100) / 100;
     const roundedADS = Math.round((aimDownSightsFalloffStart.value + Number.EPSILON) * 100) / 100;
     return `${roundedHipFire}m / ${roundedADS}m`

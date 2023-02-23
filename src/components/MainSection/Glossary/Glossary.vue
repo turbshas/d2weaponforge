@@ -101,47 +101,51 @@ function onPerkToggled(perkHash: ItemHash) {
 </script>
 
 <template>
-    <div class="glossary" v-if="isDataLoaded">
+    <section class="glossary" v-if="isDataLoaded" aria-label="Glossary">
         <h1>Glossary</h1>
         <p>
             Some perks names may appear more than once in this list.
             In some cases these are duplicates, in others they are the enhanced version.
         </p>
-        <div class="perks-header">
-            <h2>Perks</h2>
-            <div class="controls">
-                <OptionButton text="Collapse" :active="false" @toggled="onCollapseAll"></OptionButton>
-                <OptionButton text="Expand" :active="true" @toggled="onExpandAll"></OptionButton>
+        <section aria-label="Perks">
+            <div class="perks-header">
+                <h2>Perks</h2>
+                <div class="controls">
+                    <OptionButton text="Collapse" :active="false" @toggled="onCollapseAll"></OptionButton>
+                    <OptionButton text="Expand" :active="true" @toggled="onExpandAll"></OptionButton>
+                </div>
             </div>
-        </div>
-        <dl class="perks-list" aria-label="Perk insights">
-            <CollapsibleSection
-                v-for="pair of resolvedPerkPairs"
-                :key="pair.perk.hash"
-                :name="pair.perk.name"
-                :collapsed="isPerkCollapsed(pair.perk.hash)"
-                :icon="pair.perk.iconUrl"
-                @toggled="onPerkToggled(pair.perk.hash)"
-            >
-                <GlossaryDefinition
-                    class="perk-def"
-                    :insight="pair.perk"
-                    :hash="pair.perk.hash"
+            <dl class="perks-list" aria-label="Perk insights">
+                <CollapsibleSection
+                    v-for="pair of resolvedPerkPairs"
+                    :key="pair.perk.hash"
                     :name="pair.perk.name"
-                    :description="pair.perk.description"
-                ></GlossaryDefinition>
-                <GlossaryDefinition
-                    class="perk-def"
-                    v-if="!!pair.enhanced"
-                    :hash="pair.enhanced.hash"
-                    :name="getEnhancedPerkName(pair.perk.name, pair.enhanced.name)"
-                    :description="pair.enhanced.description"
-                ></GlossaryDefinition>
-            </CollapsibleSection>
-        </dl>
-        <h2>Mods</h2>
-        <GlossaryInsightGroup :insights="modInsights" aria-label="Mod insights"></GlossaryInsightGroup>
-    </div>
+                    :collapsed="isPerkCollapsed(pair.perk.hash)"
+                    :icon="pair.perk.iconUrl"
+                    @toggled="onPerkToggled(pair.perk.hash)"
+                >
+                    <GlossaryDefinition
+                        class="perk-def"
+                        :insight="pair.perk"
+                        :hash="pair.perk.hash"
+                        :name="pair.perk.name"
+                        :description="pair.perk.description"
+                    ></GlossaryDefinition>
+                    <GlossaryDefinition
+                        class="perk-def"
+                        v-if="!!pair.enhanced"
+                        :hash="pair.enhanced.hash"
+                        :name="getEnhancedPerkName(pair.perk.name, pair.enhanced.name)"
+                        :description="pair.enhanced.description"
+                    ></GlossaryDefinition>
+                </CollapsibleSection>
+            </dl>
+        </section>
+        <section aria-label="Mods">
+            <h2>Mods</h2>
+            <GlossaryInsightGroup :insights="modInsights" aria-label="Mod insights"></GlossaryInsightGroup>
+        </section>
+    </section>
 </template>
 
 <style scoped lang="less">

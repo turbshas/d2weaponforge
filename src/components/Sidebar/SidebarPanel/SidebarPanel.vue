@@ -61,7 +61,6 @@ const filteredWeapons = computed(() => {
     const test2 = weapons.value.filter(w => filters.value.perkFilter ? filters.value.perkFilter(w) : true);
     const test3 = test2.filter(w => !w.isSunset);
     const test4 = test1.filter(w => filters.value.perkFilter ? filters.value.perkFilter(w) : true);
-    console.log("filters are", filters.value, test1, test2, test3, test4);
     return filtered;
 });
 

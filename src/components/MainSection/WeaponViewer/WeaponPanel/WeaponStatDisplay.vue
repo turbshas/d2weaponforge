@@ -88,6 +88,7 @@ function getStatModifierLabel() {
 <template>
     <div class="stat" v-if="showStat">
         <span class="name" :aria-label="getStatNameLabel()">{{ name }}</span>
+
         <div class="display">
             <div class="bar" v-if="isBarDisplayType">
                 <div class="value" :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }">

@@ -358,13 +358,13 @@ function isSectionCollapsed(name: string) {
 
 <template>
     <section class="filters" aria-label="Filter Pane">
-        <div class="header">
+        <header class="header">
             <h2 class="title">Filters</h2>
             <div class="actions">
                 <OptionButton text="Clear Filters" :active="false" @click="onClearFilters"></OptionButton>
                 <OptionButton text="Apply Filters" :active="true" @click="onApplyFilters"></OptionButton>
             </div>
-        </div>
+        </header>
 
         <CollapsibleSection
             name="Perks"

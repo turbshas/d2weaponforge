@@ -19,8 +19,6 @@ function onTabSelected(tab: PageSelection) {
 function onWeaponSelected(weapon: IWeapon | undefined) {
     selectedPage.value = PageSelection.Weapon;
     selectionService.setWeapon(weapon);
-
-    console.log("weapon selected", weapon);
 }
 
 function onLanguageSelected(language: ILanguageInfo) {
@@ -30,7 +28,6 @@ function onLanguageSelected(language: ILanguageInfo) {
 
 function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {
     selectionService.setPerk(column, perk);
-    console.log("perk selected", perk);
 }
 
 function onMasterworkChanged(masterwork: IMasterwork | undefined) {

@@ -74,7 +74,7 @@ function defaultStatInfo(statHash: number): IModifiedStat {
 </script>
 
 <template>
-    <div class="list">
+    <div class="list" aria-label="Weapon Stats">
         <WeaponStatDisplay
             v-for="stat in orderedStats"
             :key="stat.statHash"

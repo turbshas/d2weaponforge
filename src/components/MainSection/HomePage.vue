@@ -77,7 +77,7 @@ const changelogs = computed<IChangelog[]>(() => [
 <template>
     <div class="home">
         <a class="github-link" href="https://github.com/turbshas/d2weaponforge/blob/main/CHANGELOG.md"><i>View on GitHub</i></a>
-        <div class="changelog" v-for="changelog of changelogs" :key="changelog.version" aria-label="Change log">
+        <section class="changelog" v-for="changelog of changelogs" :key="changelog.version" aria-label="Change log">
             <div class="header">
                 <h3 class="title">{{ changelog.title }}</h3>
                 <span>[</span>
@@ -89,7 +89,7 @@ const changelogs = computed<IChangelog[]>(() => [
             <ul class="changes" aria-label="Changes">
                 <li class="change" v-for="change of changelog.changes" :key="change">{{ change }}</li>
             </ul>
-        </div>
+        </section>
     </div>
 </template>
 

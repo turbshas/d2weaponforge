@@ -38,8 +38,8 @@ function onHideElementsClicked() {
 </script>
 
 <template>
-    <div class="panel" :style="{ 'background-image': 'url(' + screenshot + ')' }" :class="{ 'hide-ui': !showUiElements, }">
-        <div class="summary hidable">
+    <section class="panel" :style="{ 'background-image': 'url(' + screenshot + ')' }" :class="{ 'hide-ui': !showUiElements, }">
+        <header class="summary hidable" aria-label="Weapon Description">
             <div class="summary" :ref="(el) => { weaponNameElement = el as HTMLElement | null; }">
                 <WeaponIcon class="icon" with-border :weapon="weapon"></WeaponIcon>
                 <div class="description">
@@ -58,12 +58,12 @@ function onHideElementsClicked() {
                 :bonuses="[]"
                 :enhanced-bonuses="[]"
             ></Tooltip>
-        </div>
+        </header>
         <WeaponStatBlock
             class="stats hidable"
             :display-stats="statInfos"
         ></WeaponStatBlock>
-        <div class="selected-perks">
+        <footer class="selected-perks">
             <button class="hide-ui-button" @click="onHideElementsClicked">
                 <img
                     class="eye"
@@ -80,8 +80,8 @@ function onHideElementsClicked() {
                 :mod="props.selectedGear.mod.value"
                 :is-adept="!!(weapon?.isAdept)"
             ></SelectedPerks>
-        </div>
-    </div>
+        </footer>
+    </section>
 </template>
 
 <style scoped lang="less">

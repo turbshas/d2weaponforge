@@ -34,7 +34,7 @@ export class CacheService {
     public setCachedManifest = async (cachedManifest: ICachedManifest) => this.setValue(ManifestCacheKey, cachedManifest);
 
     public getPreferences = async () => this.getValue<IPreferences>(PreferencesCacheKey);
-    public setPreferences = async (preferences: IPreferences) => { console.log("setting preferences", preferences); this.setValue(PreferencesCacheKey, preferences); }
+    public setPreferences = async (preferences: IPreferences) => { this.setValue(PreferencesCacheKey, preferences); }
 
     private getValue = async <T>(key: IDBValidKey | IDBKeyRange): Promise<T | undefined> => {
         const objectStore = await this.getObjectStore("readonly");
