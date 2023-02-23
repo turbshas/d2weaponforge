@@ -30,8 +30,6 @@ Unsure about order:
   - maybe push that one braytech rwp weapon to the bottom?
 
 Bugs:
-- selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
-- tab bar text isn't centered properly
 
 Filter features:
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point

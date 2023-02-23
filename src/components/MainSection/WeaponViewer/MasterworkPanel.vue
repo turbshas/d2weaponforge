@@ -44,6 +44,11 @@ const masterworkStatNames = computed(() => Object.keys(masterworkOptionsByStatNa
 
 const selectedMasterworkStatName = ref(initSelectedStatName());
 const masterworkLevel = ref(initSelectedMasterworkLevel());
+watch(() => props.masterworkList, () => {
+    // If the masterwork list changed, the weapon changed. Re-initialized masterwork.
+    selectedMasterworkStatName.value = initSelectedStatName();
+    masterworkLevel.value = initSelectedMasterworkLevel();
+});
 watch(() => props.masterwork, (newValue) => {
     if (newValue) {
         // Only reset the selected stat name if a new one is selected (has a level > 0).

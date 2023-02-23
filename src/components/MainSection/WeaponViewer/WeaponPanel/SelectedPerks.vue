@@ -46,6 +46,7 @@ const perks = computed(() => {
     if (props.masterwork) {
         perkList.push({ selectedPerk: resolveFromMasterwork(props.masterwork?.hash), column: undefined, fullSize: true, hideHover: false, });
     }
+    console.log("getting selected perks", props.selectedPerks, perkList);
     return perkList;
 });
 
@@ -90,9 +91,9 @@ function resolveWithPerkItems(perkItem: IPerk | undefined, enhancedPerkItem: IPe
     return selectedPerk;
 }
 
-function getSelectedPerkHash(selectedPerk: ISelectedPerk | undefined) {
-    if (!selectedPerk) return 0;
-    return selectedPerk.perkOption.perk;
+function getSelectedPerkKey(selectedPerk: ISelectedPerk | undefined, index: number) {
+    const hash = selectedPerk ? selectedPerk.perkOption.perk : 0;
+    return `${hash}_${index}`;
 }
 
 function useEnhancedPerk(selectedPerk: ISelectedPerk | undefined) {
@@ -118,8 +119,8 @@ function onPerkClicked(selectedPerk: ISelectedPerk | undefined) {
     <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
         <PerkDisplay
             class="perk"
-            v-for="perk of perks"
-            :key="getSelectedPerkHash(perk.selectedPerk)"
+            v-for="(perk, index) of perks"
+            :key="getSelectedPerkKey(perk.selectedPerk, index)"
 
             :perk="getActivePerk(perk.selectedPerk)"
             :is-adept="props.isAdept"

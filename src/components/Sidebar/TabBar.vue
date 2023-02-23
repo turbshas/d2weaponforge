@@ -47,11 +47,9 @@ function onTabClick(e: Event, tab: PageSelection) {
 .tab {
     cursor: pointer;
     user-select: none;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-right: 24px;
+    padding: 8px;
 
-    color: #fff;
+    color: #ffffff;
     text-transform: uppercase;
     text-decoration: none;
     text-align: center;

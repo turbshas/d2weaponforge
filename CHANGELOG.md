@@ -4,6 +4,9 @@
 TBD
 
 * Glossary revamp with section for each perk + enhanced pair along with perk icon.
+* Fixed tabs in sidebar not being centered within their buttons.
+* Fixed MW not being selected when switching weapons.
+* Fixed selected perks section doubling in size after changing weapons.
 
 ## **Perk Filters + Other Filter Improvements** [ *1.3.0* ] 2023-02-22
 Filtering by perks on a weapon is now implemented along with some other filter improvements and bug fixes.
