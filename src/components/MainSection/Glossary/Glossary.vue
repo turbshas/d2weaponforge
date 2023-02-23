@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import OptionButton from '@/components/Common/OptionButton.vue';
-import CollapsibleSection from '@/components/Sidebar/SidebarPanel/Filter/CollapsibleSection.vue';
-import { ModHash, PerkHash, type IInsightDisplay, type IPerk, type IPerkInsights, type ItemHash, type LookupMap } from '@/data/interfaces';
+import CollapsibleSection from '@/components/Common/CollapsibleSection.vue';
+import { ModHash, PerkHash, type IInsightDisplay, type IPerkInsights, type ItemHash, type LookupMap } from '@/data/interfaces';
 import { destinyDataService } from '@/data/services';
 import { computed, ref } from 'vue';
 import GlossaryDefinition from './GlossaryDefinition.vue';

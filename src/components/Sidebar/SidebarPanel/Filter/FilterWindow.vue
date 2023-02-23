@@ -7,7 +7,7 @@ import type { Collection, FilterCategory, FilterPredicate, IAppliedFilters, IArc
 import { destinyDataService } from "@/data/services";
 import { arrayToExistenceMap } from "@/data/util";
 import { computed, ref } from "vue";
-import CollapsibleSection from "./CollapsibleSection.vue";
+import CollapsibleSection from "@/components/Common/CollapsibleSection.vue";
 
 interface ICategoryInfo {
     name: FilterCategory;
