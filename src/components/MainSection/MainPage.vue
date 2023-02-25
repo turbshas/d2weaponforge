@@ -68,7 +68,6 @@ function onModChanged(mod: IMod | undefined) {
 .main {
     display: flex;
     justify-content: center;
-    margin-left: 16px;
     padding-top: 16px;
     padding-bottom: 16px;
     padding-left: 16px;

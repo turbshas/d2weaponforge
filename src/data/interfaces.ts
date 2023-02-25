@@ -41,6 +41,11 @@ export enum SidebarPanelSelection {
     Weapons = "Weapons",
     Filters = "Filters",
     Languages = "Languages",
+    /**
+     * When the screen is narrow, default is to hide the sidebar and show the weapon viewer.
+     * When the screen is wide enough, the sidebar is always displayed so the default is the weapon list.
+     */
+    Default = "Default",
 }
 
 export enum StatDisplayType {

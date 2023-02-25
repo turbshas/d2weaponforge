@@ -57,15 +57,12 @@ const filteredWeapons = computed(() => {
         .filter(w => checkFilterCategoryOnWeapon(filters.value.rarityFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.weaponFilters, w))
         .filter(w => w.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
-    const test1 = weapons.value.filter(w => !w.isSunset);
-    const test2 = weapons.value.filter(w => filters.value.perkFilter ? filters.value.perkFilter(w) : true);
-    const test3 = test2.filter(w => !w.isSunset);
-    const test4 = test1.filter(w => filters.value.perkFilter ? filters.value.perkFilter(w) : true);
     return filtered;
 });
 
 const showFilterWindow = computed(() => props.sidebarPanelSelection === SidebarPanelSelection.Filters);
 const showLanguageWindow = computed(() => props.sidebarPanelSelection === SidebarPanelSelection.Languages);
+const showDefault = computed(() => props.sidebarPanelSelection === SidebarPanelSelection.Default);
 
 function checkFilterCategoryOnWeapon(category: FilterPredicate[], weapon: IWeapon) {
     return !category || category.length === 0 || category.some(predicate => predicate(weapon));
@@ -99,7 +96,7 @@ function onShowAllWeapons() {
 </script>
 
 <template>
-    <div class="panel">
+    <div class="panel" :class="{ 'default': showDefault }">
         <FilterWindow
             v-if="showFilterWindow"
             :active-filters="activeFilters"
@@ -121,10 +118,18 @@ function onShowAllWeapons() {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .panel {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+
+    @media @small-screen {
+        &.default {
+            display: none;
+        }
+    }
 }
 </style>

@@ -88,8 +88,9 @@ function onHideElementsClicked() {
 .panel {
     display: flex;
     flex-direction: column;
-    aspect-ratio: 16 / 9;
     background-size: cover;
+    background-position-x: 100%;
+    background-position-y: center;
     padding: 16px;
     
     .hidable {
