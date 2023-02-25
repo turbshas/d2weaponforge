@@ -9,6 +9,10 @@ import { selectionService } from "@/data/services";
 import { computed, ref } from "vue";
 import LanguageButton from "./LanguageButton.vue";
 import WeaponListButton from "./WeaponListButton.vue";
+import SidebarToggleButton from "./SidebarToggleButton.vue";
+
+import FilterIcon from '@/assets/filter_icon.svg';
+import WeaponListIcon from "@/assets/weapon_list_icon.svg";
 
 const emit = defineEmits<{
     (e: "weaponSelected", weapon: IWeapon): void,
@@ -116,7 +120,34 @@ function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>
 <template>
     <section class="sidebar right-border" aria-label="Side Bar">
         <header class="filter-search" aria-label="Side Bar Controls">
-            <FilterButton class="right-border" :active="viewingFilter" @filter-toggled="onFilterToggled"></FilterButton>
+            <SidebarToggleButton
+                class="right-border"
+                :active="viewingFilter"
+                :icon="FilterIcon"
+                label="Open Filter Pane"
+                icon-label="Filter Icon"
+                @toggled="onFilterToggled"
+            ></SidebarToggleButton>
+            <Searchbar class="search" @search-changed="onSearchChanged"></Searchbar>
+            <SidebarToggleButton
+                class="left-border"
+                :active="viewingLanguages"
+                :icon="selectedLanguage.flagIcon"
+                label="Open Languages Pane"
+                :icon-label="`Language Image: ${selectedLanguage.text}`"
+                language
+                @toggled="onLanguagesToggled"
+            ></SidebarToggleButton>
+            <SidebarToggleButton
+                class="left-border weapon-list"
+                :active="viewingWeaponList"
+                :icon="WeaponListIcon"
+                label="Open Weapon List"
+                icon-label="Weapon List Icon"
+                @toggled="onWeaponListToggled"
+            ></SidebarToggleButton>
+
+            <!-- <FilterButton class="right-border" :active="viewingFilter" @filter-toggled="onFilterToggled"></FilterButton>
             <Searchbar class="search" @search-changed="onSearchChanged"></Searchbar>
             <LanguageButton
                 class="left-border"
@@ -124,7 +155,7 @@ function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>
                 :selected-language="selectedLanguage"
                 @languages-toggled="onLanguagesToggled"
             ></LanguageButton>
-            <WeaponListButton class="left-border weapon-list" :active="viewingWeaponList" @weapon-list-toggled="onWeaponListToggled"></WeaponListButton>
+            <WeaponListButton class="left-border weapon-list" :active="viewingWeaponList" @weapon-list-toggled="onWeaponListToggled"></WeaponListButton> -->
         </header>
         <TabBar @tab-selected="onTabSelected"></TabBar>
         <SidebarPanel
