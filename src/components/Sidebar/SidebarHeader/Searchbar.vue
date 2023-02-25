@@ -21,7 +21,9 @@ const searchBarLabel = "Weapon name searchbar";
     </ElementLabel>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .wrapper {
     display: flex;
 }
@@ -29,22 +31,22 @@ const searchBarLabel = "Weapon name searchbar";
 .search {
     flex: 1;
 
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 0.125rem 0.5rem;
     border: none;
     background-color: transparent;
 
-    color: #fafafa;
-    font-size: 16px;
-    font-family: neue-haas-grotesk-text, "Helvetica Neue", sans-serif;
-    line-height: 16px;
-}
-.search::placeholder {
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 12px;
-    font-family: neue-haas-grotesk-text, "Helvetica Neue", sans-serif;
+    color: var(--color-text);
+    font-size: 1rem;
+    font-family: var(--fontText);
+
+    &::placeholder {
+        text-transform: uppercase;
+        letter-spacing: 0.125rem;
+        font-size: 0.75rem;
+    }
+
+    @media @large-screen {
+        padding: 0.5rem 1rem;
+    }
 }
 </style>

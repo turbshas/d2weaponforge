@@ -14,7 +14,7 @@ const emit = defineEmits<{
     (e: "sidebarToggled", active: boolean): void,
 }>();
 
-const panelSelection = ref(SidebarPanelSelection.Weapons);
+const panelSelection = ref(SidebarPanelSelection.Default);
 const searchString = ref("");
 
 const appliedFilters = ref<IAppliedFilters>(emptyAppliedFilters());
@@ -25,6 +25,7 @@ function onTabSelected(tab: PageSelection) {
 }
 
 function onWeaponSelected(weapon: IWeapon) {
+    panelSelection.value = SidebarPanelSelection.Default;
     emit("weaponSelected", weapon);
 }
 

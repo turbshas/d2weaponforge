@@ -83,11 +83,22 @@ function defaultStatInfo(statHash: number): IModifiedStat {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    row-gap: 0.25rem;
+    column-gap: 1rem;
+
+    @media @large-screen {
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+    }
 }
 </style>
 

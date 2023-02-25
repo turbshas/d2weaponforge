@@ -24,23 +24,27 @@ function onClicked() {
 </template>
 
 <style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .button {
     cursor: pointer;
-
-    padding: 16px;
+    padding: 0.5rem;
     border: none;
+    background-color: transparent;
 
-    background: transparent;
-
-    transition: background-color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: background-color 0.4s var(--easingCubic);
 
     &.active {
         background-color: #518dba;
     }
+
+    @media @large-screen {
+        padding: 1rem;
+    }
 }
 
 .language {
-    height: 21px;
+    height: 1.3125rem;
     vertical-align: middle;
     box-shadow: 0 0 1px 1px hsla(0, 0%, 100%, 0.25);
 }

@@ -85,18 +85,20 @@ function onHideElementsClicked() {
 </template>
 
 <style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .panel {
     display: flex;
     flex-direction: column;
     background-size: cover;
     background-position-x: 100%;
     background-position-y: center;
-    padding: 16px;
+    padding: 1rem;
     
     .hidable {
         transition-property: opacity;
-        transition-duration: 0.3s;
-        transition-timing-function: ease-in;
+        transition-duration: 0.6s;
+        transition-timing-function: var(--easingCubic);
     }
     &.hide-ui {
         .hidable {
@@ -111,40 +113,49 @@ function onHideElementsClicked() {
 }
 
 .icon {
-    width: 52px;
-    height: 52px;
-    margin-right: 16px;
+    width: 3.25rem;
+    height: 3.25rem;
+    margin-right: 1rem;
 }
 
 .description {
     display: flex;
     flex-direction: column;
+
     h1, h3 {
         margin: 0;
+        text-transform: uppercase;
     }
-}
-.description h1 {
-    font-size: 32px;
-    font-weight: 600;
-    line-height: 32px;
-    text-transform: uppercase;
-}
-.description h3 {
-    font-size: 16px;
-    font-weight: 500;
-    text-transform: uppercase;
+    h1 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        line-height: 1.4rem;
+
+        @media @large-screen {
+            font-size: 2rem;
+            line-height: 2rem;
+        }
+    }
+    h3 {
+        font-size: 1rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
 }
 
 .element {
     margin-left: auto;
-    width: 42px;
-    height: 42px;
+    width: 2.625rem;
+    height: 2.625rem;
 }
 
 .stats {
-    margin-top: 16px;
-    margin-bottom: 6px;
-    max-width: 50%;
+    margin-top: 1rem;
+    margin-bottom: 0.375rem;
+
+    @media @large-screen {
+        max-width: 50%;
+    }
 }
 
 .selected-perks {
@@ -154,20 +165,25 @@ function onHideElementsClicked() {
 
 .hide-ui-button {
     cursor: pointer;
-    align-self: flex-end;
-    padding-left: 16px;
+    margin-right: auto;
+    padding-top: 0.375rem;
+    padding-left: 1rem;
 
     background-color: transparent;
     color: transparent;
     border: none;
 
     .eye {
-        width: 48px;
-        height: 48px;
+        width: 3rem;
+        height: 3rem;
     }
 }
 
 .perks {
-    margin-left: auto;
+    margin-right: auto;
+
+    @media @large-screen {
+        margin-right: 0;
+    }
 }
 </style>

@@ -93,7 +93,7 @@ function getStatModifierLabel() {
             <div class="bar" v-if="isBarDisplayType">
                 <div class="value" :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }">
                     <span :aria-label="getStatValueLabel()">{{ displayedTotal }}</span>
-                    <span class="modifier" :aria-label="getStatModifierLabel()">({{ modifierText }})</span>
+                    <span v-if="displayModifier !== 0" class="modifier" :aria-label="getStatModifierLabel()">({{ modifierText }})</span>
                 </div>
                 <div class="filled" :style="{ 'width': filledWidthPercent + '%' }"></div>
                 <div
@@ -139,24 +139,30 @@ function getStatModifierLabel() {
 </template>
 
 <style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .stat {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    height: 20px;
+    height: 1.25rem;
 }
 
 .name {
     width: 30%;
-    margin-right: 8px;
+    margin-right: 0.5rem;
     
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 500;
-    line-height: 14px;
-    color: #fafafa;
+    line-height: 0.875rem;
+    color: var(--color-text);
     text-shadow: 0 3px 5px #0a0a0a;
-    text-align: right;
     align-self: center;
+    text-align: left;
+    
+    @media @large-screen {
+        text-align: right;
+    }
 }
 
 .display {
@@ -175,13 +181,13 @@ function getStatModifierLabel() {
     .value {
         position: absolute;
         top: 0;
-        left: 4px;
+        left: 0.25rem;
         z-index: 10;
         height: 100%;
         line-height: 100%;
-        font-size: 12px;
+        font-size: 0.75rem;
         font-weight: 500;
-        color: #05070a;
+        color: var(--black);
 
         display: flex;
         flex-direction: row;
@@ -192,26 +198,26 @@ function getStatModifierLabel() {
             font-weight: 600;
         }
         &.positive {
-            color: #33613a;
+            color: var(--uiPositive_700);
         }
         &.negative {
-            color: #732522;
+            color: var(--uiNegative_700);
         }
     }
 
     .modifier {
-        margin-left: 4px;
+        margin-left: 0.25rem;
         font-weight: 500;
     }
     .filled {
-        background-color: #fafafa;
+        background-color: var(--white);
     }
     .change {
         &.positive {
-            background-color: #5aa366;
+            background-color: var(--uiPositive_500);
         }
         &.negative {
-            background-color: #973835;
+            background-color: var(--uiNegative_500);
         }
     }
 }
@@ -223,23 +229,23 @@ function getStatModifierLabel() {
     justify-content: flex-start;
 
     .text {
-        font-size: 16px;
+        font-size: 1rem;
         color: #fafafa;
         text-shadow: 0 3px 5px #0a0a0a;
         align-self: center;
     }
     .positive {
-        color: #68cc79;
+        color: var(--uiPositive_300);
     }
     .negative {
-        color: #e25954;
+        color: var(--uiNegative_300);
     }
     .pie {
-        width: 24px;
-        height: 12px;
-        margin-left: 10px;
+        width: 1.5rem;
+        height: 0.75rem;
+        margin-left: 0.625rem;
         align-self: center;
-        fill: #fafafa;
+        fill: var(--white);
     }
     .circle {
         fill: rgba(24, 30, 37, 1);
@@ -247,12 +253,12 @@ function getStatModifierLabel() {
 }
 
 .arrow {
-    margin-left: 6px;
+    margin-left: 0.375rem;
     align-self: center;
 
-    border-left-width: 4.8px;
-    border-right-width: 4.8px;
-    border-bottom-width: 9.6px;
+    border-left-width: 0.3rem;
+    border-right-width: 0.3rem;
+    border-bottom-width: 0.6rem;
     border-color: transparent;
     border-style: solid;
     display: none;
@@ -261,10 +267,10 @@ function getStatModifierLabel() {
         display: block;
     }
     &.positive {
-        border-bottom-color: #68cc79;
+        border-bottom-color: var(--uiPositive_300);
     }
     &.negative {
-        border-bottom-color: #e25954;
+        border-bottom-color: var(--uiNegative_300);
         transform: scaleY(-1);
     }
 }

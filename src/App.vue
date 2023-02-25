@@ -8,7 +8,7 @@ import { PageSelection, type ILanguageInfo, type IMasterwork, type IMod, type IP
 import { destinyDataService, selectionService } from "./data/services";
 
 const selectedPage = ref(PageSelection.Home);
-const showMainPage = ref(false);
+const showMainPage = ref(true);
 const selectedGear = computed(() => selectionService.selectedGear);
 
 const backgroundUrl = computed(() => LowResBackgroundImage);

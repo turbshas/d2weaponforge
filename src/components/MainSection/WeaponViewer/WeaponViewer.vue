@@ -52,7 +52,6 @@ function onModChanged(mod: IMod | undefined) {
                 ></ExtrasPanel>
                 <div class="mods-masterwork">
                     <MasterworkPanel
-                        class="mw"
                         :masterwork-list="masterworkList"
                         :masterwork="props.selectedGear.masterwork.value"
                         @masterwork-changed="onMasterworkChanged"
@@ -74,36 +73,43 @@ function onModChanged(mod: IMod | undefined) {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .viewer {
-    display: grid;
-    grid-template-rows: 1fr;
-    grid-template-columns: 964.55fr 414.467fr;
-    gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    @media @grid-weapon-viewer {
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: 964.55fr 414.467fr;
+    }
 }
 
 .weapon {
     display: flex;
     flex-direction: column;
-    max-width: 1400px;
-    padding-bottom: 160px;
+    gap: 1rem;
 }
 
 .extras-mws-mods {
-    display: grid;
-    grid-template-rows: 1fr;
-    grid-template-columns: 414.467fr 534.083fr;
-    gap: 16px;
-    flex-direction: row;
-    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    @media @grid-weapon-viewer {
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: 414.467fr 534.083fr;
+        padding-bottom: 10rem;
+    }
 }
 
 .mods-masterwork {
     display: flex;
     flex-direction: column;
-}
-
-.mw {
-    margin-bottom: 16px;
+    gap: 1rem;
 }
 </style>

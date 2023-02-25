@@ -64,14 +64,17 @@ function onModChanged(mod: IMod | undefined) {
     </main>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .main {
     display: flex;
     justify-content: center;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 1rem;
+
+    @media @narrow-phone {
+        padding: 0;
+    }
 }
 
 .item {
