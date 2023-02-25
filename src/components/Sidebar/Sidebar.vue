@@ -1,18 +1,11 @@
 <script setup lang="ts">
-import FilterButton from "./FilterButton.vue";
-import Searchbar from "./Searchbar.vue";
 import SidebarPanel from "./SidebarPanel/SidebarPanel.vue";
 import TabBar from "./TabBar.vue";
 
 import { SidebarPanelSelection, type FilterCategory, type IAppliedFilters, type ILanguageInfo, type IWeapon, type LookupMap, type PageSelection } from "@/data/interfaces";
-import { selectionService } from "@/data/services";
-import { computed, ref } from "vue";
-import LanguageButton from "./LanguageButton.vue";
-import WeaponListButton from "./WeaponListButton.vue";
-import SidebarToggleButton from "./SidebarToggleButton.vue";
+import { ref } from "vue";
 
-import FilterIcon from '@/assets/filter_icon.svg';
-import WeaponListIcon from "@/assets/weapon_list_icon.svg";
+import SidebarHeader from "./SidebarHeader/SidebarHeader.vue";
 
 const emit = defineEmits<{
     (e: "weaponSelected", weapon: IWeapon): void,
@@ -23,14 +16,9 @@ const emit = defineEmits<{
 
 const panelSelection = ref(SidebarPanelSelection.Weapons);
 const searchString = ref("");
-const selectedLanguage = computed(() => selectionService.language);
 
 const appliedFilters = ref<IAppliedFilters>(emptyAppliedFilters());
 const activeFilters = ref<Record<FilterCategory, LookupMap<string, boolean>>>(emptyActiveFilters());
-
-const viewingFilter = computed(() => panelSelection.value === SidebarPanelSelection.Filters);
-const viewingLanguages = computed(() => panelSelection.value === SidebarPanelSelection.Languages);
-const viewingWeaponList = computed(() => panelSelection.value === SidebarPanelSelection.Weapons);
 
 function onTabSelected(tab: PageSelection) {
     emit("tabSelected", tab);
@@ -80,18 +68,6 @@ function setPanelSelection(selection: SidebarPanelSelection) {
     }
 }
 
-function onFilterToggled() {
-    setPanelSelection(SidebarPanelSelection.Filters);
-}
-
-function onLanguagesToggled() {
-    setPanelSelection(SidebarPanelSelection.Languages);
-}
-
-function onWeaponListToggled() {
-    setPanelSelection(SidebarPanelSelection.Weapons);
-}
-
 function emptyAppliedFilters(): IAppliedFilters {
     return {
         includeSunsetWeapons: false,
@@ -119,44 +95,11 @@ function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>
 
 <template>
     <section class="sidebar right-border" aria-label="Side Bar">
-        <header class="filter-search" aria-label="Side Bar Controls">
-            <SidebarToggleButton
-                class="right-border"
-                :active="viewingFilter"
-                :icon="FilterIcon"
-                label="Open Filter Pane"
-                icon-label="Filter Icon"
-                @toggled="onFilterToggled"
-            ></SidebarToggleButton>
-            <Searchbar class="search" @search-changed="onSearchChanged"></Searchbar>
-            <SidebarToggleButton
-                class="left-border"
-                :active="viewingLanguages"
-                :icon="selectedLanguage.flagIcon"
-                label="Open Languages Pane"
-                :icon-label="`Language Image: ${selectedLanguage.text}`"
-                language
-                @toggled="onLanguagesToggled"
-            ></SidebarToggleButton>
-            <SidebarToggleButton
-                class="left-border weapon-list"
-                :active="viewingWeaponList"
-                :icon="WeaponListIcon"
-                label="Open Weapon List"
-                icon-label="Weapon List Icon"
-                @toggled="onWeaponListToggled"
-            ></SidebarToggleButton>
-
-            <!-- <FilterButton class="right-border" :active="viewingFilter" @filter-toggled="onFilterToggled"></FilterButton>
-            <Searchbar class="search" @search-changed="onSearchChanged"></Searchbar>
-            <LanguageButton
-                class="left-border"
-                :active="viewingLanguages"
-                :selected-language="selectedLanguage"
-                @languages-toggled="onLanguagesToggled"
-            ></LanguageButton>
-            <WeaponListButton class="left-border weapon-list" :active="viewingWeaponList" @weapon-list-toggled="onWeaponListToggled"></WeaponListButton> -->
-        </header>
+        <SidebarHeader
+            :panel-selection="panelSelection"
+            @panel-selected="setPanelSelection"
+            @search-changed="onSearchChanged"
+        ></SidebarHeader>
         <TabBar @tab-selected="onTabSelected"></TabBar>
         <SidebarPanel
             :sidebar-panel-selection="panelSelection"
@@ -173,6 +116,7 @@ function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>
 
 <style scoped lang="less">
 @import "@/assets/mediaQueries.less";
+@import "@/assets/mixins.less";
 
 .sidebar {
     display: flex;
@@ -181,34 +125,7 @@ function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>
     background-color: rgba(5, 7, 10, 0.9254901961);
 }
 
-.sidebar-section-border(@side) {
-    border-@{side}-width: 1px;
-    border-@{side}-style: solid;
-    border-@{side}-color: hsla(0, 0%, 98%, 0.25);
-    border-radius: 0;
-}
-
 .right-border {
     .sidebar-section-border(~"right");
-}
-
-.left-border {
-    .sidebar-section-border(~"left");
-}
-
-.filter-search {
-    display: flex;
-
-    .sidebar-section-border(~"bottom");
-}
-
-.search {
-    flex: 1;
-}
-
-@media @large-screen {
-    .weapon-list {
-        display: none;
-    }
 }
 </style>
