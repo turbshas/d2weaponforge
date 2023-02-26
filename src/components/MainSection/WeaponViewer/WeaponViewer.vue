@@ -42,34 +42,33 @@ function onModChanged(mod: IMod | undefined) {
 
 <template>
     <div class="viewer" aria-label="Weapon Viewer">
-        <div class="weapon">
-            <WeaponPanel
-                :selected-gear="props.selectedGear"
-            ></WeaponPanel>
-            <div class="extras-mws-mods">
-                <ExtrasPanel
-                    :selected-gear="props.selectedGear"
-                ></ExtrasPanel>
-                <div class="mods-masterwork">
-                    <MasterworkPanel
-                        :masterwork-list="masterworkList"
-                        :masterwork="props.selectedGear.masterwork.value"
-                        @masterwork-changed="onMasterworkChanged"
-                    ></MasterworkPanel>
-                    <ModsPanel
-                        :mod-list="modList"
-                        :mod="props.selectedGear.mod.value"
-                        @mod-changed="onModChanged"
-                    ></ModsPanel>
-                </div>
-            </div>
-        </div>
+        <WeaponPanel
+            class="weapon-panel"
+            :selected-gear="props.selectedGear"
+        ></WeaponPanel>
         <PerksPanel
+            class="perks-panel"
             :random-roll-perks="randomRollPerks"
             :curated-perks="curatedPerks"
             :selected-perks="props.selectedGear.perkOptionsMap.value"
             @perk-selected="onPerkSelected"
         ></PerksPanel>
+        <MasterworkPanel
+            class="mw-panel"
+            :masterwork-list="masterworkList"
+            :masterwork="props.selectedGear.masterwork.value"
+            @masterwork-changed="onMasterworkChanged"
+        ></MasterworkPanel>
+        <ModsPanel
+            class="mods-panel"
+            :mod-list="modList"
+            :mod="props.selectedGear.mod.value"
+            @mod-changed="onModChanged"
+        ></ModsPanel>
+        <ExtrasPanel
+            class="extras-panel"
+            :selected-gear="props.selectedGear"
+        ></ExtrasPanel>
     </div>
 </template>
 
@@ -83,33 +82,30 @@ function onModChanged(mod: IMod | undefined) {
 
     @media @grid-weapon-viewer {
         display: grid;
-        grid-template-rows: 1fr;
-        grid-template-columns: 964.55fr 414.467fr;
+        // Rows: Weapon panel -> MW panel -> Mod panel
+        grid-template-rows: 1fr 0.25fr 1.75fr;
+        // Columns: Extras panel -> MW/Mods panels -> Perk panel
+        grid-template-columns: 1fr 1.289fr 1fr;
+        grid-template-areas:
+            "weapon weapon perks"
+            "extras mw     perks"
+            "extras mods   perks";
     }
 }
 
-.weapon {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.weapon-panel {
+    grid-area: weapon;
 }
-
-.extras-mws-mods {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    @media @grid-weapon-viewer {
-        display: grid;
-        grid-template-rows: 1fr;
-        grid-template-columns: 414.467fr 534.083fr;
-        padding-bottom: 10rem;
-    }
+.perks-panel {
+    grid-area: perks;
 }
-
-.mods-masterwork {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.mw-panel {
+    grid-area: mw;
+}
+.mods-panel {
+    grid-area: mods;
+}
+.extras-panel {
+    grid-area: extras;
 }
 </style>

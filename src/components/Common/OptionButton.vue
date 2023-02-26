@@ -24,7 +24,7 @@ function onButtonToggled() {
 <template>
     <button class="button" :class="{ 'active': props.active, 'large': props.large, 'remove': props.remove, }" @click="onButtonToggled">
         <img class="icon" :class="{ 'wide': props.wide }" v-if="!!props.iconUrl" :src="props.iconUrl" :alt="altText">
-        <span class="text">{{ props.text }}</span>
+        <span>{{ props.text }}</span>
     </button>
 </template>
 
@@ -103,9 +103,5 @@ function onButtonToggled() {
     &.wide {
         max-width: 38px;
     }
-}
-
-.text {
-    white-space: nowrap;
 }
 </style>
