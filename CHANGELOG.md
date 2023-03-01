@@ -7,6 +7,8 @@ TBD
 * Fixed tabs in sidebar not being centered within their buttons.
 * Fixed MW not being selected when switching weapons.
 * Fixed selected perks section doubling in size after changing weapons.
+* Added support for multiple screen sizes - sidebar now collapses and weapon viewer becomes single-column at low widths.
+* Fix the wrong panel being shown sometimes on narrow screens.
 
 ## **Perk Filters + Other Filter Improvements** [ *1.3.0* ] 2023-02-22
 Filtering by perks on a weapon is now implemented along with some other filter improvements and bug fixes.

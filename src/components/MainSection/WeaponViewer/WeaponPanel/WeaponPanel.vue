@@ -20,7 +20,6 @@ const screenshot = computed(() => {
 });
 
 const statInfos = computed(() => props.selectedGear.modifiedWeaponDisplayStats.value);
-const hideElementsUrl = computed(() => EyeIcon);
 const hideElementsAltText = "Show/hide UI elements.";
 
 function onHideElementsClicked() {
@@ -36,7 +35,7 @@ function onHideElementsClicked() {
             <button class="hide-ui-button" @click="onHideElementsClicked">
                 <img
                     class="eye"
-                    :src="hideElementsUrl"
+                    :src="EyeIcon"
                     :alt="hideElementsAltText"
                    
                 >
@@ -64,6 +63,10 @@ function onHideElementsClicked() {
     background-size: cover;
     background-position-x: 100%;
     background-position-y: center;
+
+    @media @narrow-phone {
+        padding: 0.5rem;
+    }
 }
 
 .hidable {

@@ -25,12 +25,12 @@ function onTabSelected(tab: PageSelection) {
 }
 
 function onWeaponSelected(weapon: IWeapon) {
-    panelSelection.value = SidebarPanelSelection.Default;
+    setPanelSelection(SidebarPanelSelection.Default);
     emit("weaponSelected", weapon);
 }
 
 function onLanguageSelected(language: ILanguageInfo) {
-    panelSelection.value = SidebarPanelSelection.Weapons;
+    setPanelSelection(SidebarPanelSelection.Default);
     emit("languageSelected", language);
 }
 
@@ -38,7 +38,7 @@ function onFiltersApplied(newFilters: IAppliedFilters) {
     appliedFilters.value = newFilters;
     // Clear search bar, may end up with empty results after a filter which may be confusing.
     searchString.value = "";
-    panelSelection.value = SidebarPanelSelection.Weapons;
+    setPanelSelection(SidebarPanelSelection.Weapons);
 }
 
 function onFiltersCleared() {
@@ -51,6 +51,9 @@ function onSearchChanged(newSearchString: string) {
     // Clear filters - if the user is searching for a specific name they probably don't need them, and empty results may be confusing.
     appliedFilters.value = emptyAppliedFilters();
     activeFilters.value = emptyActiveFilters();
+    // Always show weapon panel on search changes. Calling setPanelSelection will result in the panel toggling for every letter typed.
+    panelSelection.value = SidebarPanelSelection.Weapons;
+    emit("sidebarToggled", true);
 }
 
 function setPanelSelection(selection: SidebarPanelSelection) {

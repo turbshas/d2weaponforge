@@ -1,34 +1,11 @@
 Preferred order of work:
-1) changes to support multiple screen sizes
-  - sidebar is very wide even on some large screens
-  - at some point, need to change layout for weapon viewer
-  - sidebar can become a menu, weapon viewer must become vertical (weapon -> perks -> MW -> mod -> extras?)
-    - maybe can do something fancier - like pages you swipe left or right to view each panel
-    - weapon panel selected perks area has all slots shown, tap on one to open pop up menu?
-  - use em instead of px when possible (supports users that change text size)
-  - https://developer.mozilla.org/en-US/docs/Web/CSS/@media
-  - breakpoints:
-    - 0 <= width < 560 px (mobile mode)
-      - margin gone
-    - 560 px <= width < 830 px (mobile mode)
-      - sidebar is menu at top
-      - weapon is full width but margin around edge
-      - stat block is 2 columns
-      - selected perks below, centered
-      - panels vertical, sequentially
-    - 830 <= width < 1200 px (desktop mode)
-      - sidebar is menu bar at top
-      - stats block is 2 columns
-      - perk panel next to weapon
-      - extras/mw/mods below weapon
-    - 1200 <= width < 1920 px (desktop mode, sidebar increases in width)
-2) more accessibility changes:
+1) more accessibility changes:
   - keyboard arrow key/page up/page down navigation
-3) look into progressive web apps
+2) look into progressive web apps
   - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
   - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
   - https://web.dev/learn/pwa/progressive-web-apps/
-4) look into using the indexed DB as a proper DB - object store for each property on Destiny2GameData. see if improves read times
+3) look into using the indexed DB as a proper DB - object store for each property on Destiny2GameData. see if improves read times
 
 compare section:
   - ideas:
@@ -50,6 +27,7 @@ Unsure about order:
   - maybe push that one braytech rwp weapon to the bottom?
 
 Bugs:
+- change drang/mida mini-tool intrinsic checks to use hashes
 
 Filter features:
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
@@ -78,7 +56,6 @@ Tech debt/processing:
 - convert Item Tier Index to hash, as those are stable
 - convert as many ID comparisons, etc. as possible to hashes
 - Move constants into class/interface, add Destiny2GameData as a property to be cached (hopefully reduce bundle size)
-- change drang/mida mini-tool intrinsic checks to use hashes
 - break up filter window into components somehow
 - styling cleanup:
   - put common values into variables in base.css
