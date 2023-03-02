@@ -2,7 +2,7 @@
 import SidebarPanel from "./SidebarPanel/SidebarPanel.vue";
 import TabBar from "./TabBar.vue";
 
-import { SidebarPanelSelection, type FilterCategory, type IAppliedFilters, type ILanguageInfo, type IWeapon, type LookupMap, type PageSelection } from "@/data/interfaces";
+import { SidebarPanelSelection, type IAppliedFilters, type ILanguageInfo, type ISelectedFilters, type IWeapon, type PageSelection } from "@/data/interfaces";
 import { ref } from "vue";
 
 import SidebarHeader from "./SidebarHeader/SidebarHeader.vue";
@@ -18,7 +18,7 @@ const panelSelection = ref(SidebarPanelSelection.Default);
 const searchString = ref("");
 
 const appliedFilters = ref<IAppliedFilters>(emptyAppliedFilters());
-const activeFilters = ref<Record<FilterCategory, LookupMap<string, boolean>>>(emptyActiveFilters());
+const selectedFilters = ref<ISelectedFilters>(emptySelectedFilters());
 
 function onTabSelected(tab: PageSelection) {
     emit("tabSelected", tab);
@@ -43,14 +43,14 @@ function onFiltersApplied(newFilters: IAppliedFilters) {
 
 function onFiltersCleared() {
     appliedFilters.value = emptyAppliedFilters();
-    activeFilters.value = emptyActiveFilters();
+    selectedFilters.value = emptySelectedFilters();
 }
 
 function onSearchChanged(newSearchString: string) {
     searchString.value = newSearchString;
     // Clear filters - if the user is searching for a specific name they probably don't need them, and empty results may be confusing.
     appliedFilters.value = emptyAppliedFilters();
-    activeFilters.value = emptyActiveFilters();
+    selectedFilters.value = emptySelectedFilters();
     // Always show weapon panel on search changes. Calling setPanelSelection will result in the panel toggling for every letter typed.
     panelSelection.value = SidebarPanelSelection.Weapons;
     emit("sidebarToggled", true);
@@ -75,25 +75,28 @@ function setPanelSelection(selection: SidebarPanelSelection) {
 function emptyAppliedFilters(): IAppliedFilters {
     return {
         includeSunsetWeapons: false,
-        craftedWeapons: false,
-        adeptWeapons: false,
         perkFilter: undefined,
         collectionsFilters: [],
         damageFilters: [],
+        miscFilters: [],
         rarityFilters: [],
         weaponFilters: [],
         perkNames: [],
     };
 }
-function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>> {
+function emptySelectedFilters(): ISelectedFilters {
     return {
-        "Archetype": {},
-        "Collections": {},
-        "Damage Type": {},
-        "Perks": {},
-        "Rarity": {},
-        "Weapon": {},
-    }
+        includeSunset: false,
+        selectedFiltersMap: {
+            "Archetype": {},
+            "Collections": {},
+            "Damage Type": {},
+            "Misc": {},
+            "Rarity": {},
+            "Weapon": {},
+        },
+        selectedPerks: {},
+    };
 }
 </script>
 
@@ -109,7 +112,7 @@ function emptyActiveFilters(): Record<FilterCategory, LookupMap<string, boolean>
             :sidebar-panel-selection="panelSelection"
             :search-string="searchString"
             :applied-filters="appliedFilters"
-            :active-filters="activeFilters"
+            :selected-filters="selectedFilters"
             @weapon-selected="onWeaponSelected"
             @filters-applied="onFiltersApplied"
             @filters-cleared="onFiltersCleared"

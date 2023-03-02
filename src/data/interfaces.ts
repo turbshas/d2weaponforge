@@ -125,9 +125,21 @@ export interface ILanguageInfo {
     text: string;
 }
 
-export type FilterCategory = "Perks" | "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";
+export type FilterCategory = "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity" | "Misc";
 
 export type FilterPredicate = (item: IWeapon) => boolean;
+
+export interface ISelectedFilters {
+    includeSunset: boolean;
+    selectedPerks: LookupMap<string, IPerkFilterInfo>;
+    selectedFiltersMap: Record<FilterCategory, LookupMap<string, IFilterButton>>;
+}
+
+export interface IPerkFilterInfo {
+    name: string;
+    /** There are some duplicate perks with different hashes but the same name. */
+    perkHashes: ItemHash[];
+}
 
 export interface IFilterButton {
     text: string;
@@ -135,13 +147,11 @@ export interface IFilterButton {
     filter: FilterPredicate;
 }
 
-export interface IArchetypeFilter {
+export interface IArchetypeFilter extends IFilterButton {
     /** Whatever constitutes as an "RPM" for this weapon type. (Fusion are charge time, bows are draw time, etc.) */
     rpm: number;
     /** The name of the archetype. */
     name: string;
-    text: string;
-    filter: FilterPredicate;
 }
 
 export interface IWeaponFilterButton extends IFilterButton {
@@ -150,11 +160,10 @@ export interface IWeaponFilterButton extends IFilterButton {
 
 export interface IAppliedFilters {
     includeSunsetWeapons: boolean;
-    craftedWeapons: boolean;
-    adeptWeapons: boolean;
     perkFilter: FilterPredicate | undefined;
     collectionsFilters: FilterPredicate[];
     damageFilters: FilterPredicate[];
+    miscFilters: FilterPredicate[];
     rarityFilters: FilterPredicate[];
     weaponFilters: FilterPredicate[];
     perkNames: string[];

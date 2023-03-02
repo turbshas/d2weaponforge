@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type ILanguageInfo, type IWeapon, type LookupMap } from "@/data/interfaces";
+import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type IFilterButton, type ILanguageInfo, type ISelectedFilters, type IWeapon, type LookupMap } from "@/data/interfaces";
 import { destinyDataService } from "@/data/services";
 import { computed, defineAsyncComponent, ref, watch } from "vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
@@ -11,7 +11,7 @@ const props = defineProps<{
     sidebarPanelSelection: SidebarPanelSelection,
     searchString: string,
     appliedFilters: IAppliedFilters,
-    activeFilters: Record<FilterCategory, LookupMap<string, boolean>>,
+    selectedFilters: ISelectedFilters,
 }>();
 
 const emit = defineEmits<{
@@ -27,12 +27,10 @@ watch(() => props.searchString, () => { limitingDisplayedWeapons.value = true; }
 
 const weapons = computed(() => destinyDataService.weapons);
 const filters = computed(() => props.appliedFilters);
-const activeFilters = computed(() => props.activeFilters);
+const selectedFilters = computed(() => props.selectedFilters);
 
 const areFiltersChosen = computed(() => {
     return filters.value.includeSunsetWeapons
-        || filters.value.craftedWeapons
-        || filters.value.adeptWeapons
         || !!filters.value.perkFilter
         || filters.value.collectionsFilters.length > 0
         || filters.value.damageFilters.length > 0
@@ -49,11 +47,10 @@ const filteredWeapons = computed(() => {
 
     const filtered = weapons.value
         .filter(w => filters.value.includeSunsetWeapons || !w.isSunset)
-        .filter(w => !filters.value.craftedWeapons || w.isCraftable)
-        .filter(w => !filters.value.adeptWeapons || w.isAdept)
         .filter(w => filters.value.perkFilter ? filters.value.perkFilter(w) : true)
         .filter(w => checkFilterCategoryOnWeapon(filters.value.collectionsFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.damageFilters, w))
+        .filter(w => checkFilterCategoryOnWeapon(filters.value.miscFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.rarityFilters, w))
         .filter(w => checkFilterCategoryOnWeapon(filters.value.weaponFilters, w))
         .filter(w => w.name.toLocaleLowerCase().includes(props.searchString.toLocaleLowerCase()));
@@ -78,8 +75,8 @@ function onFiltersCleared() {
     emit("filtersCleared");
 }
 
-function onFilterToggled(categoryName: FilterCategory, filterText: string, active: boolean) {
-    activeFilters.value[categoryName][filterText] = active;
+function onFilterToggled(categoryName: FilterCategory, filterText: string, filter: IFilterButton) {
+    selectedFilters.value.selectedFiltersMap[categoryName][filterText] = filter;
 }
 
 function onLanguageSelected(language: ILanguageInfo) {
@@ -99,7 +96,7 @@ function onShowAllWeapons() {
     <div class="panel" :class="{ 'default': showDefault }">
         <FilterWindow
             v-if="showFilterWindow"
-            :active-filters="activeFilters"
+            :selected-filters="selectedFilters"
             @filters-applied="onFiltersApplied"
             @filters-cleared="onFiltersCleared"
             @filter-toggled="onFilterToggled"
