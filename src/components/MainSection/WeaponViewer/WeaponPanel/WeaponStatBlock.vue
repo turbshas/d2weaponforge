@@ -2,7 +2,7 @@
 import type { IModifiedStat, LookupMap } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
 import { computed } from '@vue/reactivity';
-import WeaponStatDisplay from './WeaponStatDisplay.vue';
+import WeaponStatDisplay from './WeaponStatDisplay/WeaponStatDisplay.vue';
 
 const statOrdering = computed(() => [
     DataSearchStrings.StatIndices.Impact,
@@ -74,13 +74,13 @@ function defaultStatInfo(statHash: number): IModifiedStat {
 </script>
 
 <template>
-    <div class="list" aria-label="Weapon Stats">
+    <section class="list" aria-label="Weapon Stats">
         <WeaponStatDisplay
             v-for="stat in orderedStats"
             :key="stat.statHash"
             :display-stat="stat"
         ></WeaponStatDisplay>
-    </div>
+    </section>
 </template>
 
 <style scoped lang="less">
