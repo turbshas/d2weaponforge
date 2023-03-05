@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { WeaponCategoryRangeValuesMap } from '@/data/constants';
+import { WeaponCategoryRangeValuesMap } from '@/data/curatedData/WeaponFormulas';
 import type { ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
 import { computed } from 'vue';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
+
+// Numbers and some calculations from: https://github.com/oh-yes-0-fps/D2_Calculation_API
 
 const props = defineProps<{
     selectedGear: ISelectedGear,
@@ -39,16 +41,17 @@ const rangefinderMultiplier = computed(() => {
 });
 
 const zoomMultiplier = computed(() => {
-    if (!rangeValues.value) return 1;
-    const adjustment = rangeValues.value.zoomAdjustment;
-    const adjustedZoom = zoom.value - adjustment;
+    if (!rangeValues.value || !weaponCategoryRegex.value) return 1;
+    const adjustedZoom = weaponCategoryRegex.value === DataSearchStrings.WeaponCategoryRegex.FusionRifle
+        ? (10 + (zoom.value / 5))
+        : (zoom.value - 0.25);
     return adjustedZoom / 10;
 });
 
 const hipFireFalloffStart = computed(() => {
     if (!rangeValues.value) return 0;
     const baseFalloffStart = rangeValues.value.baseFalloffStart;
-    const rangePerStat = rangeValues.value.hipFireRangePerStat;
+    const rangePerStat = rangeValues.value.hipFireStartPerStat;
     return baseFalloffStart + (range.value * rangePerStat);
 });
 

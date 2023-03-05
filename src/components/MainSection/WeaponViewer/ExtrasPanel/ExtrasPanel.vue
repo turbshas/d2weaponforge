@@ -6,8 +6,10 @@ import { computed } from '@vue/reactivity';
 import BuilderSection from '../../../Common/BuilderSection.vue';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 import AddToComparisons from './AddToComparisons.vue';
+import AmmoSize from './AmmoSize.vue';
 import DamageFalloff from './DamageFalloff.vue';
 import DimWishlist from './DimWishlist.vue';
+import HandlingSpeed from './HandlingSpeed.vue';
 import ReloadSpeed from './ReloadSpeed.vue';
 
 const props = defineProps<{
@@ -51,7 +53,9 @@ function onRawStatValuesClicked() {
         </ExtrasListItem>
         <AddToComparisons></AddToComparisons>
         <DamageFalloff :selected-gear="props.selectedGear"></DamageFalloff>
-        <ReloadSpeed></ReloadSpeed>
+        <ReloadSpeed :selected-gear="props.selectedGear"></ReloadSpeed>
+        <HandlingSpeed :selected-gear="props.selectedGear"></HandlingSpeed>
+        <AmmoSize :selected-gear="props.selectedGear"></AmmoSize>
     </BuilderSection>
 </template>
 

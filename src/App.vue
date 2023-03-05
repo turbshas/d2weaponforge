@@ -25,6 +25,7 @@ function onWeaponSelected(weapon: IWeapon | undefined) {
     selectedPage.value = PageSelection.Weapon;
     selectionService.setWeapon(weapon);
     showMainPage.value = true;
+    console.log("weapon selected", weapon)
 }
 
 function onLanguageSelected(language: ILanguageInfo) {

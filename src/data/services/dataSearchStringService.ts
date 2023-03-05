@@ -1,7 +1,7 @@
 import type { DestinyManifestLanguage } from "bungie-api-ts/destiny2";
 import { computed, ref, type Ref } from "vue";
 import { EnglishLanguageIndex, LanguageInfos } from "../constants";
-import type { ItemHash } from "../interfaces";
+import type { ItemHash, TraitId, WeaponCategoryRegex } from "../interfaces";
 import TranslationMap from "../translations/translationMap";
 
 class CategoryIds {
@@ -108,43 +108,43 @@ class Misc {
 }
 
 class TraitIds {
-    public get Weapon() { return "item_type.weapon"; }
-    public get AutoRifle() { return "weapon_type.auto_rifle"; }
-    public get Bow() { return "weapon_type.bow"; }
-    public get FusionRifle() { return "weapon_type.fusion_rifle"; }
-    public get Glaive() { return "weapon_type.glaive"; }
-    public get GrenadeLauncher() { return "weapon_type.grenade_launcher"; }
-    public get HandCannon() { return "weapon_type.hand_cannon"; }
-    public get LinearFusion() { return "weapon_type.linear_fusion_rifle"; }
-    public get MachineGun() { return "weapon_type.machinegun"; }
-    public get PulseRifle() { return "weapon_type.pulse_rifle"; }
-    public get RocketLauncher() { return "weapon_type.rocket_launcher"; }
-    public get ScoutRifle() { return "weapon_type.scout_rifle"; }
-    public get Shotgun() { return "weapon_type.shotgun"; }
-    public get Sidearm() { return "weapon_type.sidearm"; }
-    public get SniperRifle() { return "weapon_type.sniper_rifle"; }
-    public get SubmachineGun() { return "weapon_type.submachinegun"; }
-    public get Sword() { return "weapon_type.sword"; }
+    public get Weapon(): TraitId { return "item_type.weapon"; }
+    public get AutoRifle(): TraitId { return "weapon_type.auto_rifle"; }
+    public get Bow(): TraitId { return "weapon_type.bow"; }
+    public get FusionRifle(): TraitId { return "weapon_type.fusion_rifle"; }
+    public get Glaive(): TraitId { return "weapon_type.glaive"; }
+    public get GrenadeLauncher(): TraitId { return "weapon_type.grenade_launcher"; }
+    public get HandCannon(): TraitId { return "weapon_type.hand_cannon"; }
+    public get LinearFusion(): TraitId { return "weapon_type.linear_fusion_rifle"; }
+    public get MachineGun(): TraitId { return "weapon_type.machinegun"; }
+    public get PulseRifle(): TraitId { return "weapon_type.pulse_rifle"; }
+    public get RocketLauncher(): TraitId { return "weapon_type.rocket_launcher"; }
+    public get ScoutRifle(): TraitId { return "weapon_type.scout_rifle"; }
+    public get Shotgun(): TraitId { return "weapon_type.shotgun"; }
+    public get Sidearm(): TraitId { return "weapon_type.sidearm"; }
+    public get SniperRifle(): TraitId { return "weapon_type.sniper_rifle"; }
+    public get SubmachineGun(): TraitId { return "weapon_type.submachinegun"; }
+    public get Sword(): TraitId { return "weapon_type.sword"; }
 }
 
-class WeaponCategoryRegex {
-    public get AutoRifle() { return ".*_auto_rifle"; }
-    public get Bow() { return "type_weapon_bow"; }
-    public get HandCannon() { return ".*_hand_cannon"; }
-    public get FusionRifle() { return "type_weapon_fusion_rifle"; }
-    public get Glaive() { return ".*_glaive"; }
-    public get GrenadeLauncher() { return ".*_grenade_launcher"; }
-    public get LinearFusion() { return ".*_fusion_rifle_line"; }
-    public get MachineGun() { return ".*_machinegun"; }
-    public get PulseRifle() { return ".*_pulse_rifle"; }
-    public get RocketLauncher() { return ".*_rocket_launcher"; }
-    public get ScoutRifle() { return ".*_scout_rifle"; }
-    public get Sidearm() { return ".*_sidearm"; }
-    public get Shotgun() { return ".*_shotgun"; }
-    public get SniperRifle() { return ".*_sniper_rifle"; }
-    public get SubmachineGun() { return ".*_submachinegun"; }
-    public get Sword() { return "type_weapon_sword"; }
-    public get TraceRifle() { return ".*_beam_rifle"; }
+class WeaponCategoryRegexes {
+    public get AutoRifle(): WeaponCategoryRegex { return ".*_auto_rifle"; }
+    public get Bow(): WeaponCategoryRegex { return "type_weapon_bow"; }
+    public get HandCannon(): WeaponCategoryRegex { return ".*_hand_cannon"; }
+    public get FusionRifle(): WeaponCategoryRegex { return "type_weapon_fusion_rifle"; }
+    public get Glaive(): WeaponCategoryRegex { return ".*_glaive"; }
+    public get GrenadeLauncher(): WeaponCategoryRegex { return ".*_grenade_launcher"; }
+    public get LinearFusion(): WeaponCategoryRegex { return ".*_fusion_rifle_line"; }
+    public get MachineGun(): WeaponCategoryRegex { return ".*_machinegun"; }
+    public get PulseRifle(): WeaponCategoryRegex { return ".*_pulse_rifle"; }
+    public get RocketLauncher(): WeaponCategoryRegex { return ".*_rocket_launcher"; }
+    public get ScoutRifle(): WeaponCategoryRegex { return ".*_scout_rifle"; }
+    public get Sidearm(): WeaponCategoryRegex { return ".*_sidearm"; }
+    public get Shotgun(): WeaponCategoryRegex { return ".*_shotgun"; }
+    public get SniperRifle(): WeaponCategoryRegex { return ".*_sniper_rifle"; }
+    public get SubmachineGun(): WeaponCategoryRegex { return ".*_submachinegun"; }
+    public get Sword(): WeaponCategoryRegex { return "type_weapon_sword"; }
+    public get TraceRifle(): WeaponCategoryRegex { return ".*_beam_rifle"; }
 }
 
 export class DataSearchStrings {
@@ -154,7 +154,7 @@ export class DataSearchStrings {
     private static readonly _statIndices = new StatIndices();
     private static readonly _misc = new Misc(this.language);
     private static readonly _traitIds = new TraitIds();
-    private static readonly _weaponCategoryRegex = new WeaponCategoryRegex();
+    private static readonly _weaponCategoryRegex = new WeaponCategoryRegexes();
 
     public static get DefaultLanguage() { return LanguageInfos.value[EnglishLanguageIndex.value]; }
     public static get Languages() { return LanguageInfos.value; }

@@ -5,6 +5,25 @@ Preferred order of work:
   - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
   - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
   - https://web.dev/learn/pwa/progressive-web-apps/
+3) Extras panel:
+- reload speed calculator
+- handling speed calculator
+  - quick access sling
+- damage fall off calculator for the remaining weapon types
+  - hip fire grip multiplies hip fire range by 1.2x
+4) Inventory size calculator
+5) Perk effect selection
+  - surplus
+  - elemental capacitor
+  - field prep
+  - opening shot
+  - steady hands
+  - slideshot
+  - slideways
+  - well rounded
+  - reservoir burst
+  - figure out full list, will have to search through all perks with insights
+
 
 compare section:
   - ideas:
@@ -27,6 +46,7 @@ Unsure about order:
 
 Bugs:
 - change drang/mida mini-tool intrinsic checks to use hashes
+- charge time reduction (good) is shown as red (bad)
 
 Filter features:
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
@@ -37,11 +57,6 @@ Filter features:
 
 Masterworks/weapon features:
 - exotic catalyst support
-
-Extras panel:
-- elemental cap selector
-- reload speed calculator
-- damage fall off calculator for the remaining weapon types
 
 Load times:
 - load background image after manifest has loaded to ensure it doesn't delay page load on low speed connections
