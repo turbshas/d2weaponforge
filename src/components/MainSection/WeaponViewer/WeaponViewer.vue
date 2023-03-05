@@ -1,18 +1,13 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue';
 import WeaponPanel from './WeaponPanel/WeaponPanel.vue';
-// import ExtrasPanel from './ExtrasPanel/ExtrasPanel.vue';
-// import MasterworkPanel from './MasterworkPanel.vue';
-// import ModsPanel from './ModsPanel.vue';
 import type { IMasterwork, IMod, IPerkOption, ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
 import { computed } from 'vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
 
-// const WeaponPanel = defineAsyncComponent(() => import("./WeaponPanel/WeaponPanel.vue"));
 const ExtrasPanel = defineAsyncComponent(() => import("./ExtrasPanel/ExtrasPanel.vue"));
 const MasterworkPanel = defineAsyncComponent(() => import("./MasterworkPanel.vue"));
 const ModsPanel = defineAsyncComponent(() => import("./ModsPanel.vue"));
-// const PerksPanel = defineAsyncComponent(() => import("./PerksPanel/PerksPanel.vue"));
 
 const props = defineProps<{
     selectedGear: ISelectedGear,
@@ -46,69 +41,71 @@ function onModChanged(mod: IMod | undefined) {
 </script>
 
 <template>
-    <div class="viewer">
-        <div class="weapon">
-            <WeaponPanel
-                :selected-gear="props.selectedGear"
-            ></WeaponPanel>
-            <div class="extras-mws-mods">
-                <ExtrasPanel
-                    :selected-gear="props.selectedGear"
-                ></ExtrasPanel>
-                <div class="mods-masterwork">
-                    <MasterworkPanel
-                        class="mw"
-                        :masterwork-list="masterworkList"
-                        :masterwork="props.selectedGear.masterwork.value"
-                        @masterwork-changed="onMasterworkChanged"
-                    ></MasterworkPanel>
-                    <ModsPanel
-                        :mod-list="modList"
-                        :mod="props.selectedGear.mod.value"
-                        @mod-changed="onModChanged"
-                    ></ModsPanel>
-                </div>
-            </div>
-        </div>
+    <div class="viewer" aria-label="Weapon Viewer">
+        <WeaponPanel
+            class="weapon-panel"
+            :selected-gear="props.selectedGear"
+        ></WeaponPanel>
         <PerksPanel
+            class="perks-panel"
             :random-roll-perks="randomRollPerks"
             :curated-perks="curatedPerks"
             :selected-perks="props.selectedGear.perkOptionsMap.value"
             @perk-selected="onPerkSelected"
         ></PerksPanel>
+        <MasterworkPanel
+            class="mw-panel"
+            :masterwork-list="masterworkList"
+            :masterwork="props.selectedGear.masterwork.value"
+            @masterwork-changed="onMasterworkChanged"
+        ></MasterworkPanel>
+        <ModsPanel
+            class="mods-panel"
+            :mod-list="modList"
+            :mod="props.selectedGear.mod.value"
+            @mod-changed="onModChanged"
+        ></ModsPanel>
+        <ExtrasPanel
+            class="extras-panel"
+            :selected-gear="props.selectedGear"
+        ></ExtrasPanel>
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .viewer {
-    display: grid;
-    grid-template-rows: 1fr;
-    grid-template-columns: 964.55fr 414.467fr;
-    gap: 16px;
-}
-
-.weapon {
     display: flex;
     flex-direction: column;
-    max-width: 1400px;
-    padding-bottom: 160px;
+    gap: 1rem;
+
+    @media @grid-weapon-viewer {
+        display: grid;
+        // Rows: Weapon panel -> MW panel -> Mod panel
+        grid-template-rows: 1fr 0.25fr 1.75fr;
+        // Columns: Extras panel -> MW/Mods panels -> Perk panel
+        grid-template-columns: 1fr 1.289fr 1fr;
+        grid-template-areas:
+            "weapon weapon perks"
+            "extras mw     perks"
+            "extras mods   perks";
+    }
 }
 
-.extras-mws-mods {
-    display: grid;
-    grid-template-rows: 1fr;
-    grid-template-columns: 414.467fr 534.083fr;
-    gap: 16px;
-    flex-direction: row;
-    margin-top: 16px;
+.weapon-panel {
+    grid-area: weapon;
 }
-
-.mods-masterwork {
-    display: flex;
-    flex-direction: column;
+.perks-panel {
+    grid-area: perks;
 }
-
-.mw {
-    margin-bottom: 16px;
+.mw-panel {
+    grid-area: mw;
+}
+.mods-panel {
+    grid-area: mods;
+}
+.extras-panel {
+    grid-area: extras;
 }
 </style>

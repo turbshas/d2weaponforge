@@ -44,6 +44,11 @@ const masterworkStatNames = computed(() => Object.keys(masterworkOptionsByStatNa
 
 const selectedMasterworkStatName = ref(initSelectedStatName());
 const masterworkLevel = ref(initSelectedMasterworkLevel());
+watch(() => props.masterworkList, () => {
+    // If the masterwork list changed, the weapon changed. Re-initialized masterwork.
+    selectedMasterworkStatName.value = initSelectedStatName();
+    masterworkLevel.value = initSelectedMasterworkLevel();
+});
 watch(() => props.masterwork, (newValue) => {
     if (newValue) {
         // Only reset the selected stat name if a new one is selected (has a level > 0).
@@ -99,7 +104,7 @@ const masterworkLevelSliderLabel = "Masterwork Level Slider";
 
 <template>
     <BuilderSection class="masterwork" title="Weapon Masterwork">
-        <div class="types">
+        <div class="types" aria-label="Masterwork Type">
             <OptionButton
                 class="type"
                 v-for="name of masterworkStatNames"
@@ -109,7 +114,7 @@ const masterworkLevelSliderLabel = "Masterwork Level Slider";
                 @toggled="() => onMasterworkChanged(name)"
             ></OptionButton>
         </div>
-        <div class="level">
+        <div class="level" aria-label="Masterwork Level">
             <span class="text">{{ masterworkLevel }}</span>
             <ElementLabel class="slider-wrapper" :text="masterworkLevelSliderLabel">
                 <input class="slider" type="range" min="0" max="10" v-model="masterworkLevel" @change="onMasterworkLevelChanged">

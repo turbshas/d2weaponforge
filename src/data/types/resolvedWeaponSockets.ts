@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryDefinition, DestinyItemSocketEntryPlugItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinySocketTypeDefinition, DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { ExcludedPerkPlugCategories } from "../constants";
-import { WeaponSocketCategoryHash, type IMasterwork, type IMod, type IPerkGrid, type IPerkLookup, type IPerkOption, type IPerkPair, type ItemHash, type LookupMap } from "../interfaces";
+import { WeaponSocketCategoryHash, type IMasterwork, type IMod, type IPerkColumn, type IPerkGrid, type IPerkLookup, type IPerkOption, type IPerkPair, type ItemHash, type LookupMap } from "../interfaces";
 import { DataSearchStrings } from "../services/dataSearchStringService";
 import type { ManifestAccessor } from "./manifestAccessor";
 import { PerkColumn } from "./perkColumn";
@@ -186,24 +186,32 @@ export class ResolvedWeaponSockets {
             .map((s, index) => {
                 const perkColumn = randomRollPerkOptions.perkColumns[index];
                 if (s.singleInitialItemHash) {
-                    const perkOption = perkColumn.perks.find(p => p.perk === s.singleInitialItemHash);
+                    const existingPerkOption = perkColumn.perks.find(p => p.perk === s.singleInitialItemHash);
                     // Sometimes, a curated perk is a perk that the weapon cannot normally roll. Construct a new
                     // perk option object in this case, as there's nothing to match up with anyway.
-                    if (perkOption) return perkOption;
-                    return new PerkOption(
-                        s.singleInitialItemHash,
-                        undefined,
-                        undefined,
-                        true, // Currently can roll = true is probably fine for curated? Would look weird greyed out or hidden.
-                    );
+                    const perkOption = existingPerkOption
+                        || new PerkOption(
+                            s.singleInitialItemHash,
+                            undefined,
+                            undefined,
+                            true, // Currently can roll = true is probably fine for curated? Would look weird greyed out or hidden.
+                        );
+                    return [perkOption];
                 } else {
-                    // Origin perk doesn't have an initial item for some reason, have to use the randomized plug set.
-                    const itemHash = !!s && s.randomizedItems.length > 0 ? s.randomizedItems[0].plugItemHash : undefined;
-                    return perkColumn.perks.find(p => p.perk === itemHash);
+                    // Origin perk doesn't always have an initial item for some reason, have to use the randomized plug set.
+                    // Also, origin perks display all options.
+                    const randomizedHashes = s ? s.randomizedItems : [];
+                    const reusableHashes = s ? s.reusableItems : [];
+                    const itemHashes = randomizedHashes.concat(reusableHashes);
+                    const perkOptions = itemHashes
+                        .map(r => perkColumn.perks.find(p => p.perk === r.plugItemHash))
+                        .filter(r => !!r)
+                        .map(r => r!);
+                    return perkOptions;
                 }
             })
             // Checking for undefined here to have better defined behavior, but it really should never be undefined.
-            .map(perkOption => new PerkColumn(perkOption ? [perkOption] : []));
+            .map(perkOptions => new PerkColumn(perkOptions));
         return new PerkGrid(curatedPerkColumns);
     }
 

@@ -263,7 +263,6 @@ export class DestinyManifestProcessor {
                 statHash: weaponRpmStatHash,
             });
         }
-        console.log("found archetypes:", weaponTypeInfoMap, seenArchetypes);
         return hashMapToArray(weaponTypeInfoMap);
     }
 

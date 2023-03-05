@@ -8,6 +8,7 @@ import { PageSelection, type ILanguageInfo, type IMasterwork, type IMod, type IP
 import { destinyDataService, selectionService } from "./data/services";
 
 const selectedPage = ref(PageSelection.Home);
+const showMainPage = ref(true);
 const selectedGear = computed(() => selectionService.selectedGear);
 
 const backgroundUrl = computed(() => LowResBackgroundImage);
@@ -16,11 +17,15 @@ function onTabSelected(tab: PageSelection) {
     selectedPage.value = tab;
 }
 
+function onSidebarToggled(active: boolean) {
+    showMainPage.value = !active;
+}
+
 function onWeaponSelected(weapon: IWeapon | undefined) {
     selectedPage.value = PageSelection.Weapon;
     selectionService.setWeapon(weapon);
-
-    console.log("weapon selected", weapon);
+    showMainPage.value = true;
+    console.log("weapon selected", weapon)
 }
 
 function onLanguageSelected(language: ILanguageInfo) {
@@ -30,7 +35,6 @@ function onLanguageSelected(language: ILanguageInfo) {
 
 function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {
     selectionService.setPerk(column, perk);
-    console.log("perk selected", perk);
 }
 
 function onMasterworkChanged(masterwork: IMasterwork | undefined) {
@@ -48,16 +52,16 @@ function onUrlParsed(
     masterwork: IMasterwork | undefined,
     mod: IMod | undefined
 ) {
-    selectedPage.value = page;
-    selectionService.setWeapon(weapon);
+    onTabSelected(page);
+    onWeaponSelected(weapon);
     if (!weapon) {
         return;
     }
 
-    selectedPage.value = PageSelection.Weapon;
+    onTabSelected(PageSelection.Weapon);
     selectionService.setPerks(perkOptions);
-    selectionService.setMasterwork(masterwork);
-    selectionService.setMod(mod);
+    onMasterworkChanged(masterwork);
+    onModChanged(mod);
 }
 </script>
 
@@ -70,11 +74,13 @@ function onUrlParsed(
         ></UrlManager>
         <Sidebar
             class="sidebar"
+            :class="{ 'show': showMainPage, }"
             @tab-selected="onTabSelected"
             @weapon-selected="onWeaponSelected"
             @language-selected="onLanguageSelected"
+            @sidebar-toggled="onSidebarToggled"
         ></Sidebar>
-        <div class="main">
+        <div class="main-wrapper" :class="{ 'show': showMainPage, }">
             <MainPage
                 :page="selectedPage"
                 :selected-gear="selectedGear"
@@ -86,35 +92,50 @@ function onUrlParsed(
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .app {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
     background-size: cover;
+
+    @media @large-screen {
+        flex-direction: row;
+    }
 }
 
 .sidebar {
-    width: 460px;
-    height: 100vh;
+    width: 100vw;
     overflow: hidden;
-}
-@media screen and (min-width: 1200px) {
-    .sidebar {
+
+    @media @narrow-desktop {
         width: 360px;
     }
-}
-@media screen and (min-width: 1920px) {
-    .sidebar {
+    @media @desktop {
         width: 460px;
+    }
+    @media @large-screen {
+        height: 100vh;
     }
 }
 
-.main {
+.main-wrapper {
     flex: 1;
     overflow-x: hidden;
     overflow-y: scroll;
+
+    @media @small-screen {
+        display: none;
+        &.show {
+            display: initial;
+        }
+    }
+    @media @large-screen {
+        margin-left: 16px;
+    }
 }
 </style>

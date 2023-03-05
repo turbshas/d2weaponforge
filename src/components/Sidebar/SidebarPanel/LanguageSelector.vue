@@ -16,7 +16,7 @@ function onLanguageSelected(languageInfo: ILanguageInfo) {
 
 <template>
     <div class="wrapper">
-        <button class="button" v-for="language of languages"  @click="onLanguageSelected(language)">
+        <button class="button" v-for="language of languages"  @click="onLanguageSelected(language)" aria-label="Open Language Selector">
             <img class="flag" :src="language.flagIcon" :alt="language.text">
             <span class="text">{{ language.text }}</span>
         </button>

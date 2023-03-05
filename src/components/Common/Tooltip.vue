@@ -11,6 +11,8 @@ const props = defineProps<{
     description: string,
     effect: string | null,
     bonuses: { statName: string, value: number }[],
+    /** Manual override to show as enhanced if, for example, only the enhanced perk is to be shown. */
+    enhanced?: boolean,
     enhancedDescription?: string,
     enhancedEffects?: string,
     enhancedBonuses: { statName: string, value: number }[],
@@ -30,6 +32,9 @@ const requiredCraftLevel = computed(() => props.craftingInfo && props.craftingIn
 const requiredCraftLevelEnhanced = computed(() => props.craftingInfo && props.craftingInfo.requiredLevelEnhanced);
 const requiredLevelText = computed(() => requiredCraftLevel.value ? `Lv${requiredCraftLevel.value}` : "");
 const requiredEnhancedLevelText = computed(() => requiredCraftLevelEnhanced.value ? `Lv${requiredCraftLevelEnhanced.value}` : "");
+
+// Only show the enhanced level text in the top section if enhanced info *wasn't* provided.
+const mainCraftLevelText = computed(() => !props.enhanced || props.enhancedDescription ? requiredLevelText.value : requiredEnhancedLevelText.value);
 
 const showEnhanced = computed(() => !!props.enhancedDescription || !!props.enhancedEffects || props.enhancedBonuses.length > 0);
 const descriptionEnhanced = computed(() => props.enhancedDescription || "");
@@ -76,7 +81,7 @@ function onMouseLeave() {
             <h4 class="title" v-if="!!props.title">{{ props.title }}</h4>
             <div class="subheader" v-if="!!props.subtitle">
                 <span class="subtitle">{{ props.subtitle }}</span>
-                <span class="level" v-if="!!requiredCraftLevel">{{ requiredLevelText }}</span>
+                <span class="level" v-if="!!mainCraftLevelText">{{ mainCraftLevelText }}</span>
             </div>
         </div>
 

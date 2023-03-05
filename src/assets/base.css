@@ -1,24 +1,80 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
-  --vt-c-white: #fafafa;
-  --vt-c-white-soft: #f8f8f8;
-  --vt-c-white-mute: #f2f2f2;
+    --vt-c-white: #fafafa;
+    --vt-c-white-soft: #f8f8f8;
+    --vt-c-white-mute: #f2f2f2;
 
-  --vt-c-black: #181818;
-  --vt-c-black-soft: #222222;
-  --vt-c-black-mute: #282828;
+    --vt-c-black: #181818;
+    --vt-c-black-soft: #222222;
+    --vt-c-black-mute: #282828;
 
-  --vt-c-indigo: #2c3e50;
+    --vt-c-indigo: #2c3e50;
 
-  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
-  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
+    --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
+    --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
+    --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
+    --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
 
-  --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
-  --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+    --vt-c-text-light-1: var(--vt-c-indigo);
+    --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
+    --vt-c-text-dark-1: var(--vt-c-white);
+    --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+
+    /* Text colours */
+    --white: #fafafa;
+    --black: #05070a;
+    --grey: #ccc;
+
+    /* Element colours */
+    --sidebar-border-white: hsla(0, 0%, 98%, 0.25);
+
+    /* Bungie standard colours */
+    --bngBlue_500: #232936;
+    --bngBlue_800: #181d25;
+    --bngBlue_900: #12171c;
+    --bngGold_300: #ffce1f;
+    --bngGold_600: #b78c25;
+    --bngDefault: #64686b;
+
+    /* UI important colours */
+    --uiActive: #518dba;
+    --uiPositive_300: #68cc79;
+    --uiPositive_500: #5aa366;
+    --uiPositive_700: #33613a;
+    --uiNegative_300: #e25954;
+    --uiNegative_500: #973835;
+    --uiNegative_700: #732522;
+
+    /* Rarities */
+    --rarityBasic: #eee;
+    --rarityCommon: #346e3b;
+    --rarityRare: #5176a4;
+    --rarityLegendary: #522f65;
+    --rarityExotic: #cdae33;
+
+    /* Ammo types */
+    --ammoPrimary: #fff;
+    --ammoSpecial: #7af48b;
+    --ammoHeavy: #b286ff;
+
+    /* Damage types */
+    --damageSolar: #fa6400;
+    --damageArc: #79bbe8;
+    --damageVoid: #b185df;
+    --damageStasis: #4d88ff;
+
+    /* Fonts */
+    --fontDisplay: neue-haas-grotesk-display,"Helvetica Neue",sans-serif;
+    --fontText: neue-haas-grotesk-text,"Helvetica Neue",sans-serif;
+
+    /* Screen sizes */
+    --xLarge: 1920px;
+    --large: 1400px;
+    --medium: 800px;
+    --small: 560px;
+
+    /* Animations */
+    --easingCubic: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 /* semantic color variables for this project */
@@ -31,7 +87,9 @@
   --color-border-hover: var(--vt-c-divider-light-1);
 
   --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
+
+  --color-text: var(--white);
+  --color-sidebar-border: var(--sidebar-border-white);
 
   --section-gap: 160px;
 }

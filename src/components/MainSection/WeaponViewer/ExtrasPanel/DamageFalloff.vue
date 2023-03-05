@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { WeaponCategoryRangeValuesMap } from '@/data/constants';
+import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
+import { WeaponCategoryRangeValuesMap, WeaponCategoryValuesArchetypeOverrideMap, WeaponCategoryValuesExoticOverrideMap } from '@/data/curatedData/WeaponFormulas';
 import type { ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
 import { computed } from 'vue';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
+
+// Numbers and some calculations from: https://github.com/oh-yes-0-fps/D2_Calculation_API
 
 const props = defineProps<{
     selectedGear: ISelectedGear,
@@ -13,10 +16,25 @@ const RangeStatIndex = DataSearchStrings.StatIndices.Range;
 const ZoomStatIndex = DataSearchStrings.StatIndices.Zoom;
 
 const weapon = computed(() => props.selectedGear.weapon.value ? props.selectedGear.weapon.value : undefined);
+const weaponHash = computed(() => weapon.value ? weapon.value.hash : 0);
+const archetypeHash = computed(() => weapon.value && weapon.value.archetype ? weapon.value.archetype.intrinsicPerkHash : 0);
+
+const exoticOverride = computed(() => WeaponCategoryValuesExoticOverrideMap.value[weaponHash.value]);
+const archetypeOverride = computed(() => {
+    if (!weapon.value) return undefined;
+    const regex = weapon.value.weaponCategoryRegex;
+    const archetypeMap = WeaponCategoryValuesArchetypeOverrideMap.value[regex];
+    return archetypeMap && archetypeMap[archetypeHash.value];
+});
+const overrideValues = computed(() => exoticOverride.value || archetypeOverride.value);
+
+const baseRangeValues = computed(() => weapon.value ? WeaponCategoryRangeValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
+const overrideRangeValues = computed(() => overrideValues.value?.range);
+
+const rangeValues = computed(() => overrideRangeValues.value || baseRangeValues.value);
 
 const RangefinderPerkHash = computed(() => DataSearchStrings.Misc.RangefinderPerkHash);
 const weaponCategoryRegex = computed(() => weapon.value ? weapon.value.weaponCategoryRegex : "");
-const rangeValues = computed(() => weaponCategoryRegex.value ? WeaponCategoryRangeValuesMap.value[weaponCategoryRegex.value] : undefined);
 const hasRangeValues = computed(() => !!rangeValues.value);
 
 const allStats = computed(() => props.selectedGear.modifiedWeaponDisplayStats.value);
@@ -39,17 +57,17 @@ const rangefinderMultiplier = computed(() => {
 });
 
 const zoomMultiplier = computed(() => {
-    if (!rangeValues.value) return 1;
-    const adjustment = rangeValues.value.zoomAdjustment;
-    const adjustedZoom = zoom.value - adjustment;
+    if (!rangeValues.value || !weaponCategoryRegex.value) return 1;
+    const adjustedZoom = weaponCategoryRegex.value === DataSearchStrings.WeaponCategoryRegex.FusionRifle
+        ? (10 + (zoom.value / 5))
+        : (zoom.value - 0.25);
     return adjustedZoom / 10;
 });
 
 const hipFireFalloffStart = computed(() => {
     if (!rangeValues.value) return 0;
     const baseFalloffStart = rangeValues.value.baseFalloffStart;
-    const rangePerStat = rangeValues.value.hipFireRangePerStat;
-    console.log("hip fire values", baseFalloffStart, rangePerStat, range.value);
+    const rangePerStat = rangeValues.value.hipFireStartPerStat;
     return baseFalloffStart + (range.value * rangePerStat);
 });
 
@@ -58,7 +76,6 @@ const aimDownSightsFalloffStart = computed(() => {
 });
 
 const text = computed(() => {
-    console.log("calculated stats", range.value, zoom.value, rangefinderMultiplier.value);
     const roundedHipFire = Math.round((hipFireFalloffStart.value + Number.EPSILON) * 100) / 100;
     const roundedADS = Math.round((aimDownSightsFalloffStart.value + Number.EPSILON) * 100) / 100;
     return `${roundedHipFire}m / ${roundedADS}m`
@@ -67,7 +84,7 @@ const text = computed(() => {
 
 <template>
     <ExtrasListItem label="Damage Falloff" v-if="hasRangeValues">
-        <span>{{ text }}</span>
+        <CalculationDisplay :text="text"></CalculationDisplay>
     </ExtrasListItem>
 </template>
 

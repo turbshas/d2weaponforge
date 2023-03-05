@@ -1,23 +1,29 @@
 Preferred order of work:
-3) changes to support multiple screen sizes
-  - sidebar is very wide even on some large screens
-  - at some point, need to change layout for weapon viewer
-  - sidebar can become a menu, weapon viewer must become vertical (weapon -> perks -> MW -> mod -> extras?)
-    - maybe can do something fancier - like pages you swipe left or right to view each panel
-    - weapon panel selected perks area has all slots shown, tap on one to open pop up menu?
-  - use em instead of px when possible (supports users that change text size)
-  - https://developer.mozilla.org/en-US/docs/Web/CSS/@media
-4) more accessibility changes:
+1) more accessibility changes:
   - keyboard arrow key/page up/page down navigation
-  - rework <div> usage into semantic elements
-    - https://www.freecodecamp.org/news/semantic-html-alternatives-to-using-divs/
-    - https://developer.mozilla.org/en-US/docs/Web/HTML/Element
-5) glossary revamp:
-  - group perk + enhanced together into collapsible selections
-  - icon + name for collapsible section header
-  - within collapsible section body, show base + hash + description, then enhanced + hash + description
-  - only load perk insights when building data from the manifest, attach to IPerk
-  - if possible, allow ctrl-f on the page to expand collapsed sections (make section expand on focus event?)
+2) look into progressive web apps
+  - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
+  - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
+  - https://web.dev/learn/pwa/progressive-web-apps/
+3) Extras panel:
+- reload speed calculator
+- handling speed calculator
+  - quick access sling
+- damage fall off calculator for the remaining weapon types
+  - hip fire grip multiplies hip fire range by 1.2x
+4) Inventory size calculator
+5) Perk effect selection
+  - surplus
+  - elemental capacitor
+  - field prep
+  - opening shot
+  - steady hands
+  - slideshot
+  - slideways
+  - well rounded
+  - reservoir burst
+  - figure out full list, will have to search through all perks with insights
+
 
 compare section:
   - ideas:
@@ -27,8 +33,16 @@ compare section:
   - icon + name/type on left side
   - stats in middle
   - what should stat arrows display? green only if highest value in list of weapons being compared?
+  - should cache which weapons were selected
+  - should have button that goes back to weapon page with that weapon and perks selected
+    - if this is done, and "add to comparisons" is clicked - remove the previous one?
 
 Unsure about order:
+- update weapon formulas when data becomes available (some values are placeholder constants right now)
+- "calculations" panel for damage falloff/handling/reload/reserves/etc.
+  - make extras panel -> options panel and split out the calculations
+  - implement dps/ttk calculations
+  - load weapon formulas into the indexed db, retrieve from destiny data service
 - Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar?
 - ordering weapons by release date to the API (might have to be manual)
   - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
@@ -36,8 +50,8 @@ Unsure about order:
   - maybe push that one braytech rwp weapon to the bottom?
 
 Bugs:
-- selecting a masterwork on a weapon, then selecting a weapon that does not have that masterwork has no masterwork selected instead of the first one in the list
-- tab bar text isn't centered properly
+- change drang/mida mini-tool intrinsic checks to use hashes
+- charge time reduction (good) is shown as red (bad)
 
 Filter features:
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
@@ -48,11 +62,6 @@ Filter features:
 
 Masterworks/weapon features:
 - exotic catalyst support
-
-Extras panel:
-- elemental cap selector
-- reload speed calculator
-- damage fall off calculator for the remaining weapon types
 
 Load times:
 - load background image after manifest has loaded to ensure it doesn't delay page load on low speed connections
@@ -66,18 +75,13 @@ Tech debt/processing:
 - convert Item Tier Index to hash, as those are stable
 - convert as many ID comparisons, etc. as possible to hashes
 - Move constants into class/interface, add Destiny2GameData as a property to be cached (hopefully reduce bundle size)
-- change drang/mida mini-tool intrinsic checks to use hashes
+- break up filter window into components somehow
 - styling cleanup:
   - put common values into variables in base.css
   - convert to using rem instead of px
 
 Research:
-- look into progressive web apps
-  - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
-  - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
-  - https://web.dev/learn/pwa/progressive-web-apps/
 - make perk insights async loading - load when glossary is selected OR a weapon is selected?
-- look into using the indexed DB as a proper DB - object store for each property on Destiny2GameData. see if improves read times
 - sandbox perks - do they have any info we could want for things other than mods?
 - if possible, some feedback from the URL -> weapon list so that the weapon in the URL gets loaded first?
 - make use of inventory size stat
@@ -85,6 +89,12 @@ Research:
 - look into weapon ready/stow stat?
 - look into ADS stat?
 - better solution for dealing with enums from bungie-api-ts and isolatedModules?
+- look into using getDestinyEntityDefinition and DestinyInventoryItemLiteDefinition to improve load times?
+  - DestinyInventoryItemLiteDefinition doesn't have all the info we need, but is ~1/3 the uncompressed size as the normal table
+  - we could use those as placeholders while we load the big table in the background
+  - additionally, load the first few weapon items in the list manually, and immediately load a weapon if it is clicked
+  - if weapon exists in url, need to fetch that definition at the same time as DestinyInventoryItemLiteDefinition
+  - problem: doesn't have index property, so no way to sort as we do now. would have to be manual sorting as D2Gunsmith does
 
 Virtual scrolling on displayed weapons:
   - possible to load weapons into the list over time (as they are processed) instead of all at once?

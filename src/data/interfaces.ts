@@ -41,6 +41,11 @@ export enum SidebarPanelSelection {
     Weapons = "Weapons",
     Filters = "Filters",
     Languages = "Languages",
+    /**
+     * When the screen is narrow, default is to hide the sidebar and show the weapon viewer.
+     * When the screen is wide enough, the sidebar is always displayed so the default is the weapon list.
+     */
+    Default = "Default",
 }
 
 export enum StatDisplayType {
@@ -120,9 +125,21 @@ export interface ILanguageInfo {
     text: string;
 }
 
-export type FilterCategory = "Perks" | "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity";
+export type FilterCategory = "Damage Type" | "Weapon" | "Archetype" | "Collections" | "Rarity" | "Misc";
 
 export type FilterPredicate = (item: IWeapon) => boolean;
+
+export interface ISelectedFilters {
+    includeSunset: boolean;
+    selectedPerks: LookupMap<string, IPerkFilterInfo>;
+    selectedFiltersMap: Record<FilterCategory, LookupMap<string, IFilterButton>>;
+}
+
+export interface IPerkFilterInfo {
+    name: string;
+    /** There are some duplicate perks with different hashes but the same name. */
+    perkHashes: ItemHash[];
+}
 
 export interface IFilterButton {
     text: string;
@@ -130,13 +147,11 @@ export interface IFilterButton {
     filter: FilterPredicate;
 }
 
-export interface IArchetypeFilter {
+export interface IArchetypeFilter extends IFilterButton {
     /** Whatever constitutes as an "RPM" for this weapon type. (Fusion are charge time, bows are draw time, etc.) */
     rpm: number;
     /** The name of the archetype. */
     name: string;
-    text: string;
-    filter: FilterPredicate;
 }
 
 export interface IWeaponFilterButton extends IFilterButton {
@@ -145,11 +160,10 @@ export interface IWeaponFilterButton extends IFilterButton {
 
 export interface IAppliedFilters {
     includeSunsetWeapons: boolean;
-    craftedWeapons: boolean;
-    adeptWeapons: boolean;
     perkFilter: FilterPredicate | undefined;
     collectionsFilters: FilterPredicate[];
     damageFilters: FilterPredicate[];
+    miscFilters: FilterPredicate[];
     rarityFilters: FilterPredicate[];
     weaponFilters: FilterPredicate[];
     perkNames: string[];
@@ -335,9 +349,66 @@ export interface IArchetypeInfo {
 }
 
 export interface IWeaponRangeValues {
+    /** Distance where damage falloff starts at 0 range. */
     baseFalloffStart: number;
-    hipFireRangePerStat: number;
-    zoomAdjustment: number;
+    /** Distance where damage falloff bottoms out (stops). */
+    falloffEnd: number;
+    /** Distance gained to the damage falloff start per point of range stat. */
+    hipFireStartPerStat: number;
+    /** Distance gained to the damage falloff end per point of range stat. */
+    hipFireEndPerStat: number;
+}
+
+/** Constants of a quadratic equation. */
+export interface IWeaponReloadValues {
+    /** The x^2 constant. */
+    a: number;
+    /** The x^1 constant. */
+    b: number;
+    /** The x^0 constant. */
+    c: number;
+    /**
+     * Percentage of time through the reload animation where ammo loads into the magazine,
+     * as a decimal in the range (0, 1).
+     * A value of 0 indicates the ammo loading takes the entire length of the animation.
+     */
+    ammoTime: number;
+}
+
+/** Weapon handling formula values as constants of a line equation. */
+export interface IWeaponHandlingEquation {
+    /** The slope (m) of the line. */
+    valuePerPoint: number;
+    /** The offset (b) of the line. */
+    offset: number;
+}
+
+export interface IWeaponHandlingValues {
+    ready: IWeaponHandlingEquation;
+    stow: IWeaponHandlingEquation;
+    ads: IWeaponHandlingEquation;
+}
+
+/** Constants of a quadratic equation. */
+export interface IMagSizeEquation {
+    /** The x^2 constant. */
+    a: number;
+    /** The x^1 constant. */
+    b: number;
+    /** The x^0 constant. */
+    c: number;
+}
+
+export interface IWeaponAmmoSizeValues {
+    mag: IMagSizeEquation;
+    reservesCalc: (rawMagSize: number, magStat: number, inventorySizeStat: number) => number;
+}
+
+export interface IWeaponFormulaOverrides {
+    range?: IWeaponRangeValues;
+    reload?: IWeaponReloadValues;
+    handling?: IWeaponHandlingValues;
+    ammo?: IWeaponAmmoSizeValues;
 }
 
 export enum PerkHash {
@@ -580,9 +651,7 @@ export interface IPerkInsightCollection {
     weaponMods: IPerkInsights<ModHash>;
 }
 
-export type IPerkInsights<T extends string | number | symbol> = {
-    [key in T]: IPerkInsight | undefined;
-};
+export type IPerkInsights<T extends string | number | symbol> = LookupMap<T, IPerkInsight>;
 
 export interface IPerkInsight {
     description: string;
@@ -648,13 +717,13 @@ export enum Collection {
 }
 
 export type ICollectionsLists = {
-    [key in Collection]: number[];
+    [key in Collection]: ItemHash[];
 }
 
 export type SeasonNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 |18 | 19;
 
 export interface IInsightDisplay {
-    hash: number;
+    hash: ItemHash;
     name: string;
     iconUrl: string;
     description: string;

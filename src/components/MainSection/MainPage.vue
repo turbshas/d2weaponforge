@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { PageSelection, type IMasterwork, type IMod, type IPerkOption, type ISelectedGear, type PerkColumnNumber } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
-import ComparePage from './ComparePage.vue';
-import Glossary from './Glossary/Glossary.vue';
+import { defineAsyncComponent } from 'vue';
 import HomePage from './HomePage.vue';
 import WeaponViewer from './WeaponViewer/WeaponViewer.vue';
+
+const Glossary = defineAsyncComponent(() => import("./Glossary/Glossary.vue"));
+const ComparePage = defineAsyncComponent(() => import("./ComparePage.vue"));
 
 const props = defineProps<{
     page: PageSelection,
@@ -47,7 +49,7 @@ function onModChanged(mod: IMod | undefined) {
 </script>
 
 <template>
-    <div class="main">
+    <main class="main" aria-label="Main Page">
         <HomePage class="item" v-if="isHomeSelected"></HomePage>
         <Glossary class="item" v-else-if="isGlossarySelected"></Glossary>
         <ComparePage class="item" v-else-if="isCompareSelected"></ComparePage>
@@ -59,18 +61,20 @@ function onModChanged(mod: IMod | undefined) {
             @masterwork-changed="onMasterworkChanged"
             @mod-changed="onModChanged"
         ></WeaponViewer>
-    </div>
+    </main>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import "@/assets/mediaQueries.less";
+
 .main {
     display: flex;
     justify-content: center;
-    margin-left: 16px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 1rem;
+
+    @media @narrow-phone {
+        padding: 0;
+    }
 }
 
 .item {

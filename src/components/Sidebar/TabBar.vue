@@ -20,7 +20,7 @@ function onTabClick(e: Event, tab: PageSelection) {
 </script>
 
 <template>
-    <div class="tabs">
+    <nav class="tabs" aria-label="Tab Bar">
         <a
             v-for="tab of tabs"
             :key="tab"
@@ -28,7 +28,7 @@ function onTabClick(e: Event, tab: PageSelection) {
             :href="hrefForTab(tab)"
             @click="e => onTabClick(e, tab)"
         >{{ tab }}</a>
-    </div>
+    </nav>
 </template>
 
 <style scoped>
@@ -47,11 +47,9 @@ function onTabClick(e: Event, tab: PageSelection) {
 .tab {
     cursor: pointer;
     user-select: none;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-right: 24px;
+    padding: 8px;
 
-    color: #fff;
+    color: #ffffff;
     text-transform: uppercase;
     text-decoration: none;
     text-align: center;

@@ -1,22 +1,9 @@
 <script setup lang="ts">
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
-import type { IArchetype, IMasterwork, IMod, IPerk, ISelectedPerk, ISelectedPerkMap, ItemHash, PerkColumnNumber } from '@/data/interfaces';
+import type { IArchetype, IMasterwork, IMod, ISelectedPerk, ISelectedPerkMap } from '@/data/interfaces';
 import { destinyDataService } from '@/data/services';
 import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
-
-// Remove this if I refactor this component
-interface IResolvedSelectedPerk extends ISelectedPerk {
-    perkItem: IPerk;
-    enhancedPerkItem: IPerk | undefined;
-}
-
-interface ISelectedPerkDisplay {
-    selectedPerk: IResolvedSelectedPerk | undefined;
-    column: PerkColumnNumber | undefined,
-    fullSize: boolean;
-    hideHover: boolean;
-}
 
 const props = defineProps<{
     intrinsic: IArchetype | undefined,
@@ -28,110 +15,131 @@ const props = defineProps<{
 
 const backgroundUrl = computed(() => PerkPanelBackground);
 
-const perks = computed(() => {
-    const perkList: ISelectedPerkDisplay[] = [
-        { selectedPerk: resolveFromIntrinsic(props.intrinsic?.intrinsicPerkHash), column: undefined, fullSize: true,  hideHover: true, },
-        { selectedPerk: resolveFromSelectedPerk(props.selectedPerks[1]), column: 1, fullSize: false, hideHover: false, },
-        { selectedPerk: resolveFromSelectedPerk(props.selectedPerks[2]), column: 2, fullSize: false, hideHover: false, },
-        { selectedPerk: resolveFromSelectedPerk(props.selectedPerks[3]), column: 3, fullSize: false, hideHover: false, },
-        { selectedPerk: resolveFromSelectedPerk(props.selectedPerks[4]), column: 4, fullSize: false, hideHover: false, },
-    ];
-    const originPerk = props.selectedPerks[5];
-    if (originPerk) {
-        perkList.push({ selectedPerk: resolveFromSelectedPerk(originPerk), column: 5, fullSize: false, hideHover: false, });
-    }
-    if (props.mod) {
-        perkList.push({ selectedPerk: resolveFromMod(props.mod?.hash), column: undefined, fullSize: true, hideHover: false, });
-    }
-    if (props.masterwork) {
-        perkList.push({ selectedPerk: resolveFromMasterwork(props.masterwork?.hash), column: undefined, fullSize: true, hideHover: false, });
-    }
-    return perkList;
-});
+const intrinsicPerk = computed(() => destinyDataService.getPerkDefinition(props.intrinsic?.intrinsicPerkHash));
+const originPerk = computed(() => destinyDataService.getPerkDefinition(props.selectedPerks[5]?.perkOption.perk));
+const masterworkPerk = computed(() => destinyDataService.getMasterworkDefinition(props.masterwork?.hash));
+const modPerk = computed(() => destinyDataService.getModDefinition(props.mod?.hash));
 
-function resolveFromIntrinsic(intrinsicPerkHash: ItemHash | undefined) {
-    if (!intrinsicPerkHash) return undefined;
-    const intrinsic = destinyDataService.getPerkDefinition(intrinsicPerkHash);
-    return resolveWithPerkItems(intrinsic);
+const perk1 = computed(() => destinyDataService.getPerkDefinition(props.selectedPerks[1]?.perkOption.perk));
+const perk1Crafting = computed(() => props.selectedPerks[1]?.perkOption.craftingInfo);
+const perk2 = computed(() => destinyDataService.getPerkDefinition(props.selectedPerks[2]?.perkOption.perk));
+const perk2Crafting = computed(() => props.selectedPerks[2]?.perkOption.craftingInfo);
+
+const perk3Normal = computed(() => destinyDataService.getPerkDefinition(props.selectedPerks[3]?.perkOption.perk));
+const perk3Enhanced = computed(() => destinyDataService.getEnhancedPerkDefinition(props.selectedPerks[3]?.perkOption.enhancedPerk));
+const perk3CanBeEnhanced = computed(() => !!props.selectedPerks[3] && !!props.selectedPerks[3].perkOption.enhancedPerk);
+const isPerk3Enhanced = computed(() => !!props.selectedPerks[3] && !!props.selectedPerks[3].perkOption.enhancedPerk && props.selectedPerks[3].useEnhanced);
+const perk3 = computed(() => isPerk3Enhanced.value ? perk3Enhanced.value : perk3Normal.value);
+const perk3Crafting = computed(() => props.selectedPerks[3]?.perkOption.craftingInfo);
+
+const perk4Normal = computed(() => destinyDataService.getPerkDefinition(props.selectedPerks[4]?.perkOption.perk));
+const perk4Enhanced = computed(() => destinyDataService.getEnhancedPerkDefinition(props.selectedPerks[4]?.perkOption.enhancedPerk));
+const perk4CanBeEnhanced = computed(() => !!props.selectedPerks[4] && !!props.selectedPerks[4].perkOption.enhancedPerk);
+const isPerk4Enhanced = computed(() => !!props.selectedPerks[4] && !!props.selectedPerks[4].perkOption.enhancedPerk && props.selectedPerks[4].useEnhanced);
+const perk4 = computed(() => isPerk4Enhanced.value ? perk4Enhanced.value : perk4Normal.value);
+const perk4Crafting = computed(() => props.selectedPerks[4]?.perkOption.craftingInfo);
+
+function onPerk3Clicked() {
+    if (!props.selectedPerks[3] || !perk3CanBeEnhanced.value) return;
+    props.selectedPerks[3].useEnhanced = !props.selectedPerks[3].useEnhanced;
 }
 
-function resolveFromSelectedPerk(selectedPerk: ISelectedPerk | undefined) {
-    if (!selectedPerk) return undefined;
-    const perk = destinyDataService.getPerkDefinition(selectedPerk.perkOption.perk);
-    const enhanced = destinyDataService.getEnhancedPerkDefinition(selectedPerk.perkOption.enhancedPerk || 0);
-    return resolveWithPerkItems(perk, enhanced);
-}
-
-function resolveFromMasterwork(masterworkHash: ItemHash | undefined) {
-    if (!masterworkHash) return undefined;
-    const masterwork = destinyDataService.getMasterworkDefinition(masterworkHash);
-    return resolveWithPerkItems(masterwork);
-}
-
-function resolveFromMod(modHash: ItemHash | undefined) {
-    if (!modHash) return undefined;
-    const mod = destinyDataService.getModDefinition(modHash);
-    return resolveWithPerkItems(mod);
-}
-
-function resolveWithPerkItems(perkItem: IPerk | undefined, enhancedPerkItem: IPerk | undefined = undefined) {
-    if (!perkItem) return undefined;
-    const selectedPerk: IResolvedSelectedPerk = {
-        perkOption: {
-            perk: perkItem.hash,
-            enhancedPerk: undefined,
-            craftingInfo: undefined,
-            currentlyCanRoll: true,
-        },
-        useEnhanced: false,
-        perkItem: perkItem,
-        enhancedPerkItem: enhancedPerkItem,
-    };
-    return selectedPerk;
-}
-
-function getSelectedPerkHash(selectedPerk: ISelectedPerk | undefined) {
-    if (!selectedPerk) return 0;
-    return selectedPerk.perkOption.perk;
-}
-
-function useEnhancedPerk(selectedPerk: ISelectedPerk | undefined) {
-    return !!selectedPerk && selectedPerk.useEnhanced && !!selectedPerk.perkOption.enhancedPerk;
-}
-
-function getActivePerk(selectedPerk: IResolvedSelectedPerk | undefined) {
-    if (!selectedPerk) return undefined;
-    if (useEnhancedPerk(selectedPerk) && !!selectedPerk.enhancedPerkItem) {
-        return selectedPerk.enhancedPerkItem;
-    } else {
-        return selectedPerk.perkItem;
-    }
-}
-
-function onPerkClicked(selectedPerk: ISelectedPerk | undefined) {
-    if (!selectedPerk) return;
-    selectedPerk.useEnhanced = !selectedPerk.useEnhanced;
+function onPerk4Clicked() {
+    if (!props.selectedPerks[4] || !perk4CanBeEnhanced.value) return;
+    props.selectedPerks[4].useEnhanced = !props.selectedPerks[4].useEnhanced;
 }
 </script>
 
 <template>
-    <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }">
+    <div class="selected" :style="{ 'background-image': 'url(' + backgroundUrl + ')' }" aria-label="Selected Perks">
         <PerkDisplay
             class="perk"
-            v-for="perk of perks"
-            :key="getSelectedPerkHash(perk.selectedPerk)"
-
-            :perk="getActivePerk(perk.selectedPerk)"
+            :perk="intrinsicPerk"
             :is-adept="props.isAdept"
-            :crafting-info="perk.selectedPerk?.perkOption.craftingInfo"
-            :column="perk.column"
-            :enhanced="useEnhancedPerk(perk.selectedPerk)"
-            :enhanced-bonuses="[]"
-            :full-size="perk.fullSize"
-            :hide-hover="perk.hideHover"
+            :crafting-info="undefined"
             :selected="false"
             :retired="false"
-            @perk-clicked="onPerkClicked(perk.selectedPerk)"
+            full-size
+            hide-hover
+        ></PerkDisplay>
+
+        <PerkDisplay
+            class="perk"
+            :perk="perk1"
+            :crafting-info="perk1Crafting"
+            :column="1"
+            :is-adept="props.isAdept"
+            :selected="false"
+            :retired="false"
+        ></PerkDisplay>
+
+        <PerkDisplay
+            class="perk"
+            :perk="perk2"
+            :crafting-info="perk2Crafting"
+            :column="2"
+            :is-adept="props.isAdept"
+            :selected="false"
+            :retired="false"
+        ></PerkDisplay>
+
+        <PerkDisplay
+            class="perk"
+            :perk="perk3"
+            :enhanced="isPerk3Enhanced"
+            :crafting-info="perk3Crafting"
+            :column="3"
+            :is-adept="props.isAdept"
+            :selected="false"
+            :retired="false"
+            @perk-clicked="onPerk3Clicked"
+        ></PerkDisplay>
+
+        <PerkDisplay
+            class="perk"
+            :perk="perk4"
+            :enhanced="isPerk4Enhanced"
+            :crafting-info="perk4Crafting"
+            :column="4"
+            :is-adept="props.isAdept"
+            :selected="false"
+            :retired="false"
+            @perk-clicked="onPerk4Clicked"
+        ></PerkDisplay>
+
+        <PerkDisplay
+            class="perk"
+            v-if="!!originPerk"
+            :perk="originPerk"
+            :crafting-info="undefined"
+            :column="5"
+            :is-adept="props.isAdept"
+            :selected="false"
+            :retired="false"
+        ></PerkDisplay>
+
+        <PerkDisplay
+            class="perk"
+            v-if="!!masterworkPerk"
+            :perk="masterworkPerk"
+            :crafting-info="undefined"
+            :column="undefined"
+            :is-adept="props.isAdept"
+            :selected="false"
+            :retired="false"
+            full-size
+        ></PerkDisplay>
+
+        <PerkDisplay
+            class="perk"
+            v-if="!!modPerk"
+            :perk="modPerk"
+            :crafting-info="undefined"
+            :column="undefined"
+            :is-adept="props.isAdept"
+            :selected="false"
+            :retired="false"
+            full-size
         ></PerkDisplay>
     </div>
 </template>

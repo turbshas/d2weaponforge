@@ -4,7 +4,7 @@ import type { Destiny2GameData, ItemHash, IWeapon, LookupMap, UsedDestinyManifes
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
 
-const CurrentCachedManifestVersion = 7;
+const CurrentCachedManifestVersion = 9;
 
 export class DestinyApiService {
     constructor(private readonly cacheService: CacheService) { }
@@ -15,7 +15,8 @@ export class DestinyApiService {
         // Get manifest metadata
         const manifestInfoPromise = getDestinyManifest(this.makeRequest);
         const cachedManifestPromise = this.cacheService.getCachedManifest();
-        const [manifestInfo, cachedManifest] = await Promise.all([manifestInfoPromise, cachedManifestPromise]);
+        const [manifestInfoResponse, cachedManifest] = await Promise.all([manifestInfoPromise, cachedManifestPromise]);
+        const manifestInfo = manifestInfoResponse.Response;
 
         console.log("manifest info", manifestInfo);
 
@@ -24,7 +25,7 @@ export class DestinyApiService {
             && cachedManifest.version === CurrentCachedManifestVersion
             && cachedManifest.language === language) {
             const cachedJsonComponentUrls = cachedManifest.manifestInfo.jsonWorldComponentContentPaths[language];
-            const retrievedJsonComponentUrls = manifestInfo.Response.jsonWorldComponentContentPaths[language];
+            const retrievedJsonComponentUrls = manifestInfo.jsonWorldComponentContentPaths[language];
             // Apparently the URLs are better for checking the manifest version as they contain a
             // hash of the contents, and sometimes this will change without the actual version changing.
             if (cachedJsonComponentUrls["DestinyInventoryItemDefinition"] === retrievedJsonComponentUrls["DestinyInventoryItemDefinition"]) {
@@ -33,17 +34,17 @@ export class DestinyApiService {
         }
         // */
 
-        const gameData = await this.getGameDataFromApi(manifestInfo.Response, language);
+        const gameData = await this.getGameDataFromApi(manifestInfo, language);
 
         this.cacheService.setCachedManifest({
             version: CurrentCachedManifestVersion,
             language: language,
-            manifestInfo: manifestInfo.Response,
+            manifestInfo: manifestInfo,
             manifestData: gameData,
         }).catch(err => console.error("Failed to cache manifest.", err));
         return gameData;
     }
-    
+
     private readonly getGameDataFromApi = async (manifestInfo: DestinyManifest, language: DestinyManifestLanguage) => {
         // Get manifest slices we care about
         const manifestSlice = await getDestinyManifestSlice(this.makeRequest, {
@@ -91,6 +92,7 @@ export class DestinyApiService {
             perkInsights: perkInsights,
             collectionsLists: collectionsLists,
         };
+
         return gameData;
     }
 

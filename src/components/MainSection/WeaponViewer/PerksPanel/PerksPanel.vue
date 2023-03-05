@@ -34,7 +34,7 @@ function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined)
                 @perk-selected="onPerkSelected"
             ></PerkList>
         </BuilderSection>
-        <span class="note">
+        <span class="note" aria-label="Enhanced perk usage">
             TO APPLY THE ENHANCED VERSION OF A PERK, CLICK SAID PERK IN THE AREA WITH THE PICTURE OF THE WEAPON.
         </span>
         <BuilderSection title="Curated Roll" class="no-shadow" v-if="hasCuratedPerks">

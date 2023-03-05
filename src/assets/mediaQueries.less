@@ -1,0 +1,27 @@
+@narrow-phone-min-width: 0px;
+@phone-min-width: 560px;
+@tablet-min-width: 830px;
+@narrow-desktop-min-width: 1200px;
+@desktop-min-width: 1920px;
+
+.get-range-string(@start, @exclusive-end) {
+    @end: calc(@exclusive-end - 1px);
+    @result: ~"(min-width: @{start}) and (max-width: @{end})";
+}
+
+@narrow-phone-range: .get-range-string(@narrow-phone-min-width, @phone-min-width)[@result];
+@phone-range: .get-range-string(@phone-min-width, @tablet-min-width)[@result];
+@tablet-range: .get-range-string(@tablet-min-width, @narrow-desktop-min-width)[@result];
+@narrow-desktop-range: .get-range-string(@narrow-desktop-min-width, @desktop-min-width)[@result];
+@desktop-range:  ~"(min-width: @{desktop-min-width})";
+
+@narrow-phone: ~"only screen and @{narrow-phone-range}";
+@phone: ~"only screen and @{phone-range}";
+@tablet: ~"only screen and @{tablet-range}";
+@narrow-desktop: ~"only screen and @{narrow-desktop-range}";
+@desktop:  ~"only screen and @{desktop-range}";
+
+@small-screen: ~"only screen and ((@{narrow-phone-range}) or (@{phone-range}) or (@{tablet-range}))";
+@large-screen: ~"only screen and ((@{narrow-desktop-range}) or (@{desktop-range}))";
+
+@grid-weapon-viewer: ~"only screen and ((@{tablet-range}) or (@{narrow-desktop-range}) or (@{desktop-range}))";

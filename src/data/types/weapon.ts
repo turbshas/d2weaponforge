@@ -44,9 +44,6 @@ export class Weapon implements IWeapon {
         masterworkLookup: LookupMap<ItemHash, IMasterwork>,
         modLookup: LookupMap<ItemHash, IMod>,
         ) {
-            if (weaponItem.displayProperties.name.includes("Bite of the Fox") || weaponItem.displayProperties.name.includes("Trust")) {
-                console.log("found important item", weaponItem);
-            }
         this.index = weaponItem.index;
         this.hash = weaponItem.hash;
         this.name = weaponItem.displayProperties.name;

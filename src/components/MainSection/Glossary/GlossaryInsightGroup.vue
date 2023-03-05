@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { IInsightDisplay } from '@/data/interfaces';
+import GlossaryDefinition from './GlossaryDefinition.vue';
 
 const props = defineProps<{
     insights: IInsightDisplay[],
@@ -8,15 +9,16 @@ const props = defineProps<{
 </script>
 
 <template>
-    <ul class="group">
-        <li class="insight" v-for="insight of props.insights" :key="insight.hash">
-            <div class="info">
-                <h4 class="name">{{ insight.name }}</h4>
-                <span class="hash">&lt;{{ insight.hash }}&gt;</span>
-            </div>
-            <pre class="description">{{ insight.description }}</pre>
-        </li>
-    </ul>
+    <dl class="group">
+        <GlossaryDefinition
+            class="insight"
+            v-for="insight of props.insights"
+            :key="insight.hash"
+            :hash="insight.hash"
+            :name="insight.name"
+            :description="insight.description"
+        ></GlossaryDefinition>
+    </dl>
 </template>
 
 <style scoped lang="less">
@@ -30,22 +32,5 @@ const props = defineProps<{
 
 .insight {
     width: 350px;
-    display: flex;
-    flex-direction: column;
-    padding-bottom: 0.25rem;
-}
-
-.info {
-    display: flex;
-    gap: 1rem;
-}
-
-.name {
-    margin: 0;
-}
-
-.description {
-    margin: 0;
-    white-space: pre-wrap;
 }
 </style>

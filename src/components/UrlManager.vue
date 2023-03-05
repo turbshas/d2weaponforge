@@ -15,7 +15,6 @@ const props = defineProps<{
     selectedGear: ISelectedGear,
 }>();
 
-// TODO: might need to convert these to one big event with all data at once
 const emits = defineEmits<{
     (e: "urlParsed",
         page: PageSelection,

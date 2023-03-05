@@ -106,35 +106,6 @@ export const WeaponTypeTraitToRegex = computed<LookupMap<TraitId, WeaponCategory
     }
 });
 
-// Numbers from: https://docs.google.com/spreadsheets/d/1B2zWeT99SksMzmptNeIt66Mv8YZu38R7t-KR50BJ0p0/view#gid=817864056
-// TODO: numbers for exotics are different, like vex that acts as an auto rifle
-export const WeaponCategoryRangeValuesMap = computed<LookupMap<WeaponCategoryRegex, IWeaponRangeValues>>(() => {
-    return {
-        // TODO: hand cannons are different for 120s, include that somehow
-        // TODO: some weapons have a "zoom scalar" that is added to the base zoom?
-        [DataSearchStrings.WeaponCategoryRegex.AutoRifle]: { baseFalloffStart: 10.8, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
-        [DataSearchStrings.WeaponCategoryRegex.HandCannon]: { baseFalloffStart: 16, hipFireRangePerStat: 0.096, zoomAdjustment: 0.25, },
-        // TODO: pulse rifles are all over the place in zoom/"modified zoom multiplier"
-        [DataSearchStrings.WeaponCategoryRegex.PulseRifle]: { baseFalloffStart: 15, hipFireRangePerStat: 0.0685, zoomAdjustment: 0.25, },
-        [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: { baseFalloffStart: 29.2, hipFireRangePerStat: 0.169, zoomAdjustment: 1.25, },
-        [DataSearchStrings.WeaponCategoryRegex.Sidearm]: { baseFalloffStart: 11.6, hipFireRangePerStat: 0.034, zoomAdjustment: 0.25, },
-        [DataSearchStrings.WeaponCategoryRegex.SubmachineGun]: { baseFalloffStart: 8.19, hipFireRangePerStat: 0.09576, zoomAdjustment: 1.25, },
-
-        [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: { baseFalloffStart: 8.2, hipFireRangePerStat: 0.036, zoomAdjustment: 2, },
-        [DataSearchStrings.WeaponCategoryRegex.TraceRifle]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
-
-        [DataSearchStrings.WeaponCategoryRegex.MachineGun]: { baseFalloffStart: 10.05, hipFireRangePerStat: 0.107, zoomAdjustment: 0.25, },
-
-        /*
-        // TODO: what to do with these? ignore them?
-        ".*_fusion_rifle_line": { baseFalloffStart: 0, hipFireRangePerStat: 0, zoomAdjustment: 0, },
-        // TODO: shotgun just has 1 number, presumably it's not affected by zoom
-        ".*_shotgun": { baseFalloffStart: 0, hipFireRangePerStat: 0, zoomAdjustment: 0, },
-        ".*_sniper_rifle": { baseFalloffStart: 0, hipFireRangePerStat: 0, zoomAdjustment: 0, },
-        */
-    }
-});
-
 // This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
 // weapon type, since hash could theoretically change.
 export const WeaponCategoryIconMap = computed<LookupMap<WeaponCategoryRegex, string>>(() => {
