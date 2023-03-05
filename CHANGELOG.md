@@ -1,7 +1,7 @@
 # Changelog
 
-## **TBD** [ *1.4.0* ] TBD
-TBD
+## **Weapon Calculations** [ *1.4.0* ] 2023-03-05
+Adds calculations for weapon properties, a new glossary, and bug fixes.
 
 * Glossary revamp with section for each perk + enhanced pair along with perk icon.
 * Fixed tabs in sidebar not being centered within their buttons.
@@ -10,6 +10,7 @@ TBD
 * Added support for multiple screen sizes - sidebar now collapses and weapon viewer becomes single-column at low widths.
 * Fix the wrong panel being shown sometimes on narrow screens.
 * Fix not being able to toggle selected perks to enhanced.
+* Add calculations for weapon damage falloff, reload, handling, and total ammo.
 
 ## **Perk Filters + Other Filter Improvements** [ *1.3.0* ] 2023-02-22
 Filtering by perks on a weapon is now implemented along with some other filter improvements and bug fixes.

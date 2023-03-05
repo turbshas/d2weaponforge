@@ -11,6 +11,18 @@ interface IChangelog {
 
 const changelogs = computed<IChangelog[]>(() => [
     {
+        version: "1.4.0",
+        date: "2023-03-05",
+        title: "Weapon Calculations",
+        description: "Adds calculations for weapon properties, a new glossary, and bug fixes.",
+        changes: [
+            "Add calculations for weapon damage falloff, reload, handling, and total ammo.",
+            "Glossary revamp with section for each perk + enhanced pair along with perk icon.",
+            "Added support for multiple screen sizes - sidebar now collapses and weapon viewer becomes single-column at low widths.",
+            "Fix not being able to toggle selected perks to enhanced.",
+        ],
+    },
+    {
         version: "1.3.0",
         date: "2023-02-22",
         title: "Perk Filters + Other Filter Improvements",
