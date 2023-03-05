@@ -3,11 +3,8 @@ import type { LookupMap, WeaponCategoryRegex, IWeaponRangeValues, IWeaponReloadV
 import { DataSearchStrings } from "../services";
 
 /** Values from: https://github.com/oh-yes-0-fps/D2_Calculation_API */ 
-// TODO: numbers for exotics are different, like vex that acts as an auto rifle
-// TODO: override values, like for specific exotics or for archetypes
 export const WeaponCategoryRangeValuesMap = computed<LookupMap<WeaponCategoryRegex, IWeaponRangeValues>>(() => {
     return {
-        // TODO: some weapons have a "zoom scalar" that is added to the base zoom?
         [DataSearchStrings.WeaponCategoryRegex.AutoRifle]: {
             baseFalloffStart: 11.75,
             falloffEnd: 41.0,
@@ -22,7 +19,6 @@ export const WeaponCategoryRangeValuesMap = computed<LookupMap<WeaponCategoryReg
             hipFireEndPerStat: 0.318,
         } as IWeaponRangeValues,
 
-        // TODO: 120 rpm hand cannons are different
         [DataSearchStrings.WeaponCategoryRegex.HandCannon]: {
             baseFalloffStart: 16.83,
             falloffEnd: 29.67,
@@ -37,7 +33,6 @@ export const WeaponCategoryRangeValuesMap = computed<LookupMap<WeaponCategoryReg
             hipFireEndPerStat: 0,
         } as IWeaponRangeValues,
 
-        // TODO: pulse rifles are all over the place in zoom/"modified zoom multiplier"
         [DataSearchStrings.WeaponCategoryRegex.PulseRifle]: {
             baseFalloffStart: 16.329,
             falloffEnd: 40.4,
@@ -45,7 +40,6 @@ export const WeaponCategoryRangeValuesMap = computed<LookupMap<WeaponCategoryReg
             hipFireEndPerStat: 0,
         } as IWeaponRangeValues,
 
-        // TODO: aggressive scouts (120rpm) are different
         [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: {
             baseFalloffStart: 30.25,
             falloffEnd: 60.75,
@@ -53,7 +47,6 @@ export const WeaponCategoryRangeValuesMap = computed<LookupMap<WeaponCategoryReg
             hipFireEndPerStat: 0,
         } as IWeaponRangeValues,
 
-        // TODO: slugs are different
         [DataSearchStrings.WeaponCategoryRegex.Shotgun]: {
             baseFalloffStart: 3.77,
             falloffEnd: 14.5,
@@ -109,7 +102,7 @@ export const WeaponCategoryReloadValuesMap = computed<LookupMap<WeaponCategoryRe
             ammoTime: 0,
         } as IWeaponReloadValues,
 
-        // TODO: these are heavy number, also need numbers for special
+        // Note: these are for heavy GLs (other than Rapid-Fire frames).
         [DataSearchStrings.WeaponCategoryRegex.GrenadeLauncher]: {
             a: 0.0000755233,
             b: -0.0248947,
@@ -230,7 +223,6 @@ export const WeaponCategoryHandlingValuesMap = computed<LookupMap<WeaponCategory
             ads: { valuePerPoint: -0.001855658199, offset: 0.5293778291 },
         } as IWeaponHandlingValues,
 
-        // TODO: only Vex Mythoclast is different.
         // Note: Same across all archetypes.
         [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: {
             ready: { valuePerPoint: -0.001448069241, offset: 0.4990612517 },
@@ -308,7 +300,6 @@ export const WeaponCategoryHandlingValuesMap = computed<LookupMap<WeaponCategory
             ads: { valuePerPoint: -0.00194998437, offset: 0.5021325414 },
         } as IWeaponHandlingValues,
 
-        // TODO: striga is different
         [DataSearchStrings.WeaponCategoryRegex.SubmachineGun]: {
             ready: { valuePerPoint: -0.002376970528, offset: 0.4710178204 },
             stow: { valuePerPoint: -0.002547978067, offset: 0.4481295408 },
@@ -338,10 +329,6 @@ export const WeaponCategoryHandlingValuesMap = computed<LookupMap<WeaponCategory
     };
 });
 
-// TODO: overrides - exotics and archetypes
-// TODO: small MGs (high rpm? idk) have calculates reserves, large MGs are constants (at this time, anyway)
-// TODO: levi breath, small GLs (again, prob rpm?), large GLs, special GLs, large MGs, and lord of wolves are constants
-// TODO: xeno, overture, forerunner, eriana's are calculated
 export const WeaponCategoryAmmoSizeValuesMap = computed<LookupMap<WeaponCategoryRegex, IWeaponAmmoSizeValues>>(() => {
     return {
         [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: {
@@ -468,64 +455,80 @@ const SpecialGrenadeLauncherOverrides: IWeaponFormulaOverrides = {
     },
 };
 
-export const WeaponCategoryValuesArchetypeOverrideMap = computed<LookupMap<ItemHash, IWeaponFormulaOverrides>>(() => {
-    const map: LookupMap<ItemHash, IWeaponFormulaOverrides> = {
+export const WeaponCategoryValuesArchetypeOverrideMap = computed<LookupMap<WeaponCategoryRegex, LookupMap<ItemHash, IWeaponFormulaOverrides>>>(() => {
+    const map: LookupMap<WeaponCategoryRegex, LookupMap<ItemHash, IWeaponFormulaOverrides>> = {
         // Special GLs
-        // Wave frames
-        1395789926: SpecialGrenadeLauncherOverrides,
-        // Lightweight
-        474269988: SpecialGrenadeLauncherOverrides,
-        // Double-fire
-        1759472859: SpecialGrenadeLauncherOverrides,
+        [DataSearchStrings.WeaponCategoryRegex.GrenadeLauncher]: {
+            // Wave frames
+            1395789926: SpecialGrenadeLauncherOverrides,
+            // Lightweight
+            474269988: SpecialGrenadeLauncherOverrides,
+            // Double-fire
+            1759472859: SpecialGrenadeLauncherOverrides,
         
-        // Heavy GLs
-        // Rapid-fire
-        2353477480: {
-            ammo: {
-                mag: { a: 0, b: 0, c: 0 },
-                reservesCalc: () => 20,
+            // Heavy GLs
+            // Rapid-fire
+            2353477480: {
+                ammo: {
+                    mag: { a: 0, b: 0, c: 0 },
+                    reservesCalc: () => 20,
+                },
             },
-        },
-        // Adaptive
-        1294026524: {
-            ammo: {
-                mag: { a: 0, b: 0, c: 0 },
-                reservesCalc: () => 18,
+            // Adaptive
+            1294026524: {
+                ammo: {
+                    mag: { a: 0, b: 0, c: 0 },
+                    reservesCalc: () => 18,
+                },
             },
-        },
-
-        // 120 RPM Hand Cannons
-        2757685314: {
-            range: {
-                baseFalloffStart: 18.65,
-                falloffEnd: 32.8,
-                hipFireStartPerStat: 0.102,
-                hipFireEndPerStat: 0.0205,
+            2571259936: {
+                ammo: {
+                    mag: { a: 0, b: 0, c: 0 },
+                    reservesCalc: () => 18,
+                },
             },
         },
 
-        // MGs
-        // Rapid-Fire
-        878286503: {
-            ammo: {
-                mag: { a: 0, b: 0, c: 0 },
-                reservesCalc: () => 400,
+        [DataSearchStrings.WeaponCategoryRegex.HandCannon]: {
+            // 120 RPM Hand Cannons
+            2757685314: {
+                range: {
+                    baseFalloffStart: 18.65,
+                    falloffEnd: 32.8,
+                    hipFireStartPerStat: 0.102,
+                    hipFireEndPerStat: 0.0205,
+                },
             },
         },
 
-        // Aggressive frame scouts (120 RPM)
-        3468089894: {
-            // 120 RPMs don't really have a reload that makes sense, since they reload 2 bullets at a time.
-            reload: { a: 0, b: 0, c: 0, ammoTime: 0, },
+        [DataSearchStrings.WeaponCategoryRegex.MachineGun]: {
+            // MGs
+            // Rapid-Fire
+            878286503: {
+                ammo: {
+                    mag: { a: 0, b: 0, c: 0 },
+                    reservesCalc: () => 400,
+                },
+            },
         },
 
-        // Slug shotguns
-        918679156: {
-            range: {
-                baseFalloffStart: 5.77,
-                falloffEnd: 12.75,
-                hipFireStartPerStat: 0.0295,
-                hipFireEndPerStat: 0,
+        [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: {
+            // Aggressive frame scouts (120 RPM)
+            3468089894: {
+                // 120 RPMs don't really have a reload that makes sense, since they reload 2 bullets at a time.
+                reload: { a: 0, b: 0, c: 0, ammoTime: 0, },
+            },
+        },
+
+        [DataSearchStrings.WeaponCategoryRegex.Shotgun]: {
+            // Slug shotguns
+            918679156: {
+                range: {
+                    baseFalloffStart: 5.77,
+                    falloffEnd: 12.75,
+                    hipFireStartPerStat: 0.0295,
+                    hipFireEndPerStat: 0,
+                },
             },
         },
     };

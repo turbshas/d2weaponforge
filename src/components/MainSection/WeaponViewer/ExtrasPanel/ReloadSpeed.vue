@@ -16,9 +16,14 @@ const weapon = computed(() => props.selectedGear.weapon.value);
 const weaponHash = computed(() => weapon.value ? weapon.value.hash : 0);
 const archetypeHash = computed(() => weapon.value && weapon.value.archetype ? weapon.value.archetype.intrinsicPerkHash : 0);
 
-const overrideValues = computed(() =>
-    WeaponCategoryValuesExoticOverrideMap.value[weaponHash.value]
-    || WeaponCategoryValuesArchetypeOverrideMap.value[archetypeHash.value]);
+const exoticOverride = computed(() => WeaponCategoryValuesExoticOverrideMap.value[weaponHash.value]);
+const archetypeOverride = computed(() => {
+    if (!weapon.value) return undefined;
+    const regex = weapon.value.weaponCategoryRegex;
+    const archetypeMap = WeaponCategoryValuesArchetypeOverrideMap.value[regex];
+    return archetypeMap && archetypeMap[archetypeHash.value];
+});
+const overrideValues = computed(() => exoticOverride.value || archetypeOverride.value);
 
 const baseReloadValues = computed(() => weapon.value ? WeaponCategoryReloadValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
 const overrideReloadValues = computed(() => overrideValues.value?.reload);

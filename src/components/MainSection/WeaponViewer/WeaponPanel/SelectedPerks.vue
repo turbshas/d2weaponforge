@@ -27,23 +27,25 @@ const perk2Crafting = computed(() => props.selectedPerks[2]?.perkOption.crafting
 
 const perk3Normal = computed(() => destinyDataService.getPerkDefinition(props.selectedPerks[3]?.perkOption.perk));
 const perk3Enhanced = computed(() => destinyDataService.getEnhancedPerkDefinition(props.selectedPerks[3]?.perkOption.enhancedPerk));
+const perk3CanBeEnhanced = computed(() => !!props.selectedPerks[3] && !!props.selectedPerks[3].perkOption.enhancedPerk);
 const isPerk3Enhanced = computed(() => !!props.selectedPerks[3] && !!props.selectedPerks[3].perkOption.enhancedPerk && props.selectedPerks[3].useEnhanced);
 const perk3 = computed(() => isPerk3Enhanced.value ? perk3Enhanced.value : perk3Normal.value);
 const perk3Crafting = computed(() => props.selectedPerks[3]?.perkOption.craftingInfo);
 
 const perk4Normal = computed(() => destinyDataService.getPerkDefinition(props.selectedPerks[4]?.perkOption.perk));
 const perk4Enhanced = computed(() => destinyDataService.getEnhancedPerkDefinition(props.selectedPerks[4]?.perkOption.enhancedPerk));
+const perk4CanBeEnhanced = computed(() => !!props.selectedPerks[4] && !!props.selectedPerks[4].perkOption.enhancedPerk);
 const isPerk4Enhanced = computed(() => !!props.selectedPerks[4] && !!props.selectedPerks[4].perkOption.enhancedPerk && props.selectedPerks[4].useEnhanced);
 const perk4 = computed(() => isPerk4Enhanced.value ? perk4Enhanced.value : perk4Normal.value);
 const perk4Crafting = computed(() => props.selectedPerks[4]?.perkOption.craftingInfo);
 
 function onPerk3Clicked() {
-    if (!props.selectedPerks[3]) return;
+    if (!props.selectedPerks[3] || !perk3CanBeEnhanced.value) return;
     props.selectedPerks[3].useEnhanced = !props.selectedPerks[3].useEnhanced;
 }
 
 function onPerk4Clicked() {
-    if (!props.selectedPerks[4]) return;
+    if (!props.selectedPerks[4] || !perk4CanBeEnhanced.value) return;
     props.selectedPerks[4].useEnhanced = !props.selectedPerks[4].useEnhanced;
 }
 </script>
