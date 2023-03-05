@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
+import ExtrasListItem from '@/components/Common/ExtrasListItem.vue';
 import { WeaponCategoryAmmoSizeValuesMap } from '@/data/curatedData/WeaponFormulas';
 import type { ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
@@ -37,28 +39,19 @@ const rawMagSize = computed(() => {
     return (a * magStat * magStat) + (b * magStat) + c;
 });
 
-// TODO: from perks e.g. reservoir burst
-const magSizeMultiplier = computed(() => 1);
-const magSizeAdder = computed(() => 0);
-
-const magSize = computed(() => {
-    const adjustedRaw = Math.ceil(rawMagSize.value);
-    const modified = (adjustedRaw * magSizeMultiplier.value) + magSizeAdder.value;
-    const size = Math.ceil(modified);
-    return Math.max(1, size);
-});
-
 const reservesSize = computed(() => {
     if (!ammoSizeValues.value) return 0;
     const reservesCalc = ammoSizeValues.value.reservesCalc;
     return reservesCalc(rawMagSize.value, magSizeStat.value, inventorySizeStat.value);
 });
+
+const reservesText = computed(() => `${reservesSize.value}`);
 </script>
 
 <template>
-    <div>
-        Reserves: {{ reservesSize }}
-    </div>
+    <ExtrasListItem label="Reserves" v-if="reservesSize > 0">
+        <CalculationDisplay :text="reservesText"></CalculationDisplay>
+    </ExtrasListItem>
 </template>
 
 <style scoped>

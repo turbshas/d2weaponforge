@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
+import ExtrasListItem from '@/components/Common/ExtrasListItem.vue';
 import { WeaponCategoryHandlingValuesMap } from '@/data/curatedData/WeaponFormulas';
 import type { ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
@@ -47,18 +49,26 @@ const stowSpeed = computed(() => {
 const roundedReadySpeed = computed(() => Math.round(readySpeed.value * 100) / 100);
 const roundedAdsSpeed = computed(() => Math.round(adsSpeed.value * 100) / 100);
 const roundedStowSpeed = computed(() => Math.round(stowSpeed.value * 100) / 100);
-const showReadySpeed = computed(() => readySpeed.value > 0);
-const showAdsSpeed = computed(() => adsSpeed.value > 0);
-const showStowSpeed = computed(() => stowSpeed.value > 0);
+
+const showReadySpeed = computed(() =>  showHandlingTime.value && readySpeed.value > 0);
+const showAdsSpeed = computed(() => showHandlingTime.value && adsSpeed.value > 0);
+const showStowSpeed = computed(() => showHandlingTime.value && stowSpeed.value > 0);
+const readyText = computed(() => `${roundedReadySpeed.value} s`);
+const adsText = computed(() => `${roundedAdsSpeed.value} s`);
+const stowText = computed(() => `${roundedStowSpeed.value} s`);
 </script>
 
 <template>
-    <div>
-        Ready: {{ roundedReadySpeed }}
-        ADS: {{ roundedAdsSpeed }}
-        Stow: {{ roundedStowSpeed }}
-    </div>
+    <ExtrasListItem label="Ready Speed" v-if="showReadySpeed">
+        <CalculationDisplay :text="readyText"></CalculationDisplay>
+    </ExtrasListItem>
+    <ExtrasListItem label="ADS Speed" v-if="showAdsSpeed">
+        <CalculationDisplay :text="adsText"></CalculationDisplay>
+    </ExtrasListItem>
+    <ExtrasListItem label="Stow Speed" v-if="showStowSpeed">
+        <CalculationDisplay :text="stowText"></CalculationDisplay>
+    </ExtrasListItem>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 </style>

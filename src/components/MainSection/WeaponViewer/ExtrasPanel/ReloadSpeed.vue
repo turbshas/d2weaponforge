@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
+import ExtrasListItem from '@/components/Common/ExtrasListItem.vue';
 import { WeaponCategoryReloadValuesMap } from '@/data/curatedData/WeaponFormulas';
 import type { ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
@@ -36,13 +38,18 @@ const showReloadSpeed = computed(() => reloadSpeed.value > 0);
 const ammoTime = computed(() => reloadSpeed.value * ammoTimeMultiplier.value);
 const roundedAmmoTime = computed(() => Math.round(ammoTime.value * 100) / 100);
 const showAmmoTime = computed(() => ammoTime.value > 0);
+
+const reloadSpeedText = computed(() => `${roundedReloadSpeed.value} s`);
+const ammoTimeText = computed(() => `${roundedAmmoTime.value} s`);
 </script>
 
 <template>
-    <div>
-        Reload: {{ roundedReloadSpeed }}
-        Ammo Time: {{ roundedAmmoTime }}
-    </div>
+    <ExtrasListItem label="Reload" v-if="showReloadSpeed">
+        <CalculationDisplay :text="reloadSpeedText"></CalculationDisplay>
+    </ExtrasListItem>
+    <ExtrasListItem label="Ammo Time" v-if="showAmmoTime">
+        <CalculationDisplay :text="ammoTimeText"></CalculationDisplay>
+    </ExtrasListItem>
 </template>
 
 <style scoped>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
 import { WeaponCategoryRangeValuesMap } from '@/data/curatedData/WeaponFormulas';
 import type { ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
@@ -68,7 +69,7 @@ const text = computed(() => {
 
 <template>
     <ExtrasListItem label="Damage Falloff" v-if="hasRangeValues">
-        <span>{{ text }}</span>
+        <CalculationDisplay :text="text"></CalculationDisplay>
     </ExtrasListItem>
 </template>
 
