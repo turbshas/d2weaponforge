@@ -121,6 +121,7 @@ function onPerkClick() {
             :description="perkDescription"
             :effect="tooltipEffects"
             :bonuses="tooltipBonuses"
+            :enhanced="props.enhanced"
             :enhanced-description="enhancedDescription"
             :enhanced-effects="tooltipEnhancedEffects"
             :enhanced-bonuses="tooltipEnhancedBonus"

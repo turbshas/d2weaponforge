@@ -9,6 +9,7 @@ TBD
 * Fixed selected perks section doubling in size after changing weapons.
 * Added support for multiple screen sizes - sidebar now collapses and weapon viewer becomes single-column at low widths.
 * Fix the wrong panel being shown sometimes on narrow screens.
+* Fix not being able to toggle selected perks to enhanced.
 
 ## **Perk Filters + Other Filter Improvements** [ *1.3.0* ] 2023-02-22
 Filtering by perks on a weapon is now implemented along with some other filter improvements and bug fixes.

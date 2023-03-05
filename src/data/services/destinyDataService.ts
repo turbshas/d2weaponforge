@@ -57,7 +57,8 @@ export class DestinyDataService {
         return `https://www.bungie.net${imgFileName}`;
     }
 
-    public getWeapon = (hash: number): IWeapon | undefined => {
+    public getWeapon = (hash: ItemHash | undefined): IWeapon | undefined => {
+        if (!hash) return undefined;
         return this.gameData?.weapons.find(w => w.hash === hash);
     }
 
@@ -66,19 +67,23 @@ export class DestinyDataService {
         return !season || season.seasonNumber <= 9;
     }
 
-    public getPerkDefinition = (perkHash: ItemHash) => {
+    public getPerkDefinition = (perkHash: ItemHash | undefined) => {
+        if (!perkHash) return undefined;
         return this.gameData?.perkLookup.normal[perkHash];
     }
 
-    public getEnhancedPerkDefinition = (perkHash: ItemHash) => {
+    public getEnhancedPerkDefinition = (perkHash: ItemHash | undefined) => {
+        if (!perkHash) return undefined;
         return this.gameData?.perkLookup.enhanced[perkHash];
     }
 
-    public getMasterworkDefinition = (mwHash: ItemHash) => {
+    public getMasterworkDefinition = (mwHash: ItemHash | undefined) => {
+        if (!mwHash) return undefined;
         return this.gameData?.masterworkLookup[mwHash];
     }
 
-    public getModDefinition = (modHash: ItemHash) => {
+    public getModDefinition = (modHash: ItemHash | undefined) => {
+        if (!modHash) return undefined;
         return this.gameData?.modLookup[modHash];
     }
 
