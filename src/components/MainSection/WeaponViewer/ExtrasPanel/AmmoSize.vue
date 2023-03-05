@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
 import ExtrasListItem from '@/components/Common/ExtrasListItem.vue';
-import { WeaponCategoryAmmoSizeValuesMap } from '@/data/curatedData/WeaponFormulas';
+import { WeaponCategoryAmmoSizeValuesMap, WeaponCategoryValuesArchetypeOverrideMap, WeaponCategoryValuesExoticOverrideMap } from '@/data/curatedData/WeaponFormulas';
 import type { ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
 import { computed } from 'vue';
@@ -14,8 +14,17 @@ const MagSizeStatIndex = DataSearchStrings.StatIndices.MagSize;
 const InventorySizeStatIndex = DataSearchStrings.StatIndices.InventorySize;
 
 const weapon = computed(() => props.selectedGear.weapon.value);
+const weaponHash = computed(() => weapon.value ? weapon.value.hash : 0);
+const archetypeHash = computed(() => weapon.value && weapon.value.archetype ? weapon.value.archetype.intrinsicPerkHash : 0);
 
-const ammoSizeValues = computed(() => weapon.value ? WeaponCategoryAmmoSizeValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
+const overrideValues = computed(() =>
+    WeaponCategoryValuesExoticOverrideMap.value[weaponHash.value]
+    || WeaponCategoryValuesArchetypeOverrideMap.value[archetypeHash.value]);
+
+const baseAmmoValues = computed(() => weapon.value ? WeaponCategoryAmmoSizeValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
+const overrideAmmoValues = computed(() => overrideValues.value?.ammo);
+
+const ammoSizeValues = computed(() => overrideAmmoValues.value || baseAmmoValues.value);
 
 const allStats = computed(() => props.selectedGear.modifiedWeaponStats.value);
 // TODO: this value might be display stat e.g. actual number of bullets. I think I need investment stat value
@@ -49,7 +58,7 @@ const reservesText = computed(() => `${reservesSize.value}`);
 </script>
 
 <template>
-    <ExtrasListItem label="Reserves" v-if="reservesSize > 0">
+    <ExtrasListItem label="Ammo" v-if="reservesSize > 0">
         <CalculationDisplay :text="reservesText"></CalculationDisplay>
     </ExtrasListItem>
 </template>

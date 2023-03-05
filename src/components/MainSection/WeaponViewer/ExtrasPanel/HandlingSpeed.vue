@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
 import ExtrasListItem from '@/components/Common/ExtrasListItem.vue';
-import { WeaponCategoryHandlingValuesMap } from '@/data/curatedData/WeaponFormulas';
+import { WeaponCategoryHandlingValuesMap, WeaponCategoryValuesArchetypeOverrideMap, WeaponCategoryValuesExoticOverrideMap } from '@/data/curatedData/WeaponFormulas';
 import type { ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
 import { computed } from 'vue';
@@ -13,8 +13,17 @@ const props = defineProps<{
 const HandlingStatIndex = DataSearchStrings.StatIndices.Handling;
 
 const weapon = computed(() => props.selectedGear.weapon.value);
+const weaponHash = computed(() => weapon.value ? weapon.value.hash : 0);
+const archetypeHash = computed(() => weapon.value && weapon.value.archetype ? weapon.value.archetype.intrinsicPerkHash : 0);
 
-const handlingValues = computed(() => weapon.value ? WeaponCategoryHandlingValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
+const overrideValues = computed(() =>
+    WeaponCategoryValuesExoticOverrideMap.value[weaponHash.value]
+    || WeaponCategoryValuesArchetypeOverrideMap.value[archetypeHash.value]);
+
+const baseHandlingValues = computed(() => weapon.value ? WeaponCategoryHandlingValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
+const overrideHandlingValues = computed(() => overrideValues.value?.handling);
+
+const handlingValues = computed(() => overrideHandlingValues.value || baseHandlingValues.value);
 
 const showHandlingTime = computed(() => !!handlingValues.value);
 

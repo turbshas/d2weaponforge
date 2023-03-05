@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
 import ExtrasListItem from '@/components/Common/ExtrasListItem.vue';
-import { WeaponCategoryReloadValuesMap } from '@/data/curatedData/WeaponFormulas';
+import { WeaponCategoryReloadValuesMap, WeaponCategoryValuesArchetypeOverrideMap, WeaponCategoryValuesExoticOverrideMap } from '@/data/curatedData/WeaponFormulas';
 import type { ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
 import { computed } from 'vue';
@@ -13,8 +13,17 @@ const props = defineProps<{
 const ReloadSpeedStatIndex = DataSearchStrings.StatIndices.ReloadSpeed;
 
 const weapon = computed(() => props.selectedGear.weapon.value);
+const weaponHash = computed(() => weapon.value ? weapon.value.hash : 0);
+const archetypeHash = computed(() => weapon.value && weapon.value.archetype ? weapon.value.archetype.intrinsicPerkHash : 0);
 
-const reloadSpeedValues = computed(() => weapon.value ? WeaponCategoryReloadValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
+const overrideValues = computed(() =>
+    WeaponCategoryValuesExoticOverrideMap.value[weaponHash.value]
+    || WeaponCategoryValuesArchetypeOverrideMap.value[archetypeHash.value]);
+
+const baseReloadValues = computed(() => weapon.value ? WeaponCategoryReloadValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
+const overrideReloadValues = computed(() => overrideValues.value?.reload);
+
+const reloadSpeedValues = computed(() => overrideReloadValues.value || baseReloadValues.value);
 
 const allStats = computed(() => props.selectedGear.modifiedWeaponDisplayStats.value);
 const reloadStat = computed(() => {

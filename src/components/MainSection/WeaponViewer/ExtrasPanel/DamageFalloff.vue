@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
-import { WeaponCategoryRangeValuesMap } from '@/data/curatedData/WeaponFormulas';
+import { WeaponCategoryRangeValuesMap, WeaponCategoryValuesArchetypeOverrideMap, WeaponCategoryValuesExoticOverrideMap } from '@/data/curatedData/WeaponFormulas';
 import type { ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
 import { computed } from 'vue';
@@ -16,10 +16,20 @@ const RangeStatIndex = DataSearchStrings.StatIndices.Range;
 const ZoomStatIndex = DataSearchStrings.StatIndices.Zoom;
 
 const weapon = computed(() => props.selectedGear.weapon.value ? props.selectedGear.weapon.value : undefined);
+const weaponHash = computed(() => weapon.value ? weapon.value.hash : 0);
+const archetypeHash = computed(() => weapon.value && weapon.value.archetype ? weapon.value.archetype.intrinsicPerkHash : 0);
+
+const overrideValues = computed(() =>
+    WeaponCategoryValuesExoticOverrideMap.value[weaponHash.value]
+    || WeaponCategoryValuesArchetypeOverrideMap.value[archetypeHash.value]);
+
+const baseRangeValues = computed(() => weapon.value ? WeaponCategoryRangeValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
+const overrideRangeValues = computed(() => overrideValues.value?.range);
+
+const rangeValues = computed(() => overrideRangeValues.value || baseRangeValues.value);
 
 const RangefinderPerkHash = computed(() => DataSearchStrings.Misc.RangefinderPerkHash);
 const weaponCategoryRegex = computed(() => weapon.value ? weapon.value.weaponCategoryRegex : "");
-const rangeValues = computed(() => weaponCategoryRegex.value ? WeaponCategoryRangeValuesMap.value[weaponCategoryRegex.value] : undefined);
 const hasRangeValues = computed(() => !!rangeValues.value);
 
 const allStats = computed(() => props.selectedGear.modifiedWeaponDisplayStats.value);

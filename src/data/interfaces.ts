@@ -404,7 +404,7 @@ export interface IWeaponAmmoSizeValues {
     reservesCalc: (rawMagSize: number, magStat: number, inventorySizeStat: number) => number;
 }
 
-export interface IWeaponFormulaOverride {
+export interface IWeaponFormulaOverrides {
     range?: IWeaponRangeValues;
     reload?: IWeaponReloadValues;
     handling?: IWeaponHandlingValues;

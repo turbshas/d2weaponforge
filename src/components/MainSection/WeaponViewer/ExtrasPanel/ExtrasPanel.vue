@@ -3,14 +3,17 @@ import OptionButton from '@/components/Common/OptionButton.vue';
 import type { ISelectedGear } from '@/data/interfaces';
 import { selectionService } from '@/data/services';
 import { computed } from '@vue/reactivity';
+import { defineAsyncComponent } from 'vue';
 import BuilderSection from '../../../Common/BuilderSection.vue';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
 import AddToComparisons from './AddToComparisons.vue';
-import AmmoSize from './AmmoSize.vue';
-import DamageFalloff from './DamageFalloff.vue';
 import DimWishlist from './DimWishlist.vue';
-import HandlingSpeed from './HandlingSpeed.vue';
-import ReloadSpeed from './ReloadSpeed.vue';
+
+// Async because they load the weapon formulas which is a lot of data.
+const DamageFalloff = defineAsyncComponent(() => import("./DamageFalloff.vue"));
+const ReloadSpeed = defineAsyncComponent(() => import("./ReloadSpeed.vue"));
+const HandlingSpeed = defineAsyncComponent(() => import("./HandlingSpeed.vue"));
+const AmmoSize = defineAsyncComponent(() => import("./AmmoSize.vue"));
 
 const props = defineProps<{
     selectedGear: ISelectedGear,

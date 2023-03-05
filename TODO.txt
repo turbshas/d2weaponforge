@@ -40,6 +40,7 @@ compare section:
 Unsure about order:
 - "calculations" panel for damage falloff/handling/reload/reserves/etc.
   - make extras panel -> options panel and split out the calculations
+  - implement dps/ttk calculations
 - Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar?
 - ordering weapons by release date to the API (might have to be manual)
   - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow

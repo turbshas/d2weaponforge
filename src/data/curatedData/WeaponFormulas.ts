@@ -1,5 +1,5 @@
 import { computed } from "vue";
-import type { LookupMap, WeaponCategoryRegex, IWeaponRangeValues, IWeaponReloadValues, IWeaponHandlingValues, IWeaponAmmoSizeValues } from "../interfaces";
+import type { LookupMap, WeaponCategoryRegex, IWeaponRangeValues, IWeaponReloadValues, IWeaponHandlingValues, IWeaponAmmoSizeValues, IWeaponFormulaOverrides, ItemHash } from "../interfaces";
 import { DataSearchStrings } from "../services";
 
 /** Values from: https://github.com/oh-yes-0-fps/D2_Calculation_API */ 
@@ -340,10 +340,15 @@ export const WeaponCategoryHandlingValuesMap = computed<LookupMap<WeaponCategory
 
 // TODO: overrides - exotics and archetypes
 // TODO: small MGs (high rpm? idk) have calculates reserves, large MGs are constants (at this time, anyway)
-// TODO: levi breath, fusions, small GLs (again, prob rpm?), large GLs, special GLs, linear fusions, large MGs, and lord of wolves are constants
+// TODO: levi breath, small GLs (again, prob rpm?), large GLs, special GLs, large MGs, and lord of wolves are constants
 // TODO: xeno, overture, forerunner, eriana's are calculated
 export const WeaponCategoryAmmoSizeValuesMap = computed<LookupMap<WeaponCategoryRegex, IWeaponAmmoSizeValues>>(() => {
     return {
+        [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: {
+            mag: { a: 0, b: 0, c: 0 },
+            reservesCalc: (_rawMagSize, _magStat, _inventorySizeStat) => 21,
+        } as IWeaponAmmoSizeValues,
+
         // Note: Same across all archetypes.
         [DataSearchStrings.WeaponCategoryRegex.Glaive]: {
             mag: {
@@ -358,6 +363,11 @@ export const WeaponCategoryAmmoSizeValuesMap = computed<LookupMap<WeaponCategory
                 const reserves = (valuePerPoint * inventorySizeStat) + offset;
                 return Math.ceil(reserves);
             },
+        } as IWeaponAmmoSizeValues,
+
+        [DataSearchStrings.WeaponCategoryRegex.LinearFusion]: {
+            mag: { a: 0, b: 0, c: 0 },
+            reservesCalc: (_rawMagSize, _magStat, _inventorySizeStat) => 21,
         } as IWeaponAmmoSizeValues,
 
         // Note: This is for "small" MGs.
@@ -443,4 +453,322 @@ export const WeaponCategoryAmmoSizeValuesMap = computed<LookupMap<WeaponCategory
             },
         } as IWeaponAmmoSizeValues,
     };
+});
+
+const SpecialGrenadeLauncherOverrides: IWeaponFormulaOverrides = {
+    ammo: {
+        mag: { a: 0, b: 0, c: 0 },
+        reservesCalc: () => 21,
+    },
+    reload: {
+        a: 0.0000724199,
+        b: -0.0216432,
+        c: 3.24104606666667,
+        ammoTime: 0,
+    },
+};
+
+export const WeaponCategoryValuesArchetypeOverrideMap = computed<LookupMap<ItemHash, IWeaponFormulaOverrides>>(() => {
+    const map: LookupMap<ItemHash, IWeaponFormulaOverrides> = {
+        // Special GLs
+        // Wave frames
+        1395789926: SpecialGrenadeLauncherOverrides,
+        // Lightweight
+        474269988: SpecialGrenadeLauncherOverrides,
+        // Double-fire
+        1759472859: SpecialGrenadeLauncherOverrides,
+        
+        // Heavy GLs
+        // Rapid-fire
+        2353477480: {
+            ammo: {
+                mag: { a: 0, b: 0, c: 0 },
+                reservesCalc: () => 20,
+            },
+        },
+        // Adaptive
+        1294026524: {
+            ammo: {
+                mag: { a: 0, b: 0, c: 0 },
+                reservesCalc: () => 18,
+            },
+        },
+
+        // 120 RPM Hand Cannons
+        2757685314: {
+            range: {
+                baseFalloffStart: 18.65,
+                falloffEnd: 32.8,
+                hipFireStartPerStat: 0.102,
+                hipFireEndPerStat: 0.0205,
+            },
+        },
+
+        // MGs
+        // Rapid-Fire
+        878286503: {
+            ammo: {
+                mag: { a: 0, b: 0, c: 0 },
+                reservesCalc: () => 400,
+            },
+        },
+
+        // Aggressive frame scouts (120 RPM)
+        3468089894: {
+            // 120 RPMs don't really have a reload that makes sense, since they reload 2 bullets at a time.
+            reload: { a: 0, b: 0, c: 0, ammoTime: 0, },
+        },
+
+        // Slug shotguns
+        918679156: {
+            range: {
+                baseFalloffStart: 5.77,
+                falloffEnd: 12.75,
+                hipFireStartPerStat: 0.0295,
+                hipFireEndPerStat: 0,
+            },
+        },
+    };
+    return map;
+});
+
+const ExoticBowOverrides: IWeaponFormulaOverrides = {
+    reload: {
+        a: 0.00006152,
+        b: -0.00917,
+        c: 1.15,
+        ammoTime: 0,
+    },
+};
+
+export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash, IWeaponFormulaOverrides>>(() => {
+    const map: LookupMap<ItemHash, IWeaponFormulaOverrides> = {
+        // Cerberus
+        1541131350: {
+            // Cerberus doesn't really have a range that makes sense.
+            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0 },
+        },
+        // Hard Light
+        4124984448: {
+            range: {
+                baseFalloffStart: 11.75,
+                falloffEnd: 41,
+                hipFireStartPerStat: 0.09615,
+                hipFireEndPerStat: 0,
+            },
+        },
+        // Sweet Business
+        1345867570: {
+            ammo: {
+                mag: { a: 0, b: 0, c: 150, },
+                reservesCalc: () => 0,
+            },
+        },
+
+        // Wish-Ender
+        814876684: ExoticBowOverrides,
+        // Trinity Ghoul
+        814876685: ExoticBowOverrides,
+        // Le Monarque
+        3588934839: ExoticBowOverrides,
+        // Ticuu's Divination
+        3260753130: ExoticBowOverrides,
+        // Hierarchy of Needs
+        4174431791: ExoticBowOverrides,
+        // Leviathan's Breath
+        2591746970: {
+            ...ExoticBowOverrides,
+            ammo: {
+                mag: { a: 0, b: 0, c: 1, },
+                reservesCalc: () => 10, // TODO: is like... 15 with catalyst?
+            }
+        },
+        
+        // One Thousand Voices
+        2069224589: {
+            // Shots aren't affected by range.
+            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
+        },
+        // Telesto
+        2208405142: {
+            // Shots aren't affected by range.
+            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
+        },
+        // Jotunn
+        417164956: {
+            // Shots aren't affected by range.
+            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
+        },
+        // Vex Mythoclast
+        4289226715: {
+            // Is basically an auto rifle.
+            range: {
+                baseFalloffStart: 11.75,
+                falloffEnd: 41,
+                hipFireStartPerStat: 0.09615,
+                hipFireEndPerStat: 0,
+            },
+            reload: {
+                a: 0.0000855689,
+                b: -0.0242021,
+                c: 2.80673006666667,
+                ammoTime: 0,
+            },
+            handling: {
+                ready: { valuePerPoint: -0.00279338, offset: 0.51985381 },
+                stow: { valuePerPoint: -0.00268436, offset: 0.48414822 },
+                ads: { valuePerPoint: -0.001875, offset: 0.38975 },
+            },
+        },
+
+        // Anarchy
+        2376481550: {
+            ammo: {
+                mag: { a: 0, b: 0, c: 6, },
+                reservesCalc: () => 18,
+            },
+        },
+        // Parasite
+        2812324400: {
+            ammo: {
+                mag: { a: 0, b: 0, c: 1, },
+                reservesCalc: () => 9,
+            },
+        },
+
+        // Eriana's Vow
+        3524313097: {
+            range: {
+                baseFalloffStart: 38,
+                falloffEnd: 70,
+                hipFireStartPerStat: 0,
+                hipFireEndPerStat: 0,
+            },
+            ammo: {
+                mag: { a: 0, b: 0.1, c: 3.5, },
+                reservesCalc: (_rawMagSize, _magStat, inventorySizeStat) => {
+                    // Quadratic using inventory size.
+                    const reserves = -0.00126 * (inventorySizeStat * inventorySizeStat) + inventorySizeStat * 0.225 + 29.5;
+                    return Math.ceil(reserves);
+                },
+            },
+        },
+        // The Last Word
+        1364093401: {
+            range: {
+                baseFalloffStart: 19.3,
+                falloffEnd: 29.67,
+                hipFireStartPerStat: 0,
+                hipFireEndPerStat: 0,
+            },
+        },
+
+        // The Queenbreaker
+        // Arbalest
+        // Sleeper Simulant
+        // Lorentz Driver
+
+        // Xenophage
+        1395261499: {
+            // Not affected by range.
+            range: {
+                baseFalloffStart: 0,
+                falloffEnd: 0,
+                hipFireStartPerStat: 0,
+                hipFireEndPerStat: 0,
+            },
+            ammo: {
+                mag: { a: 0, b: 0, c: 13, },
+                reservesCalc: (_rawMagSize, _magStat, inventorySizeStat) => {
+                    // Quadratic based on inventory size.
+                    const reserves = 0.01 * (inventorySizeStat * inventorySizeStat) + inventorySizeStat * 0.56 + 25.91;
+                    return Math.ceil(reserves);
+                },
+            },
+        },
+        // Grand Overture
+        1763584999: {
+            // Not affected by range.
+            range: {
+                baseFalloffStart: 0,
+                falloffEnd: 0,
+                hipFireStartPerStat: 0,
+                hipFireEndPerStat: 0,
+            },
+            ammo: {
+                mag: { a: 0, b: 0, c: 20, },
+                reservesCalc: (_rawMagSize, _magStat, inventorySizeStat) => {
+                    // Quadratic based on inventory size.
+                    const reserves = 0.005 * (inventorySizeStat * inventorySizeStat) + inventorySizeStat * -0.4 + 67.375;
+                    return Math.ceil(reserves);
+                },
+            },
+        },
+        // Heir Apparent
+        2084878005: {
+            ammo: {
+                mag: { a: 0, b: 0.7, c: 45, },
+                reservesCalc: () => 400,
+            },
+        },
+
+        // Dead Man's Tale (same as 120 RPM scouts)
+        3468089894: {
+            // 120 RPMs don't really have a reload that makes sense, since they reload 2 bullets at a time.
+            reload: { a: 0, b: 0, c: 0, ammoTime: 0, },
+        },
+
+        // Lord of wolves
+        3413860063: {
+            // No data for LoW, and it works differently than other shotguns.
+            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
+            ammo: {
+                mag: { a: 0, b: 0, c: 0, },
+                reservesCalc: () => 120,
+            },
+        },
+        // Duality
+        3460576091: {
+            // No data for Duality, and it works differently than other shotguns.
+            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
+        },
+        // Tractor
+        3580904581: {
+            // No data for Tractor Cannon, and it works differently than other shotguns.
+            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
+        },
+
+        // Forerunner
+        2179048386: {
+            range: {
+                baseFalloffStart: 28.3,
+                falloffEnd: 43.2,
+                hipFireStartPerStat: 0,
+                hipFireEndPerStat: 0,
+            },
+            ammo: {
+                mag: { a: 0, b: 0, c: 12, },
+                reservesCalc: (_rawMagSize, _magStat, inventorySizeStat) => {
+                    const reserves = (inventorySizeStat * 0.325) + 53.45;
+                    return Math.ceil(reserves);
+                },
+            }
+        },
+
+        // Osteo Striga
+        46524085: {
+            range: {
+                baseFalloffStart: 9.0835,
+                falloffEnd: 28.11,
+                hipFireStartPerStat: 0.1247,
+                hipFireEndPerStat: 0,
+            },
+            handling: {
+                ready: { valuePerPoint: -0.199386, offset: 33.3015 },
+                stow: { valuePerPoint: -0.153306, offset: 28.8991 },
+                ads: { valuePerPoint: -0.001873200822, offset: 0.3581576422 },
+            },
+        },
+    };
+    return map;
 });
