@@ -18,6 +18,8 @@ const baseDisplayValue = computed(() => props.displayStat.baseStat);
 const displayedTotal = computed(() => props.displayStat.modifiedStat);
 
 const displayModifier = computed(() => displayedTotal.value - baseDisplayValue.value);
+const isBenefit = computed(() => props.displayStat.isBenefit);
+const hasChange = computed(() => displayModifier.value !== 0);
 
 const statDisplayType = computed(() => {
     if (!name.value || !props.displayStat.statDisplay) return StatDisplayType.Bar;
@@ -46,10 +48,10 @@ const statValueLabel = computed(() => `${name.value} Value`);
             <div class="number" v-else>
                 <span
                     class="text"
-                    :class="{ 'positive': displayModifier > 0, 'negative': displayModifier < 0, }"
+                    :class="{ 'positive': hasChange && isBenefit, 'negative': hasChange && !isBenefit, }"
                     :aria-label="statValueLabel"
                 >{{ displayedTotal }}</span>
-                <StatChangeArrow class="arrow" v-if="displayModifier !== 0" :down="displayModifier < 0"></StatChangeArrow>
+                <StatChangeArrow class="arrow" v-if="displayModifier !== 0" :down="!isBenefit"></StatChangeArrow>
 
                 <RecoilDirectionGraphic v-if="isAngleDisplayType" :stat-value="displayedTotal"></RecoilDirectionGraphic>
             </div>

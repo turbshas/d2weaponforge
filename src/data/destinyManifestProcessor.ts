@@ -215,14 +215,13 @@ export class DestinyManifestProcessor {
         for (const weapon of activeWeapons) {
             if (!weapon.archetype || (weapon.tierTypeIndex !== ItemTierIndex.Legendary)) continue;
             
-            // Exclude Drang/Mini-Tool unique intrinsics.
-            const weaponNameLower = weapon.name.toLocaleLowerCase();
-            if (weaponNameLower.includes(DataSearchStrings.Misc.DrangName.value.toLocaleLowerCase())
-                || weaponNameLower.includes(DataSearchStrings.Misc.MidaMiniToolName.value.toLocaleLowerCase())) continue;
-
             const weaponTypeTraitId = weapon.traitId;
             const archetypePerk = perkLookup.normal[weapon.archetype.intrinsicPerkHash];
             if (!archetypePerk) continue;
+            // Exclude Drang/Mini-Tool unique intrinsics.
+            if (archetypePerk.hash === DataSearchStrings.Misc.DrangIntrinsicHash
+                || archetypePerk.hash === DataSearchStrings.Misc.MidaMiniToolIntrinsicHash) continue;
+
             const archetypeName = archetypePerk.name;
 
             const weaponRpmStatHash = weapon.archetype.rpmStatHash;

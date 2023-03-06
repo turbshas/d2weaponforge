@@ -29,14 +29,16 @@ export class SelectedGear implements ISelectedGear {
             const perk4Bonus = this.perk4BonusesStatMap.value[s.statHash] || 0;
             const perk5Bonus = this.perk5BonusesStatMap.value[s.statHash] || 0;
             const bonusTotal = perk1Bonus + perk2Bonus + perk3Bonus + perk4Bonus + perk5Bonus;
+            const modifiedTotal = s.modifiedStat + bonusTotal;
 
             const statInfo: IModifiedStat = {
                 index: s.index,
                 statHash: s.statHash,
                 statDisplay: s.statDisplay,
                 statName: s.statName,
+                isBenefit: modifiedTotal > s.baseStat,
                 baseStat: s.baseStat,
-                modifiedStat: s.modifiedStat + bonusTotal,
+                modifiedStat: modifiedTotal,
             };
             return statInfo;
         });
@@ -51,6 +53,7 @@ export class SelectedGear implements ISelectedGear {
                 statHash: s.statHash,
                 statName: s.statName,
                 statDisplay: s.statDisplay,
+                isBenefit: s.isBenefit,
                 baseStat: baseDisplayValue,
                 modifiedStat: modifiedDisplayValue,
             };
@@ -123,6 +126,7 @@ export class SelectedGear implements ISelectedGear {
                 statHash: s.statHash,
                 statDisplay: s.statDisplay,
                 statName: s.statName,
+                isBenefit: masterworkModsBonus > 0,
                 baseStat: s.investmentValue,
                 modifiedStat: s.investmentValue + masterworkModsBonus,
             };

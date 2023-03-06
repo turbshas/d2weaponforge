@@ -222,6 +222,8 @@ export interface IModifiedStat {
     statHash: number;
     statName: string;
     statDisplay: DestinyStatDisplayDefinition | undefined;
+    /** Whether the stat modification was good or bad. */
+    isBenefit: boolean;
     baseStat: number;
     modifiedStat: number;
 }

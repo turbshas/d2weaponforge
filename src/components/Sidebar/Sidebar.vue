@@ -17,8 +17,8 @@ const emit = defineEmits<{
 const panelSelection = ref(SidebarPanelSelection.Default);
 const searchString = ref("");
 
-const appliedFilters = ref<IAppliedFilters>(emptyAppliedFilters());
-const selectedFilters = ref<ISelectedFilters>(emptySelectedFilters());
+const appliedFilters = ref<IAppliedFilters>(emptyAppliedFilters(false));
+const selectedFilters = ref<ISelectedFilters>(emptySelectedFilters(false));
 
 function onTabSelected(tab: PageSelection) {
     emit("tabSelected", tab);
@@ -42,15 +42,15 @@ function onFiltersApplied(newFilters: IAppliedFilters) {
 }
 
 function onFiltersCleared() {
-    appliedFilters.value = emptyAppliedFilters();
-    selectedFilters.value = emptySelectedFilters();
+    appliedFilters.value = emptyAppliedFilters(false);
+    selectedFilters.value = emptySelectedFilters(false);
 }
 
 function onSearchChanged(newSearchString: string) {
     searchString.value = newSearchString;
     // Clear filters - if the user is searching for a specific name they probably don't need them, and empty results may be confusing.
-    appliedFilters.value = emptyAppliedFilters();
-    selectedFilters.value = emptySelectedFilters();
+    appliedFilters.value = emptyAppliedFilters(appliedFilters.value.includeSunsetWeapons);
+    selectedFilters.value = emptySelectedFilters(appliedFilters.value.includeSunsetWeapons);
     // Always show weapon panel on search changes. Calling setPanelSelection will result in the panel toggling for every letter typed.
     panelSelection.value = SidebarPanelSelection.Weapons;
     emit("sidebarToggled", true);
@@ -72,9 +72,9 @@ function setPanelSelection(selection: SidebarPanelSelection) {
     }
 }
 
-function emptyAppliedFilters(): IAppliedFilters {
+function emptyAppliedFilters(includeSunsetValue: boolean): IAppliedFilters {
     return {
-        includeSunsetWeapons: false,
+        includeSunsetWeapons: includeSunsetValue,
         perkFilter: undefined,
         collectionsFilters: [],
         damageFilters: [],
@@ -84,9 +84,9 @@ function emptyAppliedFilters(): IAppliedFilters {
         perkNames: [],
     };
 }
-function emptySelectedFilters(): ISelectedFilters {
+function emptySelectedFilters(includeSunsetValue: boolean): ISelectedFilters {
     return {
-        includeSunset: false,
+        includeSunset: includeSunsetValue,
         selectedFiltersMap: {
             "Archetype": {},
             "Collections": {},

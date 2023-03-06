@@ -67,6 +67,7 @@ function defaultStatInfo(statHash: number): IModifiedStat {
         statHash: statHash,
         statName: "",
         statDisplay: undefined,
+        isBenefit: false,
         baseStat: 0,
         modifiedStat: 0,
     };

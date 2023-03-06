@@ -44,14 +44,8 @@ Unsure about order:
   - implement dps/ttk calculations
   - load weapon formulas into the indexed db, retrieve from destiny data service
 - Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar?
-- ordering weapons by release date to the API (might have to be manual)
-  - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
-  - I actually like the ordering as I have it now...
-  - maybe push that one braytech rwp weapon to the bottom?
 
 Bugs:
-- change drang/mida mini-tool intrinsic checks to use hashes
-- charge time reduction (good) is shown as red (bad)
 
 Filter features:
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
@@ -86,8 +80,6 @@ Research:
 - if possible, some feedback from the URL -> weapon list so that the weapon in the URL gets loaded first?
 - make use of inventory size stat
 - look into precision damage stat, maybe can include that?
-- look into weapon ready/stow stat?
-- look into ADS stat?
 - better solution for dealing with enums from bungie-api-ts and isolatedModules?
 - look into using getDestinyEntityDefinition and DestinyInventoryItemLiteDefinition to improve load times?
   - DestinyInventoryItemLiteDefinition doesn't have all the info we need, but is ~1/3 the uncompressed size as the normal table

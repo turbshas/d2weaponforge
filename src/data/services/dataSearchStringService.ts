@@ -99,9 +99,9 @@ class Misc {
     constructor(private readonly languageRef: Ref<DestinyManifestLanguage>) {}
 
     public Adept = computed(() => TranslationMap[this.languageRef.value].misc.adept);
-    public DrangName = computed(() => "Drang");
     public Harrowed = computed(() => TranslationMap[this.languageRef.value].misc.harrowed);
-    public MidaMiniToolName = computed(() => "Mini-Tool");
+    public get DrangIntrinsicHash() { return 1282254042; }
+    public get MidaMiniToolIntrinsicHash() { return 2213377102; }
     // public RangefinderPerkName = computed(() => TranslationMap[this.languageRef.value].misc.rangefinderPerk);
     public get RangefinderPerkHash() { return 2846385770 as ItemHash; }
     public Timelost = computed(() => TranslationMap[this.languageRef.value].misc.timelost);
