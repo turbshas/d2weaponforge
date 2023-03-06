@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryDefinition, DestinyItemSocketEntryPlugItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinySocketTypeDefinition, DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { ExcludedPerkPlugCategories } from "../constants";
-import { WeaponSocketCategoryHash, type IMasterwork, type IMod, type IPerkColumn, type IPerkGrid, type IPerkLookup, type IPerkOption, type IPerkPair, type ItemHash, type LookupMap } from "../interfaces";
+import { WeaponSocketCategoryHash, type IMasterwork, type IMod, type IPerkGrid, type IPerkLookup, type IPerkOption, type ItemHash, type LookupMap } from "../interfaces";
 import { DataSearchStrings } from "../services/dataSearchStringService";
 import type { ManifestAccessor } from "./manifestAccessor";
 import { PerkColumn } from "./perkColumn";
@@ -24,6 +24,7 @@ interface IResolvedSockets {
     mods: IResolvedPlugSet[];
     /** Includes only the main 4 + origin perk. */
     perks: IResolvedPlugSet[];
+    catalysts: IResolvedPlugSet[];
 }
 
 export class ResolvedWeaponSockets {
@@ -33,6 +34,7 @@ export class ResolvedWeaponSockets {
     public readonly masterworks: ItemHash[];
     public readonly mods: ItemHash[];
     public readonly adeptMods: ItemHash[];
+    public readonly catalysts: ItemHash[];
 
     constructor(
         weapon: DestinyInventoryItemDefinition,
@@ -46,6 +48,7 @@ export class ResolvedWeaponSockets {
         this.perks = this.getPerkOptionsFromResolvedSockets(resolvedSockets.perks);
         this.curated = this.getCuratedFromResolvedSockets(resolvedSockets.perks, this.perks);
         this.masterworks = this.getMasterworksFromResolvedSockets(resolvedSockets.masterworks, weapon);
+        this.catalysts = this.getCatalystsFromResolvedSockets(resolvedSockets.catalysts);
 
         this.adeptMods = this.getAdeptModsFromResolvedSockets(resolvedSockets.mods);
         const allMods = this.getModsFromResolvedSockets(resolvedSockets.mods);
@@ -80,15 +83,23 @@ export class ResolvedWeaponSockets {
             intrinsic: this.resolveWeaponSocketEntries(intrinsicSockets),
             masterworks: modsMasterworks.filter(s =>
                 s.socketType
-                && s.socketType.plugWhitelist.some(pw => pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlug))),
+                && s.socketType.plugWhitelist.some(pw =>
+                    pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlug)
+                )),
             mods: modsMasterworks.filter(s =>
                 s.socketType
                 && s.socketType.plugWhitelist.some(pw =>
                     pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponModGuns)
                     || pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponModDamage)
-                    || pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponModMagazine))),
+                    || pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponModMagazine)
+                )),
             perks: this.resolveWeaponSocketEntries(perkSockets)
                 .filter(s => s.socketType && s.socketType.plugWhitelist.every(pw => !ExcludedPerkPlugCategories.value.includes(pw.categoryIdentifier))),
+            catalysts: modsMasterworks.filter(s =>
+                s.socketType
+                && s.socketType.plugWhitelist.some(pw =>
+                    pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.ExoticMasterworkPlug)
+                )),
         };
 
         return resolvedSockets;
@@ -244,6 +255,12 @@ export class ResolvedWeaponSockets {
             // Swords can only have impact.
             return (isImpactMasterwork && isSword) || (!isImpactMasterwork && !isSword);
         }).map(mw => mw.hash);
+    }
+
+    private readonly getCatalystsFromResolvedSockets = (resolvedSockets: IResolvedPlugSet[]) => {
+        const catalyst = resolvedSockets.find(s => !!s);
+        if (!catalyst || !catalyst.socketReusableItems) return [];
+        return catalyst.socketReusableItems.map(i => i.plugItemHash);
     }
 
     private readonly getModsFromResolvedSockets = (resolvedSockets: IResolvedPlugSet[]) => {

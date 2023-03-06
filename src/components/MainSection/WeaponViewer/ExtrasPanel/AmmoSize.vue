@@ -54,7 +54,6 @@ const rawMagSize = computed(() => {
 });
 
 const reservesSize = computed(() => {
-    console.log("reserves", ammoSizeValues.value, baseAmmoValues.value, overrideAmmoValues.value);
     if (!ammoSizeValues.value) return 0;
     const reservesCalc = ammoSizeValues.value.reservesCalc;
     return reservesCalc(rawMagSize.value, magSizeStat.value, inventorySizeStat.value);

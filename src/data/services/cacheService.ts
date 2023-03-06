@@ -42,6 +42,7 @@ export class CacheService {
             this.getValueFromObjectStore<DestinyManifest>(objectStore, ManifestInfoKey),
 
             this.getGameDataPropertyFromObjectStore(objectStore, "collectionsLists"),
+            this.getGameDataPropertyFromObjectStore(objectStore, "catalystLookup"),
             this.getGameDataPropertyFromObjectStore(objectStore, "damageTypes"),
             this.getGameDataPropertyFromObjectStore(objectStore, "itemTierTypes"),
             this.getGameDataPropertyFromObjectStore(objectStore, "masterworkLookup"),
@@ -59,6 +60,7 @@ export class CacheService {
             manifestInfo,
 
             collectionsLists,
+            catalystLookup,
             damageTypes,
             itemTierTypes,
             masterworkLookup,
@@ -74,6 +76,7 @@ export class CacheService {
             || !language
             || !manifestInfo
             || !collectionsLists
+            || !catalystLookup
             || !damageTypes
             || !itemTierTypes
             || !masterworkLookup
@@ -88,6 +91,7 @@ export class CacheService {
 
         const gameData: Destiny2GameData = {
             collectionsLists: collectionsLists,
+            catalystLookup: catalystLookup,
             damageTypes: damageTypes,
             itemTierTypes: itemTierTypes,
             masterworkLookup: masterworkLookup,
@@ -116,6 +120,7 @@ export class CacheService {
             this.setValueInObjectStore(objectStore, cachedManifest.manifestInfo, ManifestInfoKey),
 
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.collectionsLists, "collectionsLists"),
+            this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.collectionsLists, "catalystLookup"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.damageTypes, "damageTypes"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.itemTierTypes, "itemTierTypes"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.masterworkLookup, "masterworkLookup"),

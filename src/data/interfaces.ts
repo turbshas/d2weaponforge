@@ -71,6 +71,41 @@ export enum ItemTierIndex {
     Exotic = 5,
 }
 
+/** Non-ambient copy of enum. */
+export enum SocketPlugSources {
+    /** If there's no way we can detect to insert new plugs. */
+    None = 0,
+    /**
+     * Use plugs found in the player's inventory, based on the socket type rules (see
+     * DestinySocketTypeDefinition for more info)
+     *
+     * Note that a socket - like Shaders - can have *both* reusable plugs and inventory
+     * items inserted theoretically.
+     */
+    InventorySourced = 1,
+    /**
+     * Use the DestinyItemSocketsComponent.sockets.reusablePlugs property to determine
+     * which plugs are valid for this socket. This may have to be combined with other
+     * sources, such as plug sets, if those flags are set.
+     *
+     * Note that "Reusable" plugs may not necessarily come from a plug set, nor from
+     * the "reusablePlugItems" in the socket's Definition data. They can sometimes be "
+     * randomized" in which case the only source of truth at the moment is still the
+     * runtime DestinyItemSocketsComponent.sockets.reusablePlugs property.
+     */
+    ReusablePlugItems = 2,
+    /**
+     * Use the ProfilePlugSets (DestinyProfileResponse.profilePlugSets) component data
+     * to determine which plugs are valid for this socket.
+     */
+    ProfilePlugSet = 4,
+    /**
+     * Use the CharacterPlugSets (DestinyProfileResponse.characterPlugSets) component
+     * data to determine which plugs are valid for this socket.
+     */
+    CharacterPlugSet = 8,
+}
+
 export enum ItemPerkVisibility {
     Visible = 0,
     Disabled = 1,
@@ -96,7 +131,8 @@ export type TraitId =
     | "weapon_type.sidearm"
     | "weapon_type.sniper_rifle"
     | "weapon_type.submachinegun"
-    | "weapon_type.sword";
+    | "weapon_type.sword"
+    | "item_type.exotic_catalyst";
 
 export type WeaponCategoryRegex =
     ".*_auto_rifle"
@@ -180,6 +216,7 @@ export interface Destiny2GameData {
     perkLookup: IPerkLookup;
     masterworkLookup: LookupMap<ItemHash, IMasterwork>;
     modLookup: LookupMap<ItemHash, IMod>;
+    catalystLookup: LookupMap<ItemHash, IPerk>;
 
     perkInsights: IPerkInsightCollection;
     collectionsLists: ICollectionsLists;
@@ -250,6 +287,7 @@ export interface IWeapon {
     curated: IPerkGrid;
     masterworks: ItemHash[];
     mods: ItemHash[];
+    catalysts: ItemHash[];
     seasonHash: number | undefined;
 }
 

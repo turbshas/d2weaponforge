@@ -50,8 +50,10 @@ export const ValidPerkPlugCategories = computed(() => [
     DataSearchStrings.CategoryIDs.FramesPlug,
     DataSearchStrings.CategoryIDs.OriginsPlug,
     DataSearchStrings.CategoryIDs.ExoticMasterworkPlug,
+    DataSearchStrings.CategoryIDs.ExoticMasterworkPlugComponent,
     DataSearchStrings.CategoryIDs.CatalystsPlug,
     DataSearchStrings.CategoryIDs.StocksPlug,
+    DataSearchStrings.CategoryIDs.GripsPlug,
 ]);
 
 export const ExcludedPerkPlugCategories = computed(() => [

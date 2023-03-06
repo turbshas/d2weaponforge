@@ -5,14 +5,8 @@ Preferred order of work:
   - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
   - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
   - https://web.dev/learn/pwa/progressive-web-apps/
-3) Extras panel:
-- reload speed calculator
-- handling speed calculator
-  - quick access sling
-- damage fall off calculator for the remaining weapon types
-  - hip fire grip multiplies hip fire range by 1.2x
-4) Inventory size calculator
-5) Perk effect selection
+3) Perk effect selection
+  - hip fire grip
   - surplus
   - elemental capacitor
   - field prep
@@ -22,7 +16,19 @@ Preferred order of work:
   - slideways
   - well rounded
   - reservoir burst
+  - quick access sling
   - figure out full list, will have to search through all perks with insights
+4) Masterworks/weapon features:
+  - exotic catalyst support
+  - display kill requirement if available
+  - year 1 exotic catalysts are going to have to be special case
+    - will need manual setup lookup table for their plug category IDs
+    - will need manual lookup to both not strip the masterwork item from the table and also to consider the weapon's socket a "catalyst socket"
+    - will probably want to pull the icon from the pre-completion catalyst item, but the stats + perk if applicable from the post-completion item
+  - move constants out of constants.ts and into more specific locations, like a specific file for
+    manifest processing constants (or into the manifest processing file directly if it's the only thing that uses it)
+5) Convert category ID and trait ID checks to hashes for everything
+  - can rework some stuff too, may need to remove custom catalyst checks
 
 
 compare section:
@@ -38,6 +44,7 @@ compare section:
     - if this is done, and "add to comparisons" is clicked - remove the previous one?
 
 Unsure about order:
+- better support for crafted weapons, especially crafted exotics (enhanced intrinsic)
 - update weapon formulas when data becomes available (some values are placeholder constants right now)
 - "calculations" panel for damage falloff/handling/reload/reserves/etc.
   - make extras panel -> options panel and split out the calculations
@@ -53,9 +60,6 @@ Filter features:
 - more collections icons https://github.com/justrealmilk/destiny-icons
 - only load collection lists + a few other filter-only properties from cache when opening the filter
   - it is an async component so it'll take some time anyway
-
-Masterworks/weapon features:
-- exotic catalyst support
 
 Load times:
 - load background image after manifest has loaded to ensure it doesn't delay page load on low speed connections

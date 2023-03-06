@@ -33,6 +33,7 @@ export class Weapon implements IWeapon {
     public readonly curated: PerkGrid;
     public readonly masterworks: ItemHash[];
     public readonly mods: ItemHash[];
+    public readonly catalysts: ItemHash[];
 
     // TODO: is this possible?
     public readonly seasonHash: number | undefined;
@@ -78,6 +79,8 @@ export class Weapon implements IWeapon {
         this.mods = this.isAdept
             ? baseMods.concat(resolvedWeaponSockets.adeptMods)
             : baseMods;
+
+        this.catalysts = resolvedWeaponSockets.catalysts;
 
         // This is gross, but meh it seems to work.
         const isAutoTraitId = this.traitId === DataSearchStrings.TraitIDs.AutoRifle;

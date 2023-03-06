@@ -25,8 +25,10 @@ class CategoryIds {
     public get OriginsPlug() { return "origins"; }
     public get TrackerPlug() { return "v400.plugs.weapons.masterworks.trackers"; }
     public get ExoticMasterworkPlug() { return "v400.empty.exotic.masterwork"; }
+    public get ExoticMasterworkPlugComponent() { return "exotic.weapon.masterwork"; }
     public get CatalystsPlug() { return "catalysts"; }
     public get StocksPlug() { return "stocks"; }
+    public get GripsPlug() { return "grips"; }
 
     public get WeaponMasterworkPlug() { return "v400.plugs.weapons.masterworks"; }
     public get WeaponMasterworkPlugComponent() { return "plugs.weapons.masterworks.stat"; }
@@ -125,6 +127,8 @@ class TraitIds {
     public get SniperRifle(): TraitId { return "weapon_type.sniper_rifle"; }
     public get SubmachineGun(): TraitId { return "weapon_type.submachinegun"; }
     public get Sword(): TraitId { return "weapon_type.sword"; }
+
+    public get ExoticCatalyst(): TraitId { return "item_type.exotic_catalyst"; }
 }
 
 class WeaponCategoryRegexes {
