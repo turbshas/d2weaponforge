@@ -5,14 +5,8 @@ import type {
     DestinyItemTierTypeDefinition,
     DestinyManifestLanguage,
     DestinyManifestSlice,
-    DestinyPlugSetDefinition,
     DestinySeasonDefinition,
-    DestinySocketCategoryDefinition,
-    DestinySocketTypeDefinition,
-    DestinyStatDefinition,
-    DestinyStatDisplayDefinition,
-    DestinyStatGroupDefinition
-} from "bungie-api-ts/destiny2";
+    DestinyStatDisplayDefinition} from "bungie-api-ts/destiny2";
 import type { ComputedRef, Ref } from "vue";
 
 export type UsedDestinyManifestSlice = DestinyManifestSlice<(
@@ -28,6 +22,7 @@ export type UsedDestinyManifestSlice = DestinyManifestSlice<(
     | "DestinySocketCategoryDefinition"
     | "DestinySocketTypeDefinition"
     | "DestinyPowerCapDefinition"
+    | "DestinyObjectiveDefinition"
 )[]>;
 
 export enum PageSelection {
@@ -216,7 +211,8 @@ export interface Destiny2GameData {
     perkLookup: IPerkLookup;
     masterworkLookup: LookupMap<ItemHash, IMasterwork>;
     modLookup: LookupMap<ItemHash, IMod>;
-    catalystLookup: LookupMap<ItemHash, IPerk>;
+    catalystLookup: LookupMap<ItemHash, ICatalyst>;
+    sandboxPerkLookup: LookupMap<ItemHash, ISandboxPerk>;
 
     perkInsights: IPerkInsightCollection;
     collectionsLists: ICollectionsLists;
@@ -356,6 +352,24 @@ export interface IPerkBonus {
 
 export interface IMasterwork extends IPerk { }
 export interface IMod extends IPerk { }
+export interface ICatalyst extends IPerk {
+    sandboxPerks: ItemHash[];
+    unlockRequirements: ICatalystUnlockRequirement[];
+}
+
+export interface ISandboxPerk {
+    index: number;
+    hash: ItemHash;
+    name: string;
+    description: string;
+    iconUrl: string;
+    damageTypeHash?: ItemHash;
+}
+
+export interface ICatalystUnlockRequirement {
+    description: string;
+    completionValue: number;
+}
 
 export interface IWeaponTypeInfo {
     /** User-friendly name of the weapon type. */

@@ -27,8 +27,14 @@ Preferred order of work:
     - will probably want to pull the icon from the pre-completion catalyst item, but the stats + perk if applicable from the post-completion item
   - move constants out of constants.ts and into more specific locations, like a specific file for
     manifest processing constants (or into the manifest processing file directly if it's the only thing that uses it)
+  - crafted exotics are also special
+  - only keep sandbox perks needed for catalysts, strip everything else
 5) Convert category ID and trait ID checks to hashes for everything
   - can rework some stuff too, may need to remove custom catalyst checks
+6) Updating perk insights
+  - need to go through every existing one and update its info from the spreadsheet
+  - need to add new ones
+  - need to add catalyst perks if there is info on them
 
 
 compare section:
@@ -53,6 +59,7 @@ Unsure about order:
 - Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar?
 
 Bugs:
+- perk bonuses display bonuses that aren't applicable to that weapon, e.g. charge time on bows or magazine on swords
 
 Filter features:
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point

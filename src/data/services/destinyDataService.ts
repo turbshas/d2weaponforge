@@ -93,6 +93,11 @@ export class DestinyDataService {
         return this.gameData.catalystLookup[hash];
     }
 
+    public getSandboxPerkDefinition = (hash: ItemHash | undefined) => {
+        if (!hash || !this.gameData) return undefined;
+        return this.gameData.sandboxPerkLookup[hash];
+    }
+
     // Notes
     // - On a weapon, intrinsicSockets seems to be the infuse button
     // - TODO: figure out what socketCategories is again

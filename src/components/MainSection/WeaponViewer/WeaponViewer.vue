@@ -4,6 +4,7 @@ import WeaponPanel from './WeaponPanel/WeaponPanel.vue';
 import type { IMasterwork, IMod, IPerkOption, ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
 import { computed } from 'vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
+import CatalystPanel from './CatalystPanel/CatalystPanel.vue';
 
 const ExtrasPanel = defineAsyncComponent(() => import("./ExtrasPanel/ExtrasPanel.vue"));
 const MasterworkPanel = defineAsyncComponent(() => import("./MasterworkPanel.vue"));
@@ -24,8 +25,13 @@ const weapon = computed(() => props.selectedGear.weapon.value);
 const randomRollPerks = computed(() => weapon.value ? weapon.value.perks.perkColumns : []);
 const curatedPerks = computed(() => weapon.value ? weapon.value.curated.perkColumns : []);
 
+const catalysts = computed(() => weapon.value ? weapon.value.catalysts : []);
 const masterworkList = computed(() => weapon.value ? weapon.value.masterworks : []);
 const modList = computed(() => weapon.value ? weapon.value.mods : []);
+
+const showCatalystPanel = computed(() => catalysts.value.length > 0);
+const showMasterworkPanel = computed(() => masterworkList.value.length > 0);
+const showModsPanel = computed(() => modList.value.length > 0);
 
 function onPerkSelected(column: PerkColumnNumber, perk: IPerkOption | undefined) {
     emits("perkSelected", column, perk);
@@ -53,14 +59,21 @@ function onModChanged(mod: IMod | undefined) {
             :selected-perks="props.selectedGear.perkOptionsMap.value"
             @perk-selected="onPerkSelected"
         ></PerksPanel>
+        <CatalystPanel
+            class="mw-panel"
+            v-if="showCatalystPanel"
+            :catalysts="catalysts"
+        ></CatalystPanel>
         <MasterworkPanel
             class="mw-panel"
+            v-if="showMasterworkPanel"
             :masterwork-list="masterworkList"
             :masterwork="props.selectedGear.masterwork.value"
             @masterwork-changed="onMasterworkChanged"
         ></MasterworkPanel>
         <ModsPanel
             class="mods-panel"
+            v-if="showModsPanel"
             :mod-list="modList"
             :mod="props.selectedGear.mod.value"
             @mod-changed="onModChanged"

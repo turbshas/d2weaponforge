@@ -1,4 +1,4 @@
-import type { DestinyDamageTypeDefinition, DestinyInventoryItemDefinition, DestinyItemTierTypeDefinition, DestinyPlugSetDefinition, DestinySandboxPerkDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
+import type { DestinyDamageTypeDefinition, DestinyInventoryItemDefinition, DestinyItemTierTypeDefinition, DestinyObjectiveDefinition, DestinyPlugSetDefinition, DestinySandboxPerkDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
 import type { UsedDestinyManifestSlice } from "../interfaces";
 
 export class ManifestAccessor {
@@ -37,5 +37,9 @@ export class ManifestAccessor {
 
     public getSandboxPerkDefinition = (hash: number): DestinySandboxPerkDefinition | undefined => {
         return this.manifest.DestinySandboxPerkDefinition[hash];
+    }
+
+    public getObjectiveDefinition = (hash: number): DestinyObjectiveDefinition | undefined => {
+        return this.manifest.DestinyObjectiveDefinition[hash];
     }
 }

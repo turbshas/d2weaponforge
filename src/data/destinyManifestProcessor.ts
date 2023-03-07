@@ -1,11 +1,13 @@
-import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition } from "bungie-api-ts/destiny2";
+import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinySandboxPerkDefinition } from "bungie-api-ts/destiny2";
 import { AllowedPlugCategoryIds, AllPerkPlugCategoryIds, ModPlugCategoryIds } from "./constants";
-import { ItemTierIndex, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type ItemHash, type IWeaponTypeInfo, type LookupMap, type UsedDestinyManifestSlice, type WeaponCategoryRegex } from "./interfaces";
+import { ItemTierIndex, type ICatalyst, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type ISandboxPerk, type ItemHash, type IWeaponTypeInfo, type LookupMap, type UsedDestinyManifestSlice, type WeaponCategoryRegex } from "./interfaces";
 import { DataSearchStrings } from "./services/dataSearchStringService";
+import { Catalyst } from "./types/catalyst";
 import { ManifestAccessor } from "./types/manifestAccessor";
 import { Masterwork } from "./types/masterwork";
 import { Mod } from "./types/mod";
 import { Perk } from "./types/perk";
+import { SandboxPerk } from "./types/sandboxPerk";
 import { Weapon } from "./types/weapon";
 import { arrayToExistenceMap, arrayToHashMap, hashMapToArray } from "./util";
 
@@ -24,7 +26,8 @@ export class DestinyManifestProcessor {
     private readonly _perkLookup: IPerkLookup;
     private readonly _masterworkLookup: LookupMap<ItemHash, IMasterwork>;
     private readonly _modLookup: LookupMap<ItemHash, IMod>;
-    private readonly _catalystLookup: LookupMap<ItemHash, IPerk>;
+    private readonly _catalystLookup: LookupMap<ItemHash, ICatalyst>;
+    private readonly _sandboxPerkLookup: LookupMap<ItemHash, ISandboxPerk>;
     private readonly _itemCategories: DestinyItemCategoryDefinition[];
 
     constructor(manifestSlice: UsedDestinyManifestSlice) {
@@ -38,6 +41,7 @@ export class DestinyManifestProcessor {
         this._masterworkLookup = arrayToHashMap(this.processMasterworks(groupedItems.masterworks), "hash");
         this._modLookup = arrayToHashMap(this.processMods(groupedItems.mods), "hash");
         this._catalystLookup = arrayToHashMap(this.processCatalysts(groupedItems.catalysts), "hash");
+        this._sandboxPerkLookup = this.processSandboxPerks(manifestSlice.DestinySandboxPerkDefinition);
 
         this._weapons = this.processWeapons(groupedItems.weapons, this._perkLookup, this._masterworkLookup, this._modLookup);
         this._weaponTypes = this.processArchetypes(this._weapons, this._perkLookup);
@@ -209,7 +213,18 @@ export class DestinyManifestProcessor {
     }
 
     private readonly processCatalysts = (catalysts: DestinyInventoryItemDefinition[]) => {
-        return catalysts.map(c => new Perk(c, this.manifest));
+        return catalysts.map(c => new Catalyst(c, this.manifest));
+    }
+
+    private readonly processSandboxPerks = (sandboxPerkTable: { [hash: number]: DestinySandboxPerkDefinition }) => {
+        const sandboxPerks: ISandboxPerk[] = [];
+        for (const key in sandboxPerkTable) {
+            const item = sandboxPerkTable[key];
+            if (item.isDisplayable) {
+                sandboxPerks.push(new SandboxPerk(item));
+            }
+        }
+        return arrayToHashMap(sandboxPerks, "hash");
     }
 
     private readonly processArchetypes = (weapons: Weapon[], perkLookup: IPerkLookup) => {
@@ -284,6 +299,7 @@ export class DestinyManifestProcessor {
     public get masterworkLookup() { return this._masterworkLookup; }
     public get modLookup() { return this._modLookup; }
     public get catalystLookup() { return this._catalystLookup; }
+    public get sandboxPerkLookup() { return this._sandboxPerkLookup; }
 
     public get damageTypes() { return hashMapToArray(this.manifest.slice.DestinyDamageTypeDefinition); }
     public get damageTypeLookup() { return this.manifest.slice.DestinyDamageTypeDefinition; }

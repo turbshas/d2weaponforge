@@ -49,6 +49,7 @@ export class CacheService {
             this.getGameDataPropertyFromObjectStore(objectStore, "modLookup"),
             this.getGameDataPropertyFromObjectStore(objectStore, "perkInsights"),
             this.getGameDataPropertyFromObjectStore(objectStore, "perkLookup"),
+            this.getGameDataPropertyFromObjectStore(objectStore, "sandboxPerkLookup"),
             this.getGameDataPropertyFromObjectStore(objectStore, "seasons"),
             this.getGameDataPropertyFromObjectStore(objectStore, "weaponTypes"),
             this.getGameDataPropertyFromObjectStore(objectStore, "weapons"),
@@ -67,6 +68,7 @@ export class CacheService {
             modLookup,
             perkInsights,
             perkLookup,
+            sandboxPerkLookup,
             seasons,
             weaponTypes,
             weapons,
@@ -83,6 +85,7 @@ export class CacheService {
             || !modLookup
             || !perkInsights
             || !perkLookup
+            || !sandboxPerkLookup
             || !seasons
             || !weaponTypes
             || !weapons) {
@@ -98,6 +101,7 @@ export class CacheService {
             modLookup: modLookup,
             perkInsights: perkInsights,
             perkLookup: perkLookup,
+            sandboxPerkLookup: sandboxPerkLookup,
             seasons: seasons,
             weaponTypes: weaponTypes,
             weapons: weapons,
@@ -120,13 +124,14 @@ export class CacheService {
             this.setValueInObjectStore(objectStore, cachedManifest.manifestInfo, ManifestInfoKey),
 
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.collectionsLists, "collectionsLists"),
-            this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.collectionsLists, "catalystLookup"),
+            this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.catalystLookup, "catalystLookup"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.damageTypes, "damageTypes"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.itemTierTypes, "itemTierTypes"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.masterworkLookup, "masterworkLookup"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.modLookup, "modLookup"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.perkInsights, "perkInsights"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.perkLookup, "perkLookup"),
+            this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.sandboxPerkLookup, "sandboxPerkLookup"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.seasons, "seasons"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.weaponTypes, "weaponTypes"),
             this.setGameDataPropertyInObjectStore(objectStore, cachedManifest.manifestData.weapons, "weapons"),

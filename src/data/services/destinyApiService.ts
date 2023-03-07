@@ -4,7 +4,7 @@ import type { Destiny2GameData, ItemHash, IWeapon, LookupMap, UsedDestinyManifes
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
 
-const CurrentCachedManifestVersion = 10;
+const CurrentCachedManifestVersion = 11;
 
 export class DestinyApiService {
     constructor(private readonly cacheService: CacheService) { }
@@ -63,6 +63,7 @@ export class DestinyApiService {
                 "DestinySocketTypeDefinition",
                 "DestinyPowerCapDefinition",
                 "DestinySandboxPerkDefinition",
+                "DestinyObjectiveDefinition",
             ],
         });
 
@@ -89,6 +90,7 @@ export class DestinyApiService {
             masterworkLookup: manifestProcessor.masterworkLookup,
             modLookup: manifestProcessor.modLookup,
             catalystLookup: manifestProcessor.catalystLookup,
+            sandboxPerkLookup: manifestProcessor.sandboxPerkLookup,
 
             perkInsights: perkInsights,
             collectionsLists: collectionsLists,
