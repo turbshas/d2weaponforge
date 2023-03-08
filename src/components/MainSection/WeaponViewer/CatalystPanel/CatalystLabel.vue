@@ -1,23 +1,27 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
 const props = defineProps<{
     icon: string,
     title: string,
     descriptions: string[],
 }>();
+
+const iconLabel = computed(() => `Icon: ${props.title}`);
 </script>
 
 <template>
-    <div class="catalyst-label">
-        <img class="image" :src="props.icon">
+    <section class="catalyst-label">
+        <img class="image" :src="props.icon" :alt="iconLabel">
         <div class="label-text">
             <h4 class="title">{{ props.title }}</h4>
-            <span
+            <p
                 class="description"
                 v-for="(desc, index) of props.descriptions"
                 :key="index"
-            >{{ desc }}</span>
+            >{{ desc }}</p>
         </div>
-    </div>
+    </section>
 </template>
 
 <style scoped lang="less">
@@ -50,6 +54,7 @@ const props = defineProps<{
     }
 
     .description {
+        margin: 0;
         color: var(--grey);
         letter-spacing: 0;
         line-height: 1rem;

@@ -1,6 +1,6 @@
 import type { DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { computed, ref } from "vue";
-import type { IMasterwork, IMod, IModifiedStat, IPerk, IPerkBonus, ISelectedGear, ISelectedPerk, ISelectedPerkMap, ItemHash, IWeapon, LookupMap, PerkColumnNumber } from "../interfaces";
+import type { ICatalyst, IMasterwork, IMod, IModifiedStat, IPerk, IPerkBonus, ISelectedGear, ISelectedPerk, ISelectedPerkMap, ItemHash, IWeapon, LookupMap, PerkColumnNumber } from "../interfaces";
 import { destinyDataService, selectionService } from "../services";
 import { hashMapToArray } from "../util";
 
@@ -20,9 +20,10 @@ export class SelectedGear implements ISelectedGear {
     public readonly perkOptionsList = computed(() => hashMapToArray(this.perkOptionsMap.value));
     public readonly masterwork = ref<IMasterwork | undefined>(undefined);
     public readonly mod = ref<IMod | undefined>(undefined);
+    public readonly catalyst = ref<ICatalyst | undefined>(undefined);
 
     public readonly modifiedWeaponStats = computed(() => {
-        return this.modifiedWeaponStatsMasterworkMods.value.map(s => {
+        return this.modifiedWeaponStatsWithoutPerks.value.map(s => {
             const perk1Bonus = this.perk1BonusesStatMap.value[s.statHash] || 0;
             const perk2Bonus = this.perk2BonusesStatMap.value[s.statHash] || 0;
             const perk3Bonus = this.perk3BonusesStatMap.value[s.statHash] || 0;
@@ -88,14 +89,19 @@ export class SelectedGear implements ISelectedGear {
 
     private readonly masterworkBonuses = computed(() => this.getBonusesForPerk(this.masterwork.value));
     private readonly modBonuses = computed(() => this.getBonusesForPerk(this.mod.value));
+    private readonly catalystBonuses = computed(() => this.getBonusesForPerk(this.catalyst.value));
 
-    private readonly masterworksModsBonusesMap = computed(() => {
+    private readonly nonPerkBonusesMap = computed(() => {
         const map: LookupMap<ItemHash, number> = {};
         for (const bonus of this.masterworkBonuses.value) {
             const current = map[bonus.statHash] || 0;
             map[bonus.statHash] = current + bonus.value;
         }
         for (const bonus of this.modBonuses.value) {
+            const current = map[bonus.statHash] || 0;
+            map[bonus.statHash] = current + bonus.value;
+        }
+        for (const bonus of this.catalystBonuses.value) {
             const current = map[bonus.statHash] || 0;
             map[bonus.statHash] = current + bonus.value;
         }
@@ -118,9 +124,9 @@ export class SelectedGear implements ISelectedGear {
         return map;
     });
 
-    private readonly modifiedWeaponStatsMasterworkMods = computed(() => {
+    private readonly modifiedWeaponStatsWithoutPerks = computed(() => {
         return this.weaponStats.value.map(s => {
-            const masterworkModsBonus = this.masterworksModsBonusesMap.value[s.statHash] || 0;
+            const masterworkModsBonus = this.nonPerkBonusesMap.value[s.statHash] || 0;
             const statInfo: IModifiedStat = {
                 index: s.index,
                 statHash: s.statHash,

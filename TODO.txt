@@ -19,8 +19,6 @@ Preferred order of work:
   - quick access sling
   - figure out full list, will have to search through all perks with insights
 4) Masterworks/weapon features:
-  - exotic catalyst support
-  - display kill requirement if available
   - year 1 exotic catalysts are going to have to be special case
     - will need manual setup lookup table for their plug category IDs
     - will need manual lookup to both not strip the masterwork item from the table and also to consider the weapon's socket a "catalyst socket"
@@ -28,6 +26,12 @@ Preferred order of work:
   - move constants out of constants.ts and into more specific locations, like a specific file for
     manifest processing constants (or into the manifest processing file directly if it's the only thing that uses it)
   - crafted exotics are also special
+    - for an intrinsic perk, check if it has a plug set associated with it
+    - attach that set to the intrinsic
+    - allow toggling through all the options by clicking on the intrinsic?
+    - this also works for enhanced intrinsics for legendary weapons, how to include that?
+      - legendaries also include this in the reusable plugs on the socket, but that's probably not needed
+      - only included on the crafting version of the weapon (with the crafting property on it) - regular weapons don't have it
   - only keep sandbox perks needed for catalysts, strip everything else
 5) Convert category ID and trait ID checks to hashes for everything
   - can rework some stuff too, may need to remove custom catalyst checks
@@ -59,7 +63,9 @@ Unsure about order:
 - Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar?
 
 Bugs:
+- crafted weapon bonus is +2, not +3
 - perk bonuses display bonuses that aren't applicable to that weapon, e.g. charge time on bows or magazine on swords
+- swords not showing guard endurance
 
 Filter features:
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
@@ -74,6 +80,7 @@ Load times:
 - show that page is refreshing when game data is being reloaded
 
 Tech debt/processing:
+- to find craftable weapons, find all items with a craftable.outputItemHash and build a lookup map with those
 - involve stat display override when creating masterworks in DestinyManifestProcessor
 - filter armour plugs out of the kept data (definitely shows up as intrinsics, maybe others too...)
 - change PerkColumnNumber to something better

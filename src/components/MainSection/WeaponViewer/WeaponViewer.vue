@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue';
 import WeaponPanel from './WeaponPanel/WeaponPanel.vue';
-import type { IMasterwork, IMod, IPerkOption, ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
+import type { ICatalyst, IMasterwork, IMod, IPerkOption, ISelectedGear, PerkColumnNumber } from '@/data/interfaces';
 import { computed } from 'vue';
 import PerksPanel from './PerksPanel/PerksPanel.vue';
 import CatalystPanel from './CatalystPanel/CatalystPanel.vue';
@@ -18,6 +18,7 @@ const emits = defineEmits<{
     (e: "perkSelected", column: PerkColumnNumber, perk: IPerkOption | undefined): void,
     (e: "masterworkChanged", masterwork: IMasterwork | undefined): void,
     (e: "modChanged", mod: IMod | undefined): void,
+    (e: "catalystChanged", catalyst: ICatalyst | undefined): void,
 }>();
 
 const weapon = computed(() => props.selectedGear.weapon.value);
@@ -44,6 +45,10 @@ function onMasterworkChanged(masterwork: IMasterwork | undefined) {
 function onModChanged(mod: IMod | undefined) {
     emits("modChanged", mod);
 }
+
+function onCatalystApplied(catalyst: ICatalyst | undefined) {
+    emits("catalystChanged", catalyst);
+}
 </script>
 
 <template>
@@ -63,6 +68,8 @@ function onModChanged(mod: IMod | undefined) {
             class="mw-panel"
             v-if="showCatalystPanel"
             :catalysts="catalysts"
+            :active-catalyst="props.selectedGear.catalyst.value"
+            @catalyst-applied="onCatalystApplied"
         ></CatalystPanel>
         <MasterworkPanel
             class="mw-panel"

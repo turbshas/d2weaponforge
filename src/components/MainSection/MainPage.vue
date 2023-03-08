@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PageSelection, type IMasterwork, type IMod, type IPerkOption, type ISelectedGear, type PerkColumnNumber } from '@/data/interfaces';
+import { PageSelection, type ICatalyst, type IMasterwork, type IMod, type IPerkOption, type ISelectedGear, type PerkColumnNumber } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import { defineAsyncComponent } from 'vue';
 import HomePage from './HomePage.vue';
@@ -17,6 +17,7 @@ const emits = defineEmits<{
     (e: "perkSelected", column: PerkColumnNumber, perk: IPerkOption | undefined): void,
     (e: "masterworkChanged", masterwork: IMasterwork | undefined): void,
     (e: "modChanged", mod: IMod | undefined): void,
+    (e: "catalystChanged", catalyst: ICatalyst | undefined): void,
 }>();
 
 const isHomeSelected = computed(() => {
@@ -46,6 +47,10 @@ function onMasterworkChanged(masterwork: IMasterwork | undefined) {
 function onModChanged(mod: IMod | undefined) {
     emits("modChanged", mod);
 }
+
+function onCatalystChanged(catalyst: ICatalyst | undefined) {
+    emits("catalystChanged", catalyst);
+}
 </script>
 
 <template>
@@ -60,6 +65,7 @@ function onModChanged(mod: IMod | undefined) {
             @perk-selected="onPerkSelected"
             @masterwork-changed="onMasterworkChanged"
             @mod-changed="onModChanged"
+            @catalyst-changed="onCatalystChanged"
         ></WeaponViewer>
     </main>
 </template>

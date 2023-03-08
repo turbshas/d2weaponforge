@@ -4,7 +4,7 @@ import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
 import { computed, ref } from "vue";
 import UrlManager from "./components/UrlManager.vue";
-import { PageSelection, type ILanguageInfo, type IMasterwork, type IMod, type IPerkOption, type ISelectedPerk, type ISelectedPerkMap, type IWeapon, type PerkColumnNumber } from "./data/interfaces";
+import { PageSelection, type ICatalyst, type ILanguageInfo, type IMasterwork, type IMod, type IPerkOption, type ISelectedPerk, type ISelectedPerkMap, type IWeapon, type PerkColumnNumber } from "./data/interfaces";
 import { destinyDataService, selectionService } from "./data/services";
 
 const selectedPage = ref(PageSelection.Home);
@@ -45,12 +45,17 @@ function onModChanged(mod: IMod | undefined) {
     selectionService.setMod(mod);
 }
 
+function onCatalystChanged(catalyst: ICatalyst | undefined) {
+    selectionService.setCatalyst(catalyst);
+}
+
 function onUrlParsed(
     page: PageSelection,
     weapon: IWeapon | undefined,
     perkOptions: ISelectedPerkMap<ISelectedPerk>,
     masterwork: IMasterwork | undefined,
-    mod: IMod | undefined
+    mod: IMod | undefined,
+    catalyst: ICatalyst | undefined,
 ) {
     onTabSelected(page);
     onWeaponSelected(weapon);
@@ -62,6 +67,7 @@ function onUrlParsed(
     selectionService.setPerks(perkOptions);
     onMasterworkChanged(masterwork);
     onModChanged(mod);
+    onCatalystChanged(catalyst);
 }
 </script>
 
@@ -87,6 +93,7 @@ function onUrlParsed(
                 @perk-selected="onPerkSelected"
                 @masterwork-changed="onMasterworkChanged"
                 @mod-changed="onModChanged"
+                @catalyst-changed="onCatalystChanged"
             ></MainPage>
         </div>
     </div>

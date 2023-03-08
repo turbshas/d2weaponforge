@@ -240,6 +240,7 @@ export interface ISelectedGear {
     perkOptionsList: ComputedRef<(ISelectedPerk | undefined)[]>;
     masterwork: Ref<IMasterwork | undefined>;
     mod: Ref<IMod | undefined>;
+    catalyst: Ref<ICatalyst | undefined>;
 
     modifiedWeaponStats: ComputedRef<IModifiedStat[]>;
     modifiedWeaponDisplayStats: ComputedRef<IModifiedStat[]>;

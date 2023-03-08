@@ -16,7 +16,7 @@ function textForStatValue(value: number) {
 </script>
 
 <template>
-    <ul class="stats-list">
+    <ul class="stats-list" aria-label="Stat Bonuses">
         <li class="item" v-for="(bonus, index) of props.bonuses" :key="index">
             <span class="name">{{ bonus.statName }}</span>
             <span

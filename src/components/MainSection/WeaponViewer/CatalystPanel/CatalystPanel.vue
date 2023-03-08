@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import OptionButton from '@/components/Common/OptionButton.vue';
 import StatBonusList from '@/components/Common/StatBonusList.vue';
-import type { ICatalystUnlockRequirement, IMasterwork, IPerkBonus, ItemHash } from '@/data/interfaces';
+import type { ICatalyst, IPerkBonus, ItemHash } from '@/data/interfaces';
 import { destinyDataService, selectionService } from '@/data/services';
 import { computed } from 'vue';
 import BuilderSection from '../../../Common/BuilderSection.vue';
@@ -27,10 +28,11 @@ const MissingCatalystIcon = "23a04c67f97523cdc0eff0004fae75e1.jpg";
 
 const props = defineProps<{
     catalysts: ItemHash[],
+    activeCatalyst: ICatalyst | undefined,
 }>();
 
 const emits = defineEmits<{
-    (e: "masterworkChanged", masterwork: IMasterwork | undefined): void
+    (e: "catalystApplied", catalyst: ICatalyst | undefined): void
 }>();
 
 const catalystItems = computed(() => {
@@ -70,20 +72,33 @@ const catalystItems = computed(() => {
         };
         catalystItems.push(displayItem);
     }
-    console.log("catalysts", catalystItems, props.catalysts);
     return catalystItems;
 });
+
+function onApplyToggled(catalystHash: ItemHash) {
+    const appliedCatalystHash = catalystHash === props.activeCatalyst?.hash ? undefined : catalystHash;
+    const appliedCatalyst = destinyDataService.getCatalystDefinition(appliedCatalystHash);
+    emits("catalystApplied", appliedCatalyst);
+}
 </script>
 
 <template>
-    <BuilderSection title="Exotic Catalyst" v-if="catalystItems.length > 0">
-        <div class="catalysts">
+    <BuilderSection title="Exotic Catalyst">
+        <div class="catalysts" v-if="catalystItems.length > 0">
             <div class="catalyst" v-for="item of catalystItems" :key="item.hash">
-                <CatalystLabel
-                    title="Requirements"
-                    :icon="item.requirementIcon"
-                    :descriptions="item.requirements"
-                ></CatalystLabel>
+                <div class="header">
+                    <CatalystLabel
+                        title="Requirements"
+                        :icon="item.requirementIcon"
+                        :descriptions="item.requirements"
+                    ></CatalystLabel>
+                    <OptionButton
+                        class="apply"
+                        text="Apply Catalyst"
+                        :active="item.hash === props.activeCatalyst?.hash"
+                        @toggled="onApplyToggled(item.hash)"
+                    ></OptionButton>
+                </div>
 
                 <CatalystLabel
                     v-for="perk of item.sandboxPerks"
@@ -96,6 +111,7 @@ const catalystItems = computed(() => {
                 <StatBonusList class="stats" v-if="item.statBonuses.length > 0" :bonuses="item.statBonuses"></StatBonusList>
             </div>
         </div>
+        <span v-else>This exotic currently has no catalyst.</span>
     </BuilderSection>
 
 </template>
@@ -111,6 +127,15 @@ const catalystItems = computed(() => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+
+    .apply {
+        margin-left: auto;
+    }
 }
 
 .stats {

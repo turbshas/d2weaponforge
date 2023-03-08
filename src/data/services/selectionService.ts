@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import type { ILanguageInfo, IMasterwork, IMod, IPerkBonus, IPerkOption, ISelectedPerk, ISelectedPerkMap, IWeapon, PerkColumnNumber } from "../interfaces";
+import type { ICatalyst, ILanguageInfo, IMasterwork, IMod, IPerkBonus, IPerkOption, ISelectedPerk, ISelectedPerkMap, IWeapon, PerkColumnNumber } from "../interfaces";
 import { SelectedGear } from "../types/selectedGear";
 import type { CacheService } from "./cacheService";
 import { DataSearchStrings } from "./dataSearchStringService";
@@ -67,6 +67,10 @@ export class SelectionService {
 
     public readonly setMod = (mod: IMod | undefined) => {
         this.selectedGear.mod.value = mod;
+    }
+
+    public readonly setCatalyst = (catalyst: ICatalyst | undefined) => {
+        this.selectedGear.catalyst.value = catalyst;
     }
 
     public readonly displayValueIfAddingBonus = (bonus: IPerkBonus, column?: PerkColumnNumber) => this.selectedGear.displayValueIfAddingBonus(bonus, column);

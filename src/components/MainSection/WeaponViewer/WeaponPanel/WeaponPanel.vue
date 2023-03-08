@@ -46,6 +46,7 @@ function onHideElementsClicked() {
                 :selected-perks="props.selectedGear.perkOptionsMap.value"
                 :masterwork="props.selectedGear.masterwork.value"
                 :mod="props.selectedGear.mod.value"
+                :catalyst="props.selectedGear.catalyst.value"
                 :is-adept="!!(weapon?.isAdept)"
             ></SelectedPerks>
         </footer>
