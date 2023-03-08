@@ -52,7 +52,7 @@ function onPerkClicked(column: PerkColumnNumber, perk: IPerkOption) {
             class="column"
             v-for="perkColumn in perkColumns"
             :key="perkColumn.column"
-            :class="{ 'first': perkColumn.column === 1, }"
+            :class="{ 'first': perkColumn.column === 1, 'empty': perkColumn.perks.perks.length === 0, }"
         >
             <PerkDisplay
                 class="perk"
@@ -72,7 +72,7 @@ function onPerkClicked(column: PerkColumnNumber, perk: IPerkOption) {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .grid {
     display: flex;
     flex-direction: row;
@@ -91,25 +91,28 @@ function onPerkClicked(column: PerkColumnNumber, perk: IPerkOption) {
     position: relative;
 
     margin-left: 20px;
-}
-.column::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    width: 2px;
-    height: 100%;
-    background-color: hsla(0,0%,100%,.15);
-}
-@media screen and (min-width: 560px) {
-    .column::before {
-        left: -10px;
+
+    &.empty {
+        display: none;
     }
-}
-.column:first-child {
-    margin-left: 0;
-}
-.column:first-child::before {
-    content: none;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -10px;
+        width: 2px;
+        height: 100%;
+        background-color: hsla(0,0%,100%,.15);
+    }
+
+    &:first-child {
+        margin-left: 0;
+
+        &::before {
+            content: none;
+        }
+    }
 }
 
 .perk {

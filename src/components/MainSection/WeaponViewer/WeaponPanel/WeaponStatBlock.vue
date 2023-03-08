@@ -40,14 +40,6 @@ const props = defineProps<{
     displayStats: IModifiedStat[],
 }>();
 
-const statInfoMap = computed(() => {
-    const map: LookupMap<number, IModifiedStat> = {};
-    for (const stat of props.displayStats) {
-        map[stat.statHash] = stat;
-    }
-    return map;
-});
-
 const orderedStats = computed(() => {
     const workingStatList: (IModifiedStat | undefined)[] = statOrdering.value.map(_ => undefined);
 
@@ -55,23 +47,11 @@ const orderedStats = computed(() => {
         const index = statOrdering.value.findIndex(index => index === statInfo.index);
         if (index < 0) continue;
         // Some weapons (e.g. swords) have stats that appear in their scaledStats list but not their investmentStats.
-        workingStatList[index] = statInfoMap.value[statInfo.statHash] || defaultStatInfo(statInfo.statHash);
+        workingStatList[index] = statInfo;
     }
 
     return workingStatList.filter(s => !!s).map(s => s!);
 });
-
-function defaultStatInfo(statHash: number): IModifiedStat {
-    return {
-        index: -1,
-        statHash: statHash,
-        statName: "",
-        statDisplay: undefined,
-        isBenefit: false,
-        baseStat: 0,
-        modifiedStat: 0,
-    };
-}
 </script>
 
 <template>

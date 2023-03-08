@@ -47,6 +47,7 @@ export class SelectionService {
         };
         this.selectedGear.masterwork.value = undefined;
         this.selectedGear.mod.value = undefined;
+        this.selectedGear.catalyst.value = undefined;
     }
 
     public readonly setPerk = (column: PerkColumnNumber, perk: IPerkOption | undefined) => {

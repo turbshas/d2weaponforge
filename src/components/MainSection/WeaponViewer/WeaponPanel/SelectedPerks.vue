@@ -6,6 +6,7 @@ import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 
 const props = defineProps<{
+    columnHasPerksMap: ISelectedPerkMap<boolean>,
     intrinsic: IArchetype | undefined,
     selectedPerks: ISelectedPerkMap<ISelectedPerk>,
     masterwork: IMasterwork | undefined,
@@ -64,6 +65,7 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
+            v-if="props.columnHasPerksMap[1]"
             :perk="perk1"
             :crafting-info="perk1Crafting"
             :column="1"
@@ -74,6 +76,7 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
+            v-if="props.columnHasPerksMap[2]"
             :perk="perk2"
             :crafting-info="perk2Crafting"
             :column="2"
@@ -84,6 +87,7 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
+            v-if="props.columnHasPerksMap[3]"
             :perk="perk3"
             :enhanced="isPerk3Enhanced"
             :crafting-info="perk3Crafting"
@@ -96,6 +100,7 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
+            v-if="props.columnHasPerksMap[4]"
             :perk="perk4"
             :enhanced="isPerk4Enhanced"
             :crafting-info="perk4Crafting"
@@ -108,7 +113,7 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
-            v-if="!!originPerk"
+            v-if="!!originPerk && props.columnHasPerksMap[5]"
             :perk="originPerk"
             :crafting-info="undefined"
             :column="5"

@@ -63,9 +63,8 @@ Unsure about order:
 - Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar?
 
 Bugs:
-- crafted weapon bonus is +2, not +3
 - perk bonuses display bonuses that aren't applicable to that weapon, e.g. charge time on bows or magazine on swords
-- swords not showing guard endurance
+- hide perk slots that don't have any perks
 
 Filter features:
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
