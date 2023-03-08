@@ -67,7 +67,8 @@ export class SelectedGear implements ISelectedGear {
         if (!currentStat) return bonus.value;
         const perkBonusesMap = column && this.perkBonusesMap.value[column] || {};
         const currentColumnBonuses = perkBonusesMap[bonus.statHash] || 0;
-        const currentStatWithoutColumn = currentStat.modifiedStat - currentColumnBonuses;
+        const currentStatWithoutColumn = column ? currentStat.modifiedStat - currentColumnBonuses : currentStat.baseStat;
+
         const currentDisplayStat = this.convertToDisplayValue(currentStatWithoutColumn, currentStat.statDisplay);
         const afterBonus = this.convertToDisplayValue(currentStatWithoutColumn + bonus.value, currentStat.statDisplay);
         return afterBonus - currentDisplayStat;

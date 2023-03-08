@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
-import { WeaponTypeTraitToRegex } from "../constants";
 import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type ItemHash, type IWeapon, type LookupMap, type TraitId, type WeaponCategoryRegex } from "../interfaces";
+import { WeaponTypeTraitToRegex } from "../processingConstants";
 import { DataSearchStrings } from "../services/dataSearchStringService";
 import { Archetype } from "./archetype";
 import { DamageType } from "./damageType";
@@ -58,7 +58,7 @@ export class Weapon implements IWeapon {
         this.tierTypeIndex = getWeaponTierTypeIndex(weaponItem, manifest);
 
         this.traitId = getWeaponTraitId(weaponItem);
-        this.weaponCategoryRegex = WeaponTypeTraitToRegex.value[this.traitId]!;
+        this.weaponCategoryRegex = WeaponTypeTraitToRegex[this.traitId]!;
 
         this.damageType = new DamageType(weaponItem, manifest);
         const statGroup = weaponItem.stats && weaponItem.stats.statGroupHash

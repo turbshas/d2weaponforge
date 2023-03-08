@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinySandboxPerkDefinition } from "bungie-api-ts/destiny2";
-import { AllowedPlugCategoryIds, AllPerkPlugCategoryIds, ModPlugCategoryIds } from "./constants";
 import { ItemTierIndex, type ICatalyst, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type ISandboxPerk, type ItemHash, type IWeaponTypeInfo, type LookupMap, type UsedDestinyManifestSlice, type WeaponCategoryRegex } from "./interfaces";
+import { AllowedPlugCategoryMap, AllPerkPlugCategoryMap, ModPlugCategoryMap, Year1ExoticCatalystPlugCategoryMap } from "./processingConstants";
 import { DataSearchStrings } from "./services/dataSearchStringService";
 import { Catalyst } from "./types/catalyst";
 import { ManifestAccessor } from "./types/manifestAccessor";
@@ -59,9 +59,10 @@ export class DestinyManifestProcessor {
                 && !!item.screenshot // Some weapons don't have screenshots - probably for the crafting menu.
                 && !!item.quality
                 && !!item.quality.infusionCategoryHash; // Others don't have an infusion category, probably also crafting related.
-            const isModOrPerk = item.plug && AllowedPlugCategoryIds.value.includes(item.plug.plugCategoryIdentifier);
+            const isModOrPerk = !!item.plug && !!AllowedPlugCategoryMap[item.plug.plugCategoryIdentifier];
             const isMasterwork = item.plug && item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
-            const isCatalyst = !!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.ExoticCatalyst);
+            const isCatalyst = (!!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.ExoticCatalyst))
+                || (!!item.plug && !!Year1ExoticCatalystPlugCategoryMap[item.plug.plugCategoryIdentifier]);
 
             if (!isWeapon && !isModOrPerk && !isMasterwork && !isCatalyst) {
                 itemHashesToRemove.push(item.hash);
@@ -101,9 +102,6 @@ export class DestinyManifestProcessor {
             catalysts: [],
         };
 
-        const perkPlugCategoryIdMap = arrayToExistenceMap(AllPerkPlugCategoryIds.value);
-        const modPlugCategoryIdMap = arrayToExistenceMap(ModPlugCategoryIds.value);
-
         for (const key in this.manifest.slice.DestinyInventoryItemDefinition) {
             const item = this.manifest.slice.DestinyInventoryItemDefinition[key];
             if (!item) continue;
@@ -119,11 +117,12 @@ export class DestinyManifestProcessor {
                 && !!item.quality
                 && (!!item.quality.infusionCategoryHash
                     || (!!item.quality.infusionCategoryHashes && item.quality.infusionCategoryHashes.length > 0));
-            const isPerk = !!item.plug && !!perkPlugCategoryIdMap[item.plug.plugCategoryIdentifier];
-            const isMod = !!item.plug && !!modPlugCategoryIdMap[item.plug.plugCategoryIdentifier];
+            const isPerk = !!item.plug && !!AllPerkPlugCategoryMap[item.plug.plugCategoryIdentifier];
+            const isMod = !!item.plug && !!ModPlugCategoryMap[item.plug.plugCategoryIdentifier];
             const isMasterwork = !!item.plug
                 && item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
-            const isCatalyst = !!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.ExoticCatalyst);
+            const isCatalyst = (!!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.ExoticCatalyst))
+                || (!!item.plug && !!Year1ExoticCatalystPlugCategoryMap[item.plug.plugCategoryIdentifier]);
 
             if (isWeapon) {
                 grouped.weapons.push(item);

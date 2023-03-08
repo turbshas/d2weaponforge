@@ -37,11 +37,13 @@ const emits = defineEmits<{
 
 const catalystItems = computed(() => {
     const catalystItems: ICatalystDisplay[] = [];
+
     for (const c of props.catalysts) {
         const item = destinyDataService.getCatalystDefinition(c);
         if (!item) continue;
         if (item.iconUrl.includes(PlaceholderCatalystIcon)
             || item.iconUrl.includes(MissingCatalystIcon)) continue;
+        if (item.mainBonuses.length === 0 && item.sandboxPerks.length === 0) continue;
 
         const displayPerks: ISandboxPerkDisplay[] = [];
         for (const p of item.sandboxPerks) {
@@ -72,6 +74,7 @@ const catalystItems = computed(() => {
         };
         catalystItems.push(displayItem);
     }
+
     return catalystItems;
 });
 

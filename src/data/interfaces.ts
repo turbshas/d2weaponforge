@@ -109,6 +109,33 @@ export enum ItemPerkVisibility {
 
 export type ItemHash = number;
 
+export enum StatIndex {
+    Accuracy = 17,
+    AimAssistance = 30,
+    AirborneEffectiveness = 43,
+    AmmoCapacity = 40,
+    BlastRadius = 21,
+    ChargeRate = 19,
+    ChargeTime = 18,
+    DrawTime = 50,
+    GuardEfficiency = 39,
+    GuardEndurance = 41,
+    GuardResistance = 38,
+    Handling = 26,
+    Impact = 15,
+    InventorySize = 25,
+    MagSize = 24,
+    Range = 16,
+    RecoilDirection = 31,
+    ReloadSpeed = 27,
+    Rpm = 14,
+    ShieldDuration = 42,
+    Stability = 22,
+    SwingSpeed = 37,
+    Velocity = 20,
+    Zoom = 32,
+}
+
 export type TraitId =
     "item_type.weapon"
     | "weapon_type.auto_rifle"

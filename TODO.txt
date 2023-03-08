@@ -33,6 +33,8 @@ Preferred order of work:
       - legendaries also include this in the reusable plugs on the socket, but that's probably not needed
       - only included on the crafting version of the weapon (with the crafting property on it) - regular weapons don't have it
   - only keep sandbox perks needed for catalysts, strip everything else
+  - weapon ornaments - they contain a weapon screenshot and can change that for the current weapon
+  - a few places still use DataSearchStrings, try to clean these up so the constants can be put in a common spot
 5) Convert category ID and trait ID checks to hashes for everything
   - can rework some stuff too, may need to remove custom catalyst checks
 6) Updating perk insights

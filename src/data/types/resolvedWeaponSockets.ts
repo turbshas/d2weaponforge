@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryDefinition, DestinyItemSocketEntryPlugItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinySocketTypeDefinition, DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
-import { ExcludedPerkPlugCategories } from "../constants";
 import { WeaponSocketCategoryHash, type IMasterwork, type IMod, type IPerkGrid, type IPerkLookup, type IPerkOption, type ItemHash, type LookupMap } from "../interfaces";
+import { ExcludedPerkCategoryMap, Year1ExoticCatalystPlugCategoryMap } from "../processingConstants";
 import { DataSearchStrings } from "../services/dataSearchStringService";
 import type { ManifestAccessor } from "./manifestAccessor";
 import { PerkColumn } from "./perkColumn";
@@ -94,11 +94,13 @@ export class ResolvedWeaponSockets {
                     || pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponModMagazine)
                 )),
             perks: this.resolveWeaponSocketEntries(perkSockets)
-                .filter(s => s.socketType && s.socketType.plugWhitelist.every(pw => !ExcludedPerkPlugCategories.value.includes(pw.categoryIdentifier))),
+                .filter(s => s.socketType 
+                    && s.socketType.plugWhitelist.every(pw => !ExcludedPerkCategoryMap[pw.categoryIdentifier])),
             catalysts: modsMasterworks.filter(s =>
                 s.socketType
                 && s.socketType.plugWhitelist.some(pw =>
                     pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.ExoticMasterworkPlug)
+                    || Year1ExoticCatalystPlugCategoryMap[pw.categoryIdentifier]
                 )),
         };
 

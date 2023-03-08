@@ -2,10 +2,8 @@
 import CollapsibleSection from "@/components/Common/CollapsibleSection.vue";
 import ElementLabel from "@/components/Common/ElementLabel.vue";
 import OptionButton from "@/components/Common/OptionButton.vue";
-import { ValidPerkPlugCategories } from "@/data/constants";
 import type { IPerkFilterInfo, ISelectedFilters, LookupMap } from "@/data/interfaces";
 import { destinyDataService } from "@/data/services";
-import { arrayToExistenceMap } from "@/data/util";
 import { computed, ref } from "vue";
 
 const props = defineProps<{
@@ -27,13 +25,12 @@ const selectedPerkFilters = computed(() => {
 });
 
 const allPerkOptions = computed(() => {
-    const validPerkMap = arrayToExistenceMap(ValidPerkPlugCategories.value);
     const seenOptionsMap: LookupMap<string, IPerkFilterInfo> = {};
     const options: IPerkFilterInfo[] = [];
 
     for (const pair of destinyDataService.perkPairs) {
         const perk = destinyDataService.getPerkDefinition(pair.perk);
-        if (!perk || !validPerkMap[perk.categoryId]) continue;
+        if (!perk) continue;
 
         const existing = seenOptionsMap[perk.name];
         if (!existing) {

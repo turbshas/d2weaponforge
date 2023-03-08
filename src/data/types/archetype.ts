@@ -1,6 +1,6 @@
 import type { DestinyItemStatBlockDefinition } from "bungie-api-ts/destiny2";
-import { DefaultWeaponMainStat, DefaultWeaponTypeRpmUnits, WeaponTraitIdMainStatMap, WeaponTypeRpmUnitsMap } from "../constants";
 import type { IArchetype, ItemHash, TraitId } from "../interfaces";
+import { DefaultWeaponMainStat, DefaultWeaponTypeRpmUnits, WeaponTraitIdMainStatMap, WeaponTypeRpmUnitsMap } from "../processingConstants";
 import { hashMapToArray } from "../util";
 import type { ManifestAccessor } from "./manifestAccessor";
 
@@ -21,12 +21,12 @@ export class Archetype implements IArchetype {
         this.rpmStatValue = rpmStat && weaponStats && weaponStats.stats && weaponStats.stats[rpmStat.statHash]
             ? weaponStats.stats[rpmStat.statHash].value
             : undefined;
-        this.rpmUnits = WeaponTypeRpmUnitsMap.value[weaponTypeTraitId] || DefaultWeaponTypeRpmUnits.value;
+        this.rpmUnits = WeaponTypeRpmUnitsMap[weaponTypeTraitId] || DefaultWeaponTypeRpmUnits;
     }
 }
 
 function getArchetypeRpmStat(weaponTypeTraitId: TraitId, weaponStats: DestinyItemStatBlockDefinition | undefined, manifest: ManifestAccessor) {
-    const searchStatIndex = WeaponTraitIdMainStatMap.value[weaponTypeTraitId] || DefaultWeaponMainStat.value;
+    const searchStatIndex = WeaponTraitIdMainStatMap[weaponTypeTraitId] || DefaultWeaponMainStat;
     const statList = weaponStats ? hashMapToArray(weaponStats.stats) : [];
     const rpmStat = statList.find(s => {
         const statType = manifest.getStatTypeDefinition(s.statHash);
