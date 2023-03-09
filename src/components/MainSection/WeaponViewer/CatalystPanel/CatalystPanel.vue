@@ -63,7 +63,7 @@ const catalystItems = computed(() => {
             requirementIcon: destinyDataService.getImageUrl(item.iconUrl),
             requirements: item.unlockRequirements.map(req => `${req.description}: ${req.completionValue}`),
             sandboxPerks: displayPerks,
-            statBonuses: item.mainBonuses.map(b => {
+            statBonuses: item.mainBonuses.concat(item.adeptOrCraftedBonuses).map(b => {
                 const displayBonus: IPerkBonus = {
                     statHash: b.statHash,
                     statName: b.statName,
@@ -88,8 +88,8 @@ function onApplyToggled(catalystHash: ItemHash) {
 <template>
     <BuilderSection title="Exotic Catalyst">
         <div class="catalysts" v-if="catalystItems.length > 0">
-            <div class="catalyst" v-for="item of catalystItems" :key="item.hash">
-                <div class="header">
+            <section class="catalyst" v-for="item of catalystItems" :key="item.hash">
+                <header class="header">
                     <CatalystLabel
                         title="Requirements"
                         :icon="item.requirementIcon"
@@ -101,7 +101,7 @@ function onApplyToggled(catalystHash: ItemHash) {
                         :active="item.hash === props.activeCatalyst?.hash"
                         @toggled="onApplyToggled(item.hash)"
                     ></OptionButton>
-                </div>
+                </header>
 
                 <CatalystLabel
                     v-for="perk of item.sandboxPerks"
@@ -112,7 +112,7 @@ function onApplyToggled(catalystHash: ItemHash) {
                 ></CatalystLabel>
 
                 <StatBonusList class="stats" v-if="item.statBonuses.length > 0" :bonuses="item.statBonuses"></StatBonusList>
-            </div>
+            </section>
         </div>
         <span v-else>This exotic currently has no catalyst.</span>
     </BuilderSection>

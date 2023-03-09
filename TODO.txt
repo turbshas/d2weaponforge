@@ -19,10 +19,8 @@ Preferred order of work:
   - quick access sling
   - figure out full list, will have to search through all perks with insights
 4) Masterworks/weapon features:
-  - year 1 exotic catalysts are going to have to be special case
-    - will need manual setup lookup table for their plug category IDs
-    - will need manual lookup to both not strip the masterwork item from the table and also to consider the weapon's socket a "catalyst socket"
-    - will probably want to pull the icon from the pre-completion catalyst item, but the stats + perk if applicable from the post-completion item
+  - year 1 catalysts will probably want to pull the icon from the pre-completion catalyst item, but the stats + perk if applicable from the post-completion item
+    - there are two legend of acrius weapons
   - move constants out of constants.ts and into more specific locations, like a specific file for
     manifest processing constants (or into the manifest processing file directly if it's the only thing that uses it)
   - crafted exotics are also special
@@ -32,7 +30,6 @@ Preferred order of work:
     - this also works for enhanced intrinsics for legendary weapons, how to include that?
       - legendaries also include this in the reusable plugs on the socket, but that's probably not needed
       - only included on the crafting version of the weapon (with the crafting property on it) - regular weapons don't have it
-  - only keep sandbox perks needed for catalysts, strip everything else
   - weapon ornaments - they contain a weapon screenshot and can change that for the current weapon
   - a few places still use DataSearchStrings, try to clean these up so the constants can be put in a common spot
 5) Convert category ID and trait ID checks to hashes for everything

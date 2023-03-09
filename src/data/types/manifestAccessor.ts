@@ -11,7 +11,8 @@ export class ManifestAccessor {
         return this.manifest.DestinyDamageTypeDefinition[hash];
     }
 
-    public getItemDefinition = (hash: number): DestinyInventoryItemDefinition | undefined => {
+    public getItemDefinition = (hash: number | undefined): DestinyInventoryItemDefinition | undefined => {
+        if (!hash) return undefined;
         return this.manifest.DestinyInventoryItemDefinition[hash];
     }
 
