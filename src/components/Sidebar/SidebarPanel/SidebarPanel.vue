@@ -25,7 +25,7 @@ const limitingDisplayedWeapons = ref(true);
 
 watch(() => props.searchString, () => { limitingDisplayedWeapons.value = true; });
 
-const weapons = computed(() => destinyDataService.weapons);
+const weapons = computed(() => destinyDataService.weapons || []);
 const filters = computed(() => props.appliedFilters);
 const selectedFilters = computed(() => props.selectedFilters);
 

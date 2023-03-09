@@ -25,6 +25,7 @@ interface ICatalystDisplay {
 // TODO: hopefully a better way to do this? The URLs might change with manifest updates.
 const PlaceholderCatalystIcon = "46ebd791f692b682691416beea7ac4c5.jpg";
 const MissingCatalystIcon = "23a04c67f97523cdc0eff0004fae75e1.jpg";
+const ColdheartCatalystHashes = [1249968539, 544137184, 747033132];
 
 const props = defineProps<{
     catalysts: ItemHash[],
@@ -41,8 +42,8 @@ const catalystItems = computed(() => {
     for (const c of props.catalysts) {
         const item = destinyDataService.getCatalystDefinition(c);
         if (!item) continue;
-        if (item.iconUrl.includes(PlaceholderCatalystIcon)
-            || item.iconUrl.includes(MissingCatalystIcon)) continue;
+        if (!ColdheartCatalystHashes.includes(c)
+            && (item.iconUrl.includes(PlaceholderCatalystIcon) || item.iconUrl.includes(MissingCatalystIcon))) continue;
         if (item.mainBonuses.length === 0 && item.sandboxPerks.length === 0) continue;
 
         const displayPerks: ISandboxPerkDisplay[] = [];
