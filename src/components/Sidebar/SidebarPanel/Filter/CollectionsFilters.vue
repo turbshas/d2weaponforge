@@ -43,6 +43,8 @@ const seasonFilters = computed(() => {
     return destinyDataService.seasons
         .filter(s => props.includeSunset || !destinyDataService.isSeasonSunset(s))
         .filter(s => !s.startDate || (new Date(s.startDate) <= currentDate))
+        // Some seasons aren't marked as redacted when they should be.
+        .filter(s => !s.displayProperties.name.toLowerCase().includes("redacted"))
         .map(s => {
             const seasonNumber = s.seasonNumber as SeasonNumber;
             const iconUrl = s.displayProperties.hasIcon

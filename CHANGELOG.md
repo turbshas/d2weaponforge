@@ -1,5 +1,15 @@
 # Changelog
 
+## **TBD** [ *1.5.0* ] TBD
+
+## **Exotic Catalysts** [ *1.5.0* ] 2023-03-09
+
+* Fix charge time/draw time displaying negative on a decrease.
+* Fix Drang/Mida intrinsics showing up in the filters on some languages.
+* Fix redacted seasons showing up in collections filters.
+* Fix not being able to search for sunset weapons (must enable "Include Sunset Weapons" first).
+* Added exotic catalyst panel to display catalyst requirements, perks, and stat bonuses.
+
 ## **Weapon Calculations** [ *1.4.0* ] 2023-03-05
 Adds calculations for weapon properties, a new glossary, and bug fixes.
 

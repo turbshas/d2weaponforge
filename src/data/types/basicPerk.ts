@@ -18,12 +18,13 @@ export abstract class BasicPerk implements IPerk {
         manifest: ManifestAccessor,
         name?: string,
         description?: string,
+        iconUrl?: string,
         ) {
         this.hash = item.hash;
         this.name = name || item.displayProperties.name;
         this.description = description || item.displayProperties.description;
         this.itemTypeDisplayName = item.itemTypeDisplayName;
-        this.iconUrl = item.displayProperties.icon;
+        this.iconUrl = iconUrl || item.displayProperties.icon;
         this.iconWatermarkUrl = item.iconWatermark;
         this.mainBonuses = getBonuses(item, manifest, false);
         this.adeptOrCraftedBonuses = getBonuses(item, manifest, true);

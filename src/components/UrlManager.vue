@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PageSelection, type IMasterwork, type IMod, type ISelectedGear, type ISelectedPerk, type ISelectedPerkMap, type IWeapon, type PerkColumnNumber } from '@/data/interfaces';
+import { PageSelection, type ICatalyst, type IMasterwork, type IMod, type ISelectedGear, type ISelectedPerk, type ISelectedPerkMap, type IWeapon, type PerkColumnNumber } from '@/data/interfaces';
 import { destinyDataService } from '@/data/services';
 import { computed } from '@vue/reactivity';
 import { watch } from 'vue';
@@ -22,6 +22,7 @@ const emits = defineEmits<{
         perks: ISelectedPerkMap<ISelectedPerk>,
         masterwork: IMasterwork | undefined,
         mod: IMod | undefined,
+        catalyst: ICatalyst | undefined,
     ): void,
 }>();
 
@@ -33,6 +34,7 @@ const perk4Hash = computed(() => getPerkHashAtIndex(4));
 const perk5Hash = computed(() => getPerkHashAtIndex(5));
 const masterworkHash = computed(() => props.selectedGear.masterwork.value ? props.selectedGear.masterwork.value.hash : 0);
 const modHash = computed(() => props.selectedGear.mod.value ? props.selectedGear.mod.value.hash : 0);
+const catalystHash = computed(() => props.selectedGear.catalyst.value ? props.selectedGear.catalyst.value.hash : 0);
 
 const hashSuffix = computed(() => useHash ? hashSuffixText : "");
 const basePath = computed(() => `${rootBasePath}${hashSuffix.value}`)
@@ -47,7 +49,18 @@ const path = computed(() => {
         // If no weapon is selected, don't set the path
         if (!weaponHash.value) return undefined;
         const weaponBasePath = `${basePath.value}${weaponSuffixText}${weaponHash.value}`;
-        const perkQuery = `s=${perk1Hash.value},${perk2Hash.value},${perk3Hash.value},${perk4Hash.value},${masterworkHash.value},${modHash.value},${perk5Hash.value}`;
+        const hashes = [
+            perk1Hash.value,
+            perk2Hash.value,
+            perk3Hash.value,
+            perk4Hash.value,
+            masterworkHash.value,
+            modHash.value,
+            perk5Hash.value,
+            catalystHash.value
+        ];
+        const hashesString = hashes.join(",");
+        const perkQuery = `s=${hashesString}`;
         return `${weaponBasePath}?${perkQuery}`;
     }
 });
@@ -66,16 +79,16 @@ function onGameDataChanged() {
     const normalizedUrlString = window.location.href.replace(hashSuffixText, "");
     const url = new URL(normalizedUrlString);
     if (!url.pathname) {
-        emits("urlParsed", PageSelection.Home, undefined, perkMap, undefined, undefined);
+        emits("urlParsed", PageSelection.Home, undefined, perkMap, undefined, undefined, undefined);
         return;
     }
 
     const lowerCasePath = url.pathname.toLocaleLowerCase();
     if (lowerCasePath.includes("glossary")) {
-        emits("urlParsed", PageSelection.Glossary, undefined, perkMap, undefined, undefined);
+        emits("urlParsed", PageSelection.Glossary, undefined, perkMap, undefined, undefined, undefined);
         return;
     } else if (lowerCasePath.includes("compare")) {
-        emits("urlParsed", PageSelection.Compare, undefined, perkMap, undefined, undefined);
+        emits("urlParsed", PageSelection.Compare, undefined, perkMap, undefined, undefined, undefined);
         return;
     }
 
@@ -88,15 +101,14 @@ function onGameDataChanged() {
     const weaponHashString = lowerCasePath.substring(weaponHashStringIndex);
     const urlWeaponHash = Number.parseInt(weaponHashString);
 
-    const urlPerkHashes: number[] = [0, 0, 0, 0, 0, 0, 0]; // Random roll 1, 2, 3, 4, masterwork, mod, origin perk
+    const urlPerkHashes: number[] = [0, 0, 0, 0, 0, 0, 0, 0]; // Random roll 1, 2, 3, 4, masterwork, mod, origin perk, catalyst
     const perkQuery = url.searchParams.get("s");
     if (perkQuery) {
         const perkHashStrings = perkQuery.split(",");
         const parsedHashes = perkHashStrings.map(s => Number.parseInt(s, 10));
-        for (let i = 0; i < urlPerkHashes.length; i++) {
-            if (parsedHashes.length > i && parsedHashes[i]) {
-                urlPerkHashes[i] = parsedHashes[i];
-            }
+        for (let i = 0; i < parsedHashes.length; i++) {
+            const hash = parsedHashes[i];
+            urlPerkHashes[i] = Number.isNaN(hash) ? 0 : hash;
         }
     }
 
@@ -107,6 +119,7 @@ function onGameDataChanged() {
     const perkHashes: [number, number, number, number, number] = [urlPerkHashes[0], urlPerkHashes[1], urlPerkHashes[2], urlPerkHashes[3], urlPerkHashes[6]];
     const masterworkHash = urlPerkHashes[4];
     const modHash = urlPerkHashes[5];
+    const catalystHash = urlPerkHashes[7];
 
     const perks = perkHashes.map((hash, index) => {
         const perkColumn = weapon.perks.perkColumns[index];
@@ -126,8 +139,9 @@ function onGameDataChanged() {
     perkMap[5] = perks[4];
     const masterwork = destinyDataService.getMasterworkDefinition(masterworkHash);
     const mod = destinyDataService.getModDefinition(modHash);
+    const catalyst = destinyDataService.getCatalystDefinition(catalystHash);
 
-    emits("urlParsed", PageSelection.Weapon, weapon, perkMap, masterwork, mod);
+    emits("urlParsed", PageSelection.Weapon, weapon, perkMap, masterwork, mod, catalyst);
 }
 
 function onPathChanged() {

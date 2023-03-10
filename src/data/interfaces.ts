@@ -5,14 +5,8 @@ import type {
     DestinyItemTierTypeDefinition,
     DestinyManifestLanguage,
     DestinyManifestSlice,
-    DestinyPlugSetDefinition,
     DestinySeasonDefinition,
-    DestinySocketCategoryDefinition,
-    DestinySocketTypeDefinition,
-    DestinyStatDefinition,
-    DestinyStatDisplayDefinition,
-    DestinyStatGroupDefinition
-} from "bungie-api-ts/destiny2";
+    DestinyStatDisplayDefinition} from "bungie-api-ts/destiny2";
 import type { ComputedRef, Ref } from "vue";
 
 export type UsedDestinyManifestSlice = DestinyManifestSlice<(
@@ -28,6 +22,7 @@ export type UsedDestinyManifestSlice = DestinyManifestSlice<(
     | "DestinySocketCategoryDefinition"
     | "DestinySocketTypeDefinition"
     | "DestinyPowerCapDefinition"
+    | "DestinyObjectiveDefinition"
 )[]>;
 
 export enum PageSelection {
@@ -71,6 +66,41 @@ export enum ItemTierIndex {
     Exotic = 5,
 }
 
+/** Non-ambient copy of enum. */
+export enum SocketPlugSources {
+    /** If there's no way we can detect to insert new plugs. */
+    None = 0,
+    /**
+     * Use plugs found in the player's inventory, based on the socket type rules (see
+     * DestinySocketTypeDefinition for more info)
+     *
+     * Note that a socket - like Shaders - can have *both* reusable plugs and inventory
+     * items inserted theoretically.
+     */
+    InventorySourced = 1,
+    /**
+     * Use the DestinyItemSocketsComponent.sockets.reusablePlugs property to determine
+     * which plugs are valid for this socket. This may have to be combined with other
+     * sources, such as plug sets, if those flags are set.
+     *
+     * Note that "Reusable" plugs may not necessarily come from a plug set, nor from
+     * the "reusablePlugItems" in the socket's Definition data. They can sometimes be "
+     * randomized" in which case the only source of truth at the moment is still the
+     * runtime DestinyItemSocketsComponent.sockets.reusablePlugs property.
+     */
+    ReusablePlugItems = 2,
+    /**
+     * Use the ProfilePlugSets (DestinyProfileResponse.profilePlugSets) component data
+     * to determine which plugs are valid for this socket.
+     */
+    ProfilePlugSet = 4,
+    /**
+     * Use the CharacterPlugSets (DestinyProfileResponse.characterPlugSets) component
+     * data to determine which plugs are valid for this socket.
+     */
+    CharacterPlugSet = 8,
+}
+
 export enum ItemPerkVisibility {
     Visible = 0,
     Disabled = 1,
@@ -78,6 +108,33 @@ export enum ItemPerkVisibility {
 }
 
 export type ItemHash = number;
+
+export enum StatIndex {
+    Accuracy = 17,
+    AimAssistance = 30,
+    AirborneEffectiveness = 43,
+    AmmoCapacity = 40,
+    BlastRadius = 21,
+    ChargeRate = 19,
+    ChargeTime = 18,
+    DrawTime = 50,
+    GuardEfficiency = 39,
+    GuardEndurance = 41,
+    GuardResistance = 38,
+    Handling = 26,
+    Impact = 15,
+    InventorySize = 25,
+    MagSize = 24,
+    Range = 16,
+    RecoilDirection = 31,
+    ReloadSpeed = 27,
+    Rpm = 14,
+    ShieldDuration = 42,
+    Stability = 22,
+    SwingSpeed = 37,
+    Velocity = 20,
+    Zoom = 32,
+}
 
 export type TraitId =
     "item_type.weapon"
@@ -96,7 +153,8 @@ export type TraitId =
     | "weapon_type.sidearm"
     | "weapon_type.sniper_rifle"
     | "weapon_type.submachinegun"
-    | "weapon_type.sword";
+    | "weapon_type.sword"
+    | "item_type.exotic_catalyst";
 
 export type WeaponCategoryRegex =
     ".*_auto_rifle"
@@ -180,6 +238,8 @@ export interface Destiny2GameData {
     perkLookup: IPerkLookup;
     masterworkLookup: LookupMap<ItemHash, IMasterwork>;
     modLookup: LookupMap<ItemHash, IMod>;
+    catalystLookup: LookupMap<ItemHash, ICatalyst>;
+    sandboxPerkLookup: LookupMap<ItemHash, ISandboxPerk>;
 
     perkInsights: IPerkInsightCollection;
     collectionsLists: ICollectionsLists;
@@ -207,6 +267,7 @@ export interface ISelectedGear {
     perkOptionsList: ComputedRef<(ISelectedPerk | undefined)[]>;
     masterwork: Ref<IMasterwork | undefined>;
     mod: Ref<IMod | undefined>;
+    catalyst: Ref<ICatalyst | undefined>;
 
     modifiedWeaponStats: ComputedRef<IModifiedStat[]>;
     modifiedWeaponDisplayStats: ComputedRef<IModifiedStat[]>;
@@ -222,6 +283,8 @@ export interface IModifiedStat {
     statHash: number;
     statName: string;
     statDisplay: DestinyStatDisplayDefinition | undefined;
+    /** Whether the stat modification was good or bad. */
+    isBenefit: boolean;
     baseStat: number;
     modifiedStat: number;
 }
@@ -248,6 +311,7 @@ export interface IWeapon {
     curated: IPerkGrid;
     masterworks: ItemHash[];
     mods: ItemHash[];
+    catalysts: ItemHash[];
     seasonHash: number | undefined;
 }
 
@@ -316,6 +380,24 @@ export interface IPerkBonus {
 
 export interface IMasterwork extends IPerk { }
 export interface IMod extends IPerk { }
+export interface ICatalyst extends IPerk {
+    sandboxPerks: ItemHash[];
+    unlockRequirements: ICatalystUnlockRequirement[];
+}
+
+export interface ISandboxPerk {
+    index: number;
+    hash: ItemHash;
+    name: string;
+    description: string;
+    iconUrl: string;
+    damageTypeHash?: ItemHash;
+}
+
+export interface ICatalystUnlockRequirement {
+    description: string;
+    completionValue: number;
+}
 
 export interface IWeaponTypeInfo {
     /** User-friendly name of the weapon type. */
@@ -458,8 +540,12 @@ export enum PerkHash {
     Demolitionist = 3523296417,
     DemolitionistEnhanced = 1906147653,
     Desperado = 3047969693,
+    DesperadoEnhanced = 624891305,
     DisruptionBreak = 1683379515,
     Dragonfly = 2848615171,
+    DropMag = 4134353779,
+    DuelistsTrance = 3705817207,
+    DuelistsTranceEnhanced = 1646437399,
     DynamicSwayReduction = 1359896290,
     DynamicSwayReductionEnhanced = 3060983774,
     EagerEdge = 2077819806,
@@ -477,6 +563,7 @@ export enum PerkHash {
     ExplosivePayload = 3038247973,
     EyeOfTheStorm = 699525795,
     FeedingFrenzy = 2779035018,
+    FeedingFrenzyEnhanced = 1171147302,
     FieldPrep = 2869569095,
     Firefly = 3824105627,
     FiringLine = 1771339417,
@@ -519,11 +606,13 @@ export enum PerkHash {
     Incandescent = 4293542123,
     IncandescentEnhanced = 2675184851,
     InvaderTracker = 515704826,
+    KeepAway = 3619207468,
     Kickstart = 1754714824,
     KillClip = 1015611457,
     KillClipEnhanced = 2923251173,
     KillingTally = 557221067,
     KillingWind = 2450788523,
+    KineticTremors = 3891536761,
     LandTank = 1536798515,
     LastingImpression = 3927722942,
     LeadFromGold = 1556840489,
@@ -544,6 +633,7 @@ export enum PerkHash {
     OpeningShot = 47981717,
     Outlaw1 = 1168162263,
     Outlaw2 = 1528281896,
+    OutlawEnhanced = 1347741687,
     Overflow = 3643424744,
     OverflowEnhanced = 2682205016,
     PerfectFloat = 2272927194,
@@ -571,6 +661,7 @@ export enum PerkHash {
     Recombination = 469285294,
     RecombinationEnhanced = 3335686050,
     Reconstruction = 1523832109,
+    ReconstructionEnhanced = 461595545,
     Redirection = 3201496230,
     RedirectionEnhanced = 1545231802,
     RelentlessStrikes = 1749209109,
@@ -579,12 +670,15 @@ export enum PerkHash {
     ReservoirBurst = 1427256713,
     RewindRounds = 3418782618,
     SeraphRounds = 1140096971,
+    ShatteringBlade = 818211479,
     ShieldDisorient = 3275789089,
     ShootToLoot = 3700496672,
+    ShotSwap = 2586829431,
     SkulkingWolf = 3989629871,
     SleightOfHand = 2172504645,
     SleightOfHandEnhanced = 1172098417,
     Slickdraw = 1821614984,
+    SlickdrawEnhanced = 1942880504,
     Slideshot = 3161816588,
     Slideways = 2039302152,
     SlidewaysEnhanced = 2396422520,
@@ -603,15 +697,21 @@ export enum PerkHash {
     Surplus = 3436462433,
     Surrounded = 3708227201,
     SurroundedEnhanced = 781192741,
+    SwapMag = 3721627275,
     Swashbuckler = 4082225868,
     SwashbucklerEnhanced = 1161469972,
     SympatheticArsenal = 3350417888,
     SympatheticArsenalEnhanced = 1537607344,
     TapTheTrigger = 1890422124,
     TapTheTriggerEnhanced = 1523649716,
+    TargetLock = 365154968,
+    TargetLockEnhanced = 2939589096,
     ThreatDetector = 4071163871,
+    ThreatDetectorEnhanced = 494941759,
     Thresh = 2726471870,
     ThreshEnhanced = 1172413778,
+    TiltingAtWindmills = 3526486541,
+    TiltingAtWindmillsEnhanced = 1738338041,
     TimedPayload = 1954620775,
     TirelessBlade = 2590710093,
     ToExcess = 1905044254,
@@ -619,6 +719,7 @@ export enum PerkHash {
     TripleTap = 3400784728,
     TripleTapEnhanced = 573122728,
     TunnelVision = 2946784966,
+    Turnabout = 2209918983,
     TurnaboutEnhanced = 2000295559,
     Underdog = 205890336,
     UnderOver = 1870851715,

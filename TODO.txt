@@ -5,14 +5,8 @@ Preferred order of work:
   - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
   - https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Offline_Service_workers
   - https://web.dev/learn/pwa/progressive-web-apps/
-3) Extras panel:
-- reload speed calculator
-- handling speed calculator
-  - quick access sling
-- damage fall off calculator for the remaining weapon types
-  - hip fire grip multiplies hip fire range by 1.2x
-4) Inventory size calculator
-5) Perk effect selection
+3) Perk effect selection
+  - hip fire grip
   - surplus
   - elemental capacitor
   - field prep
@@ -22,7 +16,24 @@ Preferred order of work:
   - slideways
   - well rounded
   - reservoir burst
+  - quick access sling
   - figure out full list, will have to search through all perks with insights
+4) Masterworks/weapon features:
+  - crafted exotics are also special
+    - maybe move origin perks into a dedicated slot in SelectedGear? Then perks panel and selected perks can just expand to whatever is in SelectedPerksMap
+    - for an intrinsic perk, check if it has a plug set associated with it
+    - attach that set to the intrinsic
+    - allow toggling through all the options by clicking on the intrinsic?
+    - this also works for enhanced intrinsics for legendary weapons, how to include that?
+      - legendaries also include this in the reusable plugs on the socket, but that's probably not needed
+      - only included on the crafting version of the weapon (with the crafting property on it) - regular weapons don't have it
+  - weapon ornaments - they contain a weapon screenshot and can change that for the current weapon
+  - a few places still use DataSearchStrings, try to clean these up so the constants can be put in a common spot
+5) Convert category ID and trait ID checks to hashes for everything
+  - can rework some stuff too, may need to remove custom catalyst checks
+6) Updating perk insights
+  - need to add new ones
+  - need to add catalyst perks if there is info on them
 
 
 compare section:
@@ -38,20 +49,17 @@ compare section:
     - if this is done, and "add to comparisons" is clicked - remove the previous one?
 
 Unsure about order:
+- update perk insights for origin perks, exotic perks, and to include swords stats
+- better support for crafted weapons, especially crafted exotics (enhanced intrinsic)
 - update weapon formulas when data becomes available (some values are placeholder constants right now)
 - "calculations" panel for damage falloff/handling/reload/reserves/etc.
   - make extras panel -> options panel and split out the calculations
   - implement dps/ttk calculations
   - load weapon formulas into the indexed db, retrieve from destiny data service
 - Convert masterwork panel to list of icons for each masterwork (with tooltip) instead of buttons + bar?
-- ordering weapons by release date to the API (might have to be manual)
-  - if picking limited scrolling for unfiltered weapon list, make sure to grab latest weapons somehow
-  - I actually like the ordering as I have it now...
-  - maybe push that one braytech rwp weapon to the bottom?
 
 Bugs:
-- change drang/mida mini-tool intrinsic checks to use hashes
-- charge time reduction (good) is shown as red (bad)
+- perk bonuses display bonuses that aren't applicable to that weapon, e.g. charge time on bows or magazine on swords
 
 Filter features:
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
@@ -60,22 +68,21 @@ Filter features:
 - only load collection lists + a few other filter-only properties from cache when opening the filter
   - it is an async component so it'll take some time anyway
 
-Masterworks/weapon features:
-- exotic catalyst support
-
 Load times:
 - load background image after manifest has loaded to ensure it doesn't delay page load on low speed connections
   - the home page loads until the background fills in, then it transitions to the weapon page
 - show that page is refreshing when game data is being reloaded
 
 Tech debt/processing:
+- convert things like weapon category regex to my own enum I can use universally
+  - would probably save some space and would simplify a few places constants are duplicated
+- to find craftable weapons, find all items with a craftable.outputItemHash and build a lookup map with those
 - involve stat display override when creating masterworks in DestinyManifestProcessor
 - filter armour plugs out of the kept data (definitely shows up as intrinsics, maybe others too...)
 - change PerkColumnNumber to something better
 - convert Item Tier Index to hash, as those are stable
 - convert as many ID comparisons, etc. as possible to hashes
 - Move constants into class/interface, add Destiny2GameData as a property to be cached (hopefully reduce bundle size)
-- break up filter window into components somehow
 - styling cleanup:
   - put common values into variables in base.css
   - convert to using rem instead of px
@@ -86,8 +93,6 @@ Research:
 - if possible, some feedback from the URL -> weapon list so that the weapon in the URL gets loaded first?
 - make use of inventory size stat
 - look into precision damage stat, maybe can include that?
-- look into weapon ready/stow stat?
-- look into ADS stat?
 - better solution for dealing with enums from bungie-api-ts and isolatedModules?
 - look into using getDestinyEntityDefinition and DestinyInventoryItemLiteDefinition to improve load times?
   - DestinyInventoryItemLiteDefinition doesn't have all the info we need, but is ~1/3 the uncompressed size as the normal table

@@ -54,6 +54,7 @@ export class DestinyDataService {
     }
 
     public getImageUrl = (imgFileName: string) => {
+        if (!imgFileName) return "";
         return `https://www.bungie.net${imgFileName}`;
     }
 
@@ -85,6 +86,16 @@ export class DestinyDataService {
     public getModDefinition = (modHash: ItemHash | undefined) => {
         if (!modHash) return undefined;
         return this.gameData?.modLookup[modHash];
+    }
+
+    public getCatalystDefinition = (hash: ItemHash | undefined) => {
+        if (!hash || !this.gameData) return undefined;
+        return this.gameData.catalystLookup[hash];
+    }
+
+    public getSandboxPerkDefinition = (hash: ItemHash | undefined) => {
+        if (!hash || !this.gameData) return undefined;
+        return this.gameData.sandboxPerkLookup[hash];
     }
 
     // Notes

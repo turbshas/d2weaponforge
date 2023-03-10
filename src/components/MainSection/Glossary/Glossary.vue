@@ -23,7 +23,7 @@ const allPerkPairs = computed(() => destinyDataService.perkPairs);
 const perkPairsWithInsight = computed(() => {
     const perkInsights = weaponPerkInsights.value;
     if (!perkInsights) return [];
-    const pairs = allPerkPairs.value.filter(p => !!perkInsights[p.perk as PerkHash] && (!p.enhanced || !!perkInsights[p.enhanced as PerkHash]));
+    const pairs = allPerkPairs.value.filter(p => !!perkInsights[p.perk as PerkHash] || !!perkInsights[p.enhanced as PerkHash]);
     return pairs;
 });
 

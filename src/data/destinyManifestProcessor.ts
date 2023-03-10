@@ -1,19 +1,22 @@
-import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition } from "bungie-api-ts/destiny2";
-import { AllowedPlugCategoryIds, AllPerkPlugCategoryIds, ModPlugCategoryIds } from "./constants";
-import { ItemTierIndex, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type ItemHash, type IWeaponTypeInfo, type LookupMap, type UsedDestinyManifestSlice, type WeaponCategoryRegex } from "./interfaces";
+import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinySandboxPerkDefinition } from "bungie-api-ts/destiny2";
+import { ItemTierIndex, type ICatalyst, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type ISandboxPerk, type ItemHash, type IWeaponTypeInfo, type LookupMap, type UsedDestinyManifestSlice, type WeaponCategoryRegex } from "./interfaces";
+import { AllowedPlugCategoryMap, AllPerkPlugCategoryMap, ExcludedItemsMap, ModPlugCategoryMap, PlugCategoryId, TraitId, Year1ExoticCatalystPlugCategoryMap } from "./processingConstants";
 import { DataSearchStrings } from "./services/dataSearchStringService";
+import { Catalyst } from "./types/catalyst";
 import { ManifestAccessor } from "./types/manifestAccessor";
 import { Masterwork } from "./types/masterwork";
 import { Mod } from "./types/mod";
 import { Perk } from "./types/perk";
+import { SandboxPerk } from "./types/sandboxPerk";
 import { Weapon } from "./types/weapon";
-import { arrayToExistenceMap, arrayToHashMap, hashMapToArray } from "./util";
+import { arrayToHashMap, hashMapToArray } from "./util";
 
 interface IGroupedItems {
     weapons: DestinyInventoryItemDefinition[];
     perks: DestinyInventoryItemDefinition[];
     masterworks: DestinyInventoryItemDefinition[];
     mods: DestinyInventoryItemDefinition[];
+    catalysts: DestinyInventoryItemDefinition[];
 }
 
 export class DestinyManifestProcessor {
@@ -23,6 +26,8 @@ export class DestinyManifestProcessor {
     private readonly _perkLookup: IPerkLookup;
     private readonly _masterworkLookup: LookupMap<ItemHash, IMasterwork>;
     private readonly _modLookup: LookupMap<ItemHash, IMod>;
+    private readonly _catalystLookup: LookupMap<ItemHash, ICatalyst>;
+    private readonly _sandboxPerkLookup: LookupMap<ItemHash, ISandboxPerk>;
     private readonly _itemCategories: DestinyItemCategoryDefinition[];
 
     constructor(manifestSlice: UsedDestinyManifestSlice) {
@@ -35,6 +40,8 @@ export class DestinyManifestProcessor {
         this._perkLookup = this.processPerks(groupedItems.perks);
         this._masterworkLookup = arrayToHashMap(this.processMasterworks(groupedItems.masterworks), "hash");
         this._modLookup = arrayToHashMap(this.processMods(groupedItems.mods), "hash");
+        this._catalystLookup = arrayToHashMap(this.processCatalysts(groupedItems.catalysts), "hash");
+        this._sandboxPerkLookup = this.processSandboxPerks(manifestSlice.DestinySandboxPerkDefinition);
 
         this._weapons = this.processWeapons(groupedItems.weapons, this._perkLookup, this._masterworkLookup, this._modLookup);
         this._weaponTypes = this.processArchetypes(this._weapons, this._perkLookup);
@@ -44,18 +51,20 @@ export class DestinyManifestProcessor {
         // Remove everything we don't need - this makes loading from cache much faster (and actually usable).
         // Only doing this for DestinyInventoryItemDefinition as it is by far the largest table.
         // The others are fairly small and don't need this.
-        const itemHashesToRemove: number[] = [];
+        const itemHashesToRemove: ItemHash[] = [...ExcludedItemsMap];
         for (const key in this.manifest.slice.DestinyInventoryItemDefinition) {
             const item = this.manifest.slice.DestinyInventoryItemDefinition[key];
             
-            const isWeapon = !!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.Weapon)
+            const isWeapon = !!item.traitIds && item.traitIds.includes(TraitId.Weapon)
                 && !!item.screenshot // Some weapons don't have screenshots - probably for the crafting menu.
                 && !!item.quality
                 && !!item.quality.infusionCategoryHash; // Others don't have an infusion category, probably also crafting related.
-            const isModOrPerk = item.plug && AllowedPlugCategoryIds.value.includes(item.plug.plugCategoryIdentifier);
-            const isMasterwork = item.plug && item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
+            const isModOrPerk = !!item.plug && !!AllowedPlugCategoryMap[item.plug.plugCategoryIdentifier];
+            const isMasterwork = item.plug && item.plug.plugCategoryIdentifier.includes(PlugCategoryId.WeaponMasterworkComponent);
+            const isCatalyst = (!!item.traitIds && item.traitIds.includes(TraitId.ExoticCatalyst))
+                || (!!item.plug && !!Year1ExoticCatalystPlugCategoryMap[item.plug.plugCategoryIdentifier]);
 
-            if (!isWeapon && !isModOrPerk && !isMasterwork) {
+            if (!isWeapon && !isModOrPerk && !isMasterwork && !isCatalyst) {
                 itemHashesToRemove.push(item.hash);
             }
         }
@@ -90,10 +99,8 @@ export class DestinyManifestProcessor {
             perks: [],
             masterworks: [],
             mods: [],
+            catalysts: [],
         };
-
-        const perkPlugCategoryIdMap = arrayToExistenceMap(AllPerkPlugCategoryIds.value);
-        const modPlugCategoryIdMap = arrayToExistenceMap(ModPlugCategoryIds.value);
 
         for (const key in this.manifest.slice.DestinyInventoryItemDefinition) {
             const item = this.manifest.slice.DestinyInventoryItemDefinition[key];
@@ -103,17 +110,19 @@ export class DestinyManifestProcessor {
 
             const isWeapon =
                 // If no categories, probably not an item we care about.
-                !!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.Weapon)
+                !!item.traitIds && item.traitIds.includes(TraitId.Weapon)
                 // Some weapons don't have screenshots (including some duplicates) - probably for the crafting menu.
                 && !!item.screenshot
                 // Others don't have an infusion category, probably also crafting related.
                 && !!item.quality
                 && (!!item.quality.infusionCategoryHash
                     || (!!item.quality.infusionCategoryHashes && item.quality.infusionCategoryHashes.length > 0));
-            const isPerk = !!item.plug && !!perkPlugCategoryIdMap[item.plug.plugCategoryIdentifier];
-            const isMod = !!item.plug && !!modPlugCategoryIdMap[item.plug.plugCategoryIdentifier];
+            const isPerk = !!item.plug && !!AllPerkPlugCategoryMap[item.plug.plugCategoryIdentifier];
+            const isMod = !!item.plug && !!ModPlugCategoryMap[item.plug.plugCategoryIdentifier];
             const isMasterwork = !!item.plug
-                && item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
+                && item.plug.plugCategoryIdentifier.includes(PlugCategoryId.WeaponMasterworkComponent);
+            const isCatalyst = (!!item.traitIds && item.traitIds.includes(TraitId.ExoticCatalyst))
+                || (!!item.plug && !!Year1ExoticCatalystPlugCategoryMap[item.plug.plugCategoryIdentifier]);
 
             if (isWeapon) {
                 grouped.weapons.push(item);
@@ -123,6 +132,8 @@ export class DestinyManifestProcessor {
                 grouped.mods.push(item);
             } else if (isMasterwork) {
                 grouped.masterworks.push(item);
+            } else if (isCatalyst) {
+                grouped.catalysts.push(item);
             }
         }
 
@@ -156,8 +167,8 @@ export class DestinyManifestProcessor {
             if (!itemTier) continue;
 
             const perk = new Perk(perkItem, this.manifest);
-            const isIntrinsic = perkItem.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.IntrinsicPlug;
-            if (itemTier.index === ItemTierIndex.Common || isIntrinsic) {
+            const isIntrinsic = perkItem.plug.plugCategoryIdentifier === PlugCategoryId.Intrinsic;
+            if (itemTier.index !== ItemTierIndex.Uncommon || isIntrinsic) {
                 normalPerks.push(perk);
             } else if (itemTier.index === ItemTierIndex.Uncommon) {
                 enhancedPerks.push(perk);
@@ -173,7 +184,7 @@ export class DestinyManifestProcessor {
                 perk: perk.hash,
                 enhanced: undefined,
             };
-            if (perk.categoryId === DataSearchStrings.CategoryIDs.FramesPlug) {
+            if (perk.categoryId === PlugCategoryId.Frames) {
                 // Searching through the array could be slow, so only bother for perks that CAN be enhanced.
                 const enhancedPerk = enhancedPerkNameMap[perk.name] || enhancedPerks.find(e => e.name.includes(perk.name));
                 perkPair.enhanced = enhancedPerk?.hash;
@@ -200,6 +211,21 @@ export class DestinyManifestProcessor {
         return masterworks.map(mw => new Masterwork(mw, undefined, this.manifest));
     }
 
+    private readonly processCatalysts = (catalysts: DestinyInventoryItemDefinition[]) => {
+        return catalysts.map(c => new Catalyst(c, this.manifest));
+    }
+
+    private readonly processSandboxPerks = (sandboxPerkTable: { [hash: number]: DestinySandboxPerkDefinition }) => {
+        const sandboxPerks: ISandboxPerk[] = [];
+        for (const key in sandboxPerkTable) {
+            const item = sandboxPerkTable[key];
+            if (item.isDisplayable) {
+                sandboxPerks.push(new SandboxPerk(item));
+            }
+        }
+        return arrayToHashMap(sandboxPerks, "hash");
+    }
+
     private readonly processArchetypes = (weapons: Weapon[], perkLookup: IPerkLookup) => {
         const activeWeapons = weapons.filter(w => !w.isSunset);
 
@@ -215,14 +241,13 @@ export class DestinyManifestProcessor {
         for (const weapon of activeWeapons) {
             if (!weapon.archetype || (weapon.tierTypeIndex !== ItemTierIndex.Legendary)) continue;
             
-            // Exclude Drang/Mini-Tool unique intrinsics.
-            const weaponNameLower = weapon.name.toLocaleLowerCase();
-            if (weaponNameLower.includes(DataSearchStrings.Misc.DrangName.value.toLocaleLowerCase())
-                || weaponNameLower.includes(DataSearchStrings.Misc.MidaMiniToolName.value.toLocaleLowerCase())) continue;
-
             const weaponTypeTraitId = weapon.traitId;
             const archetypePerk = perkLookup.normal[weapon.archetype.intrinsicPerkHash];
             if (!archetypePerk) continue;
+            // Exclude Drang/Mini-Tool unique intrinsics.
+            if (archetypePerk.hash === DataSearchStrings.Misc.DrangIntrinsicHash
+                || archetypePerk.hash === DataSearchStrings.Misc.MidaMiniToolIntrinsicHash) continue;
+
             const archetypeName = archetypePerk.name;
 
             const weaponRpmStatHash = weapon.archetype.rpmStatHash;
@@ -241,9 +266,9 @@ export class DestinyManifestProcessor {
                     weaponCategoryRegex: weapon.weaponCategoryRegex,
                     weaponCategoryHash: category.hash,
                     // Hide RPM for bows and swords - bows are inconsistent and swords don't have one that makes sense.
-                    showRpm: weaponTypeTraitId !== DataSearchStrings.TraitIDs.Bow && weaponTypeTraitId !== DataSearchStrings.TraitIDs.Sword,
+                    showRpm: weaponTypeTraitId !== TraitId.Bow && weaponTypeTraitId !== TraitId.Sword,
                     // Sidearms have duplicate adaptive frames but differing RPM, so make sure to actually compare with RPM.
-                    compareUsingRpm: weaponTypeTraitId === DataSearchStrings.TraitIDs.Sidearm,
+                    compareUsingRpm: weaponTypeTraitId === TraitId.Sidearm,
                     rpmUnits: weapon.archetype.rpmUnits,
                     archetypes: [],
                 };
@@ -272,6 +297,8 @@ export class DestinyManifestProcessor {
     public get perkLookup() { return this._perkLookup; }
     public get masterworkLookup() { return this._masterworkLookup; }
     public get modLookup() { return this._modLookup; }
+    public get catalystLookup() { return this._catalystLookup; }
+    public get sandboxPerkLookup() { return this._sandboxPerkLookup; }
 
     public get damageTypes() { return hashMapToArray(this.manifest.slice.DestinyDamageTypeDefinition); }
     public get damageTypeLookup() { return this.manifest.slice.DestinyDamageTypeDefinition; }

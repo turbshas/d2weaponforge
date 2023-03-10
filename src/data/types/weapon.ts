@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
-import { WeaponTypeTraitToRegex } from "../constants";
-import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type ItemHash, type IWeapon, type LookupMap, type TraitId, type WeaponCategoryRegex } from "../interfaces";
+import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type ItemHash, type IWeapon, type LookupMap, type WeaponCategoryRegex } from "../interfaces";
+import { TraitId, WeaponTypeTraitToRegex } from "../processingConstants";
 import { DataSearchStrings } from "../services/dataSearchStringService";
 import { Archetype } from "./archetype";
 import { DamageType } from "./damageType";
@@ -33,6 +33,7 @@ export class Weapon implements IWeapon {
     public readonly curated: PerkGrid;
     public readonly masterworks: ItemHash[];
     public readonly mods: ItemHash[];
+    public readonly catalysts: ItemHash[];
 
     // TODO: is this possible?
     public readonly seasonHash: number | undefined;
@@ -57,7 +58,7 @@ export class Weapon implements IWeapon {
         this.tierTypeIndex = getWeaponTierTypeIndex(weaponItem, manifest);
 
         this.traitId = getWeaponTraitId(weaponItem);
-        this.weaponCategoryRegex = WeaponTypeTraitToRegex.value[this.traitId]!;
+        this.weaponCategoryRegex = WeaponTypeTraitToRegex[this.traitId]!;
 
         this.damageType = new DamageType(weaponItem, manifest);
         const statGroup = weaponItem.stats && weaponItem.stats.statGroupHash
@@ -79,8 +80,10 @@ export class Weapon implements IWeapon {
             ? baseMods.concat(resolvedWeaponSockets.adeptMods)
             : baseMods;
 
+        this.catalysts = resolvedWeaponSockets.catalysts;
+
         // This is gross, but meh it seems to work.
-        const isAutoTraitId = this.traitId === DataSearchStrings.TraitIDs.AutoRifle;
+        const isAutoTraitId = this.traitId === TraitId.AutoRifle;
         const hasTraceRifleRpm = this.archetype && this.archetype.rpmStatValue && this.archetype.rpmStatValue >= 1000;
         if (isAutoTraitId && hasTraceRifleRpm) {
             this.weaponCategoryRegex = DataSearchStrings.WeaponCategoryRegex.TraceRifle as WeaponCategoryRegex;

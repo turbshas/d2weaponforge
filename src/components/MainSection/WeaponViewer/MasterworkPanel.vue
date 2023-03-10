@@ -124,17 +124,17 @@ const masterworkLevelSliderLabel = "Masterwork Level Slider";
 
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .types {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
 }
 
 .type {
-    margin-bottom: 8px;
-    margin-right: 8px;
+    margin-bottom: 0.5rem;
+    margin-right: 0.5rem;
 }
 
 .level {
@@ -149,18 +149,18 @@ const masterworkLevelSliderLabel = "Masterwork Level Slider";
     flex-direction: column;
     justify-content: center;
 
-    width: 24px;
-    height: 24px;
+    width: 1.5rem;
+    height: 1.5rem;
     box-sizing: content-box;
-    margin-right: 8px;
-    padding: 8px;
+    margin-right: 0.5rem;
+    padding: 0.5rem;
 
     background-color: hsla(0, 0%, 100%, 0.05);
     box-shadow: inset 0 0 0 1px #f5f5f5;
 
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 500;
-    line-height: 20px;
+    line-height: 1.25rem;
     letter-spacing: 2px;
     text-transform: uppercase;
     text-decoration: none;
@@ -175,30 +175,31 @@ const masterworkLevelSliderLabel = "Masterwork Level Slider";
     flex-direction: row;
     align-items: center;
     position: relative;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 1rem;
+    padding-right: 1rem;
     box-shadow: inset 0 0 0 1px #f5f5f5;
-}
-.slider-wrapper::before, .slider-wrapper::after {
-    content: "";
-    pointer-events: none;
-    position: absolute;
-    top: 50%;
-    width: 8px;
-    height: 8px;
-    z-index: 1;
 
-    background-color: #1d1c25;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #fafafa;
-    transform: translateY(-50%) rotate(45deg);
-}
-.slider-wrapper::before {
-    left: calc(16px + 2px);
-}
-.slider-wrapper::after {
-    right: calc(16px + 2px);
+    &::before, &::after {
+        content: "";
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        width: 0.5rem;
+        height: 0.5rem;
+        z-index: 1;
+
+        background-color: #1d1c25;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #fafafa;
+        transform: translateY(-50%) rotate(45deg);
+    }
+    &::before {
+        left: calc(1rem + 2px);
+    }
+    &::after {
+        right: calc(1rem + 2px);
+    }
 }
 
 .slider {
@@ -206,30 +207,31 @@ const masterworkLevelSliderLabel = "Masterwork Level Slider";
     -webkit-appearance: none;
     -moz-appearance: none;
     width: 100%;
-    padding-top: 1.6px;
-    padding-bottom: 1.6px;
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
     cursor: pointer;
-}
-.slider::-webkit-slider-runnable-track, .slider::-moz-range-track {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-color: #fafafa;
-    height: 2px
-}
-.slider::-webkit-slider-thumb, .slider::-moz-range-thumb {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
 
-    width: 16px;
-    height: 16px;
-    position: relative;
-    background-color: #1d1c25;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #fafafa;
-    cursor: grab;
-    transform: rotate(45deg);
+    &::-webkit-slider-runnable-track, &::-moz-range-track {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: #fafafa;
+        height: 0.125rem;
+    }
+    &::-webkit-slider-thumb, &::-moz-range-thumb {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+
+        width: 1rem;
+        height: 1rem;
+        position: relative;
+        background-color: #1d1c25;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #fafafa;
+        cursor: grab;
+        transform: rotate(45deg);
+    }
 }
 </style>

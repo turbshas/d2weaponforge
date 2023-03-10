@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import PerkPanelBackground from "@/assets/perk_panel_background.svg";
-import type { IArchetype, IMasterwork, IMod, ISelectedPerk, ISelectedPerkMap } from '@/data/interfaces';
+import type { IArchetype, ICatalyst, IMasterwork, IMod, ISelectedPerk, ISelectedPerkMap } from '@/data/interfaces';
 import { destinyDataService } from '@/data/services';
 import { computed } from 'vue';
 import PerkDisplay from '../../../Common/PerkDisplay.vue';
 
 const props = defineProps<{
+    columnHasPerksMap: ISelectedPerkMap<boolean>,
     intrinsic: IArchetype | undefined,
     selectedPerks: ISelectedPerkMap<ISelectedPerk>,
     masterwork: IMasterwork | undefined,
     mod: IMod | undefined,
+    catalyst: ICatalyst | undefined,
     isAdept: boolean,
 }>();
 
@@ -17,8 +19,6 @@ const backgroundUrl = computed(() => PerkPanelBackground);
 
 const intrinsicPerk = computed(() => destinyDataService.getPerkDefinition(props.intrinsic?.intrinsicPerkHash));
 const originPerk = computed(() => destinyDataService.getPerkDefinition(props.selectedPerks[5]?.perkOption.perk));
-const masterworkPerk = computed(() => destinyDataService.getMasterworkDefinition(props.masterwork?.hash));
-const modPerk = computed(() => destinyDataService.getModDefinition(props.mod?.hash));
 
 const perk1 = computed(() => destinyDataService.getPerkDefinition(props.selectedPerks[1]?.perkOption.perk));
 const perk1Crafting = computed(() => props.selectedPerks[1]?.perkOption.craftingInfo);
@@ -65,6 +65,7 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
+            v-if="props.columnHasPerksMap[1]"
             :perk="perk1"
             :crafting-info="perk1Crafting"
             :column="1"
@@ -75,6 +76,7 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
+            v-if="props.columnHasPerksMap[2]"
             :perk="perk2"
             :crafting-info="perk2Crafting"
             :column="2"
@@ -85,6 +87,7 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
+            v-if="props.columnHasPerksMap[3]"
             :perk="perk3"
             :enhanced="isPerk3Enhanced"
             :crafting-info="perk3Crafting"
@@ -97,6 +100,7 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
+            v-if="props.columnHasPerksMap[4]"
             :perk="perk4"
             :enhanced="isPerk4Enhanced"
             :crafting-info="perk4Crafting"
@@ -109,7 +113,7 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
-            v-if="!!originPerk"
+            v-if="!!originPerk && props.columnHasPerksMap[5]"
             :perk="originPerk"
             :crafting-info="undefined"
             :column="5"
@@ -120,8 +124,8 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
-            v-if="!!masterworkPerk"
-            :perk="masterworkPerk"
+            v-if="!!props.catalyst"
+            :perk="props.catalyst"
             :crafting-info="undefined"
             :column="undefined"
             :is-adept="props.isAdept"
@@ -132,8 +136,20 @@ function onPerk4Clicked() {
 
         <PerkDisplay
             class="perk"
-            v-if="!!modPerk"
-            :perk="modPerk"
+            v-if="!!props.masterwork"
+            :perk="props.masterwork"
+            :crafting-info="undefined"
+            :column="undefined"
+            :is-adept="props.isAdept"
+            :selected="false"
+            :retired="false"
+            full-size
+        ></PerkDisplay>
+
+        <PerkDisplay
+            class="perk"
+            v-if="!!props.mod"
+            :perk="props.mod"
             :crafting-info="undefined"
             :column="undefined"
             :is-adept="props.isAdept"

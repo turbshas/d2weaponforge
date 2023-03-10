@@ -2,7 +2,7 @@ import FlagIcons from "@/assets/FlagIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import WeaponIcons from "@/assets/WeaponIcons";
 import { computed } from "vue";
-import { Collection, type ILanguageInfo, type IWeaponRangeValues, type LookupMap, type SeasonNumber, type TraitId, type WeaponCategoryRegex } from "./interfaces";
+import { Collection, type ILanguageInfo, type LookupMap, type SeasonNumber, type WeaponCategoryRegex } from "./interfaces";
 import { DataSearchStrings } from "./services/dataSearchStringService";
 
 export const LanguageInfos = computed<ILanguageInfo[]>(() => [
@@ -21,90 +21,6 @@ export const LanguageInfos = computed<ILanguageInfo[]>(() => [
     { language: "zh-cht", flagIcon: FlagIcons.ZH_CHT, text: "漢語", },
 ]);
 export const EnglishLanguageIndex = computed(() => LanguageInfos.value.findIndex(l => l.language === "en"));
-
-export const WeaponTraitIdMainStatMap = computed<LookupMap<TraitId, number>>(() => {
-    return {
-        [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.StatIndices.DrawTime,
-        [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.StatIndices.ChargeTime,
-        [DataSearchStrings.TraitIDs.LinearFusion]: DataSearchStrings.StatIndices.ChargeTime,
-        [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.StatIndices.Impact,
-    };
-});
-// All other weapons types use RPM.
-export const DefaultWeaponMainStat = computed(() => DataSearchStrings.StatIndices.Rpm);
-
-export const ValidPerkPlugCategories = computed(() => [
-    DataSearchStrings.CategoryIDs.BarrelsPlug,
-    DataSearchStrings.CategoryIDs.BladesPlug,
-    DataSearchStrings.CategoryIDs.BowstringsPlug,
-    DataSearchStrings.CategoryIDs.HaftsPlug,
-    DataSearchStrings.CategoryIDs.ScopesPlug,
-    DataSearchStrings.CategoryIDs.TubesPlug,
-
-    DataSearchStrings.CategoryIDs.ArrowsPlug,
-    DataSearchStrings.CategoryIDs.BatteriesPlug,
-    DataSearchStrings.CategoryIDs.GuardsPlug,
-    DataSearchStrings.CategoryIDs.MagazinesPlug,
-    DataSearchStrings.CategoryIDs.MagazinesGLPlug,
-
-    DataSearchStrings.CategoryIDs.FramesPlug,
-    DataSearchStrings.CategoryIDs.OriginsPlug,
-    DataSearchStrings.CategoryIDs.ExoticMasterworkPlug,
-    DataSearchStrings.CategoryIDs.CatalystsPlug,
-    DataSearchStrings.CategoryIDs.StocksPlug,
-]);
-
-export const ExcludedPerkPlugCategories = computed(() => [
-    DataSearchStrings.CategoryIDs.TrackerPlug,
-    DataSearchStrings.CategoryIDs.WeaponModEmpty,
-]);
-
-export const AllPerkPlugCategoryIds = computed(() => [
-    DataSearchStrings.CategoryIDs.IntrinsicPlug,
-    ...ValidPerkPlugCategories.value
-]);
-
-export const ModPlugCategoryIds = computed(() => [
-    DataSearchStrings.CategoryIDs.WeaponModDamage,
-    DataSearchStrings.CategoryIDs.WeaponModGuns,
-    DataSearchStrings.CategoryIDs.WeaponModMagazine,
-]);
-
-export const AllowedPlugCategoryIds = computed(() => [
-    ...AllPerkPlugCategoryIds.value,
-    ...ModPlugCategoryIds.value,
-]);
-
-export const WeaponTypeRpmUnitsMap = computed<LookupMap<TraitId, string>>(() => {
-    return {
-        [DataSearchStrings.TraitIDs.Bow]: "ms",
-        [DataSearchStrings.TraitIDs.FusionRifle]: "ms",
-        [DataSearchStrings.TraitIDs.LinearFusion]: "ms",
-    }
-});
-export const DefaultWeaponTypeRpmUnits = computed(() => "RPM");
-
-export const WeaponTypeTraitToRegex = computed<LookupMap<TraitId, WeaponCategoryRegex>>(() => {
-    return {
-        [DataSearchStrings.TraitIDs.AutoRifle]: DataSearchStrings.WeaponCategoryRegex.AutoRifle,
-        [DataSearchStrings.TraitIDs.Bow]: DataSearchStrings.WeaponCategoryRegex.Bow,
-        [DataSearchStrings.TraitIDs.FusionRifle]: DataSearchStrings.WeaponCategoryRegex.FusionRifle,
-        [DataSearchStrings.TraitIDs.Glaive]: DataSearchStrings.WeaponCategoryRegex.Glaive,
-        [DataSearchStrings.TraitIDs.GrenadeLauncher]: DataSearchStrings.WeaponCategoryRegex.GrenadeLauncher,
-        [DataSearchStrings.TraitIDs.HandCannon]: DataSearchStrings.WeaponCategoryRegex.HandCannon,
-        [DataSearchStrings.TraitIDs.LinearFusion]: DataSearchStrings.WeaponCategoryRegex.LinearFusion,
-        [DataSearchStrings.TraitIDs.MachineGun]: DataSearchStrings.WeaponCategoryRegex.MachineGun,
-        [DataSearchStrings.TraitIDs.PulseRifle]: DataSearchStrings.WeaponCategoryRegex.PulseRifle,
-        [DataSearchStrings.TraitIDs.RocketLauncher]: DataSearchStrings.WeaponCategoryRegex.RocketLauncher,
-        [DataSearchStrings.TraitIDs.ScoutRifle]: DataSearchStrings.WeaponCategoryRegex.ScoutRifle,
-        [DataSearchStrings.TraitIDs.Shotgun]: DataSearchStrings.WeaponCategoryRegex.Shotgun,
-        [DataSearchStrings.TraitIDs.Sidearm]: DataSearchStrings.WeaponCategoryRegex.Sidearm,
-        [DataSearchStrings.TraitIDs.SniperRifle]: DataSearchStrings.WeaponCategoryRegex.SniperRifle,
-        [DataSearchStrings.TraitIDs.SubmachineGun]: DataSearchStrings.WeaponCategoryRegex.SubmachineGun,
-        [DataSearchStrings.TraitIDs.Sword]: DataSearchStrings.WeaponCategoryRegex.Sword,
-        // [DataSearchStrings.TraitIDs.TraceRifle]: DataSearchStrings.WeaponCategoryRegex.TraceRifle,
-    }
-});
 
 // This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
 // weapon type, since hash could theoretically change.

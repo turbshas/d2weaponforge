@@ -442,6 +442,18 @@ export const WeaponCategoryAmmoSizeValuesMap = computed<LookupMap<WeaponCategory
     };
 });
 
+/** For weapons where range is not applicable or unknown, hides the range calculation. */
+const CancelRangeValues: IWeaponRangeValues = {
+    baseFalloffStart: 0,
+    falloffEnd: 0,
+    hipFireStartPerStat: 0,
+    hipFireEndPerStat: 0,
+};
+
+const CancelRangeOverride: IWeaponFormulaOverrides = {
+    range: CancelRangeValues,
+};
+
 const SpecialGrenadeLauncherOverrides: IWeaponFormulaOverrides = {
     ammo: {
         mag: { a: 0, b: 0, c: 0 },
@@ -455,33 +467,41 @@ const SpecialGrenadeLauncherOverrides: IWeaponFormulaOverrides = {
     },
 };
 
+const enum ArchetypeOverrideHash {
+    GL_Wave = 1395789926,
+    GL_Lightweight = 474269988,
+    GL_DoubleFire = 1759472859,
+    GL_RapidFire = 2353477480,
+    GL_Adaptive = 1294026524,
+    GL_CompressedWave = 2571259936,
+    HC_120RPM = 2757685314,
+    MG_RapidFire = 878286503,
+    Scout_Aggressive = 3468089894,
+    Shotgun_Slug = 918679156,
+}
+
 export const WeaponCategoryValuesArchetypeOverrideMap = computed<LookupMap<WeaponCategoryRegex, LookupMap<ItemHash, IWeaponFormulaOverrides>>>(() => {
     const map: LookupMap<WeaponCategoryRegex, LookupMap<ItemHash, IWeaponFormulaOverrides>> = {
-        // Special GLs
         [DataSearchStrings.WeaponCategoryRegex.GrenadeLauncher]: {
-            // Wave frames
-            1395789926: SpecialGrenadeLauncherOverrides,
-            // Lightweight
-            474269988: SpecialGrenadeLauncherOverrides,
-            // Double-fire
-            1759472859: SpecialGrenadeLauncherOverrides,
+            // Special GLs
+            [ArchetypeOverrideHash.GL_Wave]: SpecialGrenadeLauncherOverrides,
+            [ArchetypeOverrideHash.GL_Lightweight]: SpecialGrenadeLauncherOverrides,
+            [ArchetypeOverrideHash.GL_DoubleFire]: SpecialGrenadeLauncherOverrides,
         
             // Heavy GLs
-            // Rapid-fire
-            2353477480: {
+            [ArchetypeOverrideHash.GL_RapidFire]: {
                 ammo: {
                     mag: { a: 0, b: 0, c: 0 },
                     reservesCalc: () => 20,
                 },
             },
-            // Adaptive
-            1294026524: {
+            [ArchetypeOverrideHash.GL_Adaptive]: {
                 ammo: {
                     mag: { a: 0, b: 0, c: 0 },
                     reservesCalc: () => 18,
                 },
             },
-            2571259936: {
+            [ArchetypeOverrideHash.GL_CompressedWave]: {
                 ammo: {
                     mag: { a: 0, b: 0, c: 0 },
                     reservesCalc: () => 18,
@@ -490,8 +510,7 @@ export const WeaponCategoryValuesArchetypeOverrideMap = computed<LookupMap<Weapo
         },
 
         [DataSearchStrings.WeaponCategoryRegex.HandCannon]: {
-            // 120 RPM Hand Cannons
-            2757685314: {
+            [ArchetypeOverrideHash.HC_120RPM]: {
                 range: {
                     baseFalloffStart: 18.65,
                     falloffEnd: 32.8,
@@ -502,9 +521,7 @@ export const WeaponCategoryValuesArchetypeOverrideMap = computed<LookupMap<Weapo
         },
 
         [DataSearchStrings.WeaponCategoryRegex.MachineGun]: {
-            // MGs
-            // Rapid-Fire
-            878286503: {
+            [ArchetypeOverrideHash.MG_RapidFire]: {
                 ammo: {
                     mag: { a: 0, b: 0, c: 0 },
                     reservesCalc: () => 400,
@@ -513,16 +530,14 @@ export const WeaponCategoryValuesArchetypeOverrideMap = computed<LookupMap<Weapo
         },
 
         [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: {
-            // Aggressive frame scouts (120 RPM)
-            3468089894: {
+            [ArchetypeOverrideHash.Scout_Aggressive]: {
                 // 120 RPMs don't really have a reload that makes sense, since they reload 2 bullets at a time.
                 reload: { a: 0, b: 0, c: 0, ammoTime: 0, },
             },
         },
 
         [DataSearchStrings.WeaponCategoryRegex.Shotgun]: {
-            // Slug shotguns
-            918679156: {
+            [ArchetypeOverrideHash.Shotgun_Slug]: {
                 range: {
                     baseFalloffStart: 5.77,
                     falloffEnd: 12.75,
@@ -544,15 +559,39 @@ const ExoticBowOverrides: IWeaponFormulaOverrides = {
     },
 };
 
+const enum ExoticOverrideHash {
+    Cerberus = 1541131350,
+    HardLight = 4124984448,
+    SweetBusiness = 1345867570,
+    WishEnder = 814876684,
+    TrinityGhoul = 814876685,
+    LeMonarque = 3588934839,
+    TicuusDivination = 3260753130,
+    HierarchyOfNeeds = 4174431791,
+    LeviathansBreath = 2591746970,
+    OneThousandVoice = 2069224589,
+    Telesto = 2208405142,
+    Jotunn = 417164956,
+    VexMythoclast = 4289226715,
+    Anarchy = 2376481550,
+    Parasite = 2812324400,
+    ErianasVow = 3524313097,
+    TheLastWord = 1364093401,
+    Xenophage = 1395261499,
+    GrandOverture = 1763584999,
+    HeirApparent = 2084878005,
+    DeadMansTale = 3468089894,
+    LordOfWolves = 3413860063,
+    Duality = 3460576091,
+    TractorCannon = 3580904581,
+    Forerunner = 2179048386,
+    OsteoStriga = 46524085,
+}
+
 export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash, IWeaponFormulaOverrides>>(() => {
     const map: LookupMap<ItemHash, IWeaponFormulaOverrides> = {
-        // Cerberus
-        1541131350: {
-            // Cerberus doesn't really have a range that makes sense.
-            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0 },
-        },
-        // Hard Light
-        4124984448: {
+        [ExoticOverrideHash.Cerberus]: CancelRangeOverride,
+        [ExoticOverrideHash.HardLight]: {
             range: {
                 baseFalloffStart: 11.75,
                 falloffEnd: 41,
@@ -560,26 +599,19 @@ export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash
                 hipFireEndPerStat: 0,
             },
         },
-        // Sweet Business
-        1345867570: {
+        [ExoticOverrideHash.SweetBusiness]: {
             ammo: {
                 mag: { a: 0, b: 0, c: 150, },
                 reservesCalc: () => 0,
             },
         },
 
-        // Wish-Ender
-        814876684: ExoticBowOverrides,
-        // Trinity Ghoul
-        814876685: ExoticBowOverrides,
-        // Le Monarque
-        3588934839: ExoticBowOverrides,
-        // Ticuu's Divination
-        3260753130: ExoticBowOverrides,
-        // Hierarchy of Needs
-        4174431791: ExoticBowOverrides,
-        // Leviathan's Breath
-        2591746970: {
+        [ExoticOverrideHash.WishEnder]: ExoticBowOverrides,
+        [ExoticOverrideHash.TrinityGhoul]: ExoticBowOverrides,
+        [ExoticOverrideHash.LeMonarque]: ExoticBowOverrides,
+        [ExoticOverrideHash.TicuusDivination]: ExoticBowOverrides,
+        [ExoticOverrideHash.HierarchyOfNeeds]: ExoticBowOverrides,
+        [ExoticOverrideHash.LeviathansBreath]: {
             ...ExoticBowOverrides,
             ammo: {
                 mag: { a: 0, b: 0, c: 1, },
@@ -587,23 +619,10 @@ export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash
             }
         },
         
-        // One Thousand Voices
-        2069224589: {
-            // Shots aren't affected by range.
-            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
-        },
-        // Telesto
-        2208405142: {
-            // Shots aren't affected by range.
-            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
-        },
-        // Jotunn
-        417164956: {
-            // Shots aren't affected by range.
-            range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
-        },
-        // Vex Mythoclast
-        4289226715: {
+        [ExoticOverrideHash.OneThousandVoice]: CancelRangeOverride,
+        [ExoticOverrideHash.Telesto]: CancelRangeOverride,
+        [ExoticOverrideHash.Jotunn]: CancelRangeOverride,
+        [ExoticOverrideHash.VexMythoclast]: {
             // Is basically an auto rifle.
             range: {
                 baseFalloffStart: 11.75,
@@ -624,23 +643,20 @@ export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash
             },
         },
 
-        // Anarchy
-        2376481550: {
+        [ExoticOverrideHash.Anarchy]: {
             ammo: {
                 mag: { a: 0, b: 0, c: 6, },
                 reservesCalc: () => 18,
             },
         },
-        // Parasite
-        2812324400: {
+        [ExoticOverrideHash.Parasite]: {
             ammo: {
                 mag: { a: 0, b: 0, c: 1, },
                 reservesCalc: () => 9,
             },
         },
 
-        // Eriana's Vow
-        3524313097: {
+        [ExoticOverrideHash.ErianasVow]: {
             range: {
                 baseFalloffStart: 38,
                 falloffEnd: 70,
@@ -656,8 +672,7 @@ export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash
                 },
             },
         },
-        // The Last Word
-        1364093401: {
+        [ExoticOverrideHash.TheLastWord]: {
             range: {
                 baseFalloffStart: 19.3,
                 falloffEnd: 29.67,
@@ -671,15 +686,8 @@ export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash
         // Sleeper Simulant
         // Lorentz Driver
 
-        // Xenophage
-        1395261499: {
-            // Not affected by range.
-            range: {
-                baseFalloffStart: 0,
-                falloffEnd: 0,
-                hipFireStartPerStat: 0,
-                hipFireEndPerStat: 0,
-            },
+        [ExoticOverrideHash.Xenophage]: {
+            range: CancelRangeValues,
             ammo: {
                 mag: { a: 0, b: 0, c: 13, },
                 reservesCalc: (_rawMagSize, _magStat, inventorySizeStat) => {
@@ -689,15 +697,8 @@ export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash
                 },
             },
         },
-        // Grand Overture
-        1763584999: {
-            // Not affected by range.
-            range: {
-                baseFalloffStart: 0,
-                falloffEnd: 0,
-                hipFireStartPerStat: 0,
-                hipFireEndPerStat: 0,
-            },
+        [ExoticOverrideHash.GrandOverture]: {
+            range: CancelRangeValues,
             ammo: {
                 mag: { a: 0, b: 0, c: 20, },
                 reservesCalc: (_rawMagSize, _magStat, inventorySizeStat) => {
@@ -707,22 +708,19 @@ export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash
                 },
             },
         },
-        // Heir Apparent
-        2084878005: {
+        [ExoticOverrideHash.HeirApparent]: {
             ammo: {
                 mag: { a: 0, b: 0.7, c: 45, },
                 reservesCalc: () => 400,
             },
         },
 
-        // Dead Man's Tale (same as 120 RPM scouts)
-        3468089894: {
+        [ExoticOverrideHash.DeadMansTale]: {
             // 120 RPMs don't really have a reload that makes sense, since they reload 2 bullets at a time.
             reload: { a: 0, b: 0, c: 0, ammoTime: 0, },
         },
 
-        // Lord of wolves
-        3413860063: {
+        [ExoticOverrideHash.LordOfWolves]: {
             // No data for LoW, and it works differently than other shotguns.
             range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
             ammo: {
@@ -730,19 +728,16 @@ export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash
                 reservesCalc: () => 120,
             },
         },
-        // Duality
-        3460576091: {
+        [ExoticOverrideHash.Duality]: {
             // No data for Duality, and it works differently than other shotguns.
             range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
         },
-        // Tractor
-        3580904581: {
+        [ExoticOverrideHash.TractorCannon]: {
             // No data for Tractor Cannon, and it works differently than other shotguns.
             range: { baseFalloffStart: 0, falloffEnd: 0, hipFireStartPerStat: 0, hipFireEndPerStat: 0, },
         },
 
-        // Forerunner
-        2179048386: {
+        [ExoticOverrideHash.Forerunner]: {
             range: {
                 baseFalloffStart: 28.3,
                 falloffEnd: 43.2,
@@ -758,8 +753,7 @@ export const WeaponCategoryValuesExoticOverrideMap = computed<LookupMap<ItemHash
             }
         },
 
-        // Osteo Striga
-        46524085: {
+        [ExoticOverrideHash.OsteoStriga]: {
             range: {
                 baseFalloffStart: 9.0835,
                 falloffEnd: 28.11,

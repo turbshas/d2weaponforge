@@ -11,6 +11,17 @@ interface IChangelog {
 
 const changelogs = computed<IChangelog[]>(() => [
     {
+        version: "1.5.0",
+        date: "2023-03-09",
+        title: "Exotic Catalysts",
+        description: "Adds exotic catalysts and some bug fixes.",
+        changes: [
+            "Added exotic catalyst panel to display catalyst requirements, perks, and stat bonuses.",
+            "Fix charge time/draw time displaying negative on a decrease.",
+            "Fix not being able to search for sunset weapons (must enable \"Include Sunset Weapons\" first).",
+        ],
+    },
+    {
         version: "1.4.0",
         date: "2023-03-05",
         title: "Weapon Calculations",
