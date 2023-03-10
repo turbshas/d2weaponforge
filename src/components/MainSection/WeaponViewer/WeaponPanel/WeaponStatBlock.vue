@@ -1,39 +1,38 @@
 <script setup lang="ts">
-import type { IModifiedStat, LookupMap } from '@/data/interfaces';
-import { DataSearchStrings } from '@/data/services';
+import { StatIndex, type IModifiedStat } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import WeaponStatDisplay from './WeaponStatDisplay/WeaponStatDisplay.vue';
 
 const statOrdering = computed(() => [
-    DataSearchStrings.StatIndices.Impact,
-    DataSearchStrings.StatIndices.BlastRadius,
+    StatIndex.Impact,
+    StatIndex.BlastRadius,
 
-    DataSearchStrings.StatIndices.Range,
-    DataSearchStrings.StatIndices.Accuracy,
-    DataSearchStrings.StatIndices.Velocity,
+    StatIndex.Range,
+    StatIndex.Accuracy,
+    StatIndex.Velocity,
 
-    DataSearchStrings.StatIndices.ShieldDuration,
-    DataSearchStrings.StatIndices.Stability,
-    DataSearchStrings.StatIndices.Handling,
-    DataSearchStrings.StatIndices.ReloadSpeed,
-    DataSearchStrings.StatIndices.AimAssistance,
-    DataSearchStrings.StatIndices.AirborneEffectiveness,
-    DataSearchStrings.StatIndices.Zoom,
-    DataSearchStrings.StatIndices.RecoilDirection,
+    StatIndex.ShieldDuration,
+    StatIndex.Stability,
+    StatIndex.Handling,
+    StatIndex.ReloadSpeed,
+    StatIndex.AimAssistance,
+    StatIndex.AirborneEffectiveness,
+    StatIndex.Zoom,
+    StatIndex.RecoilDirection,
 
-    DataSearchStrings.StatIndices.SwingSpeed,
-    DataSearchStrings.StatIndices.ChargeRate,
-    DataSearchStrings.StatIndices.GuardEfficiency,
-    DataSearchStrings.StatIndices.GuardResistance,
-    DataSearchStrings.StatIndices.GuardEndurance,
+    StatIndex.SwingSpeed,
+    StatIndex.ChargeRate,
+    StatIndex.GuardEfficiency,
+    StatIndex.GuardResistance,
+    StatIndex.GuardEndurance,
 
-    DataSearchStrings.StatIndices.Rpm,
-    DataSearchStrings.StatIndices.DrawTime,
-    DataSearchStrings.StatIndices.ChargeTime,
+    StatIndex.Rpm,
+    StatIndex.DrawTime,
+    StatIndex.ChargeTime,
 
-    DataSearchStrings.StatIndices.MagSize,
-    DataSearchStrings.StatIndices.AmmoCapacity,
-    DataSearchStrings.StatIndices.InventorySize,
+    StatIndex.MagSize,
+    StatIndex.AmmoCapacity,
+    StatIndex.InventorySize,
 ]);
 
 const props = defineProps<{

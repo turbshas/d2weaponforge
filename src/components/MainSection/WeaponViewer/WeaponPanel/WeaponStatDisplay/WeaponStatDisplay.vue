@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { StatDisplayType, type IModifiedStat } from '@/data/interfaces';
-import { DataSearchStrings } from '@/data/services';
+import { StatDisplayType, StatIndex, type IModifiedStat } from '@/data/interfaces';
 import { computed } from '@vue/reactivity';
 import BarDisplay from './BarDisplay.vue';
 import RecoilDirectionGraphic from './RecoilDirectionGraphic.vue';
@@ -24,7 +23,7 @@ const hasChange = computed(() => displayModifier.value !== 0);
 const statDisplayType = computed(() => {
     if (!name.value || !props.displayStat.statDisplay) return StatDisplayType.Bar;
     if (!props.displayStat.statDisplay.displayAsNumeric) return StatDisplayType.Bar;
-    return index.value === DataSearchStrings.StatIndices.RecoilDirection ? StatDisplayType.Angle : StatDisplayType.Number;
+    return index.value === StatIndex.RecoilDirection ? StatDisplayType.Angle : StatDisplayType.Number;
 });
 const isBarDisplayType = computed(() => statDisplayType.value === StatDisplayType.Bar);
 const isAngleDisplayType = computed(() => statDisplayType.value === StatDisplayType.Angle);

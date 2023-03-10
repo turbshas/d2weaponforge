@@ -1,6 +1,12 @@
 import { StatIndex, type ItemHash, type LookupMap, type WeaponCategoryRegex } from "./interfaces";
 
-const enum PlugCategoryId {
+/**
+ * This file should contain constants that are ONLY used for processing the manifest,
+ * to reduce the file size of the other constants.
+ * This file should only be lazy-loaded when the manifest updates and we need to pull new data.
+ */
+
+export enum PlugCategoryId {
     Intrinsic = "intrinsics",
     Barrels = "barrels",
     Blades = "blades",
@@ -66,6 +72,26 @@ const enum PlugCategoryId {
     SurosRegime =       "v320_repackage_auto_rifle0_masterwork",
     SleeperSimulant =   "v320_repackage_fusion_rifle0_masterwork",
     Whisper =           "v320_repackage_sniper_rifle0_masterwork",
+}
+
+class WeaponCategoryRegexes {
+    public get AutoRifle(): WeaponCategoryRegex { return ".*_auto_rifle"; }
+    public get Bow(): WeaponCategoryRegex { return "type_weapon_bow"; }
+    public get HandCannon(): WeaponCategoryRegex { return ".*_hand_cannon"; }
+    public get FusionRifle(): WeaponCategoryRegex { return "type_weapon_fusion_rifle"; }
+    public get Glaive(): WeaponCategoryRegex { return ".*_glaive"; }
+    public get GrenadeLauncher(): WeaponCategoryRegex { return ".*_grenade_launcher"; }
+    public get LinearFusion(): WeaponCategoryRegex { return ".*_fusion_rifle_line"; }
+    public get MachineGun(): WeaponCategoryRegex { return ".*_machinegun"; }
+    public get PulseRifle(): WeaponCategoryRegex { return ".*_pulse_rifle"; }
+    public get RocketLauncher(): WeaponCategoryRegex { return ".*_rocket_launcher"; }
+    public get ScoutRifle(): WeaponCategoryRegex { return ".*_scout_rifle"; }
+    public get Sidearm(): WeaponCategoryRegex { return ".*_sidearm"; }
+    public get Shotgun(): WeaponCategoryRegex { return ".*_shotgun"; }
+    public get SniperRifle(): WeaponCategoryRegex { return ".*_sniper_rifle"; }
+    public get SubmachineGun(): WeaponCategoryRegex { return ".*_submachinegun"; }
+    public get Sword(): WeaponCategoryRegex { return "type_weapon_sword"; }
+    public get TraceRifle(): WeaponCategoryRegex { return ".*_beam_rifle"; }
 }
 
 const enum Year1ExoticCatalystHash {
@@ -178,7 +204,7 @@ export const AllowedPlugCategoryMap: LookupMap<string, boolean> = {
     ...ModPlugCategoryMap,
 };
 
-const enum TraitId {
+export enum TraitId {
     Weapon =            "item_type.weapon",
     AutoRifle =         "weapon_type.auto_rifle",
     Bow =               "weapon_type.bow",
@@ -233,3 +259,22 @@ export const WeaponTypeTraitToRegex: LookupMap<TraitId, WeaponCategoryRegex> = {
     [TraitId.SubmachineGun]: ".*_submachinegun",
     [TraitId.Sword]: "type_weapon_sword",
 };
+
+export const NonSunsetPowerCapMap: LookupMap<ItemHash, boolean> = {
+    999940: true,
+    999950: true,
+    999960: true,
+    999970: true,
+    999980: true,
+    999990: true,
+};
+
+const enum ExcludedItems {
+    SecondLegendOfAcrius = 1744115122,
+    BastionCatalyst = 4273298922,
+}
+
+export const ExcludedItemsMap: ItemHash[] = [
+    ExcludedItems.SecondLegendOfAcrius,
+    ExcludedItems.BastionCatalyst,
+];

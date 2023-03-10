@@ -2,15 +2,14 @@
 import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
 import ExtrasListItem from '@/components/Common/ExtrasListItem.vue';
 import { WeaponCategoryHandlingValuesMap, WeaponCategoryValuesArchetypeOverrideMap, WeaponCategoryValuesExoticOverrideMap } from '@/data/curatedData/WeaponFormulas';
-import type { ISelectedGear } from '@/data/interfaces';
-import { DataSearchStrings } from '@/data/services';
+import { StatIndex, type ISelectedGear } from '@/data/interfaces';
 import { computed } from 'vue';
 
 const props = defineProps<{
     selectedGear: ISelectedGear,
 }>();
 
-const HandlingStatIndex = DataSearchStrings.StatIndices.Handling;
+const HandlingStatIndex = StatIndex.Handling;
 
 const weapon = computed(() => props.selectedGear.weapon.value);
 const weaponHash = computed(() => weapon.value ? weapon.value.hash : 0);

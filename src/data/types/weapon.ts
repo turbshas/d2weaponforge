@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
-import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type ItemHash, type IWeapon, type LookupMap, type TraitId, type WeaponCategoryRegex } from "../interfaces";
-import { WeaponTypeTraitToRegex } from "../processingConstants";
+import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type ItemHash, type IWeapon, type LookupMap, type WeaponCategoryRegex } from "../interfaces";
+import { TraitId, WeaponTypeTraitToRegex } from "../processingConstants";
 import { DataSearchStrings } from "../services/dataSearchStringService";
 import { Archetype } from "./archetype";
 import { DamageType } from "./damageType";
@@ -83,7 +83,7 @@ export class Weapon implements IWeapon {
         this.catalysts = resolvedWeaponSockets.catalysts;
 
         // This is gross, but meh it seems to work.
-        const isAutoTraitId = this.traitId === DataSearchStrings.TraitIDs.AutoRifle;
+        const isAutoTraitId = this.traitId === TraitId.AutoRifle;
         const hasTraceRifleRpm = this.archetype && this.archetype.rpmStatValue && this.archetype.rpmStatValue >= 1000;
         if (isAutoTraitId && hasTraceRifleRpm) {
             this.weaponCategoryRegex = DataSearchStrings.WeaponCategoryRegex.TraceRifle as WeaponCategoryRegex;

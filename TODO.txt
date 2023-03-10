@@ -19,11 +19,8 @@ Preferred order of work:
   - quick access sling
   - figure out full list, will have to search through all perks with insights
 4) Masterworks/weapon features:
-  - year 1 catalysts will probably want to pull the icon from the pre-completion catalyst item, but the stats + perk if applicable from the post-completion item
-    - there are two legend of acrius weapons
-  - move constants out of constants.ts and into more specific locations, like a specific file for
-    manifest processing constants (or into the manifest processing file directly if it's the only thing that uses it)
   - crafted exotics are also special
+    - maybe move origin perks into a dedicated slot in SelectedGear? Then perks panel and selected perks can just expand to whatever is in SelectedPerksMap
     - for an intrinsic perk, check if it has a plug set associated with it
     - attach that set to the intrinsic
     - allow toggling through all the options by clicking on the intrinsic?
@@ -35,7 +32,6 @@ Preferred order of work:
 5) Convert category ID and trait ID checks to hashes for everything
   - can rework some stuff too, may need to remove custom catalyst checks
 6) Updating perk insights
-  - need to go through every existing one and update its info from the spreadsheet
   - need to add new ones
   - need to add catalyst perks if there is info on them
 
@@ -53,6 +49,7 @@ compare section:
     - if this is done, and "add to comparisons" is clicked - remove the previous one?
 
 Unsure about order:
+- update perk insights for origin perks, exotic perks, and to include swords stats
 - better support for crafted weapons, especially crafted exotics (enhanced intrinsic)
 - update weapon formulas when data becomes available (some values are placeholder constants right now)
 - "calculations" panel for damage falloff/handling/reload/reserves/etc.
@@ -63,7 +60,6 @@ Unsure about order:
 
 Bugs:
 - perk bonuses display bonuses that aren't applicable to that weapon, e.g. charge time on bows or magazine on swords
-- hide perk slots that don't have any perks
 
 Filter features:
 - for collections filters - don't seem to include all possible weapons, e.g. multimach isn't in the iron banner filter. change this at some point
@@ -78,6 +74,8 @@ Load times:
 - show that page is refreshing when game data is being reloaded
 
 Tech debt/processing:
+- convert things like weapon category regex to my own enum I can use universally
+  - would probably save some space and would simplify a few places constants are duplicated
 - to find craftable weapons, find all items with a craftable.outputItemHash and build a lookup map with those
 - involve stat display override when creating masterworks in DestinyManifestProcessor
 - filter armour plugs out of the kept data (definitely shows up as intrinsics, maybe others too...)
@@ -85,7 +83,6 @@ Tech debt/processing:
 - convert Item Tier Index to hash, as those are stable
 - convert as many ID comparisons, etc. as possible to hashes
 - Move constants into class/interface, add Destiny2GameData as a property to be cached (hopefully reduce bundle size)
-- break up filter window into components somehow
 - styling cleanup:
   - put common values into variables in base.css
   - convert to using rem instead of px

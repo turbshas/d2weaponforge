@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinySandboxPerkDefinition } from "bungie-api-ts/destiny2";
 import { ItemTierIndex, type ICatalyst, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type ISandboxPerk, type ItemHash, type IWeaponTypeInfo, type LookupMap, type UsedDestinyManifestSlice, type WeaponCategoryRegex } from "./interfaces";
-import { AllowedPlugCategoryMap, AllPerkPlugCategoryMap, ModPlugCategoryMap, Year1ExoticCatalystPlugCategoryMap } from "./processingConstants";
+import { AllowedPlugCategoryMap, AllPerkPlugCategoryMap, ExcludedItemsMap, ModPlugCategoryMap, PlugCategoryId, TraitId, Year1ExoticCatalystPlugCategoryMap } from "./processingConstants";
 import { DataSearchStrings } from "./services/dataSearchStringService";
 import { Catalyst } from "./types/catalyst";
 import { ManifestAccessor } from "./types/manifestAccessor";
@@ -9,7 +9,7 @@ import { Mod } from "./types/mod";
 import { Perk } from "./types/perk";
 import { SandboxPerk } from "./types/sandboxPerk";
 import { Weapon } from "./types/weapon";
-import { arrayToExistenceMap, arrayToHashMap, hashMapToArray } from "./util";
+import { arrayToHashMap, hashMapToArray } from "./util";
 
 interface IGroupedItems {
     weapons: DestinyInventoryItemDefinition[];
@@ -51,17 +51,17 @@ export class DestinyManifestProcessor {
         // Remove everything we don't need - this makes loading from cache much faster (and actually usable).
         // Only doing this for DestinyInventoryItemDefinition as it is by far the largest table.
         // The others are fairly small and don't need this.
-        const itemHashesToRemove: number[] = [];
+        const itemHashesToRemove: ItemHash[] = [...ExcludedItemsMap];
         for (const key in this.manifest.slice.DestinyInventoryItemDefinition) {
             const item = this.manifest.slice.DestinyInventoryItemDefinition[key];
             
-            const isWeapon = !!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.Weapon)
+            const isWeapon = !!item.traitIds && item.traitIds.includes(TraitId.Weapon)
                 && !!item.screenshot // Some weapons don't have screenshots - probably for the crafting menu.
                 && !!item.quality
                 && !!item.quality.infusionCategoryHash; // Others don't have an infusion category, probably also crafting related.
             const isModOrPerk = !!item.plug && !!AllowedPlugCategoryMap[item.plug.plugCategoryIdentifier];
-            const isMasterwork = item.plug && item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
-            const isCatalyst = (!!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.ExoticCatalyst))
+            const isMasterwork = item.plug && item.plug.plugCategoryIdentifier.includes(PlugCategoryId.WeaponMasterworkComponent);
+            const isCatalyst = (!!item.traitIds && item.traitIds.includes(TraitId.ExoticCatalyst))
                 || (!!item.plug && !!Year1ExoticCatalystPlugCategoryMap[item.plug.plugCategoryIdentifier]);
 
             if (!isWeapon && !isModOrPerk && !isMasterwork && !isCatalyst) {
@@ -110,7 +110,7 @@ export class DestinyManifestProcessor {
 
             const isWeapon =
                 // If no categories, probably not an item we care about.
-                !!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.Weapon)
+                !!item.traitIds && item.traitIds.includes(TraitId.Weapon)
                 // Some weapons don't have screenshots (including some duplicates) - probably for the crafting menu.
                 && !!item.screenshot
                 // Others don't have an infusion category, probably also crafting related.
@@ -120,8 +120,8 @@ export class DestinyManifestProcessor {
             const isPerk = !!item.plug && !!AllPerkPlugCategoryMap[item.plug.plugCategoryIdentifier];
             const isMod = !!item.plug && !!ModPlugCategoryMap[item.plug.plugCategoryIdentifier];
             const isMasterwork = !!item.plug
-                && item.plug.plugCategoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlugComponent);
-            const isCatalyst = (!!item.traitIds && item.traitIds.includes(DataSearchStrings.TraitIDs.ExoticCatalyst))
+                && item.plug.plugCategoryIdentifier.includes(PlugCategoryId.WeaponMasterworkComponent);
+            const isCatalyst = (!!item.traitIds && item.traitIds.includes(TraitId.ExoticCatalyst))
                 || (!!item.plug && !!Year1ExoticCatalystPlugCategoryMap[item.plug.plugCategoryIdentifier]);
 
             if (isWeapon) {
@@ -167,7 +167,7 @@ export class DestinyManifestProcessor {
             if (!itemTier) continue;
 
             const perk = new Perk(perkItem, this.manifest);
-            const isIntrinsic = perkItem.plug.plugCategoryIdentifier === DataSearchStrings.CategoryIDs.IntrinsicPlug;
+            const isIntrinsic = perkItem.plug.plugCategoryIdentifier === PlugCategoryId.Intrinsic;
             if (itemTier.index !== ItemTierIndex.Uncommon || isIntrinsic) {
                 normalPerks.push(perk);
             } else if (itemTier.index === ItemTierIndex.Uncommon) {
@@ -184,7 +184,7 @@ export class DestinyManifestProcessor {
                 perk: perk.hash,
                 enhanced: undefined,
             };
-            if (perk.categoryId === DataSearchStrings.CategoryIDs.FramesPlug) {
+            if (perk.categoryId === PlugCategoryId.Frames) {
                 // Searching through the array could be slow, so only bother for perks that CAN be enhanced.
                 const enhancedPerk = enhancedPerkNameMap[perk.name] || enhancedPerks.find(e => e.name.includes(perk.name));
                 perkPair.enhanced = enhancedPerk?.hash;
@@ -266,9 +266,9 @@ export class DestinyManifestProcessor {
                     weaponCategoryRegex: weapon.weaponCategoryRegex,
                     weaponCategoryHash: category.hash,
                     // Hide RPM for bows and swords - bows are inconsistent and swords don't have one that makes sense.
-                    showRpm: weaponTypeTraitId !== DataSearchStrings.TraitIDs.Bow && weaponTypeTraitId !== DataSearchStrings.TraitIDs.Sword,
+                    showRpm: weaponTypeTraitId !== TraitId.Bow && weaponTypeTraitId !== TraitId.Sword,
                     // Sidearms have duplicate adaptive frames but differing RPM, so make sure to actually compare with RPM.
-                    compareUsingRpm: weaponTypeTraitId === DataSearchStrings.TraitIDs.Sidearm,
+                    compareUsingRpm: weaponTypeTraitId === TraitId.Sidearm,
                     rpmUnits: weapon.archetype.rpmUnits,
                     archetypes: [],
                 };

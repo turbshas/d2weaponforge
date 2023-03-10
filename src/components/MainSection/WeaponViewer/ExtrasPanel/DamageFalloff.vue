@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
 import { WeaponCategoryRangeValuesMap, WeaponCategoryValuesArchetypeOverrideMap, WeaponCategoryValuesExoticOverrideMap } from '@/data/curatedData/WeaponFormulas';
-import type { ISelectedGear } from '@/data/interfaces';
+import { StatIndex, type ISelectedGear } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
 import { computed } from 'vue';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
@@ -12,8 +12,8 @@ const props = defineProps<{
     selectedGear: ISelectedGear,
 }>();
 
-const RangeStatIndex = DataSearchStrings.StatIndices.Range;
-const ZoomStatIndex = DataSearchStrings.StatIndices.Zoom;
+const RangeStatIndex = StatIndex.Range;
+const ZoomStatIndex = StatIndex.Zoom;
 
 const weapon = computed(() => props.selectedGear.weapon.value ? props.selectedGear.weapon.value : undefined);
 const weaponHash = computed(() => weapon.value ? weapon.value.hash : 0);

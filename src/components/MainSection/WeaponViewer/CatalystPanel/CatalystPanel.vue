@@ -42,9 +42,9 @@ const catalystItems = computed(() => {
     for (const c of props.catalysts) {
         const item = destinyDataService.getCatalystDefinition(c);
         if (!item) continue;
-        if (!ColdheartCatalystHashes.includes(c)
-            && (item.iconUrl.includes(PlaceholderCatalystIcon) || item.iconUrl.includes(MissingCatalystIcon))) continue;
-        if (item.mainBonuses.length === 0 && item.sandboxPerks.length === 0) continue;
+        const isActuallyColdheart = ColdheartCatalystHashes.includes(c);
+        const isPlaceholderCatalystIcon = item.iconUrl.includes(PlaceholderCatalystIcon) || item.iconUrl.includes(MissingCatalystIcon);
+        if (!isActuallyColdheart && isPlaceholderCatalystIcon) continue;
 
         const displayPerks: ISandboxPerkDisplay[] = [];
         for (const p of item.sandboxPerks) {
@@ -58,6 +58,8 @@ const catalystItems = computed(() => {
             };
             displayPerks.push(displayPerk);
         }
+
+        if (item.mainBonuses.length === 0 && displayPerks.length === 0) continue;
 
         const displayItem: ICatalystDisplay = {
             hash: c,

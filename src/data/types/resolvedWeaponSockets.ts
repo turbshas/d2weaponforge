@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition, DestinyItemSocketEntryDefinition, DestinyItemSocketEntryPlugItemDefinition, DestinyItemSocketEntryPlugItemRandomizedDefinition, DestinySocketTypeDefinition, DestinyStatDisplayDefinition } from "bungie-api-ts/destiny2";
 import { WeaponSocketCategoryHash, type IMasterwork, type IMod, type IPerkGrid, type IPerkLookup, type IPerkOption, type ItemHash, type LookupMap } from "../interfaces";
-import { ExcludedPerkCategoryMap, Year1ExoticCatalystPlugCategoryMap } from "../processingConstants";
+import { ExcludedPerkCategoryMap, PlugCategoryId, TraitId, Year1ExoticCatalystPlugCategoryMap } from "../processingConstants";
 import { DataSearchStrings } from "../services/dataSearchStringService";
 import type { ManifestAccessor } from "./manifestAccessor";
 import { PerkColumn } from "./perkColumn";
@@ -84,14 +84,14 @@ export class ResolvedWeaponSockets {
             masterworks: modsMasterworks.filter(s =>
                 s.socketType
                 && s.socketType.plugWhitelist.some(pw =>
-                    pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponMasterworkPlug)
+                    pw.categoryIdentifier.includes(PlugCategoryId.WeaponMasterwork)
                 )),
             mods: modsMasterworks.filter(s =>
                 s.socketType
                 && s.socketType.plugWhitelist.some(pw =>
-                    pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponModGuns)
-                    || pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponModDamage)
-                    || pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.WeaponModMagazine)
+                    pw.categoryIdentifier.includes(PlugCategoryId.WeaponModGuns)
+                    || pw.categoryIdentifier.includes(PlugCategoryId.WeaponModDamage)
+                    || pw.categoryIdentifier.includes(PlugCategoryId.WeaponModMagazine)
                 )),
             perks: this.resolveWeaponSocketEntries(perkSockets)
                 .filter(s => s.socketType 
@@ -99,7 +99,7 @@ export class ResolvedWeaponSockets {
             catalysts: modsMasterworks.filter(s =>
                 s.socketType
                 && s.socketType.plugWhitelist.some(pw =>
-                    pw.categoryIdentifier.includes(DataSearchStrings.CategoryIDs.ExoticMasterworkPlug)
+                    pw.categoryIdentifier.includes(PlugCategoryId.ExoticMasterwork)
                     || Year1ExoticCatalystPlugCategoryMap[pw.categoryIdentifier]
                 )),
         };
@@ -247,12 +247,12 @@ export class ResolvedWeaponSockets {
             scaledStatsLookup[stat.statHash] = stat;
         }
 
-        const isSword = weaponItem.traitIds.includes(DataSearchStrings.TraitIDs.Sword);
+        const isSword = weaponItem.traitIds.includes(TraitId.Sword);
         return masterworks.filter(mw => {
             const mainStat = mw.mainBonuses.find(b => b.value > 0);
             const isValidStat = !!mainStat && !!scaledStatsLookup[mainStat.statHash];
             if (!isValidStat) return false;
-            const isImpactMasterwork = mw.categoryId === DataSearchStrings.CategoryIDs.WeaponMasterworkImpact;
+            const isImpactMasterwork = mw.categoryId === PlugCategoryId.WeaponMasterworkImpact;
             // Impact only applies to swords.
             // Swords can only have impact.
             return (isImpactMasterwork && isSword) || (!isImpactMasterwork && !isSword);
@@ -275,7 +275,7 @@ export class ResolvedWeaponSockets {
             // The only mod that has this plug category ID is the empty mod slot which is useless here.
             .filter(h => {
                 const mod = this.modLookup[h];
-                return mod && mod.categoryId !== DataSearchStrings.CategoryIDs.WeaponModEmpty;
+                return mod && mod.categoryId !== PlugCategoryId.WeaponModEmpty;
             });
     }
 
@@ -288,9 +288,9 @@ export class ResolvedWeaponSockets {
                 const mod = this.modLookup[i.plugItemHash];
                 return mod
                     && mod.name.includes(DataSearchStrings.Misc.Adept.value)
-                    && (mod.categoryId === DataSearchStrings.CategoryIDs.WeaponModDamage
-                        || mod.categoryId === DataSearchStrings.CategoryIDs.WeaponModGuns
-                        || mod.categoryId === DataSearchStrings.CategoryIDs.WeaponModMagazine)
+                    && (mod.categoryId === PlugCategoryId.WeaponModDamage
+                        || mod.categoryId === PlugCategoryId.WeaponModGuns
+                        || mod.categoryId === PlugCategoryId.WeaponModMagazine)
             }).map(i => i.plugItemHash);
     }
 }

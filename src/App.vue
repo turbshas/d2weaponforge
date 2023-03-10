@@ -22,9 +22,11 @@ function onSidebarToggled(active: boolean) {
 }
 
 function onWeaponSelected(weapon: IWeapon | undefined) {
-    selectedPage.value = PageSelection.Weapon;
     selectionService.setWeapon(weapon);
-    showMainPage.value = true;
+    if (weapon) {
+        selectedPage.value = PageSelection.Weapon;
+        showMainPage.value = true;
+    }
     console.log("weapon selected", weapon)
 }
 

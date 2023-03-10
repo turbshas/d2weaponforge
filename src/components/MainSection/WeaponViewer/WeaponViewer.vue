@@ -52,7 +52,7 @@ function onCatalystApplied(catalyst: ICatalyst | undefined) {
 </script>
 
 <template>
-    <div class="viewer" aria-label="Weapon Viewer">
+    <div class="viewer" aria-label="Weapon Viewer" v-if="weapon">
         <WeaponPanel
             class="weapon-panel"
             :selected-gear="props.selectedGear"
