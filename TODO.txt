@@ -28,12 +28,8 @@ Preferred order of work:
       - legendaries also include this in the reusable plugs on the socket, but that's probably not needed
       - only included on the crafting version of the weapon (with the crafting property on it) - regular weapons don't have it
   - weapon ornaments - they contain a weapon screenshot and can change that for the current weapon
-  - a few places still use DataSearchStrings, try to clean these up so the constants can be put in a common spot
 5) Convert category ID and trait ID checks to hashes for everything
   - can rework some stuff too, may need to remove custom catalyst checks
-6) Updating perk insights
-  - need to add new ones
-  - need to add catalyst perks if there is info on them
 
 
 compare section:
@@ -49,6 +45,7 @@ compare section:
     - if this is done, and "add to comparisons" is clicked - remove the previous one?
 
 Unsure about order:
+- have option to alternate to crafted version of a weapon? would should enhanced intrinsic and automatically include crafted bonus
 - update perk insights for origin perks, exotic perks, and to include swords stats
 - better support for crafted weapons, especially crafted exotics (enhanced intrinsic)
 - update weapon formulas when data becomes available (some values are placeholder constants right now)
