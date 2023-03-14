@@ -1,6 +1,8 @@
 # Changelog
 
-## **TBD** [ *1.5.0* ] TBD
+## **TBD** [ *1.5.1* ] TBD
+
+* Change weapon list to list all weapons that were released after the previous season.
 
 ## **Exotic Catalysts** [ *1.5.0* ] 2023-03-09
 

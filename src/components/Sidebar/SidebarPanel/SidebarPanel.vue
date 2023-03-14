@@ -42,7 +42,9 @@ const areFiltersChosen = computed(() => {
 const filteredWeapons = computed(() => {
     // If no filter or search, return truncated list
     if (!areFiltersChosen.value && !props.searchString) {
-        return weapons.value.filter(w => !w.isSunset).slice(0, 63);
+        const nonSunsetWeapons = weapons.value.filter(w => !w.isSunset);
+        const finalWeaponFromPreviousSeason = nonSunsetWeapons.findIndex(w => w.index <= 13257); // This is the index for Blowout
+        return nonSunsetWeapons.slice(0, finalWeaponFromPreviousSeason > 0 ? finalWeaponFromPreviousSeason : 50);
     }
 
     const filtered = weapons.value
