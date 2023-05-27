@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type IFilterButton, type ILanguageInfo, type ISelectedFilters, type IWeapon, type LookupMap } from "@/data/interfaces";
+import { SidebarPanelSelection, type FilterCategory, type FilterPredicate, type IAppliedFilters, type IFilterButton, type ILanguageInfo, type ISelectedFilters, type IWeapon } from "@/data/interfaces";
 import { destinyDataService } from "@/data/services";
 import { computed, defineAsyncComponent, ref, watch } from "vue";
 import WeaponList from "./WeaponList/WeaponList.vue";
@@ -39,11 +39,15 @@ const areFiltersChosen = computed(() => {
         || filters.value.perkNames.length > 0;
 });
 
+// This is the index for The Title (2023 version).
+const finalWeaponIndexFromPreviousSeason = 13880;
+
 const filteredWeapons = computed(() => {
     // If no filter or search, return truncated list
     if (!areFiltersChosen.value && !props.searchString) {
         const nonSunsetWeapons = weapons.value.filter(w => !w.isSunset);
-        const finalWeaponFromPreviousSeason = nonSunsetWeapons.findIndex(w => w.index <= 13257); // This is the index for Blowout
+        // Note: requires that weapons are sorted by index.
+        const finalWeaponFromPreviousSeason = nonSunsetWeapons.findIndex(w => w.index <= finalWeaponIndexFromPreviousSeason);
         return nonSunsetWeapons.slice(0, finalWeaponFromPreviousSeason > 0 ? finalWeaponFromPreviousSeason : 50);
     }
 

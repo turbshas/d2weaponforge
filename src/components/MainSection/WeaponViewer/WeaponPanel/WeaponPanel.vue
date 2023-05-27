@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import EyeIcon from "@/assets/eye_icon.svg";
-import type { ISelectedGear, ISelectedPerkMap, LookupMap } from '@/data/interfaces';
+import type { ISelectedGear, ISelectedPerkMap } from '@/data/interfaces';
 import { destinyDataService } from '@/data/services';
-import type { PerkColumn } from "@/data/types/perkColumn";
 import { computed, ref } from '@vue/reactivity';
 import SelectedPerks from './SelectedPerks.vue';
 import WeaponHeader from "./WeaponHeader.vue";

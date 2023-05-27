@@ -46,7 +46,7 @@ const weaponCategoryArchetypeMap = computed(() => {
                 rpm: archetype.rpm,
                 name: archetype.name,
                 text: `${rpmPrefix}${archetype.name}`,
-                iconUrl: WeaponCategoryIconMap.value[weaponType.weaponCategoryRegex] || "",
+                iconUrl: WeaponCategoryIconMap.value[weaponType.traitId] || "",
                 filter: (item: IWeapon) => {
                     if (!item.archetype) return false;
                     const hash = item.archetype.intrinsicPerkHash;
@@ -60,7 +60,7 @@ const weaponCategoryArchetypeMap = computed(() => {
         }
 
         archetypeFilterList.sort((a, b) => a.rpm - b.rpm);
-        archetypeFilters[weaponType.weaponCategoryRegex] = archetypeFilterList;
+        archetypeFilters[weaponType.traitId] = archetypeFilterList;
     }
 
     return archetypeFilters;
@@ -68,14 +68,14 @@ const weaponCategoryArchetypeMap = computed(() => {
 
 const weaponCategoryFilters = computed(() => {
     const weaponFilters = destinyDataService.weaponTypes
-        .filter(t => t.traitId && WeaponCategoryIconMap.value[t.weaponCategoryRegex])
+        .filter(t => t.traitId && WeaponCategoryIconMap.value[t.traitId])
         .map(t => {
             const filter: IWeaponFilterButton = {
                 text: t.weaponTypeName,
-                iconUrl: WeaponCategoryIconMap.value[t.weaponCategoryRegex] || "",
-                archetypes: weaponCategoryArchetypeMap.value[t.weaponCategoryRegex] || [],
+                iconUrl: WeaponCategoryIconMap.value[t.traitId] || "",
+                archetypes: weaponCategoryArchetypeMap.value[t.traitId] || [],
                 filter: (item: IWeapon) => {
-                    if (item.weaponCategoryRegex !== t.weaponCategoryRegex) return false;
+                    if (item.traitId !== t.traitId) return false;
                     const activeArchetypeFilters = filter.archetypes.filter(a => props.selectedFilters.selectedFiltersMap["Archetype"][a.text]);
                     // If no archetypes chosen, allow all.
                     if (activeArchetypeFilters.length === 0) return true;

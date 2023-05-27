@@ -1,6 +1,9 @@
 # Changelog
 
-## **TBD** [ *1.5.1* ] TBD
+## **TBD** [ *1.5.2* ] TBD
+
+## **Season of the Deep** [ *1.5.1* ] 2023-05-27
+Fixes weapons not loading from API - weapon trait IDs were changed.
 
 * Change weapon list to list all weapons that were released after the previous season.
 

@@ -18,13 +18,12 @@ const archetypeHash = computed(() => weapon.value && weapon.value.archetype ? we
 const exoticOverride = computed(() => WeaponCategoryValuesExoticOverrideMap.value[weaponHash.value]);
 const archetypeOverride = computed(() => {
     if (!weapon.value) return undefined;
-    const regex = weapon.value.weaponCategoryRegex;
-    const archetypeMap = WeaponCategoryValuesArchetypeOverrideMap.value[regex];
+    const archetypeMap = WeaponCategoryValuesArchetypeOverrideMap.value[weapon.value.traitId];
     return archetypeMap && archetypeMap[archetypeHash.value];
 });
 const overrideValues = computed(() => exoticOverride.value || archetypeOverride.value);
 
-const baseHandlingValues = computed(() => weapon.value ? WeaponCategoryHandlingValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
+const baseHandlingValues = computed(() => weapon.value ? WeaponCategoryHandlingValuesMap.value[weapon.value.traitId] : undefined);
 const overrideHandlingValues = computed(() => overrideValues.value?.handling);
 
 const handlingValues = computed(() => overrideHandlingValues.value || baseHandlingValues.value);

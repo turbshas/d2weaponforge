@@ -1,4 +1,4 @@
-import { StatIndex, type ItemHash, type LookupMap, type WeaponCategoryRegex } from "./interfaces";
+import { StatIndex, type ItemHash, type LookupMap, TraitId } from "./interfaces";
 
 /**
  * This file should contain constants that are ONLY used for processing the manifest,
@@ -72,26 +72,6 @@ export enum PlugCategoryId {
     SurosRegime =       "v320_repackage_auto_rifle0_masterwork",
     SleeperSimulant =   "v320_repackage_fusion_rifle0_masterwork",
     Whisper =           "v320_repackage_sniper_rifle0_masterwork",
-}
-
-class WeaponCategoryRegexes {
-    public get AutoRifle(): WeaponCategoryRegex { return ".*_auto_rifle"; }
-    public get Bow(): WeaponCategoryRegex { return "type_weapon_bow"; }
-    public get HandCannon(): WeaponCategoryRegex { return ".*_hand_cannon"; }
-    public get FusionRifle(): WeaponCategoryRegex { return "type_weapon_fusion_rifle"; }
-    public get Glaive(): WeaponCategoryRegex { return ".*_glaive"; }
-    public get GrenadeLauncher(): WeaponCategoryRegex { return ".*_grenade_launcher"; }
-    public get LinearFusion(): WeaponCategoryRegex { return ".*_fusion_rifle_line"; }
-    public get MachineGun(): WeaponCategoryRegex { return ".*_machinegun"; }
-    public get PulseRifle(): WeaponCategoryRegex { return ".*_pulse_rifle"; }
-    public get RocketLauncher(): WeaponCategoryRegex { return ".*_rocket_launcher"; }
-    public get ScoutRifle(): WeaponCategoryRegex { return ".*_scout_rifle"; }
-    public get Sidearm(): WeaponCategoryRegex { return ".*_sidearm"; }
-    public get Shotgun(): WeaponCategoryRegex { return ".*_shotgun"; }
-    public get SniperRifle(): WeaponCategoryRegex { return ".*_sniper_rifle"; }
-    public get SubmachineGun(): WeaponCategoryRegex { return ".*_submachinegun"; }
-    public get Sword(): WeaponCategoryRegex { return "type_weapon_sword"; }
-    public get TraceRifle(): WeaponCategoryRegex { return ".*_beam_rifle"; }
 }
 
 const enum Year1ExoticCatalystHash {
@@ -204,27 +184,6 @@ export const AllowedPlugCategoryMap: LookupMap<string, boolean> = {
     ...ModPlugCategoryMap,
 };
 
-export enum TraitId {
-    Weapon =            "item_type.weapon",
-    AutoRifle =         "weapon_type.auto_rifle",
-    Bow =               "weapon_type.bow",
-    FusionRifle =       "weapon_type.fusion_rifle",
-    Glaive =            "weapon_type.glaive",
-    GrenadeLauncher =   "weapon_type.grenade_launcher",
-    HandCannon =        "weapon_type.hand_cannon",
-    LinearFusion =      "weapon_type.linear_fusion_rifle",
-    MachineGun =        "weapon_type.machinegun",
-    PulseRifle =        "weapon_type.pulse_rifle",
-    RocketLauncher =    "weapon_type.rocket_launcher",
-    ScoutRifle =        "weapon_type.scout_rifle",
-    Shotgun =           "weapon_type.shotgun",
-    Sidearm =           "weapon_type.sidearm",
-    SniperRifle =       "weapon_type.sniper_rifle",
-    SubmachineGun =     "weapon_type.submachinegun",
-    Sword =             "weapon_type.sword",
-    ExoticCatalyst =    "item_type.exotic_catalyst",
-}
-
 export const WeaponTraitIdMainStatMap: LookupMap<TraitId, StatIndex> = {
     [TraitId.Bow]: StatIndex.DrawTime,
     [TraitId.FusionRifle]: StatIndex.ChargeTime,
@@ -240,25 +199,6 @@ export const WeaponTypeRpmUnitsMap: LookupMap<TraitId, string> = {
     [TraitId.LinearFusion]: "ms",
 };
 export const DefaultWeaponTypeRpmUnits = "RPM";
-
-export const WeaponTypeTraitToRegex: LookupMap<TraitId, WeaponCategoryRegex> = {
-    [TraitId.AutoRifle]: ".*_auto_rifle",
-    [TraitId.Bow]: "type_weapon_bow",
-    [TraitId.FusionRifle]: "type_weapon_fusion_rifle",
-    [TraitId.Glaive]: ".*_glaive",
-    [TraitId.GrenadeLauncher]: ".*_grenade_launcher",
-    [TraitId.HandCannon]: ".*_hand_cannon",
-    [TraitId.LinearFusion]: ".*_fusion_rifle_line",
-    [TraitId.MachineGun]: ".*_machinegun",
-    [TraitId.PulseRifle]: ".*_pulse_rifle",
-    [TraitId.RocketLauncher]: ".*_rocket_launcher",
-    [TraitId.ScoutRifle]: ".*_scout_rifle",
-    [TraitId.Shotgun]: ".*_shotgun",
-    [TraitId.Sidearm]: ".*_sidearm",
-    [TraitId.SniperRifle]: ".*_sniper_rifle",
-    [TraitId.SubmachineGun]: ".*_submachinegun",
-    [TraitId.Sword]: "type_weapon_sword",
-};
 
 export const NonSunsetPowerCapMap: LookupMap<ItemHash, boolean> = {
     999940: true,
