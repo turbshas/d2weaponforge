@@ -1,11 +1,11 @@
 import type {
     DestinyDamageTypeDefinition,
-    DestinyInventoryItemDefinition,
     DestinyItemCategoryDefinition,
     DestinyItemTierTypeDefinition,
     DestinyManifestLanguage,
     DestinyManifestSlice,
     DestinySeasonDefinition,
+    DestinyStatDefinition,
     DestinyStatDisplayDefinition} from "bungie-api-ts/destiny2";
 import type { ComputedRef, Ref } from "vue";
 
@@ -101,6 +101,7 @@ export enum SocketPlugSources {
     CharacterPlugSet = 8,
 }
 
+/** Non-ambient copy of enum. */
 export enum ItemPerkVisibility {
     Visible = 0,
     Disabled = 1,
@@ -109,6 +110,7 @@ export enum ItemPerkVisibility {
 
 export type ItemHash = number;
 
+/** The value of @see {@link DestinyStatDefinition.index}. Used as if it was a hash. */
 export enum StatIndex {
     Accuracy = 17,
     AimAssistance = 30,
@@ -473,6 +475,7 @@ export interface IWeaponFormulaOverrides {
     ammo?: IWeaponAmmoSizeValues;
 }
 
+/** The hash of every perk. */
 export enum PerkHash {
     Adagio = 3673922083,
     AdagioEnhanced = 2889515627,
