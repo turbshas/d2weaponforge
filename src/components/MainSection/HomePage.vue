@@ -11,6 +11,15 @@ interface IChangelog {
 
 const changelogs = computed<IChangelog[]>(() => [
     {
+        version: "1.5.1",
+        date: "2023-05-27",
+        title: "Season of the Deep",
+        description: "Fixes weapons not loading.",
+        changes: [
+            "Change weapon list to display all weapons that were released after the previous season."
+        ],
+    },
+    {
         version: "1.5.0",
         date: "2023-03-09",
         title: "Exotic Catalysts",

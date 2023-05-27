@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FilterCategory, IFilterButton, ISelectedFilters, IWeapon, LookupMap } from "@/data/interfaces";
+import type { FilterCategory, IFilterButton, ISelectedFilters, IWeapon } from "@/data/interfaces";
 import { computed, ref } from "vue";
 import CollapsibleSection from "@/components/Common/CollapsibleSection.vue";
 import FilterGroup from "./FilterGroup.vue";
