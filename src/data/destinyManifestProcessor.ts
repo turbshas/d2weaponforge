@@ -1,6 +1,6 @@
 import type { DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinySandboxPerkDefinition } from "bungie-api-ts/destiny2";
-import { ItemTierIndex, type ICatalyst, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type ISandboxPerk, type ItemHash, type IWeaponTypeInfo, type LookupMap, type UsedDestinyManifestSlice, type WeaponCategoryRegex } from "./interfaces";
-import { AllowedPlugCategoryMap, AllPerkPlugCategoryMap, ExcludedItemsMap, ModPlugCategoryMap, PlugCategoryId, TraitId, Year1ExoticCatalystPlugCategoryMap } from "./processingConstants";
+import { ItemTierIndex, type ICatalyst, type IMasterwork, type IMod, type IPerk, type IPerkLookup, type IPerkPair, type ISandboxPerk, type ItemHash, type IWeaponTypeInfo, type LookupMap, type UsedDestinyManifestSlice, TraitId } from "./interfaces";
+import { AllPerkPlugCategoryMap, ExcludedItemsMap, ModPlugCategoryMap, PlugCategoryId, Year1ExoticCatalystPlugCategoryMap } from "./processingConstants";
 import { DataSearchStrings } from "./services/dataSearchStringService";
 import { Catalyst } from "./types/catalyst";
 import { ManifestAccessor } from "./types/manifestAccessor";
@@ -19,6 +19,15 @@ interface IGroupedItems {
     catalysts: DestinyInventoryItemDefinition[];
 }
 
+const enum ItemType {
+    None,
+    Weapon,
+    Perk,
+    Mod,
+    Masterwork,
+    Catalyst,
+}
+
 export class DestinyManifestProcessor {
     private readonly manifest: ManifestAccessor;
     private readonly _weapons: Weapon[];
@@ -32,11 +41,10 @@ export class DestinyManifestProcessor {
 
     constructor(manifestSlice: UsedDestinyManifestSlice) {
         this.manifest = new ManifestAccessor(manifestSlice);
-        this.stripRedactedAndUnneeded();
+        const groupedItems = this.stripUnneededAndGroup();
 
         this._itemCategories = hashMapToArray(this.manifest.slice.DestinyItemCategoryDefinition);
 
-        const groupedItems = this.groupItems();
         this._perkLookup = this.processPerks(groupedItems.perks);
         this._masterworkLookup = arrayToHashMap(this.processMasterworks(groupedItems.masterworks), "hash");
         this._modLookup = arrayToHashMap(this.processMods(groupedItems.mods), "hash");
@@ -47,31 +55,7 @@ export class DestinyManifestProcessor {
         this._weaponTypes = this.processArchetypes(this._weapons, this._perkLookup);
     }
 
-    private readonly stripRedactedAndUnneeded = () => {
-        // Remove everything we don't need - this makes loading from cache much faster (and actually usable).
-        // Only doing this for DestinyInventoryItemDefinition as it is by far the largest table.
-        // The others are fairly small and don't need this.
-        const itemHashesToRemove: ItemHash[] = [...ExcludedItemsMap];
-        for (const key in this.manifest.slice.DestinyInventoryItemDefinition) {
-            const item = this.manifest.slice.DestinyInventoryItemDefinition[key];
-            
-            const isWeapon = !!item.traitIds && item.traitIds.includes(TraitId.Weapon)
-                && !!item.screenshot // Some weapons don't have screenshots - probably for the crafting menu.
-                && !!item.quality
-                && !!item.quality.infusionCategoryHash; // Others don't have an infusion category, probably also crafting related.
-            const isModOrPerk = !!item.plug && !!AllowedPlugCategoryMap[item.plug.plugCategoryIdentifier];
-            const isMasterwork = item.plug && item.plug.plugCategoryIdentifier.includes(PlugCategoryId.WeaponMasterworkComponent);
-            const isCatalyst = (!!item.traitIds && item.traitIds.includes(TraitId.ExoticCatalyst))
-                || (!!item.plug && !!Year1ExoticCatalystPlugCategoryMap[item.plug.plugCategoryIdentifier]);
-
-            if (!isWeapon && !isModOrPerk && !isMasterwork && !isCatalyst) {
-                itemHashesToRemove.push(item.hash);
-            }
-        }
-        for (const hash of itemHashesToRemove) {
-            delete this.manifest.slice.DestinyInventoryItemDefinition[hash];
-        }
-
+    private readonly stripUnneededAndGroup = () => {
         // Remove redacted values
         for (const key in this.manifest) {
             const table = key as keyof UsedDestinyManifestSlice;
@@ -91,9 +75,8 @@ export class DestinyManifestProcessor {
                 delete component[hash];
             }
         }
-    }
 
-    private readonly groupItems = () => {
+        // Next, remove items we don't need and group them into useful categories.
         const grouped: IGroupedItems = {
             weapons: [],
             perks: [],
@@ -102,42 +85,56 @@ export class DestinyManifestProcessor {
             catalysts: [],
         };
 
+        // Remove everything we don't need - this makes loading from cache much faster (and actually usable).
+        // Only doing this for DestinyInventoryItemDefinition as it is by far the largest table.
+        // The others are fairly small and don't need this.
+        const itemHashesToRemove: ItemHash[] = [...ExcludedItemsMap];
         for (const key in this.manifest.slice.DestinyInventoryItemDefinition) {
             const item = this.manifest.slice.DestinyInventoryItemDefinition[key];
-            if (!item) continue;
-            // If no name, probably not an item we care about.
-            if (!item.displayProperties.name) continue;
-
-            const isWeapon =
-                // If no categories, probably not an item we care about.
-                !!item.traitIds && item.traitIds.includes(TraitId.Weapon)
-                // Some weapons don't have screenshots (including some duplicates) - probably for the crafting menu.
-                && !!item.screenshot
-                // Others don't have an infusion category, probably also crafting related.
-                && !!item.quality
-                && (!!item.quality.infusionCategoryHash
-                    || (!!item.quality.infusionCategoryHashes && item.quality.infusionCategoryHashes.length > 0));
-            const isPerk = !!item.plug && !!AllPerkPlugCategoryMap[item.plug.plugCategoryIdentifier];
-            const isMod = !!item.plug && !!ModPlugCategoryMap[item.plug.plugCategoryIdentifier];
-            const isMasterwork = !!item.plug
-                && item.plug.plugCategoryIdentifier.includes(PlugCategoryId.WeaponMasterworkComponent);
-            const isCatalyst = (!!item.traitIds && item.traitIds.includes(TraitId.ExoticCatalyst))
-                || (!!item.plug && !!Year1ExoticCatalystPlugCategoryMap[item.plug.plugCategoryIdentifier]);
-
-            if (isWeapon) {
-                grouped.weapons.push(item);
-            } else if (isPerk) {
-                grouped.perks.push(item);
-            } else if (isMod) {
-                grouped.mods.push(item);
-            } else if (isMasterwork) {
-                grouped.masterworks.push(item);
-            } else if (isCatalyst) {
-                grouped.catalysts.push(item);
+            const itemType = this.getItemType(item);
+            switch (itemType) {
+                case ItemType.Weapon: grouped.weapons.push(item); break;
+                case ItemType.Perk: grouped.perks.push(item); break;
+                case ItemType.Mod: grouped.mods.push(item); break;
+                case ItemType.Masterwork: grouped.masterworks.push(item); break;
+                case ItemType.Catalyst: grouped.catalysts.push(item); break;
+                case ItemType.None: itemHashesToRemove.push(item.hash); break;
+                default: throw `Unknown item type: ${itemType}.`;
             }
+        }
+        for (const hash of itemHashesToRemove) {
+            delete this.manifest.slice.DestinyInventoryItemDefinition[hash];
         }
 
         return grouped;
+    }
+
+    private readonly getItemType = (item: DestinyInventoryItemDefinition) => {
+        const isWeapon =
+            // If no categories, probably not an item we care about.
+            !!item.traitIds && item.traitIds.some(t => !!t && t.includes(TraitId.Weapon))
+            // Some weapons don't have screenshots (including some duplicates) - probably for the crafting menu.
+            && !!item.screenshot
+            // Others don't have an infusion category, probably also crafting related.
+            && !!item.quality
+            && (!!item.quality.infusionCategoryHash
+                || (!!item.quality.infusionCategoryHashes && item.quality.infusionCategoryHashes.length > 0));
+        if (isWeapon) return ItemType.Weapon;
+
+        const isCatalyst = (!!item.traitIds && item.traitIds.includes(TraitId.ExoticCatalyst))
+            || (!!item.plug && !!Year1ExoticCatalystPlugCategoryMap[item.plug.plugCategoryIdentifier]);
+        if (isCatalyst) return ItemType.Catalyst;
+
+        if (!item.plug) return ItemType.None;
+
+        const isPerk = !!AllPerkPlugCategoryMap[item.plug.plugCategoryIdentifier];
+        if (isPerk) return ItemType.Perk;
+        const isMod = !!ModPlugCategoryMap[item.plug.plugCategoryIdentifier];
+        if (isMod) return ItemType.Mod;
+        const isMasterwork = item.plug.plugCategoryIdentifier.includes(PlugCategoryId.WeaponMasterworkComponent);
+        if (isMasterwork) return ItemType.Masterwork;
+
+        return ItemType.None;
     }
 
     private readonly processWeapons = (
@@ -229,14 +226,11 @@ export class DestinyManifestProcessor {
     private readonly processArchetypes = (weapons: Weapon[], perkLookup: IPerkLookup) => {
         const activeWeapons = weapons.filter(w => !w.isSunset);
 
-        const seenArchetypes: {
-            [weaponCategoryRegex: string]: {
-                [intrinsicName: string]: {
-                    [rpm: number]: boolean,
-                },
-            },
-        } = {};
-        const weaponTypeInfoMap: LookupMap<WeaponCategoryRegex, IWeaponTypeInfo> = {};
+        type SeenRPMs = LookupMap<number, boolean>;
+        type IntrinsicNameSeenRPMs = LookupMap<string, SeenRPMs>;
+        type SeenArchetypes = LookupMap<TraitId, IntrinsicNameSeenRPMs>;
+        const seenArchetypes: SeenArchetypes = {};
+        const weaponTypeInfoMap: LookupMap<TraitId, IWeaponTypeInfo> = {};
 
         for (const weapon of activeWeapons) {
             if (!weapon.archetype || (weapon.tierTypeIndex !== ItemTierIndex.Legendary)) continue;
@@ -254,16 +248,16 @@ export class DestinyManifestProcessor {
             const stat = weapon.archetype.rpmStatValue;
             if (!weaponRpmStatHash || (!stat && stat !== 0)) continue;
 
-            const category = this._itemCategories.find(c => c.itemTypeRegex === weapon.weaponCategoryRegex);
+            const category = this._itemCategories.find(c => c.traitId === weapon.traitId);
             if (!category) continue;
 
-            if (!seenArchetypes[weapon.weaponCategoryRegex]) {
-                seenArchetypes[weapon.weaponCategoryRegex] = {};
+            const intrinsicNameSeenRPMs = seenArchetypes[weapon.traitId] || {};
+            if (!seenArchetypes[weapon.traitId]) {
+                seenArchetypes[weapon.traitId] = intrinsicNameSeenRPMs;
 
-                weaponTypeInfoMap[weapon.weaponCategoryRegex] = {
+                weaponTypeInfoMap[weapon.traitId] = {
                     weaponTypeName: category.displayProperties.name,
                     traitId: weaponTypeTraitId,
-                    weaponCategoryRegex: weapon.weaponCategoryRegex,
                     weaponCategoryHash: category.hash,
                     // Hide RPM for bows and swords - bows are inconsistent and swords don't have one that makes sense.
                     showRpm: weaponTypeTraitId !== TraitId.Bow && weaponTypeTraitId !== TraitId.Sword,
@@ -273,14 +267,15 @@ export class DestinyManifestProcessor {
                     archetypes: [],
                 };
             }
-            if (!seenArchetypes[weapon.weaponCategoryRegex][archetypeName]) {
-                seenArchetypes[weapon.weaponCategoryRegex][archetypeName] = {};
+            const seenRPMs = intrinsicNameSeenRPMs[archetypeName] || {};
+            if (!intrinsicNameSeenRPMs[archetypeName]) {
+                intrinsicNameSeenRPMs[archetypeName] = seenRPMs;
             }
 
-            if (seenArchetypes[weapon.weaponCategoryRegex][archetypeName][stat]) continue;
-            seenArchetypes[weapon.weaponCategoryRegex][archetypeName][stat] = true;
+            if (seenRPMs[stat]) continue;
+            seenRPMs[stat] = true;
 
-            weaponTypeInfoMap[weapon.weaponCategoryRegex]!.archetypes.push({
+            weaponTypeInfoMap[weapon.traitId]!.archetypes.push({
                 weaponType: weaponTypeTraitId,
                 hash: archetypePerk.hash,
                 name: archetypeName,

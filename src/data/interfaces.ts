@@ -136,44 +136,27 @@ export enum StatIndex {
     Zoom = 32,
 }
 
-export type TraitId =
-    "item_type.weapon"
-    | "weapon_type.auto_rifle"
-    | "weapon_type.bow"
-    | "weapon_type.fusion_rifle"
-    | "weapon_type.glaive"
-    | "weapon_type.grenade_launcher"
-    | "weapon_type.hand_cannon"
-    | "weapon_type.linear_fusion_rifle"
-    | "weapon_type.machinegun"
-    | "weapon_type.pulse_rifle"
-    | "weapon_type.rocket_launcher"
-    | "weapon_type.scout_rifle"
-    | "weapon_type.shotgun"
-    | "weapon_type.sidearm"
-    | "weapon_type.sniper_rifle"
-    | "weapon_type.submachinegun"
-    | "weapon_type.sword"
-    | "item_type.exotic_catalyst";
-
-export type WeaponCategoryRegex =
-    ".*_auto_rifle"
-    | "type_weapon_bow"
-    | ".*_hand_cannon"
-    | "type_weapon_fusion_rifle"
-    | ".*_glaive"
-    | ".*_grenade_launcher"
-    | ".*_fusion_rifle_line"
-    | ".*_machinegun"
-    | ".*_pulse_rifle"
-    | ".*_rocket_launcher"
-    | ".*_scout_rifle"
-    | ".*_sidearm"
-    | ".*_shotgun"
-    | ".*_sniper_rifle"
-    | ".*_submachinegun"
-    | "type_weapon_sword"
-    | ".*_beam_rifle";
+export enum TraitId {
+    Weapon =            "item.weapon",
+    AutoRifle =         "item.weapon.auto_rifle",
+    Bow =               "item.weapon.bow",
+    FusionRifle =       "item.weapon.fusion_rifle",
+    Glaive =            "item.weapon.glaive",
+    GrenadeLauncher =   "item.weapon.grenade_launcher",
+    HandCannon =        "item.weapon.hand_cannon",
+    LinearFusion =      "item.weapon.linear_fusion_rifle",
+    MachineGun =        "item.weapon.machinegun",
+    PulseRifle =        "item.weapon.pulse_rifle",
+    RocketLauncher =    "item.weapon.rocket_launcher",
+    ScoutRifle =        "item.weapon.scout_rifle",
+    Shotgun =           "item.weapon.shotgun",
+    Sidearm =           "item.weapon.sidearm",
+    SniperRifle =       "item.weapon.sniper_rifle",
+    SubmachineGun =     "item.weapon.submachinegun",
+    Sword =             "item.weapon.sword",
+    TraceRifle =        "item.weapon.trace_rifle",
+    ExoticCatalyst =    "item.exotic_catalyst",
+}
 
 export type LookupMap<K extends string | number | symbol, V> = { [key in K]?: V };
 
@@ -303,7 +286,6 @@ export interface IWeapon {
     isSunset: boolean;
     tierTypeIndex: number;
     traitId: TraitId;
-    weaponCategoryRegex: WeaponCategoryRegex;
     damageType: IDamageType;
     statBlock: IStatBlock;
     archetype: IArchetype | undefined;
@@ -402,10 +384,8 @@ export interface ICatalystUnlockRequirement {
 export interface IWeaponTypeInfo {
     /** User-friendly name of the weapon type. */
     weaponTypeName: string;
-    /** The trait ID of this weapon type (@see {@link DestinyInventoryItemDefinition.traitIds}). */
+    /** The trait ID from @see {@link DestinyItemCategoryDefinition.traitId} that matches this weapon type. */
     traitId: TraitId;
-    /** The regex from @see {@link DestinyItemCategoryDefinition.itemTypeRegex} that matches this weapon type. */
-    weaponCategoryRegex: WeaponCategoryRegex;
     /** The hash of the weapon type's category, from @see {@link DestinyItemCategoryDefinition.hash}. */
     weaponCategoryHash: number;
     /** Whether to show the RPM value in the filter. */

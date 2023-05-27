@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CalculationDisplay from '@/components/Common/CalculationDisplay.vue';
 import { WeaponCategoryRangeValuesMap, WeaponCategoryValuesArchetypeOverrideMap, WeaponCategoryValuesExoticOverrideMap } from '@/data/curatedData/WeaponFormulas';
-import { StatIndex, type ISelectedGear } from '@/data/interfaces';
+import { StatIndex, type ISelectedGear, TraitId } from '@/data/interfaces';
 import { DataSearchStrings } from '@/data/services';
 import { computed } from 'vue';
 import ExtrasListItem from '../../../Common/ExtrasListItem.vue';
@@ -22,19 +22,18 @@ const archetypeHash = computed(() => weapon.value && weapon.value.archetype ? we
 const exoticOverride = computed(() => WeaponCategoryValuesExoticOverrideMap.value[weaponHash.value]);
 const archetypeOverride = computed(() => {
     if (!weapon.value) return undefined;
-    const regex = weapon.value.weaponCategoryRegex;
-    const archetypeMap = WeaponCategoryValuesArchetypeOverrideMap.value[regex];
+    const archetypeMap = WeaponCategoryValuesArchetypeOverrideMap.value[weapon.value.traitId];
     return archetypeMap && archetypeMap[archetypeHash.value];
 });
 const overrideValues = computed(() => exoticOverride.value || archetypeOverride.value);
 
-const baseRangeValues = computed(() => weapon.value ? WeaponCategoryRangeValuesMap.value[weapon.value.weaponCategoryRegex] : undefined);
+const baseRangeValues = computed(() => weapon.value ? WeaponCategoryRangeValuesMap.value[weapon.value.traitId] : undefined);
 const overrideRangeValues = computed(() => overrideValues.value?.range);
 
 const rangeValues = computed(() => overrideRangeValues.value || baseRangeValues.value);
 
 const RangefinderPerkHash = computed(() => DataSearchStrings.Misc.RangefinderPerkHash);
-const weaponCategoryRegex = computed(() => weapon.value ? weapon.value.weaponCategoryRegex : "");
+const weaponTraitId = computed(() => weapon.value ? weapon.value.traitId : "");
 const hasRangeValues = computed(() => !!rangeValues.value);
 
 const allStats = computed(() => props.selectedGear.modifiedWeaponDisplayStats.value);
@@ -57,8 +56,8 @@ const rangefinderMultiplier = computed(() => {
 });
 
 const zoomMultiplier = computed(() => {
-    if (!rangeValues.value || !weaponCategoryRegex.value) return 1;
-    const adjustedZoom = weaponCategoryRegex.value === DataSearchStrings.WeaponCategoryRegex.FusionRifle
+    if (!rangeValues.value || !weaponTraitId.value) return 1;
+    const adjustedZoom = weaponTraitId.value === TraitId.FusionRifle
         ? (10 + (zoom.value / 5))
         : (zoom.value - 0.25);
     return adjustedZoom / 10;

@@ -2,8 +2,7 @@ import FlagIcons from "@/assets/FlagIcons";
 import OriginIcons from "@/assets/OriginIcons";
 import WeaponIcons from "@/assets/WeaponIcons";
 import { computed } from "vue";
-import { Collection, type ILanguageInfo, type LookupMap, type SeasonNumber, type WeaponCategoryRegex } from "./interfaces";
-import { DataSearchStrings } from "./services/dataSearchStringService";
+import { Collection, TraitId, type ILanguageInfo, type LookupMap, type SeasonNumber } from "./interfaces";
 
 export const LanguageInfos = computed<ILanguageInfo[]>(() => [
     { language: "de", flagIcon: FlagIcons.DE, text: "Altsächsisch", },
@@ -24,25 +23,25 @@ export const EnglishLanguageIndex = computed(() => LanguageInfos.value.findIndex
 
 // This uses the "itemTypeRegex" field of DestinyItemCategoryDefinition as an identifier for each
 // weapon type, since hash could theoretically change.
-export const WeaponCategoryIconMap = computed<LookupMap<WeaponCategoryRegex, string>>(() => {
+export const WeaponCategoryIconMap = computed<LookupMap<TraitId, string>>(() => {
     return {
-        [DataSearchStrings.WeaponCategoryRegex.AutoRifle]: WeaponIcons.AutoRifle,
-        [DataSearchStrings.WeaponCategoryRegex.HandCannon]: WeaponIcons.HandCannon,
-        [DataSearchStrings.WeaponCategoryRegex.PulseRifle]: WeaponIcons.PulseRifle,
-        [DataSearchStrings.WeaponCategoryRegex.ScoutRifle]: WeaponIcons.ScoutRifle,
-        [DataSearchStrings.WeaponCategoryRegex.FusionRifle]: WeaponIcons.FusionRifle,
-        [DataSearchStrings.WeaponCategoryRegex.SniperRifle]: WeaponIcons.SniperRifle,
-        [DataSearchStrings.WeaponCategoryRegex.Shotgun]: WeaponIcons.Shotgun,
-        [DataSearchStrings.WeaponCategoryRegex.MachineGun]: WeaponIcons.MachineGun,
-        [DataSearchStrings.WeaponCategoryRegex.RocketLauncher]: WeaponIcons.RocketLauncher,
-        [DataSearchStrings.WeaponCategoryRegex.Sidearm]: WeaponIcons.Sidearm,
-        [DataSearchStrings.WeaponCategoryRegex.Sword]: WeaponIcons.Sword,
-        [DataSearchStrings.WeaponCategoryRegex.GrenadeLauncher]: WeaponIcons.GrenadeLauncher,
-        [DataSearchStrings.WeaponCategoryRegex.LinearFusion]: WeaponIcons.LinearFusionRifle,
-        [DataSearchStrings.WeaponCategoryRegex.TraceRifle]: WeaponIcons.TraceRifle,
-        [DataSearchStrings.WeaponCategoryRegex.Bow]: WeaponIcons.Bow,
-        [DataSearchStrings.WeaponCategoryRegex.Glaive]: WeaponIcons.Glaive,
-        [DataSearchStrings.WeaponCategoryRegex.SubmachineGun]: WeaponIcons.SubmachineGun,
+        [TraitId.AutoRifle]: WeaponIcons.AutoRifle,
+        [TraitId.HandCannon]: WeaponIcons.HandCannon,
+        [TraitId.PulseRifle]: WeaponIcons.PulseRifle,
+        [TraitId.ScoutRifle]: WeaponIcons.ScoutRifle,
+        [TraitId.FusionRifle]: WeaponIcons.FusionRifle,
+        [TraitId.SniperRifle]: WeaponIcons.SniperRifle,
+        [TraitId.Shotgun]: WeaponIcons.Shotgun,
+        [TraitId.MachineGun]: WeaponIcons.MachineGun,
+        [TraitId.RocketLauncher]: WeaponIcons.RocketLauncher,
+        [TraitId.Sidearm]: WeaponIcons.Sidearm,
+        [TraitId.Sword]: WeaponIcons.Sword,
+        [TraitId.GrenadeLauncher]: WeaponIcons.GrenadeLauncher,
+        [TraitId.LinearFusion]: WeaponIcons.LinearFusionRifle,
+        [TraitId.TraceRifle]: WeaponIcons.TraceRifle,
+        [TraitId.Bow]: WeaponIcons.Bow,
+        [TraitId.Glaive]: WeaponIcons.Glaive,
+        [TraitId.SubmachineGun]: WeaponIcons.SubmachineGun,
     }
 });
 

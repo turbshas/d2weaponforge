@@ -1,6 +1,5 @@
 import type { DestinyInventoryItemDefinition } from "bungie-api-ts/destiny2";
-import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type ItemHash, type IWeapon, type LookupMap, type WeaponCategoryRegex } from "../interfaces";
-import { TraitId, WeaponTypeTraitToRegex } from "../processingConstants";
+import { ItemTierIndex, type IMasterwork, type IMod, type IPerkLookup, type ItemHash, type IWeapon, type LookupMap, TraitId } from "../interfaces";
 import { DataSearchStrings } from "../services/dataSearchStringService";
 import { Archetype } from "./archetype";
 import { DamageType } from "./damageType";
@@ -24,7 +23,6 @@ export class Weapon implements IWeapon {
     public readonly tierTypeIndex: number;
 
     public readonly traitId: TraitId;
-    public readonly weaponCategoryRegex: WeaponCategoryRegex;
 
     public readonly damageType: DamageType;
     public readonly statBlock: StatBlock;
@@ -58,7 +56,6 @@ export class Weapon implements IWeapon {
         this.tierTypeIndex = getWeaponTierTypeIndex(weaponItem, manifest);
 
         this.traitId = getWeaponTraitId(weaponItem);
-        this.weaponCategoryRegex = WeaponTypeTraitToRegex[this.traitId]!;
 
         this.damageType = new DamageType(weaponItem, manifest);
         const statGroup = weaponItem.stats && weaponItem.stats.statGroupHash
@@ -81,13 +78,6 @@ export class Weapon implements IWeapon {
             : baseMods;
 
         this.catalysts = resolvedWeaponSockets.catalysts;
-
-        // This is gross, but meh it seems to work.
-        const isAutoTraitId = this.traitId === TraitId.AutoRifle;
-        const hasTraceRifleRpm = this.archetype && this.archetype.rpmStatValue && this.archetype.rpmStatValue >= 1000;
-        if (isAutoTraitId && hasTraceRifleRpm) {
-            this.weaponCategoryRegex = DataSearchStrings.WeaponCategoryRegex.TraceRifle as WeaponCategoryRegex;
-        }
 
         this.seasonHash = weaponItem.seasonHash;
         this.isCraftable = this.perks.perkColumns.some(c => c.perks.some(p => !!p.enhancedPerk));
