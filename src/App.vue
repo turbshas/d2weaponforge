@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LowResBackgroundImage from "@/assets/background_low_res.jpg";
+import LowResBackgroundImage from "@/assets/background_low_res.webp";
 import MainPage from "@/components/MainSection/MainPage.vue";
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
 import { computed, ref } from "vue";

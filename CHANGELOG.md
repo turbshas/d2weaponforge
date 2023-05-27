@@ -6,6 +6,7 @@
 Fixes weapons not loading from API - weapon trait IDs were changed.
 
 * Change weapon list to list all weapons that were released after the previous season.
+* Improve some lighthouse metrics.
 
 ## **Exotic Catalysts** [ *1.5.0* ] 2023-03-09
 
