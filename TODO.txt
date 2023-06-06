@@ -1,4 +1,6 @@
 Preferred order of work:
+0) On narrow screens, move eye button somewhere (or hide it) - need to make room for masterwork/mod
+  - might just need to shrink them in size
 1) more accessibility changes:
   - keyboard arrow key/page up/page down navigation
 2) look into progressive web apps
