@@ -115,9 +115,12 @@ export class DestinyApiService {
     }
 
     private readonly makeRequest = async (config: HttpClientConfig) => {
-        const query = !config.params ? "" : Object.keys(config.params)
-            .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(config.params[k])}`)
-            .join("&");
+        const params = config.params;
+        const query = !params
+            ? ""
+            : Object.keys(params)
+                .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
+                .join("&");
         const url = query ? `${config.url}?${query}` : config.url;
         const response = await fetch(url, { method: config.method, body: config.body, });
         return await response.json();
