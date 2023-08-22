@@ -200,6 +200,26 @@ export const WeaponTypeRpmUnitsMap: LookupMap<TraitId, string> = {
 };
 export const DefaultWeaponTypeRpmUnits = "RPM";
 
+export const WeaponCategoryHashFilterMap: LookupMap<ItemHash, boolean> = {
+    5: true, // Auto Rifles
+    6: true, // Hand Cannon
+    7: true, // Pulse Rifle
+    8: true, // Scout Rifle
+    9: true, // Fusion Rifle
+    10: true, // Sniper Rifle
+    11: true, // Shotgun
+    12: true, // Machine gun
+    13: true, // Rocket Launcher
+    14: true, // Sidearm
+    54: true, // Sword
+    153950757: true, // Grenade Launchers
+    1504945536: true, // Linear Fusion Rifles
+    2489664120: true, // Trace Rifles
+    3317538576: true, // Bows
+    3871742104: true, // Glaives
+    3954685534: true, // Submachine Guns
+};
+
 export const NonSunsetPowerCapMap: LookupMap<ItemHash, boolean> = {
     999940: true,
     999950: true,

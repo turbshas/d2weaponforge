@@ -7,6 +7,7 @@ import type { ManifestAccessor } from "./manifestAccessor";
 import type { PerkGrid } from "./perkGrid";
 import { ResolvedWeaponSockets } from "./resolvedWeaponSockets";
 import { StatBlock } from "./statBlock";
+import { WeaponCategoryHashFilterMap } from "../processingConstants";
 
 export class Weapon implements IWeapon {
     public readonly index: number;
@@ -22,6 +23,7 @@ export class Weapon implements IWeapon {
     public readonly isSunset: boolean;
     public readonly tierTypeIndex: number;
 
+    public readonly categoryHash: ItemHash;
     public readonly traitId: TraitId;
 
     public readonly damageType: DamageType;
@@ -55,6 +57,7 @@ export class Weapon implements IWeapon {
         this.isSunset = isWeaponSunset(weaponItem);
         this.tierTypeIndex = getWeaponTierTypeIndex(weaponItem, manifest);
 
+        this.categoryHash = getWeaponCategoryHash(weaponItem);
         this.traitId = getWeaponTraitId(weaponItem);
 
         this.damageType = new DamageType(weaponItem, manifest);
@@ -118,6 +121,8 @@ function getWeaponTierTypeIndex(weapon: DestinyInventoryItemDefinition, manifest
     const tierType = manifest.getItemTierDefinition(weapon.inventory.tierTypeHash);
     return tierType ? (tierType.index as ItemTierIndex) : ItemTierIndex.Basic;
 }
+
+function getWeaponCategoryHash(weapon: DestinyInventoryItemDefinition) { return weapon.itemCategoryHashes?.find(h => WeaponCategoryHashFilterMap[h]) || 0; }
 
 // Archetype trait ID seems to always be last one in the list, hopefully that doesn't change.
 function getWeaponTraitId(weapon: DestinyInventoryItemDefinition) { return weapon.traitIds[weapon.traitIds.length - 1] as TraitId; }

@@ -1,4 +1,4 @@
-import type { DestinyDamageTypeDefinition, DestinyInventoryItemDefinition, DestinyItemTierTypeDefinition, DestinyObjectiveDefinition, DestinyPlugSetDefinition, DestinySandboxPerkDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
+import type { DestinyDamageTypeDefinition, DestinyInventoryItemDefinition, DestinyItemCategoryDefinition, DestinyItemTierTypeDefinition, DestinyObjectiveDefinition, DestinyPlugSetDefinition, DestinySandboxPerkDefinition, DestinySocketTypeDefinition, DestinyStatDefinition, DestinyStatGroupDefinition } from "bungie-api-ts/destiny2";
 import type { UsedDestinyManifestSlice } from "../interfaces";
 
 export class ManifestAccessor {
@@ -14,6 +14,11 @@ export class ManifestAccessor {
     public getItemDefinition = (hash: number | undefined): DestinyInventoryItemDefinition | undefined => {
         if (!hash) return undefined;
         return this.manifest.DestinyInventoryItemDefinition[hash];
+    }
+
+    public getItemCategoryDefinition = (hash: number | undefined): DestinyItemCategoryDefinition | undefined => {
+        if (!hash) return undefined;
+        return this.manifest.DestinyItemCategoryDefinition[hash];
     }
 
     public getItemTierDefinition = (hash: number): DestinyItemTierTypeDefinition | undefined => {
