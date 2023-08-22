@@ -39,8 +39,8 @@ const areFiltersChosen = computed(() => {
         || filters.value.perkNames.length > 0;
 });
 
-// This is the index for The Title (2023 version).
-const finalWeaponIndexFromPreviousSeason = 13880;
+// This is the index for Glissando-47.
+const finalWeaponIndexFromPreviousSeason = 14594;
 
 const filteredWeapons = computed(() => {
     // If no filter or search, return truncated list

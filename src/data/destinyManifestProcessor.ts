@@ -248,7 +248,8 @@ export class DestinyManifestProcessor {
             const stat = weapon.archetype.rpmStatValue;
             if (!weaponRpmStatHash || (!stat && stat !== 0)) continue;
 
-            const category = this._itemCategories.find(c => c.traitId === weapon.traitId);
+            const category = this._itemCategories.find(c => c.traitId === weapon.traitId)
+                || this.manifest.getItemCategoryDefinition(weapon.categoryHash);
             if (!category) continue;
 
             const intrinsicNameSeenRPMs = seenArchetypes[weapon.traitId] || {};

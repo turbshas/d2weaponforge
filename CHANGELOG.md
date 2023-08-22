@@ -1,6 +1,11 @@
 # Changelog
 
-## **TBD** [ *1.5.2* ] TBD
+## **TBD** [ *1.5.3* ] TBD
+
+## **Season of the Witch** [ *1.5.2* ] 2023-08-22
+Fixes weapons filters not loading from API - trait IDs aren't appearing on item categories.
+
+* Change weapon list to list all weapons that were released after the previous season.
 
 ## **Season of the Deep** [ *1.5.1* ] 2023-05-27
 Fixes weapons not loading from API - weapon trait IDs were changed.

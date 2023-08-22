@@ -10,7 +10,7 @@
     "analyze-bundle": "npx vite-bundle-visualizer"
   },
   "dependencies": {
-    "bungie-api-ts": "4.21.0",
+    "bungie-api-ts": "5.0.0",
     "vue": "3.2.45"
   },
   "devDependencies": {
