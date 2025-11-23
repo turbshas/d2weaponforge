@@ -7,20 +7,21 @@
     "preview": "vite preview --port 4173",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit",
-    "analyze-bundle": "npx vite-bundle-visualizer"
+    "analyze-bundle": "npx vite-bundle-visualizer",
+    "update": "npx npm-check-updates -u"
   },
   "dependencies": {
-    "bungie-api-ts": "5.0.0",
-    "vue": "3.2.45"
+    "bungie-api-ts": "^5.9.0",
+    "vue": "^3.5.24"
   },
   "devDependencies": {
-    "@types/node": "^16.11.56",
-    "@vitejs/plugin-vue": "4.0.0",
-    "@vue/tsconfig": "0.1.3",
-    "less": "^4.1.3",
+    "@types/node": "^24.10.1",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/tsconfig": "^0.8.1",
+    "less": "^4.4.2",
     "npm-run-all": "4.1.5",
-    "typescript": "~4.7.4",
-    "vite": "4.0.5",
-    "vue-tsc": "1.0.14"
+    "typescript": "~5.9.3",
+    "vite": "^7.2.4",
+    "vue-tsc": "^3.1.5"
   }
 }
